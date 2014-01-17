@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EntityColumnInfo.cs" />
+    <Compile Include="EntityInfo.cs" />
     <Compile Include="IEntityColumnInfo.cs" />
     <Compile Include="IEntityInfo.cs" />
     <Compile Include="IMapper.cs" />

@@ -65,7 +65,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Config\ColumnAttribute.cs" />
-    <Compile Include="Config\ConfigurationBuilderTests.cs" />
+    <Compile Include="Config\MappingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
