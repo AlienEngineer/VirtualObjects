@@ -22,7 +22,7 @@ namespace VirtualObjects.Tests.Config
 
             public int SomeName { get; set; }
 
-            [Column("NotSoRandom")]
+            [Db.Column("NotSoRandom")]
             public int SomeRandomName { get; set; }
 
         }
@@ -45,8 +45,17 @@ namespace VirtualObjects.Tests.Config
         {
             var builder = new MappingBuilder();
 
-            builder.NameFromProperty(e => e.Name);
-            builder.NameFromAttribute<ColumnAttribute>(e => e.Name);
+            //
+            // TableName getters
+            //
+            builder.EntityNameFromType(e => e.Name);
+            builder.EntityNameFromAttribute<Db.TableAttribute>(e => e.Name);
+
+            //
+            // ColumnName getters
+            //
+            builder.ColumnNameFromProperty(e => e.Name);
+            builder.ColumnNameFromAttribute<Db.ColumnAttribute>(e => e.Name);
 
             return builder;
         }
@@ -55,6 +64,12 @@ namespace VirtualObjects.Tests.Config
         public void EntityInfo_Should_NotBeNull()
         {
             entityInfo.Should().NotBeNull();
+        }
+
+        [TestCase("TestModel")]
+        public void EntityInfo_Name_Should_Be(String name)
+        {
+            entityInfo.EntityName.Should().Be(name);
         }
         
         [Test]
