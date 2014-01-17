@@ -95,6 +95,18 @@ namespace VirtualObjects.Tests.Config
             someNameInfo.ColumnName.Should().Be("SomeName");
             notSoRandomInfo.ColumnName.Should().Be("NotSoRandom");
         }
+
+        [Test]
+        public void Column_Should_Be_Found()
+        {
+            entityInfo["SomeName"].Should().NotBeNull();
+        }
+
+        [Test]
+        public void Column_Should_NotBe_Found()
+        {
+            entityInfo["SomeRandomName"].Should().BeNull();
+        }
   
         [Test]
         public void EntityInfo_Should_Have_One_Key()
