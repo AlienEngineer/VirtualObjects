@@ -13,6 +13,22 @@ namespace VirtualObjects.Tests.Config
             public String Name { get; private set; }
         }
 
+        public class KeyAttribute : ColumnAttribute
+        {
+            public KeyAttribute(String name) 
+                : base(name)
+            {
+            }
+        }
+
+        public class IdentityAttribute : KeyAttribute
+        {
+            public IdentityAttribute(String name)
+                : base(name)
+            {
+            }
+        }
+
         public class TableAttribute : Attribute
         {
             public TableAttribute(String name)

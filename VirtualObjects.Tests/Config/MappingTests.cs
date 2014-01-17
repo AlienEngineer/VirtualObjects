@@ -22,7 +22,7 @@ namespace VirtualObjects.Tests.Config
 
             public int SomeName { get; set; }
 
-            [Db.Column("NotSoRandom")]
+            [Db.Identity("NotSoRandom")]
             public int SomeRandomName { get; set; }
 
         }
@@ -57,6 +57,12 @@ namespace VirtualObjects.Tests.Config
             builder.ColumnNameFromProperty(e => e.Name);
             builder.ColumnNameFromAttribute<Db.ColumnAttribute>(e => e.Name);
 
+            builder.ColumnKeyFromProperty(e => e.Name == "Id");
+            builder.ColumnKeyFromAttribute<Db.KeyAttribute>(e => e != null);
+            builder.ColumnKeyFromAttribute<Db.IdentityAttribute>(e => e != null);
+
+            builder.ColumnIdentityFromAttribute<Db.IdentityAttribute>(e => e != null);
+
             return builder;
         }
 
@@ -90,5 +96,16 @@ namespace VirtualObjects.Tests.Config
             notSoRandomInfo.ColumnName.Should().Be("NotSoRandom");
         }
   
+        [Test]
+        public void EntityInfo_Should_Have_One_Key()
+        {
+            entityInfo.Columns.Count(e => e.IsKey).Should().Be(1);
+        }
+
+        [Test]
+        public void EntityInfo_Should_Have_One_Identity()
+        {
+            entityInfo.Columns.Count(e => e.IsIdentity).Should().Be(1);
+        }
     }
 }

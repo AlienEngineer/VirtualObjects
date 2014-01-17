@@ -11,16 +11,21 @@ namespace VirtualObjects.Config
     public class Mapper : IMapper
     {
         public IEnumerable<Func<PropertyInfo, String>> ColumnNameGetters { get; set; }
+        public IEnumerable<Func<PropertyInfo, Boolean>> ColumnKeyGetters { get; set; }
+        public IEnumerable<Func<PropertyInfo, Boolean>> ColumnIdentityGetters { get; set; }
         public IEnumerable<Func<Type, String>> EntityNameGetters { get; set; }
 
         #region IMapper Members
 
         public IEntityInfo Map(Type entityType)
         {
+            var columns = MapColumns(entityType.GetProperties()).ToList();
+
             return new EntityInfo
             {
                 EntityName = GetName(entityType),
-                Columns = MapColumns(entityType.GetProperties())
+                Columns = columns,
+                KeyColumns = columns.Where(e => e.IsKey).ToList()
             };
         }
 
@@ -55,8 +60,20 @@ namespace VirtualObjects.Config
         {
             return new EntityColumnInfo
             {
-                ColumnName = GetName(propertyInfo)
+                ColumnName = GetName(propertyInfo),
+                IsKey = GetIsKey(propertyInfo),
+                IsIdentity = GetIsIdentity(propertyInfo)
             };
+        }
+  
+        private bool GetIsIdentity(PropertyInfo propertyInfo)
+        {
+            return ColumnIdentityGetters.Any(e => e(propertyInfo));
+        }
+        
+        private bool GetIsKey(PropertyInfo propertyInfo)
+        {
+            return ColumnKeyGetters.Any(e => e(propertyInfo));
         }
 
         private string GetName(PropertyInfo propertyInfo)
