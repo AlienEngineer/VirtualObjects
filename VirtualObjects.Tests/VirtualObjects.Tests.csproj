@@ -80,6 +80,10 @@
       <Project>{84453362-1924-4f00-bf56-859ad828febb}</Project>
       <Name>VirtualObjects.Config</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VirtualObjects.Queries\VirtualObjects.Queries.csproj">
+      <Project>{0A1EC294-D82C-40AF-BE1E-D2FFCF692EB6}</Project>
+      <Name>VirtualObjects.Queries</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
