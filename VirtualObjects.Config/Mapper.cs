@@ -24,6 +24,7 @@ namespace VirtualObjects.Config
             return new EntityInfo
             {
                 EntityName = GetName(entityType),
+                EntityType = entityType,
                 Columns = columns,
                 KeyColumns = columns.Where(e => e.IsKey).ToList()
             };
@@ -36,24 +37,18 @@ namespace VirtualObjects.Config
 
         private string GetName(Type entityType)
         {
-            foreach ( var nameGetter in EntityNameGetters )
-            {
-                var name = nameGetter(entityType);
-                if ( !String.IsNullOrEmpty(name) )
-                {
-                    return name;
-                }
-            }
-            return null;
+            return EntityNameGetters
+                .Select(nameGetter => nameGetter(entityType))
+                .FirstOrDefault(name => !String.IsNullOrEmpty(name));
         }
 
         #endregion
-        
+
         #region Auxilary column mapping methods
 
-        private IEnumerable<IEntityColumnInfo> MapColumns(PropertyInfo[] properties)
+        private IEnumerable<IEntityColumnInfo> MapColumns(IEnumerable<PropertyInfo> properties)
         {
-            return properties.Select(propertyInfo => MapColumn(propertyInfo));
+            return properties.Select(MapColumn);
         }
 
         private IEntityColumnInfo MapColumn(PropertyInfo propertyInfo)
@@ -62,15 +57,16 @@ namespace VirtualObjects.Config
             {
                 ColumnName = GetName(propertyInfo),
                 IsKey = GetIsKey(propertyInfo),
-                IsIdentity = GetIsIdentity(propertyInfo)
+                IsIdentity = GetIsIdentity(propertyInfo),
+                Property = propertyInfo
             };
         }
-  
+
         private bool GetIsIdentity(PropertyInfo propertyInfo)
         {
             return ColumnIdentityGetters.Any(e => e(propertyInfo));
         }
-        
+
         private bool GetIsKey(PropertyInfo propertyInfo)
         {
             return ColumnKeyGetters.Any(e => e(propertyInfo));
@@ -78,17 +74,11 @@ namespace VirtualObjects.Config
 
         private string GetName(PropertyInfo propertyInfo)
         {
-            foreach ( var nameGetter in ColumnNameGetters )
-            {
-                var name = nameGetter(propertyInfo);
-                if ( !String.IsNullOrEmpty(name) )
-                {
-                    return name;
-                }
-            }
-            return null;
+            return ColumnNameGetters
+                .Select(nameGetter => nameGetter(propertyInfo))
+                .FirstOrDefault(name => !String.IsNullOrEmpty(name));
         }
-        
+
         #endregion
 
     }

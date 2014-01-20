@@ -61,6 +61,24 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find the proper Entity Info for {SourceType.Name}..
+        /// </summary>
+        public static string Query_EntityInfoNotFound {
+            get {
+                return ResourceManager.GetString("Query_EntityInfoNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The source of the query was not set..
+        /// </summary>
+        public static string Query_SourceNotSet {
+            get {
+                return ResourceManager.GetString("Query_SourceNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to get the type from {NodeType} because it&apos;s not yet supported..
         /// </summary>
         public static string UnableToGetType {

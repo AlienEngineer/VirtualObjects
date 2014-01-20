@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace VirtualObjects.Config
 {
@@ -9,5 +10,7 @@ namespace VirtualObjects.Config
         Boolean IsKey { get; }
 
         Boolean IsIdentity { get; }
+
+        PropertyInfo Property { get; }
     }
 }

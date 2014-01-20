@@ -105,7 +105,7 @@ namespace VirtualObjects.Tests.Config
         [Test]
         public void Column_Should_NotBe_Found()
         {
-            entityInfo["SomeRandomName"].Should().BeNull();
+            entityInfo["NotSoRandom"].Should().BeNull();
         }
   
         [Test]

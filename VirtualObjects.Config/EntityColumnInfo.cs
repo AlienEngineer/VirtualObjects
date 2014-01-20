@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace VirtualObjects.Config
 {
     class EntityColumnInfo : IEntityColumnInfo
@@ -8,5 +10,6 @@ namespace VirtualObjects.Config
 
         public bool IsIdentity { get; set; }
 
+        public PropertyInfo Property { get; set; }
     }
 }

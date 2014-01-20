@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using VirtualObjects.Config;
 using VirtualObjects.Queries.Builder;
 using Fasterflect;
 using System.Linq;
@@ -10,12 +11,15 @@ namespace VirtualObjects.Queries.Compilation
 {
     class QueryCompiler : IQueryCompiler
     {
-        private readonly int index;
-        private readonly IFormatter formatter;
+        private readonly int _index;
+        private readonly IFormatter _formatter;
+        private readonly IMapper _mapper;
 
-        public QueryCompiler(IFormatter formatter)
+        public QueryCompiler(IFormatter formatter, IMapper mapper, int index = 0)
         {
-            this.formatter = formatter;
+            _formatter = formatter;
+            _mapper = mapper;
+            _index = index;
         }
 
         /// <summary>
@@ -25,7 +29,14 @@ namespace VirtualObjects.Queries.Compilation
         /// <returns></returns>
         public IQueryInfo CompileQuery(IBuiltedQuery query)
         {
-            var buffer = new CompilerBuffer();
+            query.SourceType.RaiseIfNull(Errors.Query_SourceNotSet);
+
+            var buffer = new CompilerBuffer()
+            {
+                EntityInfo = _mapper.Map(query.SourceType)
+            };
+
+            buffer.EntityInfo.RaiseIfNull(Errors.Query_EntityInfoNotFound, query);
 
             CompileProjection(query, buffer);
             CompileFrom(query, buffer);
@@ -50,17 +61,20 @@ namespace VirtualObjects.Queries.Compilation
 
             var returnType = ExtractType(lambda.Body);
 
-            buffer.Projection = String.Join(formatter.FieldSeparator, 
-                returnType.Properties().Select(e=> formatter.FormatFieldWithTable(e.Name, index))
+            buffer.Projection = String.Join(_formatter.FieldSeparator, 
+                returnType
+                    .Properties()
+                    .Select(e => buffer.EntityInfo[e.Name])
+                    .Select(e=> _formatter.FormatFieldWithTable(e.ColumnName, _index))
             );
         }
 
         private void CompileFrom(IBuiltedQuery query, CompilerBuffer buffer)
         {
-            buffer.From = formatter.FormatField(query.SourceType.Name);
+            buffer.From = _formatter.FormatTableName(buffer.EntityInfo.EntityName, _index);
         }
 
-        private Type ExtractType(Expression expression)
+        private static Type ExtractType(Expression expression)
         {
             switch ( expression.NodeType )
             {
@@ -77,6 +91,7 @@ namespace VirtualObjects.Queries.Compilation
     {
         public String Projection { get; set; }
         public String From { get; set; }
+        public IEntityInfo EntityInfo { get; set; }
     }
     
 }

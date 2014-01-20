@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,30 +6,31 @@ namespace VirtualObjects.Config
 {
     class EntityInfo : IEntityInfo
     {
-        private IEnumerable<IEntityColumnInfo> columns;
+        private IEnumerable<IEntityColumnInfo> _columns;
+        private IDictionary<string, IEntityColumnInfo> _columnsDictionary;
 
         public string EntityName { get; set; }
 
         public IEnumerable<IEntityColumnInfo> Columns
         {
-            get { return this.columns; }
+            get { return _columns; }
             set
             {
-                this.columns = value;
-                columnsDictionary = value.ToDictionary(e => e.ColumnName);
+                _columns = value;
+                _columnsDictionary = value.ToDictionary(e => e.Property.Name);
             }
         }
         
         public IEnumerable<IEntityColumnInfo> KeyColumns { get; set; }
+        public Type EntityType { get; set; }
 
-        private IDictionary<string, IEntityColumnInfo> columnsDictionary;
 
-        public IEntityColumnInfo this[string columnName]
+        public IEntityColumnInfo this[string propertyName]
         {
             get
             {
                 IEntityColumnInfo column;
-                return columnsDictionary.TryGetValue(columnName, out column) ? column : null;
+                return _columnsDictionary.TryGetValue(propertyName, out column) ? column : null;
             }
         }
 

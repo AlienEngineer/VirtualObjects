@@ -19,7 +19,7 @@ namespace VirtualObjects.Queries.Builder
         
         public IQueryInfo BuildQuery()
         {
-            return queryCompiler.CompileQuery((IBuiltedQuery)this);
+            return queryCompiler.CompileQuery(this);
         }
   
         public void Project(Expression projection)

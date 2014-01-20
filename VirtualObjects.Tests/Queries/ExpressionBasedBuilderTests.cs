@@ -21,36 +21,39 @@ namespace VirtualObjects.Tests.Queries
     [TestFixture, Category("Query Building")]
     public class ExpressionBasedBuilderTests 
     {
-        readonly IMapper mapper;
-        ExpressionBasedBuilder builder;
+        readonly IMapper _mapper;
+        ExpressionBasedBuilder _builder;
 
         public ExpressionBasedBuilderTests()
         {
             var mapperMock = new Mock<IMapper>();
 
-            mapperMock.Setup(e => e.Map(null)).Returns(MakeEntityInfo());
+            mapperMock.Setup(e => e.Map(typeof(Person))).Returns(MakeEntityInfo());
 
-            mapper = mapperMock.Object;
+            _mapper = mapperMock.Object;
         }
 
         class Person
         {
             public int Id { get; set; }
-            public String Name { get; set; }
+            public String FullName { get; set; }
         }
   
         
-        private IEntityInfo MakeEntityInfo()
+        private static IEntityInfo MakeEntityInfo()
         {
+            var personType = typeof (Person);
+
             var columns = new List<IEntityColumnInfo>
             {
-                new EntityColumnInfo { ColumnName = "Id", IsKey = true },
-                new EntityColumnInfo { ColumnName = "Name"}
+                new EntityColumnInfo { ColumnName = "Id", IsKey = true, Property = personType.GetProperty("Id")},
+                new EntityColumnInfo { ColumnName = "Name", Property = personType.GetProperty("FullName")}
             };
 
             return new EntityInfo
             {
                 EntityName = "People",
+                EntityType = personType,
                 Columns = columns,
                 KeyColumns = columns.Where(e => e.IsKey).ToList()
             };
@@ -59,37 +62,28 @@ namespace VirtualObjects.Tests.Queries
         [SetUp]
         public void SetUpEachTestMethod()
         {
-            builder = new ExpressionBasedBuilder(
-                new QueryCompiler(new SqlFormatter())
+            _builder = new ExpressionBasedBuilder(
+                new QueryCompiler(new SqlFormatter(), _mapper)
             );
         }
-
 
         [Test]
         public void Projection_Should_Show_Projected_Field()
         {
-            builder.Project<Person>(e => new { e.Id });
+            _builder.Project<Person>(e => new { e.Id });
+            _builder.From<Person>();
 
-            builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id]");
+            _builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id] From [People] [T0]");
         }
-
-        [Test]
-        public void Projection_Should_Show_All_Fields()
-        {
-            builder.Project<Person>(e => e);
-
-            builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name]");
-        }
-
+        
         [Test]
         public void Source_Should_Be_People()
         {
-            builder.Project<Person>(e => e);
-            builder.From<Person>();
+            _builder.Project<Person>(e => e);
+            _builder.From<Person>();
 
-            builder.BuildQuery().CommandText
+            _builder.BuildQuery().CommandText
                 .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0]");
         }
 

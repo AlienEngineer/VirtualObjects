@@ -6,12 +6,14 @@ namespace VirtualObjects.Config
     public interface IEntityInfo
     {
 
-        IEntityColumnInfo this[String columnName] { get; }
+        IEntityColumnInfo this[String propertyName] { get; }
 
         String EntityName { get; }
 
         IEnumerable<IEntityColumnInfo> Columns { get; }
 
         IEnumerable<IEntityColumnInfo> KeyColumns { get; }
+        
+        Type EntityType { get; }
     }
 }
