@@ -9,6 +9,10 @@ namespace VirtualObjects.Queries.Builder
 
         void Project<T>(Expression<Func<T, Object>> projection);
 
+        void From(Type src);
+
+        void From<T>();
+
         /// <summary>
         /// Builds the query.
         /// </summary>

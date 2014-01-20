@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using VirtualObjects.Queries.Compilation;
 
 namespace VirtualObjects.Queries.Builder
 {
     class ExpressionBasedBuilder : IBuiltedQuery, IQueryBuilder 
     {
-        public Expression Projection { get; set; }
+        private readonly IQueryCompiler queryCompiler;
 
+        public ExpressionBasedBuilder(IQueryCompiler queryCompiler)
+        {
+            this.queryCompiler = queryCompiler;
+        }
+
+        public Expression Projection { get; set; }
+        public Type SourceType { get; set; }
+        
         public IQueryInfo BuildQuery()
         {
-            return Build((IBuiltedQuery)this);
+            return queryCompiler.CompileQuery((IBuiltedQuery)this);
         }
   
-        private IQueryInfo Build(IBuiltedQuery query)
-        {
-            return new QueryInfo
-            {
-                CommandText = ""
-            };
-        }
-
         public void Project(Expression projection)
         {
             Projection = projection;
@@ -30,5 +31,16 @@ namespace VirtualObjects.Queries.Builder
         {
             Project((Expression)projection);
         }
+
+        public void From(Type src)
+        {
+            SourceType = src;
+        }
+
+        public void From<T>()
+        {
+            From(typeof(T));
+        }
+
     }
 }

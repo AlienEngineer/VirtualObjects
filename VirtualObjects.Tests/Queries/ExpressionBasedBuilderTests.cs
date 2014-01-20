@@ -9,6 +9,8 @@ namespace VirtualObjects.Tests.Queries
     using System.Collections.Generic;
     using VirtualObjects.Config;
     using VirtualObjects.Queries.Builder;
+    using VirtualObjects.Queries.Compilation;
+    using VirtualObjects.Queries.Formatters;
 
     /// <summary>
     /// 
@@ -19,7 +21,7 @@ namespace VirtualObjects.Tests.Queries
     [TestFixture, Category("Query Building")]
     public class ExpressionBasedBuilderTests 
     {
-        IMapper mapper;
+        readonly IMapper mapper;
         ExpressionBasedBuilder builder;
 
         public ExpressionBasedBuilderTests()
@@ -57,22 +59,38 @@ namespace VirtualObjects.Tests.Queries
         [SetUp]
         public void SetUpEachTestMethod()
         {
-            builder = new ExpressionBasedBuilder();
+            builder = new ExpressionBasedBuilder(
+                new QueryCompiler(new SqlFormatter())
+            );
         }
 
 
-        /// <summary>
-        /// 
-        /// Unit-test for projection
-        /// 
-        /// </summary>
+        [Test]
+        public void Projection_Should_Show_Projected_Field()
+        {
+            builder.Project<Person>(e => new { e.Id });
+
+            builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id]");
+        }
+
         [Test]
         public void Projection_Should_Show_All_Fields()
         {
-            builder.Project<Person>(e => new { e.Id, e.Name });
+            builder.Project<Person>(e => e);
 
             builder.BuildQuery().CommandText
-                .Should().Be("Select Id, Name");
+                .Should().Be("Select [T0].[Id], [T0].[Name]");
+        }
+
+        [Test]
+        public void Source_Should_Be_People()
+        {
+            builder.Project<Person>(e => e);
+            builder.From<Person>();
+
+            builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0]");
         }
 
     }

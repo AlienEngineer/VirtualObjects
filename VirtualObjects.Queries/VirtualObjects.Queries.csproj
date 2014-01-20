@@ -11,6 +11,8 @@
     <AssemblyName>VirtualObjects.Queries</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,9 +32,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,21 +50,33 @@
     <Compile Include="Builder\ExpressionBasedBuilder.cs" />
     <Compile Include="Builder\IBuiltedQuery.cs" />
     <Compile Include="Builder\IQueryBuilder.cs" />
+    <Compile Include="Compilation\IQueryCompiler.cs" />
+    <Compile Include="Compilation\QueryCompiler.cs" />
+    <Compile Include="Formatters\IFormatter.cs" />
+    <Compile Include="Formatters\SqlFormatter.cs" />
     <Compile Include="IConverter.cs" />
     <Compile Include="IQueryInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\VirtualObjects.Common\VirtualObjects.Common.csproj">
+      <Project>{c486dfb8-eafc-4a11-9ee2-ee6f6a59bb38}</Project>
+      <Name>VirtualObjects.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VirtualObjects.Config\VirtualObjects.Config.csproj">
       <Project>{84453362-1924-4f00-bf56-859ad828febb}</Project>
       <Name>VirtualObjects.Config</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NewFolder1\" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="netfx\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
