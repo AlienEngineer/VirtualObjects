@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace VirtualObjects.Queries.Formatters
 {
@@ -30,6 +31,33 @@ namespace VirtualObjects.Queries.Formatters
         public String FormatTableName(String name, int index)
         {
             return string.Format("{0} {1}", Wrap(name), Wrap(TablePrefix + index));
+        }
+
+        public string FormatNode(ExpressionType nodeType)
+        {
+            switch (nodeType)
+            {
+                case ExpressionType.Add: return " + ";
+                case ExpressionType.Subtract: return " - ";
+                case ExpressionType.Divide: return " / ";
+                case ExpressionType.Multiply: return " * ";
+                case ExpressionType.Equal: return " = ";
+                case ExpressionType.AndAlso: return " And ";
+                case ExpressionType.OrElse: return " Or ";
+                case ExpressionType.NotEqual: return " != ";
+                case ExpressionType.GreaterThan: return " > ";
+                case ExpressionType.GreaterThanOrEqual: return " >= ";
+                case ExpressionType.LessThan: return " < ";
+                case ExpressionType.LessThanOrEqual: return " <= ";
+                default:
+                    throw new UnsupportedException(Errors.SQL_UnableToFormatNode, new {NodeType = nodeType});
+
+            }
+        }
+
+        public string FormatConstant(object value, int count)
+        {
+            return "@p" + count;
         }
     }
 }

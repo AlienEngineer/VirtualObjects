@@ -61,6 +61,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Wrong method called for {NodeType}..
+        /// </summary>
+        public static string Internal_WrongMethodCall {
+            get {
+                return ResourceManager.GetString("Internal_WrongMethodCall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find the proper Entity Info for {SourceType.Name}..
         /// </summary>
         public static string Query_EntityInfoNotFound {
@@ -75,6 +84,24 @@ namespace VirtualObjects {
         public static string Query_SourceNotSet {
             get {
                 return ResourceManager.GetString("Query_SourceNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {NodeType} in predicate is not yet supported..
+        /// </summary>
+        public static string SQL_ExpressionTypeNotSupported {
+            get {
+                return ResourceManager.GetString("SQL_ExpressionTypeNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {NodeType} is not yet supported..
+        /// </summary>
+        public static string SQL_UnableToFormatNode {
+            get {
+                return ResourceManager.GetString("SQL_UnableToFormatNode", resourceCulture);
             }
         }
         

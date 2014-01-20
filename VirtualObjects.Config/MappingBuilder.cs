@@ -6,7 +6,12 @@ using System.Linq;
 
 namespace VirtualObjects.Config
 {
-    class MappingBuilder
+    internal interface IMappingBuilder
+    {
+        IMapper Build();
+    }
+
+    public class MappingBuilder : IMappingBuilder
     {
         private readonly ICollection<Func<PropertyInfo, String>> _columnNameGetters;
         private readonly ICollection<Func<PropertyInfo, Boolean>> _columnKeyGetters;

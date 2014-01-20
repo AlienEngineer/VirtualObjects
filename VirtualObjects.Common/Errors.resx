@@ -117,11 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Internal_WrongMethodCall" xml:space="preserve">
+    <value>Wrong method called for {NodeType}.</value>
+  </data>
   <data name="Query_EntityInfoNotFound" xml:space="preserve">
     <value>Unable to find the proper Entity Info for {SourceType.Name}.</value>
   </data>
   <data name="Query_SourceNotSet" xml:space="preserve">
     <value>The source of the query was not set.</value>
+  </data>
+  <data name="SQL_ExpressionTypeNotSupported" xml:space="preserve">
+    <value>{NodeType} in predicate is not yet supported.</value>
+  </data>
+  <data name="SQL_UnableToFormatNode" xml:space="preserve">
+    <value>{NodeType} is not yet supported.</value>
   </data>
   <data name="UnableToGetType" xml:space="preserve">
     <value>Unable to get the type from {NodeType} because it's not yet supported.</value>

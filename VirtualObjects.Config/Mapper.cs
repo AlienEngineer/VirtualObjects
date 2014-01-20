@@ -8,7 +8,7 @@ namespace VirtualObjects.Config
     /// <summary>
     /// 
     /// </summary>
-    public class Mapper : IMapper
+    class Mapper : IMapper
     {
         public IEnumerable<Func<PropertyInfo, String>> ColumnNameGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnKeyGetters { get; set; }

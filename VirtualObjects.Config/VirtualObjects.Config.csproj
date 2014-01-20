@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributeMappingBuilder.cs" />
     <Compile Include="EntityColumnInfo.cs" />
     <Compile Include="EntityInfo.cs" />
     <Compile Include="IEntityColumnInfo.cs" />

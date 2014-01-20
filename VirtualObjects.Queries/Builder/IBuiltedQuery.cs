@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace VirtualObjects.Queries.Builder
@@ -8,5 +9,7 @@ namespace VirtualObjects.Queries.Builder
         Type SourceType { get; }
 
         Expression Projection { get; }
+
+        ICollection<Expression> Predicates { get; set; }
     }
 }

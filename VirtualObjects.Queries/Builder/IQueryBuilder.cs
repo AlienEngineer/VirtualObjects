@@ -17,5 +17,8 @@ namespace VirtualObjects.Queries.Builder
         /// Builds the query.
         /// </summary>
         IQueryInfo BuildQuery();
+
+        void Where(Expression predicate);
+        void Where<T>(Expression<Func<T, bool>> predicate);
     }
 }

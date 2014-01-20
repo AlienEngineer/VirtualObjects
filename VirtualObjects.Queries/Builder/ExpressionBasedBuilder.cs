@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using VirtualObjects.Queries.Compilation;
@@ -7,19 +9,21 @@ namespace VirtualObjects.Queries.Builder
 {
     class ExpressionBasedBuilder : IBuiltedQuery, IQueryBuilder 
     {
-        private readonly IQueryCompiler queryCompiler;
+        private readonly IQueryCompiler _queryCompiler;
 
         public ExpressionBasedBuilder(IQueryCompiler queryCompiler)
         {
-            this.queryCompiler = queryCompiler;
+            _queryCompiler = queryCompiler;
+            Predicates = new Collection<Expression>();
         }
 
         public Expression Projection { get; set; }
         public Type SourceType { get; set; }
+        public ICollection<Expression> Predicates { get; set; }
         
         public IQueryInfo BuildQuery()
         {
-            return queryCompiler.CompileQuery(this);
+            return _queryCompiler.CompileQuery(this);
         }
   
         public void Project(Expression projection)
@@ -42,5 +46,14 @@ namespace VirtualObjects.Queries.Builder
             From(typeof(T));
         }
 
+        public void Where(Expression predicate)
+        {
+            Predicates.Add(predicate);
+        }
+
+        public void Where<T>(Expression<Func<T, bool>> predicate)
+        {
+            Where((Expression) predicate);
+        }
     }
 }

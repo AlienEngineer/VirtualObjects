@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 
 namespace VirtualObjects.Queries.Formatters
 {
@@ -11,5 +12,9 @@ namespace VirtualObjects.Queries.Formatters
         String FieldSeparator { get; }
 
         String FormatField(String name);
+        
+        String FormatNode(ExpressionType nodeType);
+        
+        string FormatConstant(object value, int count);
     }
 }
