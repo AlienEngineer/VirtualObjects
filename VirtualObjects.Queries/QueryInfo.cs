@@ -2,13 +2,15 @@ using System.Data.Common;
 
 namespace VirtualObjects.Queries
 {
-    public interface IQueryInfo
-    {
-        DbCommand Command { get; }
-    }
-
     class QueryInfo : IQueryInfo
     {
+
+        #region IQueryInfo Members
+        
         public DbCommand Command { get; set; }
+
+        public string CommandText { get; set; }
+        
+        #endregion
     }
 }
