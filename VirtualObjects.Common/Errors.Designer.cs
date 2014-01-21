@@ -61,6 +61,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Init method on Mapper not called..
+        /// </summary>
+        public static string Internal_MapperNotInitialized {
+            get {
+                return ResourceManager.GetString("Internal_MapperNotInitialized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Wrong method called for {NodeType}..
         /// </summary>
         public static string Internal_WrongMethodCall {

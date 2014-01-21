@@ -19,16 +19,12 @@ namespace VirtualObjects.Tests.Queries
     /// Author: Sérgio
     /// </summary>
     [TestFixture, Category("Query Building")]
-    public class ExpressionBasedBuilderTests
+    public class ExpressionBasedBuilderTests : UtilityBelt
     {
-        readonly IMapper _mapper;
         ExpressionBasedBuilder _builder;
 
         public ExpressionBasedBuilderTests()
         {
-            var builder = new AttributeMappingBuilder();
-
-            _mapper = builder.Build();
         }
 
         class People
@@ -49,7 +45,7 @@ namespace VirtualObjects.Tests.Queries
         public void SetUpEachTestMethod()
         {
             _builder = new ExpressionBasedBuilder(
-                new QueryCompiler(new SqlFormatter(), _mapper)
+                new QueryCompiler(new SqlFormatter(), Mapper)
             );
 
             _builder.Project<People>(e => new { e.Id, e.Name });

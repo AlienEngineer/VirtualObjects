@@ -19,7 +19,12 @@ namespace VirtualObjects.Queries.Builder
         public Expression Projection { get; set; }
         public Type SourceType { get; set; }
         public ICollection<Expression> Predicates { get; set; }
-        
+
+        public IQueryBuilder CreateQueryBuilder(IQueryCompiler queryCompiler)
+        {
+            return new ExpressionBasedBuilder(queryCompiler);
+        }
+
         public IQueryInfo BuildQuery()
         {
             return _queryCompiler.CompileQuery(this);

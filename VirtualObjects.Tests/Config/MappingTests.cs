@@ -15,7 +15,7 @@ namespace VirtualObjects.Tests.Config
     /// Author: Sérgio
     /// </summary>
     [TestFixture, Category("Mapping")]
-    public class MappingTests
+    public class MappingTests : UtilityBelt
     {
         public class TestModel
         {
@@ -27,6 +27,9 @@ namespace VirtualObjects.Tests.Config
 
             [Db.Association("ExtId", "Id")]
             public TestModel1 OtherModel { get; set; }
+
+            [Db.Association("ExtId", "SomeRandomName")]
+            public TestModel OtherModelKey { get; set; }
         }
 
         public class TestModel1
@@ -46,37 +49,9 @@ namespace VirtualObjects.Tests.Config
 
         private IEntityInfo MapTestModel()
         {
-            var mapping = CreateBuilder().Build();
-            return mapping.Map(typeof(TestModel));
+            return base.Mapper.Map(typeof(TestModel));
         }
   
-        private MappingBuilder CreateBuilder()
-        {
-            var builder = new MappingBuilder();
-
-            //
-            // TableName getters
-            //
-            builder.EntityNameFromType(e => e.Name);
-            builder.EntityNameFromAttribute<Db.TableAttribute>(e => e.TableName);
-
-            //
-            // ColumnName getters
-            //
-            builder.ColumnNameFromProperty(e => e.Name);
-            builder.ColumnNameFromAttribute<Db.ColumnAttribute>(e => e.FieldName);
-
-            builder.ColumnKeyFromProperty(e => e.Name == "Id");
-            builder.ColumnKeyFromAttribute<Db.KeyAttribute>(e => e != null);
-            builder.ColumnKeyFromAttribute<Db.IdentityAttribute>(e => e != null);
-
-            builder.ColumnIdentityFromAttribute<Db.IdentityAttribute>(e => e != null);
-
-            builder.ForeignKeyFromAttribute<Db.AssociationAttribute>(e => e.OtherKey);
-
-            return builder;
-        }
-
         [Test]
         public void EntityInfo_Should_NotBeNull()
         {
@@ -92,7 +67,7 @@ namespace VirtualObjects.Tests.Config
         [Test]
         public void EntityInfo_Should_Have_Columns()
         {
-            _entityInfo.Columns.Count().Should().Be(3);
+            _entityInfo.Columns.Count().Should().Be(4);
             _entityInfo.Columns.Should().NotBeEmpty();
             CollectionAssert.AllItemsAreNotNull(_entityInfo.Columns);
         }
@@ -132,9 +107,9 @@ namespace VirtualObjects.Tests.Config
         }
 
         [Test]
-        public void EntityInfo_Should_Have_One_Association()
+        public void EntityInfo_Should_Have_Two_Associations()
         {
-            _entityInfo.Columns.Count(e => e.ForeignKey != null).Should().Be(1);
+            _entityInfo.Columns.Count(e => e.ForeignKey != null).Should().Be(2);
         }
 
         [Test]
@@ -146,6 +121,17 @@ namespace VirtualObjects.Tests.Config
 
             foreignKey.IsKey.Should().BeTrue();
             foreignKey.ColumnName.Should().Be("Id");
+        }
+
+        [Test]
+        public void EntityInfo_Other_ForeignKey_Should_Be()
+        {
+            var field = _entityInfo.Columns.Where(e => e.ForeignKey != null).Skip(1).First();
+
+            var foreignKey = field.ForeignKey;
+
+            foreignKey.IsKey.Should().BeTrue();
+            foreignKey.ColumnName.Should().Be("NotSoRandom");
         }
     }
 }

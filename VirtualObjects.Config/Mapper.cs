@@ -6,8 +6,9 @@ using Fasterflect;
 
 namespace VirtualObjects.Config
 {
+
     /// <summary>
-    /// 
+    /// Maps a type into an IEntityInfo. Caches out the results.
     /// </summary>
     class Mapper : IMapper
     {
@@ -17,30 +18,38 @@ namespace VirtualObjects.Config
         public IEnumerable<Func<Type, String>> EntityNameGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKey { get; set; }
 
-        private readonly IMapper _mapper;
-
-        public Mapper(IMapper mapper)
-        {
-            _mapper = mapper;
-        }
+        private readonly IDictionary<Type, EntityInfo> _cacheEntityInfos;
 
         public Mapper()
         {
-            _mapper = this;
+            _cacheEntityInfos = new Dictionary<Type, EntityInfo>();
         }
+
 
         #region IMapper Members
 
         public IEntityInfo Map(Type entityType)
         {
-            var entityInfo = new EntityInfo
+            EntityInfo entityInfo;
+
+            if ( _cacheEntityInfos.TryGetValue(entityType, out entityInfo) )
+            {
+                return entityInfo;
+            }
+
+            _cacheEntityInfos[entityType] = entityInfo = new EntityInfo
             {
                 EntityName = GetName(entityType),
                 EntityType = entityType
             };
 
-            entityInfo.Columns = MapColumns(entityType.GetProperties(), entityInfo).ToList();
+            entityInfo.Columns = MapColumns(entityType.Properties(), entityInfo).ToList();
             entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey);
+
+            foreach (var column in entityInfo.Columns)
+            {
+                column.ForeignKey = GetForeignKey(column.Property);
+            }
 
             return entityInfo;
         }
@@ -74,8 +83,7 @@ namespace VirtualObjects.Config
                 ColumnName = GetName(propertyInfo),
                 IsKey = GetIsKey(propertyInfo),
                 IsIdentity = GetIsIdentity(propertyInfo),
-                Property = propertyInfo,
-                ForeignKey = GetForeignKey(propertyInfo)
+                Property = propertyInfo
             };
         }
 
@@ -86,7 +94,7 @@ namespace VirtualObjects.Config
                 return null;
             }
 
-            var entity = _mapper.Map(propertyInfo.PropertyType);
+            var entity = Map(propertyInfo.PropertyType);
 
             var keyName = ColumnForeignKey
                 .Select(keyGetter => keyGetter(propertyInfo))

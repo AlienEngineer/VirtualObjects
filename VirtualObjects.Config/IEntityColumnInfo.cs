@@ -15,6 +15,6 @@ namespace VirtualObjects.Config
 
         IEntityInfo EntityInfo { get;  }
         
-        IEntityColumnInfo ForeignKey { get; }
+        IEntityColumnInfo ForeignKey { get; set; }
     }
 }

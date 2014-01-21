@@ -43,6 +43,11 @@ namespace VirtualObjects.Tests.Config
         {
             public string OtherKey { get; private set; }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="fieldName">The name of this field.</param>
+            /// <param name="otherKey">The property name, not the fieldName.</param>
             public AssociationAttribute(String fieldName, String otherKey)
                 :base(fieldName)
             {

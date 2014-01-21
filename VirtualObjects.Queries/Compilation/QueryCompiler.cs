@@ -16,14 +16,41 @@ namespace VirtualObjects.Queries.Compilation
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
         private readonly IDictionary<String, Object> _parameters;
+        private int _depth;
+        private QueryCompiler _rootCompiler;
 
-        public QueryCompiler(IFormatter formatter, IMapper mapper, int index = 0)
+        public QueryCompiler(IFormatter formatter, IMapper mapper)
+        {
+            _formatter = formatter;
+            _mapper = mapper;
+            _index = _depth = 0;
+            _parameters = new Dictionary<String, Object>();
+            _rootCompiler = this;
+        }
+
+        public QueryCompiler(IFormatter formatter, IMapper mapper, int index)
         {
             _formatter = formatter;
             _mapper = mapper;
             _index = index;
-            _parameters = new Dictionary<String, Object>();
         }
+
+        private IDictionary<string, object> Parameters
+        {
+            get { return _rootCompiler._parameters; }
+        }
+
+        private IQueryCompiler CreateQueryCompiler()
+        {
+            return new QueryCompiler(_formatter, _mapper, ++_rootCompiler._depth)
+            {
+                //
+                // Bind the new compile to the root.
+                // This binding is used to share parameters and such.
+                _rootCompiler = _rootCompiler
+            };
+        }
+
 
         /// <summary>
         /// Compiles the query.
@@ -164,9 +191,9 @@ namespace VirtualObjects.Queries.Compilation
                 throw new UnsupportedException(Errors.Internal_WrongMethodCall, expression);
             }
 
-            var formatted = _formatter.FormatConstant(constant.Value, _parameters.Count);
+            var formatted = _formatter.FormatConstant(constant.Value, Parameters.Count);
 
-            _parameters[formatted] = constant.Value;
+            Parameters[formatted] = constant.Value;
 
             buffer.Predicates += formatted;
         }
@@ -181,8 +208,8 @@ namespace VirtualObjects.Queries.Compilation
             }
 
             var constant = ExtractConstant(expression);
-            
-            if (constant != null)
+
+            if ( constant != null )
             {
                 CompileConstant(constant, buffer);
                 return;
@@ -228,14 +255,14 @@ namespace VirtualObjects.Queries.Compilation
 
         private static Expression ExtractConstant(Expression expression)
         {
-            if (expression == null)
+            if ( expression == null )
             {
                 return null;
             }
 
-            switch (expression.NodeType)
+            switch ( expression.NodeType )
             {
-                case ExpressionType.MemberAccess: 
+                case ExpressionType.MemberAccess:
                     return ExtractConstant(((MemberExpression)expression).Expression);
                 case ExpressionType.Constant:
                     return expression;
