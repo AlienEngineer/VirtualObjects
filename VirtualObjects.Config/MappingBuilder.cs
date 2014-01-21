@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using Fasterflect;
 using System.Linq;
@@ -14,17 +15,21 @@ namespace VirtualObjects.Config
     public class MappingBuilder : IMappingBuilder
     {
         private readonly ICollection<Func<PropertyInfo, String>> _columnNameGetters;
+        private readonly ICollection<Func<PropertyInfo, String>> _columnForeignKeyGetters;
         private readonly ICollection<Func<PropertyInfo, Boolean>> _columnKeyGetters;
         private readonly ICollection<Func<PropertyInfo, Boolean>> _columnIdentityGetters;
         private readonly ICollection<Func<Type, String>> _entityNameGetters;
         
         public MappingBuilder()
         {
-            _columnNameGetters = new List<Func<PropertyInfo, String>>();
-            _columnKeyGetters = new List<Func<PropertyInfo, Boolean>>();
-            _columnIdentityGetters = new List<Func<PropertyInfo, Boolean>>();
-            _entityNameGetters = new List<Func<Type, String>>();
+            _columnNameGetters = new Collection<Func<PropertyInfo, String>>();
+            _columnKeyGetters = new Collection<Func<PropertyInfo, Boolean>>();
+            _columnIdentityGetters = new Collection<Func<PropertyInfo, Boolean>>();
+            _entityNameGetters = new Collection<Func<Type, String>>();
+            _columnForeignKeyGetters = new Collection<Func<PropertyInfo, string>>();
         }
+
+        #region Building Methods
 
         public void EntityNameFromAttribute<TAttribute>(Func<TAttribute, String> nameGetter) where TAttribute : Attribute
         {
@@ -45,7 +50,7 @@ namespace VirtualObjects.Config
             ColumnNameFromProperty(prop =>
             {
                 var attribute = prop.Attribute<TAttribute>();
-                return attribute != null  ? nameGetter(attribute) : null;
+                return attribute != null ? nameGetter(attribute) : null;
             });
         }
 
@@ -59,7 +64,7 @@ namespace VirtualObjects.Config
             ColumnKeyFromProperty(prop =>
             {
                 var attribute = prop.Attribute<TAttribute>();
-                return attribute != null ? keyGetter(attribute) : false;
+                return attribute != null && keyGetter(attribute);
             });
         }
 
@@ -73,7 +78,7 @@ namespace VirtualObjects.Config
             ColumnIdentityFromProperty(prop =>
             {
                 var attribute = prop.Attribute<TAttribute>();
-                return attribute != null ? keyGetter(attribute) : false;
+                return attribute != null && keyGetter(attribute);
             });
         }
 
@@ -81,6 +86,22 @@ namespace VirtualObjects.Config
         {
             _columnIdentityGetters.Add(keyGetter);
         }
+
+        public void ForeignKeyFromProperty(Func<PropertyInfo, String> foreignKeyGetter)
+        {
+            _columnForeignKeyGetters.Add(foreignKeyGetter);
+        }
+
+        public void ForeignKeyFromAttribute<TAttribute>(Func<TAttribute, String> foreignKeyGetter) where TAttribute : Attribute
+        {
+            ForeignKeyFromProperty(prop =>
+            {
+                var attribute = prop.Attribute<TAttribute>();
+                return attribute != null ? foreignKeyGetter(attribute) : null;
+            });
+        }
+
+        #endregion
         
         public IMapper Build()
         {
@@ -89,8 +110,10 @@ namespace VirtualObjects.Config
                 ColumnNameGetters = _columnNameGetters.Reverse(),
                 EntityNameGetters = _entityNameGetters.Reverse(),
                 ColumnIdentityGetters = _columnIdentityGetters.Reverse(),
-                ColumnKeyGetters = _columnKeyGetters.Reverse()
+                ColumnKeyGetters = _columnKeyGetters.Reverse(),
+                ColumnForeignKey = _columnForeignKeyGetters.Reverse()
             };
         }
+
     }
 }

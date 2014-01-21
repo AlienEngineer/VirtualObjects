@@ -25,14 +25,23 @@ namespace VirtualObjects.Tests.Config
             [Db.Identity("NotSoRandom")]
             public int SomeRandomName { get; set; }
 
+            [Db.Association("ExtId", "Id")]
+            public TestModel1 OtherModel { get; set; }
         }
 
-        IEntityInfo entityInfo;
+        public class TestModel1
+        {
+            [Db.Key]
+            public int Id { get; set; }
+            
+        }
+
+        IEntityInfo _entityInfo;
 
         [TestFixtureSetUp]
         public void SetUp()
         {
-            entityInfo = MapTestModel();
+            _entityInfo = MapTestModel();
         }
 
         private IEntityInfo MapTestModel()
@@ -49,13 +58,13 @@ namespace VirtualObjects.Tests.Config
             // TableName getters
             //
             builder.EntityNameFromType(e => e.Name);
-            builder.EntityNameFromAttribute<Db.TableAttribute>(e => e.Name);
+            builder.EntityNameFromAttribute<Db.TableAttribute>(e => e.TableName);
 
             //
             // ColumnName getters
             //
             builder.ColumnNameFromProperty(e => e.Name);
-            builder.ColumnNameFromAttribute<Db.ColumnAttribute>(e => e.Name);
+            builder.ColumnNameFromAttribute<Db.ColumnAttribute>(e => e.FieldName);
 
             builder.ColumnKeyFromProperty(e => e.Name == "Id");
             builder.ColumnKeyFromAttribute<Db.KeyAttribute>(e => e != null);
@@ -63,34 +72,36 @@ namespace VirtualObjects.Tests.Config
 
             builder.ColumnIdentityFromAttribute<Db.IdentityAttribute>(e => e != null);
 
+            builder.ForeignKeyFromAttribute<Db.AssociationAttribute>(e => e.OtherKey);
+
             return builder;
         }
 
         [Test]
         public void EntityInfo_Should_NotBeNull()
         {
-            entityInfo.Should().NotBeNull();
+            _entityInfo.Should().NotBeNull();
         }
 
         [TestCase("TestModel")]
         public void EntityInfo_Name_Should_Be(String name)
         {
-            entityInfo.EntityName.Should().Be(name);
+            _entityInfo.EntityName.Should().Be(name);
         }
         
         [Test]
         public void EntityInfo_Should_Have_Columns()
         {
-            entityInfo.Columns.Count().Should().Be(2);
-            entityInfo.Columns.Should().NotBeEmpty();
-            CollectionAssert.AllItemsAreNotNull(entityInfo.Columns);
+            _entityInfo.Columns.Count().Should().Be(3);
+            _entityInfo.Columns.Should().NotBeEmpty();
+            CollectionAssert.AllItemsAreNotNull(_entityInfo.Columns);
         }
         
         [Test]
         public void ColumnName_Should_Be_Found()
         {
-            var someNameInfo = entityInfo.Columns.First();
-            var notSoRandomInfo = entityInfo.Columns.Skip(1).First();
+            var someNameInfo = _entityInfo.Columns.First();
+            var notSoRandomInfo = _entityInfo.Columns.Skip(1).First();
             
             someNameInfo.ColumnName.Should().Be("SomeName");
             notSoRandomInfo.ColumnName.Should().Be("NotSoRandom");
@@ -99,25 +110,42 @@ namespace VirtualObjects.Tests.Config
         [Test]
         public void Column_Should_Be_Found()
         {
-            entityInfo["SomeName"].Should().NotBeNull();
+            _entityInfo["SomeName"].Should().NotBeNull();
         }
 
         [Test]
         public void Column_Should_NotBe_Found()
         {
-            entityInfo["NotSoRandom"].Should().BeNull();
+            _entityInfo["NotSoRandom"].Should().BeNull();
         }
   
         [Test]
         public void EntityInfo_Should_Have_One_Key()
         {
-            entityInfo.Columns.Count(e => e.IsKey).Should().Be(1);
+            _entityInfo.Columns.Count(e => e.IsKey).Should().Be(1);
         }
 
         [Test]
         public void EntityInfo_Should_Have_One_Identity()
         {
-            entityInfo.Columns.Count(e => e.IsIdentity).Should().Be(1);
+            _entityInfo.Columns.Count(e => e.IsIdentity).Should().Be(1);
+        }
+
+        [Test]
+        public void EntityInfo_Should_Have_One_Association()
+        {
+            _entityInfo.Columns.Count(e => e.ForeignKey != null).Should().Be(1);
+        }
+
+        [Test]
+        public void EntityInfo_ForeignKey_Should_Be()
+        {
+            var field = _entityInfo.Columns.First(e => e.ForeignKey != null);
+
+            var foreignKey = field.ForeignKey;
+
+            foreignKey.IsKey.Should().BeTrue();
+            foreignKey.ColumnName.Should().Be("Id");
         }
     }
 }

@@ -11,5 +11,9 @@ namespace VirtualObjects.Config
         public bool IsIdentity { get; set; }
 
         public PropertyInfo Property { get; set; }
+        
+        public IEntityInfo EntityInfo { get; set; }
+        
+        public IEntityColumnInfo ForeignKey { get; set; }
     }
 }

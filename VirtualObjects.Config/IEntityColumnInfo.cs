@@ -12,5 +12,9 @@ namespace VirtualObjects.Config
         Boolean IsIdentity { get; }
 
         PropertyInfo Property { get; }
+
+        IEntityInfo EntityInfo { get;  }
+        
+        IEntityColumnInfo ForeignKey { get; }
     }
 }

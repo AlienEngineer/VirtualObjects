@@ -5,38 +5,49 @@ namespace VirtualObjects.Tests.Config
     {
         public class ColumnAttribute : Attribute
         {
-            public ColumnAttribute(String name)
+            public ColumnAttribute(String fieldName)
             {
-                this.Name = name;
+                FieldName = fieldName;
             }
 
-            public String Name { get; private set; }
+            public String FieldName { get; private set; }
         }
 
         public class KeyAttribute : ColumnAttribute
         {
-            public KeyAttribute(String name) 
-                : base(name)
+            public KeyAttribute(String fieldName = null) 
+                : base(fieldName)
             {
             }
         }
 
         public class IdentityAttribute : KeyAttribute
         {
-            public IdentityAttribute(String name)
-                : base(name)
+            public IdentityAttribute(String fieldName = null)
+                : base(fieldName)
             {
             }
         }
 
         public class TableAttribute : Attribute
         {
-            public TableAttribute(String name)
+            public TableAttribute(String tableName)
             {
-                this.Name = name;
+                TableName = tableName;
             }
 
-            public String Name { get; private set; }
+            public String TableName { get; private set; }
+        }
+
+        public class AssociationAttribute : ColumnAttribute
+        {
+            public string OtherKey { get; private set; }
+
+            public AssociationAttribute(String fieldName, String otherKey)
+                :base(fieldName)
+            {
+                OtherKey = otherKey;
+            }
         }
     }
     

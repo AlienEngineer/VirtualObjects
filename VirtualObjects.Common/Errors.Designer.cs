@@ -70,6 +70,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to get the ForeignKey for field {Name} in type {PropertyType.Name}..
+        /// </summary>
+        public static string Mapping_UnableToGetForeignKey {
+            get {
+                return ResourceManager.GetString("Mapping_UnableToGetForeignKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find the proper Entity Info for {SourceType.Name}..
         /// </summary>
         public static string Query_EntityInfoNotFound {
