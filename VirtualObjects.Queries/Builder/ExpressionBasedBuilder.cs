@@ -14,16 +14,14 @@ namespace VirtualObjects.Queries.Builder
         {
             _queryCompiler = queryCompiler;
             Predicates = new Collection<Expression>();
+            Joins = new Collection<Expression>();
         }
 
         public Expression Projection { get; set; }
         public Type SourceType { get; set; }
         public ICollection<Expression> Predicates { get; set; }
+        public ICollection<Expression> Joins { get; set; }
 
-        public IQueryBuilder CreateQueryBuilder(IQueryCompiler queryCompiler)
-        {
-            return new ExpressionBasedBuilder(queryCompiler);
-        }
 
         public IQueryInfo BuildQuery()
         {
@@ -67,6 +65,16 @@ namespace VirtualObjects.Queries.Builder
             Where((Expression) predicate);
         }
 
+        public void Join(Expression joinExpression)
+        {
+            Joins.Add(joinExpression);
+        }
+
+        public void Join<T, T1>(Expression<Func<T, T1, Boolean>> joinExpression)
+        {
+            Join((Expression)joinExpression);
+        }
+
         public override string ToString()
         {
             try
@@ -79,5 +87,6 @@ namespace VirtualObjects.Queries.Builder
             }
             
         }
+
     }
 }

@@ -19,5 +19,7 @@ namespace VirtualObjects.Queries.Builder
         /// </summary>
         IQueryInfo BuildQuery();
 
+        void Join(Expression joinExpression);
+        void Join<T, T1>(Expression<Func<T, T1, Boolean>> joinExpression);
     }
 }

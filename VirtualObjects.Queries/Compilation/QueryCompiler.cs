@@ -72,11 +72,42 @@ namespace VirtualObjects.Queries.Compilation
             CompileProjection(query, buffer);
             CompileFrom(buffer);
             CompilePredicates(query, buffer);
+            CompileJoins(query, buffer);
 
             return new QueryInfo
             {
                 CommandText = Merge(buffer)
             };
+        }
+
+        private void CompileJoins(IBuiltedQuery query, CompilerBuffer buffer)
+        {
+            foreach ( var join in query.Joins.Cast<LambdaExpression>() )
+            {
+                var entityInfo = _mapper.Map(join.Parameters[1].Type);
+                var binary = (BinaryExpression) join.Body;
+
+                var leftMemberName = ExtractName(binary.Left, buffer.EntityInfo);
+                var rightMemberName = ExtractName(binary.Right, entityInfo);
+
+                buffer.Joins += " Inner Join ";
+                buffer.Joins += _formatter.FormatTableName(entityInfo.EntityName, ++_rootCompiler._depth);
+                buffer.Joins += " On (";
+                buffer.Joins += _formatter.FormatFieldWithTable(buffer.EntityInfo[leftMemberName].ColumnName, _index);
+                buffer.Joins += " = ";
+                buffer.Joins += _formatter.FormatFieldWithTable(entityInfo[rightMemberName].ColumnName, _rootCompiler._depth);
+                buffer.Joins += ")";
+            }
+        }
+
+        private string ExtractName(Expression expression, IEntityInfo entityInfo)
+        {
+            if (expression is MemberExpression)
+                return ((MemberExpression) expression).Member.Name;
+            if (expression is ParameterExpression)
+                return entityInfo.KeyColumns.First().ColumnName;
+
+            return null;
         }
 
 
@@ -86,6 +117,7 @@ namespace VirtualObjects.Queries.Compilation
                 .Append("Select ").Append(buffer.Projection)
                 .Append(" From ").Append(buffer.From)
                 .Append(buffer.Predicates)
+                .Append(buffer.Joins)
                 .ToString();
         }
 
@@ -401,6 +433,7 @@ namespace VirtualObjects.Queries.Compilation
         public IEntityInfo EntityInfo { get; set; }
         public String Predicates { get; set; }
         public int Parenthesis { get; set; }
+        public String Joins { get; set; }
     }
 
 }

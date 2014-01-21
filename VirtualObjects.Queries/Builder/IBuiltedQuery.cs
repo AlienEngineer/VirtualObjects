@@ -12,7 +12,7 @@ namespace VirtualObjects.Queries.Builder
         Expression Projection { get; }
 
         ICollection<Expression> Predicates { get; }
+        ICollection<Expression> Joins { get; }
 
-        IQueryBuilder CreateQueryBuilder(IQueryCompiler queryCompiler);
     }
 }

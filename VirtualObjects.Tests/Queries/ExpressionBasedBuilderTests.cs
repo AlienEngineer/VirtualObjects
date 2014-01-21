@@ -1,6 +1,5 @@
 ﻿using System;
 using FluentAssertions;
-using NUnit.Framework.Constraints;
 using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests.Queries
@@ -20,11 +19,7 @@ namespace VirtualObjects.Tests.Queries
     public class ExpressionBasedBuilderTests : UtilityBelt
     {
         ExpressionBasedBuilder _builder;
-
-        public ExpressionBasedBuilderTests()
-        {
-        }
-
+        
         class People
         {
             [Db.Key]
@@ -73,7 +68,7 @@ namespace VirtualObjects.Tests.Queries
 
 
         [Test]
-        public void WhereClause_Should_Be_Id_Equals_1()
+        public void People_Id_Equals_1()
         {
             _builder.Where<People>(e => e.Id == 1);
 
@@ -83,7 +78,7 @@ namespace VirtualObjects.Tests.Queries
 
 
         [Test]
-        public void WhereClause_Should_Be_Id_Equals_1_Or_Id_Equals_2()
+        public void People_Id_Equals_1_Or_Id_Equals_2()
         {
             _builder.Where<People>(e => e.Id == 1 || e.Id == 2);
 
@@ -92,7 +87,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test]
-        public void WhereClause_Should_Be_Id_Equals_1_Or_Id_Equals_2_And_Id_Greater_Than_1()
+        public void People_Id_Equals_1_Or_Id_Equals_2_And_Id_Greater_Than_1()
         {
             _builder.Where<People>(e => e.Id == 1 || e.Id == 2);
             _builder.Where<People>(e => e.Id > 1);
@@ -102,7 +97,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test]
-        public void WhereClause_Should_Be_Id_Plus_1_Equals_2()
+        public void People_Id_Plus_1_Equals_2()
         {
             _builder.Where<People>(e => e.Id + 1 == 1);
 
@@ -111,7 +106,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [TestCase(1)]
-        public void WhereClause_Should_Be_Id_Equal_Parameter(int value)
+        public void People_Id_Equal_Parameter(int value)
         {
             _builder.Where<People>(e => e.Id == value);
 
@@ -120,7 +115,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test]
-        public void WhereClause_Should_Be_Id_Equal_FuncResult()
+        public void People_Id_Equal_FuncResult()
         {
             var func = new Func<int>(() => 1);
 
@@ -192,6 +187,15 @@ namespace VirtualObjects.Tests.Queries
 
             _builder.BuildQuery().CommandText
                 .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[IsDeveloper] != @p0)");
+        }
+
+        [Test]
+        public void People_Joined_With_Boss()
+        {
+            _builder.Join<People, Bosses>((person, boss) => person.Boss == boss);
+
+            _builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Inner Join [Bosses] [T1] On ([T0].[Boss] = [T1].[BossId])");
         }
     }
 }
