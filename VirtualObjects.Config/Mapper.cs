@@ -30,6 +30,11 @@ namespace VirtualObjects.Config
 
         public IEntityInfo Map(Type entityType)
         {
+            if ( entityType.IsFrameworkType() )
+            {
+                return null;
+            }
+
             EntityInfo entityInfo;
 
             if ( _cacheEntityInfos.TryGetValue(entityType, out entityInfo) )

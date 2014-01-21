@@ -15,5 +15,7 @@ namespace VirtualObjects.Config
         IEnumerable<IEntityColumnInfo> KeyColumns { get; }
         
         Type EntityType { get; }
+        
+        IEntityColumnInfo GetFieldAssociatedWith(string name);
     }
 }

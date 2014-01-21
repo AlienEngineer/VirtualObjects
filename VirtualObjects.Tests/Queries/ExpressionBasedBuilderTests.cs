@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Linq;
 using FluentAssertions;
+using NUnit.Framework.Constraints;
+using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests.Queries
 {
-    using Moq;
     using NUnit.Framework;
-    using System.Collections.Generic;
-    using VirtualObjects.Config;
     using VirtualObjects.Queries.Builder;
     using VirtualObjects.Queries.Compilation;
     using VirtualObjects.Queries.Formatters;
@@ -29,16 +27,20 @@ namespace VirtualObjects.Tests.Queries
 
         class People
         {
+            [Db.Key]
             public int Id { get; set; }
             public String Name { get; set; }
+            public DateTime BirthDate { get; set; }
+            public Boolean IsDeveloper { get; set; }
 
             public Bosses Boss { get; set; }
         }
 
         class Bosses
         {
-            public int Id { get; set; }
-            public String Name { get; set; }
+            [Db.Key]
+            public int BossId { get; set; }
+            public String BossName { get; set; }
         }
 
         [SetUp]
@@ -129,14 +131,67 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test]
-        public void People_With_Boss_Equals_To_1()
+        public void People_With_BossId_Equals_To_1()
         {
-            _builder.Where<People>(e => e.Boss.Id == 1);
+            _builder.Where<People>(e => e.Boss.BossId == 1);
 
             _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where [T0].[Id] In (Select [T1].[Id] From [Bosses] [T1] Where [T1].[Id] = @p0)");
+                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[Boss] In (Select [T1].[BossId] From [Bosses] [T1] Where [T1].[BossId] = @p0))");
+        }
+
+        [Test]
+        public void People_With_Boss_Equals_To_1()
+        {
+            _builder.Where<People>(e => e.Boss == new Bosses { BossId = 1 });
+
+            _builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[Boss] = @p0)");
+        }
+
+        [Test]
+        public void People_With_BirthDate_Equals_To_New_Date()
+        {
+            _builder.Where<People>(e => e.BirthDate == new DateTime(DateTime.Now.Ticks));
+
+            _builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[BirthDate] = @p0)");
+        }
+
+        [Test]
+        public void People_With_BirthDate_Equals_To_New_Date_Default()
+        {
+            _builder.Where<People>(e => e.BirthDate == new DateTime());
+
+            _builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[BirthDate] = @p0)");
         }
 
 
+        [Test]
+        public void People_Is_Developer()
+        {
+            _builder.Where<People>(e => e.IsDeveloper);
+
+            _builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[IsDeveloper] = @p0)");
+        }
+
+        [Test]
+        public void People_Not_Is_Developer()
+        {
+            _builder.Where<People>(e => !e.IsDeveloper);
+
+            _builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[IsDeveloper] != @p0)");
+        }
+
+        [Test]
+        public void People_Is_Not_Developer()
+        {
+            _builder.Where<People>(e => e.IsDeveloper != false);
+
+            _builder.BuildQuery().CommandText
+                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[IsDeveloper] != @p0)");
+        }
     }
 }

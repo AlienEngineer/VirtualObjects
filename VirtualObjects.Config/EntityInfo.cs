@@ -22,7 +22,15 @@ namespace VirtualObjects.Config
         }
         
         public IEnumerable<IEntityColumnInfo> KeyColumns { get; set; }
+        
         public Type EntityType { get; set; }
+        
+        public IEntityColumnInfo GetFieldAssociatedWith(string name)
+        {
+            return Columns
+                .Where(e => e.ForeignKey != null)
+                .FirstOrDefault(e => e.ForeignKey.ColumnName == name);
+        }
 
 
         public IEntityColumnInfo this[string propertyName]

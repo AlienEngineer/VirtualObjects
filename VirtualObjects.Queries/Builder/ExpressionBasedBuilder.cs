@@ -52,12 +52,32 @@ namespace VirtualObjects.Queries.Builder
 
         public void Where(Expression predicate)
         {
+            var lambda = (LambdaExpression)predicate;
+
+            if ( lambda.Body is MemberExpression )
+            {
+                predicate = Expression.Equal(lambda.Body, Expression.Constant(true));
+            }
+
             Predicates.Add(predicate);
         }
 
         public void Where<T>(Expression<Func<T, bool>> predicate)
         {
             Where((Expression) predicate);
+        }
+
+        public override string ToString()
+        {
+            try
+            {
+                return BuildQuery().CommandText;
+            }
+            catch (Exception)
+            {
+                return base.ToString();
+            }
+            
         }
     }
 }
