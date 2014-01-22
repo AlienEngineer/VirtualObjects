@@ -15,6 +15,8 @@ namespace VirtualObjects.Queries.Formatters
         
         String FormatNode(ExpressionType nodeType);
         
-        string FormatConstant(object value, int count);
+        String FormatConstant(object value, int count);
+
+        String FormatGetDate();
     }
 }

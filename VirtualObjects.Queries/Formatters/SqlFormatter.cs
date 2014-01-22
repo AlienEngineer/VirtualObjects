@@ -59,5 +59,10 @@ namespace VirtualObjects.Queries.Formatters
         {
             return "@p" + count;
         }
+
+        public string FormatGetDate()
+        {
+            return "GetDate()";
+        }
     }
 }

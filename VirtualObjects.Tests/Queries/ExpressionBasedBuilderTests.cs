@@ -1,13 +1,15 @@
 ﻿using System;
-using FluentAssertions;
-using VirtualObjects.Tests.Config;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using VirtualObjects.Queries;
+using VirtualObjects.Queries.Compilation;
+using VirtualObjects.Queries.Formatters;
+using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Queries
 {
     using NUnit.Framework;
-    using VirtualObjects.Queries.Builder;
-    using VirtualObjects.Queries.Compilation;
-    using VirtualObjects.Queries.Formatters;
 
     /// <summary>
     /// 
@@ -16,186 +18,327 @@ namespace VirtualObjects.Tests.Queries
     /// Author: Sérgio
     /// </summary>
     [TestFixture, Category("Query Building")]
-    public class ExpressionBasedBuilderTests : UtilityBelt
+    public class SqlTranslationTests : UtilityBelt
     {
-        ExpressionBasedBuilder _builder;
-        
-        class People
-        {
-            [Db.Key]
-            public int Id { get; set; }
-            public String Name { get; set; }
-            public DateTime BirthDate { get; set; }
-            public Boolean IsDeveloper { get; set; }
 
-            public Bosses Boss { get; set; }
+        private static IQueryable<TEntity> Query<TEntity>()
+        {
+            return new List<TEntity>().AsQueryable();
         }
 
-        class Bosses
+        private String Translate(IQueryable query)
         {
-            [Db.Key]
-            public int BossId { get; set; }
-            public String BossName { get; set; }
+
+            var str =  Diagnostic.Timed(
+                func: () => new QueryTranslator(new SqlFormatter(), Mapper).TranslateQuery(query).CommandText, 
+                name: "Translation");
+
+            Trace.WriteLine(str);
+
+            return str;
         }
 
-        [SetUp]
-        public void SetUpEachTestMethod()
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple predicate
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Simple_Query()
         {
-            _builder = new ExpressionBasedBuilder(
-                new QueryCompiler(new SqlFormatter(), Mapper)
+            var query = Query<Employee>();
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0]")
+            );
+        }
+
+
+        /// <summary>
+        /// 
+        /// Sql translation get the 10 first rows.
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Query_Top_N()
+        {
+            var query = Query<Employee>().Take(10);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select TOP 10 [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0]")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation skip the 10 first rows.
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Query_Skip_N()
+        {
+            var query = Query<Employee>().Skip(1);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index],  [T100].[EmployeeId], [T100].[LastName], [T100].[FirstName], [T100].[Title], [T100].[TitleOfCourtesy], [T100].[BirthDate], [T100].[HireDate], [T100].[Address], [T100].[City], [T100].[Region], [T100].[PostalCode], [T100].[Country], [T100].[HomePhone], [T100].[Extension], [T100].[Notes], [T100].[Photo], [T100].[ReportsTo], [T100].[PhotoPath], [T100].[Version] From [Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1)")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation skip the 1 and take 1 row.
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Query_Skip_Take_N()
+        {
+            var query = Query<Employee>().Take(1).Skip(1);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index],  [T100].[EmployeeId], [T100].[LastName], [T100].[FirstName], [T100].[Title], [T100].[TitleOfCourtesy], [T100].[BirthDate], [T100].[HireDate], [T100].[Address], [T100].[City], [T100].[Region], [T100].[PostalCode], [T100].[Country], [T100].[HomePhone], [T100].[Extension], [T100].[Notes], [T100].[Photo], [T100].[ReportsTo], [T100].[PhotoPath], [T100].[Version] From [Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1) And ([T0].[Internal_Row_Index] <= 2)")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation skip the 1 and take 1 row predicated.
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Predicated_Query_Skip_Take_N()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.FirstName == "")
+                .Take(1).Skip(1).Where(e => e.FirstName == "");
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index],  [T100].[EmployeeId], [T100].[LastName], [T100].[FirstName], [T100].[Title], [T100].[TitleOfCourtesy], [T100].[BirthDate], [T100].[HireDate], [T100].[Address], [T100].[City], [T100].[Region], [T100].[PostalCode], [T100].[Country], [T100].[HomePhone], [T100].[Extension], [T100].[Notes], [T100].[Photo], [T100].[ReportsTo], [T100].[PhotoPath], [T100].[Version] From [Employees] [T100] Where ([T100].[FirstName] = @p1) And ([T100].[FirstName] = @p2)) [T0] Where ([T0].[FirstName] = @p1) And ([T0].[FirstName] = @p2) And ([T0].[Internal_Row_Index] > 1) And ([T0].[Internal_Row_Index] <= 2)")
+            );
+        }
+
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple nested query
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_NestedQuery()
+        {
+            var query = Query<Orders>()
+                .Where(o => Query<OrderDetails>().Select(od => od.UnitPrice).Contains(o.Freight));
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry] From [Orders] [T0] Where ([T0].[Freight] In (Select [T1].[UnitPrice] From [Order Details] [T1]))")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple nested query
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_NestedQuery_Predicated()
+        {
+            var query = Query<Orders>()
+                .Where(o => Query<OrderDetails>().Where(e => e.Quantity > 0).Select(od => od.UnitPrice).Contains(o.Freight));
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry] From [Orders] [T0] Where ([T0].[Freight] In (Select [T1].[UnitPrice] From [Order Details] [T1] Where ([T1].[Quantity] > @p1)))")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple nested query
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_NestedQuery_Predicated1()
+        {
+            var query = Query<Orders>()
+                .Where(o =>
+                    Query<OrderDetails>().Where(e => e.Order == o)
+                    .Select(od => od.UnitPrice)
+                    .Contains(o.Freight)
+                );
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry] From [Orders] [T0] Where ([T0].[Freight] In (Select [T1].[UnitPrice] From [Order Details] [T1] Where ([T1].[OrderId] = [T0].[OrderId])))")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple nested query
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_NestedQuery_Predicated2()
+        {
+            var query = Query<Orders>()
+                .Where(o =>
+                    Query<OrderDetails>().Where(e => e.Order.OrderId == o.OrderId)
+                    .Select(od => od.UnitPrice)
+                    .Contains(o.Freight)
+                );
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry] From [Orders] [T0] Where ([T0].[Freight] In (Select [T1].[UnitPrice] From [Order Details] [T1] Where ([T1].[OrderId] In (Select [T2].[OrderId] From [Orders] [T2] Where [T2].[OrderId] = [T0].[OrderId]))))")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple predicate
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Simple_Predicate()
+        {
+            var query = Query<Employee>().Where(e => e.EmployeeId == 1);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[EmployeeId] = @p0)")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple predicate
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Member_Predicate()
+        {
+            var query = Query<Employee>().Where(e => e.ReportsTo.EmployeeId == 1);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[ReportsTo] In (Select [T1].[EmployeeId] From [Employees] [T1] Where [T1].[EmployeeId] = @p0))")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple predicate
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Simple_Dated_Predicate()
+        {
+            // Todo: Enable support for DateTime.Now, this fails due to MemberAccess restrictions.
+            var query = Query<Employee>().Where(e => e.BirthDate == new DateTime(DateTime.Now.Ticks));
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[BirthDate] = @p0)")
             );
 
-            _builder.Project<People>(e => new { e.Id, e.Name });
-            _builder.From<People>();
+            query = Query<Employee>().Where(e => e.BirthDate == new DateTime());
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[BirthDate] = @p0)")
+            );
+
+            query = Query<Employee>().Where(e => e.BirthDate == DateTime.Now);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[BirthDate] = GetDate())")
+            );
         }
 
-        [Test]
-        public void Projection_Should_Show_Projected_Field()
+        /// <summary>
+        /// 
+        /// Sql translation for a simple predicate
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Simple_Members_Predicate()
         {
-            _builder.Project<People>(e => new { e.Id });
-            _builder.From<People>();
+            var query = Query<Employee>().Where(e => e.LastName == e.City);
 
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id] From [People] [T0]");
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[LastName] = [T0].[City])")
+            );
         }
 
-        [Test]
-        public void Source_Should_Be_People()
+        /// <summary>
+        /// 
+        /// Sql translation for a multiple predicate where clauses
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_MultipleCalls_Predicate()
         {
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0]");
+            var query = Query<Employee>()
+                .Where(e => e.LastName == e.City || e.EmployeeId == 1)
+                .Where(e => e.Extension == "351");
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[LastName] = [T0].[City] Or [T0].[EmployeeId] = @p1) And ([T0].[Extension] = @p2)")
+            );
         }
 
-
-        [Test]
-        public void People_Id_Equals_1()
+        /// <summary>
+        /// 
+        /// Sql translation for a multiple predicate where clauses
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_MultipleCalls_Predicate1()
         {
-            _builder.Where<People>(e => e.Id == 1);
+            var query = Query<Employee>()
+                .Where(e => e.Extension == "351")
+                .Where(e => e.LastName == e.City || e.EmployeeId == 1)
+                .Where(e => e.Extension == "351")
+                .Where(e => e.LastName == e.City || e.EmployeeId == 1)
+                .Where(e => e.Extension == "351")
+                .Where(e => e.Extension == "351");
 
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[Id] = @p0)");
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[Extension] = @p1) And ([T0].[LastName] = [T0].[City] Or [T0].[EmployeeId] = @p2) And ([T0].[Extension] = @p3) And ([T0].[LastName] = [T0].[City] Or [T0].[EmployeeId] = @p4) And ([T0].[Extension] = @p5) And ([T0].[Extension] = @p6)")
+            );
         }
 
-
-        [Test]
-        public void People_Id_Equals_1_Or_Id_Equals_2()
+        /// <summary>
+        /// 
+        /// Sql translation for a simple predicate
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Simple_Boolean_Predicate()
         {
-            _builder.Where<People>(e => e.Id == 1 || e.Id == 2);
+            var query = Query<Products>().Where(e => e.Discontinued);
 
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where (([T0].[Id] = @p0) Or ([T0].[Id] = @p1))");
-        }
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[ProductId], [T0].[ProductName], [T0].[SupplierId], [T0].[CategoryId], [T0].[QuantityPerUnit], [T0].[UnitPrice], [T0].[UnitsInStock], [T0].[UnitsOnOrder], [T0].[ReorderLevel], [T0].[Discontinued] From [Products] [T0] Where ([T0].[Discontinued] = @p0)")
+            );
 
-        [Test]
-        public void People_Id_Equals_1_Or_Id_Equals_2_And_Id_Greater_Than_1()
-        {
-            _builder.Where<People>(e => e.Id == 1 || e.Id == 2);
-            _builder.Where<People>(e => e.Id > 1);
+            query = Query<Products>().Where(e => !e.Discontinued);
 
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where (([T0].[Id] = @p0) Or ([T0].[Id] = @p1)) And ([T0].[Id] > @p2)");
-        }
-
-        [Test]
-        public void People_Id_Plus_1_Equals_2()
-        {
-            _builder.Where<People>(e => e.Id + 1 == 1);
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where (([T0].[Id] + @p0) = @p1)");
-        }
-
-        [TestCase(1)]
-        public void People_Id_Equal_Parameter(int value)
-        {
-            _builder.Where<People>(e => e.Id == value);
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[Id] = @p0)");
-        }
-
-        [Test]
-        public void People_Id_Equal_FuncResult()
-        {
-            var func = new Func<int>(() => 1);
-
-            _builder.Where<People>(e => e.Id == func());
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[Id] = @p0)");
-        }
-
-        [Test]
-        public void People_With_BossId_Equals_To_1()
-        {
-            _builder.Where<People>(e => e.Boss.BossId == 1);
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[Boss] In (Select [T1].[BossId] From [Bosses] [T1] Where [T1].[BossId] = @p0))");
-        }
-
-        [Test]
-        public void People_With_Boss_Equals_To_1()
-        {
-            _builder.Where<People>(e => e.Boss == new Bosses { BossId = 1 });
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[Boss] = @p0)");
-        }
-
-        [Test]
-        public void People_With_BirthDate_Equals_To_New_Date()
-        {
-            _builder.Where<People>(e => e.BirthDate == new DateTime(DateTime.Now.Ticks));
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[BirthDate] = @p0)");
-        }
-
-        [Test]
-        public void People_With_BirthDate_Equals_To_New_Date_Default()
-        {
-            _builder.Where<People>(e => e.BirthDate == new DateTime());
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[BirthDate] = @p0)");
-        }
-
-
-        [Test]
-        public void People_Is_Developer()
-        {
-            _builder.Where<People>(e => e.IsDeveloper);
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[IsDeveloper] = @p0)");
-        }
-
-        [Test]
-        public void People_Not_Is_Developer()
-        {
-            _builder.Where<People>(e => !e.IsDeveloper);
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[IsDeveloper] != @p0)");
-        }
-
-        [Test]
-        public void People_Is_Not_Developer()
-        {
-            _builder.Where<People>(e => e.IsDeveloper != false);
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Where ([T0].[IsDeveloper] != @p0)");
-        }
-
-        [Test]
-        public void People_Joined_With_Boss()
-        {
-            _builder.Join<People, Bosses>((person, boss) => person.Boss == boss);
-
-            _builder.BuildQuery().CommandText
-                .Should().Be("Select [T0].[Id], [T0].[Name] From [People] [T0] Inner Join [Bosses] [T1] On ([T0].[Boss] = [T1].[BossId])");
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[ProductId], [T0].[ProductName], [T0].[SupplierId], [T0].[CategoryId], [T0].[QuantityPerUnit], [T0].[UnitPrice], [T0].[UnitsInStock], [T0].[UnitsOnOrder], [T0].[ReorderLevel], [T0].[Discontinued] From [Products] [T0] Where ([T0].[Discontinued] != @p0)")
+            );
         }
     }
 }

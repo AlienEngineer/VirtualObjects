@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
@@ -77,7 +78,9 @@ namespace VirtualObjects.Config
 
         private IEnumerable<IEntityColumnInfo> MapColumns(IEnumerable<PropertyInfo> properties, EntityInfo entityInfo)
         {
-            return properties.Select(e => MapColumn(e, entityInfo));
+            return properties
+                .Where(e => !e.PropertyType.IsGenericType || !e.PropertyType.GetInterfaces().Contains(typeof(IEnumerable)))
+                .Select(e => MapColumn(e, entityInfo));
         }
 
         private IEntityColumnInfo MapColumn(PropertyInfo propertyInfo, EntityInfo entityInfo)

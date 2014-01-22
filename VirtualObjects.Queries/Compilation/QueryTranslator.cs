@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Linq;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Web.UI.WebControls;
 using VirtualObjects.Config;
-using VirtualObjects.Queries.Builder;
 using Fasterflect;
 using System.Linq;
 using System.Text;
@@ -11,25 +12,25 @@ using VirtualObjects.Queries.Formatters;
 
 namespace VirtualObjects.Queries.Compilation
 {
-    class QueryCompiler : IQueryCompiler
+    class QueryTranslator : IQueryTranslator
     {
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
         private readonly IDictionary<String, Object> _parameters;
         private int _depth;
-        private QueryCompiler _rootCompiler;
+        private QueryTranslator _rootTranslator;
 
-        public QueryCompiler(IFormatter formatter, IMapper mapper)
+        public QueryTranslator(IFormatter formatter, IMapper mapper)
         {
             _formatter = formatter;
             _mapper = mapper;
             _index = _depth = 0;
             _parameters = new Dictionary<String, Object>();
-            _rootCompiler = this;
+            _rootTranslator = this;
         }
 
-        public QueryCompiler(IFormatter formatter, IMapper mapper, int index)
+        public QueryTranslator(IFormatter formatter, IMapper mapper, int index)
         {
             _formatter = formatter;
             _mapper = mapper;
@@ -38,41 +39,38 @@ namespace VirtualObjects.Queries.Compilation
 
         private IDictionary<string, object> Parameters
         {
-            get { return _rootCompiler._parameters; }
+            get { return _rootTranslator._parameters; }
         }
-
-        private QueryCompiler CreateQueryCompiler()
-        {
-            return new QueryCompiler(_formatter, _mapper, ++_rootCompiler._depth)
-            {
-                //
-                // Bind the new compile to the root.
-                // This binding is used to share parameters and such.
-                _rootCompiler = _rootCompiler
-            };
-        }
-
 
         /// <summary>
-        /// Compiles the query.
+        /// Translates the query.
         /// </summary>
-        /// <param name="query">The query.</param>
+        /// <param name="queryable">The queryable.</param>
         /// <returns></returns>
-        public IQueryInfo CompileQuery(IBuiltedQuery query)
+        /// <exception cref="System.NotImplementedException"></exception>
+        public IQueryInfo TranslateQuery(IQueryable queryable)
         {
-            query.SourceType.RaiseIfNull(Errors.Query_SourceNotSet);
-
             var buffer = new CompilerBuffer
             {
-                EntityInfo = _mapper.Map(query.SourceType)
+                EntityInfo = _mapper.Map(queryable.ElementType)
             };
 
-            buffer.EntityInfo.RaiseIfNull(Errors.Query_EntityInfoNotFound, query);
+            buffer.EntityInfo.RaiseIfNull(Errors.Query_EntityInfoNotFound, queryable);
 
-            CompileProjection(query, buffer);
+            //
+            // Starts by compiling a standard From [Source]
+            //
             CompileFrom(buffer);
-            CompilePredicates(query, buffer);
-            CompileJoins(query, buffer);
+            
+            //
+            // Compiles the ExpressionTree
+            //
+            CompileExpression(queryable.Expression, buffer);
+
+            //
+            // Conditional Default Projection Compilation.
+            //
+            CompileDefaultProjection(queryable, buffer);
 
             return new QueryInfo
             {
@@ -80,57 +78,60 @@ namespace VirtualObjects.Queries.Compilation
             };
         }
 
-        private void CompileJoins(IBuiltedQuery query, CompilerBuffer buffer)
+        #region Compiling Methods
+
+        private void CompileExpression(Expression expression, CompilerBuffer buffer)
         {
-            foreach ( var join in query.Joins.Cast<LambdaExpression>() )
+            switch ( expression.NodeType )
             {
-                var entityInfo = _mapper.Map(join.Parameters[1].Type);
-                var binary = (BinaryExpression) join.Body;
+                case ExpressionType.Call:
+                    CompileMethodCall((MethodCallExpression)expression, buffer); break;
 
-                var leftMemberName = ExtractName(binary.Left, buffer.EntityInfo);
-                var rightMemberName = ExtractName(binary.Right, entityInfo);
-
-                buffer.Joins += " Inner Join ";
-                buffer.Joins += _formatter.FormatTableName(entityInfo.EntityName, ++_rootCompiler._depth);
-                buffer.Joins += " On (";
-                buffer.Joins += _formatter.FormatFieldWithTable(buffer.EntityInfo[leftMemberName].ColumnName, _index);
-                buffer.Joins += " = ";
-                buffer.Joins += _formatter.FormatFieldWithTable(entityInfo[rightMemberName].ColumnName, _rootCompiler._depth);
-                buffer.Joins += ")";
             }
         }
 
-        private string ExtractName(Expression expression, IEntityInfo entityInfo)
+        private void CompileMethodCall(MethodCallExpression expression, CompilerBuffer buffer)
         {
-            if (expression is MemberExpression)
-                return ((MemberExpression) expression).Member.Name;
-            if (expression is ParameterExpression)
-                return entityInfo.KeyColumns.First().ColumnName;
+            CompileExpression(expression.Arguments.FirstOrDefault(), buffer);
 
-            return null;
+            if ( expression.Arguments.Count == 1 )
+            {
+                return;
+            }
+
+            switch ( expression.Method.Name )
+            {
+                case "Select": break;
+                case "Where":
+                    if (String.IsNullOrEmpty(buffer.Predicates))
+                    {
+                        buffer.Predicates += " Where ";
+                    }
+                    else
+                    {
+                        buffer.Predicates += " And ";
+                    }
+
+                    CompileBinaryExpression(expression.Arguments[1], buffer);
+                    break;
+
+                case "OrderBy": break;
+                default:
+                    throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
+            }
+
         }
-
-
-        private string Merge(CompilerBuffer buffer)
+        
+        private void CompileDefaultProjection(IQueryable query, CompilerBuffer buffer)
         {
-            return new StringBuilder()
-                .Append("Select ").Append(buffer.Projection)
-                .Append(" From ").Append(buffer.From)
-                .Append(buffer.Predicates)
-                .Append(buffer.Joins)
-                .ToString();
-        }
-
-        private void CompileProjection(IBuiltedQuery query, CompilerBuffer buffer)
-        {
-            var lambda = (LambdaExpression)query.Projection;
-
-            var returnType = lambda != null ? ExtractType(lambda.Body) : query.SourceType;
+            if ( !String.IsNullOrEmpty(buffer.Projection) )
+            {
+                return;
+            }
 
             buffer.Projection = String.Join(_formatter.FieldSeparator,
-                returnType
-                    .Properties()
-                    .Select(e => buffer.EntityInfo[e.Name])
+                    buffer.EntityInfo
+                    .Columns
                     .Select(e => _formatter.FormatFieldWithTable(e.ColumnName, _index))
             );
         }
@@ -139,35 +140,13 @@ namespace VirtualObjects.Queries.Compilation
         {
             buffer.From = _formatter.FormatTableName(buffer.EntityInfo.EntityName, _index);
         }
-
-        private void CompilePredicates(IBuiltedQuery query, CompilerBuffer buffer)
-        {
-            if ( buffer.Predicates == null && query.Predicates.Any() )
-            {
-                buffer.Predicates = " Where ";
-            }
-
-            if ( !query.Predicates.Any() )
-            {
-                return;
-            }
-
-            var predicate = query.Predicates.First();
-            CompilePredicateExpression(query, predicate, buffer);
-
-            foreach ( var expression in query.Predicates.Skip(1) )
-            {
-                buffer.Predicates += _formatter.FormatNode(ExpressionType.AndAlso);
-                CompilePredicateExpression(query, expression, buffer);
-            }
-        }
-
-        private void CompilePredicateExpression(IBuiltedQuery query, Expression expression, CompilerBuffer buffer)
+        
+        private void CompilePredicateExpression(Expression expression, CompilerBuffer buffer)
         {
             switch ( expression.NodeType )
             {
                 case ExpressionType.Lambda:
-                    CompilePredicateExpression(query, ((LambdaExpression)expression).Body, buffer);
+                    CompilePredicateExpression(((LambdaExpression)expression).Body, buffer);
                     break;
 
                 case ExpressionType.New:
@@ -191,7 +170,7 @@ namespace VirtualObjects.Queries.Compilation
                     break;
 
                 case ExpressionType.Not:
-                    CompileNot(expression, buffer, query);
+                    CompileNot(expression, buffer);
                     break;
 
                 case ExpressionType.Equal:
@@ -206,7 +185,7 @@ namespace VirtualObjects.Queries.Compilation
                 case ExpressionType.Subtract:
                 case ExpressionType.Divide:
                 case ExpressionType.Multiply:
-                    CompileBinaryExpression(query, expression, buffer);
+                    CompileBinaryExpression(expression, buffer);
                     break;
 
                 default:
@@ -215,29 +194,23 @@ namespace VirtualObjects.Queries.Compilation
 
         }
 
-        private void CompileNot(Expression expression, CompilerBuffer buffer, IBuiltedQuery query)
+        private void CompileNot(Expression expression, CompilerBuffer buffer)
         {
-            var unary = ((UnaryExpression) expression);
+            var unary = ((UnaryExpression)expression);
 
-            CompilePredicateExpression(query, Expression.NotEqual(unary.Operand, Expression.Constant(true)), buffer);
+            CompilePredicateExpression(Expression.NotEqual(unary.Operand, Expression.Constant(true)), buffer);
         }
 
         private void CompileNew(Expression expression, CompilerBuffer buffer)
         {
-            var newExpression = (NewExpression) expression;
-            
-            object value;
+            var newExpression = (NewExpression)expression;
 
-            if (newExpression.Constructor != null)
-            {
-                value = newExpression.Constructor.Invoke(GetParameters(newExpression));
-            }
-            else
-            {
-                value = newExpression.Type.CreateInstance();
-            }
-            
-            
+            // This is a ReSharper bug this is not allways true...
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            var value = newExpression.Constructor != null ?
+                newExpression.Constructor.Invoke(GetParameters(newExpression)) :
+                newExpression.Type.CreateInstance();
+
             CompileConstant(Expression.Constant(value), buffer);
         }
 
@@ -246,28 +219,6 @@ namespace VirtualObjects.Queries.Compilation
             var value = Expression.Lambda(expression).Compile().DynamicInvoke();
 
             CompileConstant(Expression.Constant(value), buffer);
-        }
-
-        private static object ParseValue(Expression arg)
-        {
-            var constantExpression = arg as ConstantExpression;
-            if ( constantExpression != null )
-            {
-                return constantExpression.Value;
-            }
-
-            var fieldExpression = arg as MemberExpression;
-            if ( fieldExpression != null )
-            {
-                return Expression.Lambda(arg).Compile().DynamicInvoke();
-            }
-
-            return null;
-        }
-
-        private static object[] GetParameters(NewExpression expression)
-        {
-            return expression.Arguments.Select(ParseValue).ToArray();
         }
 
         private void CompileInvoke(Expression expression, CompilerBuffer buffer)
@@ -309,6 +260,7 @@ namespace VirtualObjects.Queries.Compilation
 
             if ( CompileIfConstant(expression, buffer) ) return;
 
+            if ( CompileIfDatetime(expression, buffer) ) return;
 
             //
             // If the member is from the current entity.
@@ -361,6 +313,42 @@ namespace VirtualObjects.Queries.Compilation
             return entityInfo;
         }
 
+        private bool CompileIfDatetime(Expression expression, CompilerBuffer buffer)
+        {
+            //
+            // This accessor should be the first member of the expression.
+            // A parameter or a member.
+            //
+            var accessor = ExtractAccessor(expression);
+
+            if (accessor.Type != typeof (DateTime))
+            {
+                return false;
+            }
+
+
+            switch ( expression.NodeType )
+            {
+                case ExpressionType.MemberAccess:
+                    var member = (MemberExpression)expression;
+
+                    switch (member.Member.Name)
+                    {
+                        case "Now":
+                            buffer.Predicates += _formatter.FormatGetDate();
+                            break;
+                        default: throw new TranslationException(Errors.Translation_DateTimeMemberNotSupported, member);
+                    }
+
+                    return true;
+
+                default: 
+                    return false;
+            }
+
+            return false;
+        }
+
         private bool CompileIfConstant(Expression expression, CompilerBuffer buffer)
         {
             var constant = ExtractConstant(expression);
@@ -373,20 +361,15 @@ namespace VirtualObjects.Queries.Compilation
             return false;
         }
 
-        private void CompileBinaryExpression(IBuiltedQuery query, Expression expression, CompilerBuffer buffer)
+        private void CompileBinaryExpression(Expression expression, CompilerBuffer buffer)
         {
-            var binary = expression as BinaryExpression;
-
-            if ( binary == null )
-            {
-                throw new UnsupportedException(Errors.Internal_WrongMethodCall, expression);
-            }
+            var binary = (BinaryExpression)ExtractLambda(expression).Body;
 
             buffer.Predicates += "(";
 
-            CompilePredicateExpression(query, binary.Left, buffer);
+            CompilePredicateExpression(binary.Left, buffer);
             CompileNodeType(binary.NodeType, buffer);
-            CompilePredicateExpression(query, binary.Right, buffer);
+            CompilePredicateExpression(binary.Right, buffer);
 
             buffer.Predicates += new string(')', buffer.Parenthesis + 1);
         }
@@ -394,6 +377,62 @@ namespace VirtualObjects.Queries.Compilation
         private void CompileNodeType(ExpressionType nodeType, CompilerBuffer buffer)
         {
             buffer.Predicates += _formatter.FormatNode(nodeType);
+        }
+
+        #endregion
+
+        #region Auxiliary Methods
+
+        private QueryTranslator CreateQueryCompiler()
+        {
+            return new QueryTranslator(_formatter, _mapper, ++_rootTranslator._depth)
+            {
+                //
+                // Bind the new compile to the root.
+                // This binding is used to share parameters and such.
+                _rootTranslator = _rootTranslator
+            };
+        }
+
+        private static LambdaExpression ExtractLambda(Expression arg)
+        {
+
+            if ( arg is LambdaExpression )
+            {
+                var lambda = (LambdaExpression) arg;
+                
+                if (lambda.Body is BinaryExpression)
+                {
+                    return (LambdaExpression) arg;
+                }
+
+                //
+                // In case of a MemberExpression Lambda return an explicit equality.
+                //
+                var parameters = lambda.Parameters;
+
+                Expression body;
+
+                if (lambda.Body is UnaryExpression)
+                {
+                    var unary = (UnaryExpression) lambda.Body;
+
+                    body = Expression.NotEqual(unary.Operand, Expression.Constant(true));
+                }
+                else
+                {
+                    body = Expression.Equal(lambda.Body, Expression.Constant(true));
+                }
+
+                return Expression.Lambda(body, parameters);
+            }
+
+            if ( arg is UnaryExpression )
+            {
+                return ExtractLambda(((UnaryExpression)arg).Operand);
+            }
+
+            throw new TranslationException(Errors.Translation_UnableToExtractLambda);
         }
 
         private static Type ExtractType(Expression expression)
@@ -408,6 +447,22 @@ namespace VirtualObjects.Queries.Compilation
             }
         }
 
+        private static Expression ExtractAccessor(Expression expression)
+        {
+            var member = expression as MemberExpression;
+
+            if (member != null)
+            {
+                var accessor = ExtractAccessor(member.Expression);
+                if (accessor != null)
+                {
+                    expression = accessor;
+                }
+            }
+
+            return expression;
+        }
+
         private static Expression ExtractConstant(Expression expression)
         {
             if ( expression == null )
@@ -418,12 +473,57 @@ namespace VirtualObjects.Queries.Compilation
             switch ( expression.NodeType )
             {
                 case ExpressionType.MemberAccess:
-                    return ExtractConstant(((MemberExpression)expression).Expression);
+                    var member = (MemberExpression)expression;
+                    return ExtractConstant(member.Expression);
                 case ExpressionType.Constant:
                     return expression;
                 default: return null;
             }
         }
+
+        private static object ParseValue(Expression arg)
+        {
+            var constantExpression = arg as ConstantExpression;
+            if ( constantExpression != null )
+            {
+                return constantExpression.Value;
+            }
+
+            var fieldExpression = arg as MemberExpression;
+            if ( fieldExpression != null )
+            {
+                return Expression.Lambda(arg).Compile().DynamicInvoke();
+            }
+
+            return null;
+        }
+
+        private static object[] GetParameters(NewExpression expression)
+        {
+            return expression.Arguments.Select(ParseValue).ToArray();
+        }
+
+        private string ExtractName(Expression expression, IEntityInfo entityInfo)
+        {
+            if ( expression is MemberExpression )
+                return ((MemberExpression)expression).Member.Name;
+            if ( expression is ParameterExpression )
+                return entityInfo.KeyColumns.First().ColumnName;
+
+            return null;
+        }
+
+        private static string Merge(CompilerBuffer buffer)
+        {
+            return new StringBuilder()
+                .Append("Select ").Append(buffer.Projection)
+                .Append(" From ").Append(buffer.From)
+                .Append(buffer.Predicates)
+                .Append(buffer.Joins)
+                .ToString();
+        }
+
+        #endregion
     }
 
     public class CompilerBuffer

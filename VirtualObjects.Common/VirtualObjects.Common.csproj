@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Diagnostic.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Errors.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -49,6 +50,7 @@
       <DependentUpon>Errors.resx</DependentUpon>
     </Compile>
     <Compile Include="netfx\System\StringFormatWith.cs" />
+    <Compile Include="TranslationException.cs" />
     <Compile Include="UnsupportedException.cs" />
     <Compile Include="VirtualObjectsException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

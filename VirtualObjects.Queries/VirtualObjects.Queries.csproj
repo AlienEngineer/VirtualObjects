@@ -47,15 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Builder\ExpressionBasedBuilder.cs" />
-    <Compile Include="Builder\IBuiltedQuery.cs" />
-    <Compile Include="Builder\IQueryBuilder.cs" />
-    <Compile Include="Compilation\IQueryCompiler.cs" />
-    <Compile Include="Compilation\QueryCompiler.cs" />
+    <Compile Include="Compilation\QueryTranslator.cs" />
     <Compile Include="Formatters\IFormatter.cs" />
     <Compile Include="Formatters\SqlFormatter.cs" />
     <Compile Include="IConverter.cs" />
     <Compile Include="IQueryInfo.cs" />
+    <Compile Include="IQueryTranslator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryInfo.cs" />
   </ItemGroup>

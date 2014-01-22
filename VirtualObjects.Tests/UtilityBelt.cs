@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using NUnit.Framework;
 using VirtualObjects.Config;
 using VirtualObjects.Tests.Config;
 
@@ -13,7 +14,22 @@ namespace VirtualObjects.Tests
         {
             InitBelt();
         }
-  
+
+        int _count = 0;
+
+        [TearDown]
+        public void FlushTime()
+        {
+            var times = (int)TestContext.CurrentContext.Test.Properties["Repeat"];
+
+            _count++;
+
+            if (_count%times != 0) return;
+
+            Diagnostic.PrintAverageTime(TestContext.CurrentContext.Test.Name + " => Translation parsed in time :   {1} ms", "Translation");
+            Diagnostic.PrintAverageTime(TestContext.CurrentContext.Test.Name + " Values parsed in time :    {1} ms", "Values");
+        }
+
         private void InitBelt()
         {
             Connection = new SqlConnection(@"

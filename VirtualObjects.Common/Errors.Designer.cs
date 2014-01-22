@@ -88,7 +88,7 @@ namespace VirtualObjects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to find the proper Entity Info for {SourceType.Name}..
+        ///   Looks up a localized string similar to Unable to find the proper Entity Info for {ElementType.Name}..
         /// </summary>
         public static string Query_EntityInfoNotFound {
             get {
@@ -120,6 +120,33 @@ namespace VirtualObjects {
         public static string SQL_UnableToFormatNode {
             get {
                 return ResourceManager.GetString("SQL_UnableToFormatNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The member {Member.Name} is not yet supported..
+        /// </summary>
+        public static string Translation_DateTimeMemberNotSupported {
+            get {
+                return ResourceManager.GetString("Translation_DateTimeMemberNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The method [{Method.Name}] used in a query is not yet supported..
+        /// </summary>
+        public static string Translation_MethodNotSupported {
+            get {
+                return ResourceManager.GetString("Translation_MethodNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to extract lambda from expression..
+        /// </summary>
+        public static string Translation_UnableToExtractLambda {
+            get {
+                return ResourceManager.GetString("Translation_UnableToExtractLambda", resourceCulture);
             }
         }
         
