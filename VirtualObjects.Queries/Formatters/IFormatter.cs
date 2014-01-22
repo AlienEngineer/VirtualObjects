@@ -17,6 +17,8 @@ namespace VirtualObjects.Queries.Formatters
         String Where { get; }
         String And { get; }
         String In { get; }
+        String InnerJoin { get; }
+        String On { get; }
 
         String FormatField(String name);
 

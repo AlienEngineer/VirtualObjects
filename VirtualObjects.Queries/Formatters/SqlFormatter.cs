@@ -19,6 +19,8 @@ namespace VirtualObjects.Queries.Formatters
             Where = "Where";
             And = "And";
             In = "In";
+            On = "On";
+            InnerJoin = "Inner Join";
         }
 
         private static string Wrap(string name)
@@ -36,6 +38,8 @@ namespace VirtualObjects.Queries.Formatters
         public string Where { get; private set; }
         public string And { get; private set; }
         public string In { get; private set; }
+        public string InnerJoin { get; private set; }
+        public string On { get; private set; }
 
         public String FormatField(String name)
         {

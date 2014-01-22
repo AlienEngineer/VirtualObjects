@@ -218,9 +218,10 @@ namespace VirtualObjects.Queries.Translation
             //
 
             buffer.From += _formatter.FormatTableName(entityInfo1.EntityName, _index);
-            buffer.From += " Inner Join ";
+            buffer.From += " " + _formatter.InnerJoin + " ";
             buffer.From += _formatter.FormatTableName(entityInfo2.EntityName, newTranlator._index);
-            buffer.From += " On (";
+            buffer.From += " " + _formatter.On + " ";
+            buffer.From += _formatter.BeginWrap();
 
             //
             // On Clause 
@@ -239,7 +240,7 @@ namespace VirtualObjects.Queries.Translation
             // Custom Projection
             //
             CompileCustomProjection(expression.Arguments[4], buffer);
-
+            
         }
 
         private void CompileJoinOnPart(Expression expression, CompilerBuffer buffer, QueryTranslator translator)
@@ -264,23 +265,29 @@ namespace VirtualObjects.Queries.Translation
             {
                 Indexer[lambda.Parameters.First()] = this;
 
-                //
-                // CompileMemberAccess compiles into buffer.Predicates
-                // Copy the current predicate to restore it later.
-                //
-                String predicates = buffer.Predicates;
-                buffer.Predicates = null;
-
-                CompileMemberAccess(lambda.Body, buffer);
-
-                //
-                // CompileMemberAccess compiles into buffer.Predicates
-                // Copy the result into the proper buffer.
-                //
-                buffer.Projection = buffer.Predicates;
-                buffer.Predicates = predicates;
+                buffer.Projection = CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
             }
+            else if ( lambda.Body is NewExpression )
+            {
+                var newExp = (NewExpression)lambda.Body;
 
+                buffer.Projection = CompileAndGetBuffer(() =>
+                {
+                    
+                    if (IsDynamic(newExp.Type) && newExp.Type.Properties().All(e => e.PropertyType.IsFrameworkType()))
+                    {
+
+                        foreach (var arg in ((NewExpression) lambda.Body).Arguments)
+                        {
+                            CompileMemberAccess(arg, buffer);
+                            buffer.Predicates += _formatter.FieldSeparator;
+                        }
+                    }
+
+
+                }, buffer);
+
+            }
         }
 
         private void CompileTakeSkip(MethodCallExpression expression, CompilerBuffer buffer)
@@ -815,6 +822,20 @@ namespace VirtualObjects.Queries.Translation
                 .ToString();
         }
 
+        private StringBuffer CompileAndGetBuffer(Action action, CompilerBuffer buffer)
+        {
+            SafePredicate(buffer);
+            try
+            {
+                action();
+                return buffer.Predicates;
+            }
+            finally
+            {
+                RestorePredicate(buffer);    
+            }
+        }
+
         private String _predicates;
 
         private void SafePredicate(CompilerBuffer buffer)
@@ -826,6 +847,11 @@ namespace VirtualObjects.Queries.Translation
         private void RestorePredicate(CompilerBuffer buffer)
         {
             buffer.Predicates = _predicates;
+        }
+
+        public static bool IsDynamic(Type type)
+        {
+            return type.Name.StartsWith("<>");
         }
 
         #endregion
