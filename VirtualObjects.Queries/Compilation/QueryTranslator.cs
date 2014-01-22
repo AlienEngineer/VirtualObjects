@@ -1,15 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Web.Compilation;
-using System.Web.UI.WebControls;
 using VirtualObjects.Config;
 using Fasterflect;
 using System.Linq;
 using System.Text;
+using VirtualObjects.Queries.Annotations;
 using VirtualObjects.Queries.Formatters;
 
 namespace VirtualObjects.Queries.Compilation
@@ -43,7 +41,7 @@ namespace VirtualObjects.Queries.Compilation
 
             public Expression Expression { get; private set; }
             public Type ElementType { get; private set; }
-            public IQueryProvider Provider { get; private set; }
+            public IQueryProvider Provider { get; [UsedImplicitly] private set; }
         }
 
         private readonly int _index;
@@ -52,6 +50,7 @@ namespace VirtualObjects.Queries.Compilation
         private readonly IDictionary<String, Object> _parameters;
         private int _depth;
         private QueryTranslator _rootTranslator;
+        private readonly IDictionary<Expression, QueryTranslator> _indexer;
 
         public QueryTranslator(IFormatter formatter, IMapper mapper)
         {
@@ -59,6 +58,7 @@ namespace VirtualObjects.Queries.Compilation
             _mapper = mapper;
             _index = _depth = 0;
             _parameters = new Dictionary<String, Object>();
+            _indexer = new Dictionary<Expression, QueryTranslator>();
             _rootTranslator = this;
         }
 
@@ -69,10 +69,11 @@ namespace VirtualObjects.Queries.Compilation
             _index = index;
         }
 
-        private IDictionary<string, object> Parameters
-        {
-            get { return _rootTranslator._parameters; }
-        }
+        private IDictionary<string, object> Parameters { get { return _rootTranslator._parameters; } }
+
+        public IDictionary<Expression, QueryTranslator> Indexer { get { return _rootTranslator._indexer; } }
+        
+        public IEntityInfo EntityInfo { get; set; }
 
         /// <summary>
         /// Translates the query.
@@ -86,6 +87,8 @@ namespace VirtualObjects.Queries.Compilation
             {
                 EntityInfo = _mapper.Map(queryable.ElementType)
             };
+
+            EntityInfo = buffer.EntityInfo;
 
             buffer.EntityInfo.RaiseIfNull(Errors.Query_EntityInfoNotFound, queryable);
 
@@ -201,6 +204,15 @@ namespace VirtualObjects.Queries.Compilation
 
             if ( lambda.Body is MemberExpression )
             {
+                Indexer[lambda.Parameters.First()] = this;
+
+                //
+                // CompileMemberAccess compiles into buffer.Predicates
+                // Copy the current predicate to restore it later.
+                //
+                String predicates = buffer.Predicates;
+                buffer.Predicates = null;
+
                 CompileMemberAccess(lambda.Body, buffer);
 
                 //
@@ -208,7 +220,7 @@ namespace VirtualObjects.Queries.Compilation
                 // Copy the result into the proper buffer.
                 //
                 buffer.Projection = buffer.Predicates;
-                buffer.Predicates = null;
+                buffer.Predicates = predicates;
             }
 
         }
@@ -331,6 +343,14 @@ namespace VirtualObjects.Queries.Compilation
                     CompileCallPredicate((MethodCallExpression)expression, buffer);
                     break;
 
+                case ExpressionType.Convert:
+                    CompilePredicateExpression(((UnaryExpression)expression).Operand, buffer);
+                    break;
+
+                case ExpressionType.Parameter:
+                    CompileParameter((ParameterExpression)expression, buffer);
+                    break;
+
                 case ExpressionType.Equal:
                 case ExpressionType.GreaterThan:
                 case ExpressionType.GreaterThanOrEqual:
@@ -350,6 +370,13 @@ namespace VirtualObjects.Queries.Compilation
                     throw new UnsupportedException(Errors.SQL_ExpressionTypeNotSupported, expression);
             }
 
+        }
+
+        private void CompileParameter(ParameterExpression expression, CompilerBuffer buffer)
+        {
+            var entityInfo = _mapper.Map(expression.Type);
+
+            buffer.Predicates += _formatter.FormatFieldWithTable(entityInfo.KeyColumns.First().ColumnName, Indexer[expression]._index);
         }
 
         private void CompileCallPredicate(MethodCallExpression expression, CompilerBuffer buffer)
@@ -447,8 +474,9 @@ namespace VirtualObjects.Queries.Compilation
             //
             if ( member.Expression is ParameterExpression )
             {
-                buffer.Predicates += _formatter
-                    .FormatFieldWithTable(buffer.EntityInfo[member.Member.Name].ColumnName, _index);
+                var entityInfo = Indexer[member.Expression].EntityInfo;
+
+                buffer.Predicates += _formatter.FormatFieldWithTable(entityInfo[member.Member.Name].ColumnName, Indexer[member.Expression]._index);
             }
             else
             {
@@ -549,6 +577,9 @@ namespace VirtualObjects.Queries.Compilation
             if (binary == null)
             {
                 var lambda = ExtractLambda(expression);
+
+                Indexer[lambda.Parameters.First()] = this;
+
                 var callExpression = lambda.Body as MethodCallExpression;
 
                 if (callExpression != null)
@@ -573,7 +604,7 @@ namespace VirtualObjects.Queries.Compilation
             }
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
         }
-
+        
         private void CompileNodeType(ExpressionType nodeType, CompilerBuffer buffer)
         {
             buffer.Predicates += _formatter.FormatNode(nodeType);

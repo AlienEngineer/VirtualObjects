@@ -53,6 +53,7 @@
     <Compile Include="IConverter.cs" />
     <Compile Include="IQueryInfo.cs" />
     <Compile Include="IQueryTranslator.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryInfo.cs" />
   </ItemGroup>
