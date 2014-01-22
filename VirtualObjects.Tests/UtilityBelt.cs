@@ -20,6 +20,11 @@ namespace VirtualObjects.Tests
         [TearDown]
         public void FlushTime()
         {
+            if (!TestContext.CurrentContext.Test.Properties.Contains("Repeat"))
+            {
+                return;
+            }
+
             var times = (int)TestContext.CurrentContext.Test.Properties["Repeat"];
 
             _count++;

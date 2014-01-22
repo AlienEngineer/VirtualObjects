@@ -239,7 +239,6 @@ namespace VirtualObjects.Tests.Queries
         [Test, Repeat(10)]
         public void SqlTranslation_Simple_Dated_Predicate()
         {
-            // Todo: Enable support for DateTime.Now, this fails due to MemberAccess restrictions.
             var query = Query<Employee>().Where(e => e.BirthDate == new DateTime(DateTime.Now.Ticks));
 
             Assert.That(
@@ -338,6 +337,67 @@ namespace VirtualObjects.Tests.Queries
             Assert.That(
                 Translate(query),
                 Is.EqualTo("Select [T0].[ProductId], [T0].[ProductName], [T0].[SupplierId], [T0].[CategoryId], [T0].[QuantityPerUnit], [T0].[UnitPrice], [T0].[UnitsInStock], [T0].[UnitsOnOrder], [T0].[ReorderLevel], [T0].[Discontinued] From [Products] [T0] Where ([T0].[Discontinued] != @p0)")
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple predicate
+        /// 
+        /// </summary>
+        [Test, Repeat(10)]
+        public void SqlTranslation_Simple_Join()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order
+                        select new { Order = o, Detail = od };
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
+            );
+        }
+
+
+        [Test]
+        public void SqlTranslation_Joins_Predicated()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order
+                        where o.Freight > od.UnitPrice
+                        select new { Order = o, Detail = od };
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T0].[Freight] > [T1].[UnitPrice])")
+            );
+        }
+
+        [Test]
+        public void SqlTranslation_2Joins_Predicated()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order
+                        join e in Query<Employee>() on o.Employee equals e
+                        where e.EmployeeId == o.Employee.EmployeeId
+                        select new { Order = o, Detail = od, e };
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount], [T2].[EmployeeId], [T2].[LastName], [T2].[FirstName], [T2].[Title], [T2].[TitleOfCourtesy], [T2].[BirthDate], [T2].[HireDate], [T2].[Address], [T2].[City], [T2].[Region], [T2].[PostalCode], [T2].[Country], [T2].[HomePhone], [T2].[Extension], [T2].[Notes], [T2].[Photo], [T2].[ReportsTo], [T2].[PhotoPath], [T2].[Version] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Inner Join [Employees] [T2] On ([T0].[EmployeeId] = [T2].[EmployeeId]) Where ([T0].[EmployeeId] = [T2].[EmployeeId])")
+            );
+        }
+
+        [Test]
+        public void SqlTranslation_Translate_GroupedJoins()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order into ods
+                        select new { Order = o, Details = ods };
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
             );
         }
     }
