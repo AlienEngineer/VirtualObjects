@@ -84,7 +84,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index],  [T100].[EmployeeId], [T100].[LastName], [T100].[FirstName], [T100].[Title], [T100].[TitleOfCourtesy], [T100].[BirthDate], [T100].[HireDate], [T100].[Address], [T100].[City], [T100].[Region], [T100].[PostalCode], [T100].[Country], [T100].[HomePhone], [T100].[Extension], [T100].[Notes], [T100].[Photo], [T100].[ReportsTo], [T100].[PhotoPath], [T100].[Version] From [Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index], * From [Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1)")
             );
         }
 
@@ -100,7 +100,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index],  [T100].[EmployeeId], [T100].[LastName], [T100].[FirstName], [T100].[Title], [T100].[TitleOfCourtesy], [T100].[BirthDate], [T100].[HireDate], [T100].[Address], [T100].[City], [T100].[Region], [T100].[PostalCode], [T100].[Country], [T100].[HomePhone], [T100].[Extension], [T100].[Notes], [T100].[Photo], [T100].[ReportsTo], [T100].[PhotoPath], [T100].[Version] From [Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1) And ([T0].[Internal_Row_Index] <= 2)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index], * From [Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1 And [T0].[Internal_Row_Index] <= 2)")
             );
         }
 
@@ -118,7 +118,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index],  [T100].[EmployeeId], [T100].[LastName], [T100].[FirstName], [T100].[Title], [T100].[TitleOfCourtesy], [T100].[BirthDate], [T100].[HireDate], [T100].[Address], [T100].[City], [T100].[Region], [T100].[PostalCode], [T100].[Country], [T100].[HomePhone], [T100].[Extension], [T100].[Notes], [T100].[Photo], [T100].[ReportsTo], [T100].[PhotoPath], [T100].[Version] From [Employees] [T100] Where ([T100].[FirstName] = @p1) And ([T100].[FirstName] = @p2)) [T0] Where ([T0].[FirstName] = @p1) And ([T0].[FirstName] = @p2) And ([T0].[Internal_Row_Index] > 1) And ([T0].[Internal_Row_Index] <= 2)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index], * From [Employees] [T100] Where ([T100].[FirstName] = @p0) And ([T100].[FirstName] = @p1)) [T0] Where ([T0].[FirstName] = @p0) And ([T0].[FirstName] = @p1) And ([T0].[Internal_Row_Index] > 1 And [T0].[Internal_Row_Index] <= 2)")
             );
         }
 
@@ -292,7 +292,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[LastName] = [T0].[City] Or [T0].[EmployeeId] = @p1) And ([T0].[Extension] = @p2)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (([T0].[LastName] = [T0].[City]) Or ([T0].[EmployeeId] = @p0)) And ([T0].[Extension] = @p1)")
             );
         }
 
@@ -314,7 +314,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[Extension] = @p1) And ([T0].[LastName] = [T0].[City] Or [T0].[EmployeeId] = @p2) And ([T0].[Extension] = @p3) And ([T0].[LastName] = [T0].[City] Or [T0].[EmployeeId] = @p4) And ([T0].[Extension] = @p5) And ([T0].[Extension] = @p6)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[Extension] = @p0) And (([T0].[LastName] = [T0].[City]) Or ([T0].[EmployeeId] = @p1)) And ([T0].[Extension] = @p2) And (([T0].[LastName] = [T0].[City]) Or ([T0].[EmployeeId] = @p3)) And ([T0].[Extension] = @p4) And ([T0].[Extension] = @p5)")
             );
         }
 

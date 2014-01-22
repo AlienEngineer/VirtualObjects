@@ -14,6 +14,18 @@ namespace VirtualObjects.Queries.Compilation
 {
     class QueryTranslator : IQueryTranslator
     {
+        class CompilerBuffer
+        {
+            public StringBuffer Projection { get; set; }
+            public StringBuffer From { get; set; }
+            public IEntityInfo EntityInfo { get; set; }
+            public StringBuffer Predicates { get; set; }
+            public int Parenthesis { get; set; }
+            public StringBuffer Joins { get; set; }
+            public int Take { get; set; }
+            public int Skip { get; set; }
+        }
+
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
@@ -57,15 +69,16 @@ namespace VirtualObjects.Queries.Compilation
 
             buffer.EntityInfo.RaiseIfNull(Errors.Query_EntityInfoNotFound, queryable);
 
-            //
-            // Starts by compiling a standard From [Source]
-            //
-            CompileFrom(buffer);
-            
+
             //
             // Compiles the ExpressionTree
             //
             CompileExpression(queryable.Expression, buffer);
+
+            //
+            // Starts by compiling a standard From [Source]
+            //
+            CompileFrom(buffer);
 
             //
             // Conditional Default Projection Compilation.
@@ -102,8 +115,12 @@ namespace VirtualObjects.Queries.Compilation
             switch ( expression.Method.Name )
             {
                 case "Select": break;
+                case "Take":
+                case "Skip":
+                    CompileTakeSkip(expression, buffer);
+                    break;
                 case "Where":
-                    if (String.IsNullOrEmpty(buffer.Predicates))
+                    if ( String.IsNullOrEmpty(buffer.Predicates) )
                     {
                         buffer.Predicates += " Where ";
                     }
@@ -121,7 +138,21 @@ namespace VirtualObjects.Queries.Compilation
             }
 
         }
-        
+
+        private void CompileTakeSkip(MethodCallExpression expression, CompilerBuffer buffer)
+        {
+            switch ( expression.Method.Name )
+            {
+                case "Skip":
+                    buffer.Skip = (int)ParseValue(expression.Arguments[1]);
+                    break;
+                case "Take":
+                    buffer.Take = (int)ParseValue(expression.Arguments[1]);
+                    break;
+                default: break;
+            }
+        }
+
         private void CompileDefaultProjection(IQueryable query, CompilerBuffer buffer)
         {
             if ( !String.IsNullOrEmpty(buffer.Projection) )
@@ -129,18 +160,67 @@ namespace VirtualObjects.Queries.Compilation
                 return;
             }
 
-            buffer.Projection = String.Join(_formatter.FieldSeparator,
-                    buffer.EntityInfo
-                    .Columns
-                    .Select(e => _formatter.FormatFieldWithTable(e.ColumnName, _index))
-            );
+            if ( buffer.Take > 0 && buffer.Skip == 0 )
+            {
+                buffer.Projection += _formatter.FormatTakeN(buffer.Take);
+                buffer.Projection += " ";
+            }
+
+            buffer.Projection += _formatter.FormatFields(buffer.EntityInfo.Columns, _index);
+
         }
 
         private void CompileFrom(CompilerBuffer buffer)
         {
+            if ( buffer.Skip > 0 )
+            {
+                buffer.From += _formatter.BeginWrap();
+                {
+                    buffer.From += _formatter.Select + " ";
+                    buffer.From += _formatter.FormatRowNumber(buffer.EntityInfo.KeyColumns, _index);
+                    buffer.From += " " + _formatter.From + " ";
+                    buffer.From += _formatter.FormatTableName(buffer.EntityInfo.EntityName, 100 + _index);
+
+                    //
+                    // Here the problem is the [T0] must be [T100].
+                    if ( buffer.Predicates != null )
+                    {
+                        buffer.From += buffer.Predicates.Replace(_formatter.GetTableAlias(_index), _formatter.GetTableAlias(100 + _index));
+                    }
+                }
+                buffer.From += _formatter.EndWrap() + " ";
+                buffer.From += _formatter.GetTableAlias(_index);
+
+                //
+                // Append the conditions to the predicates.
+                //
+                if (buffer.Predicates == null)
+                {
+                    buffer.Predicates += " " + _formatter.Where + " ";
+                }
+                else
+                {
+                    buffer.Predicates += " " + _formatter.And + " ";
+                }
+
+                buffer.Predicates += _formatter.BeginWrap();
+                {
+                    buffer.Predicates += _formatter.GetRowNumberField(_index) + _formatter.FormatNode(ExpressionType.GreaterThan) + buffer.Skip;
+
+                    if ( buffer.Take > 0 )
+                    {
+                        buffer.Predicates += " " + _formatter.And + " ";
+                        buffer.Predicates += _formatter.GetRowNumberField(_index) + _formatter.FormatNode(ExpressionType.LessThanOrEqual) + (buffer.Take + buffer.Skip);
+                    }
+                }
+                buffer.Predicates += _formatter.EndWrap();
+
+                return;
+            }
+
             buffer.From = _formatter.FormatTableName(buffer.EntityInfo.EntityName, _index);
         }
-        
+
         private void CompilePredicateExpression(Expression expression, CompilerBuffer buffer)
         {
             switch ( expression.NodeType )
@@ -295,7 +375,9 @@ namespace VirtualObjects.Queries.Compilation
             // Use the binded field on the predicate.
             //
             buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, _index);
-            buffer.Predicates += " In (Select ";
+            buffer.Predicates += " " + _formatter.In + " ";
+            buffer.Predicates += _formatter.BeginWrap();
+            buffer.Predicates += _formatter.Select + " ";
             buffer.Parenthesis++;
 
             var queryCompiler = CreateQueryCompiler();
@@ -305,9 +387,9 @@ namespace VirtualObjects.Queries.Compilation
             //
             foreignKey = foreignKey.ForeignKey;
             buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, queryCompiler._index);
-            buffer.Predicates += " From ";
+            buffer.Predicates += " " + _formatter.From + " ";
             buffer.Predicates += _formatter.FormatTableName(foreignKey.EntityInfo.EntityName, queryCompiler._index);
-            buffer.Predicates += " Where ";
+            buffer.Predicates += " " + _formatter.Where + " ";
             buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, queryCompiler._index);
 
             return entityInfo;
@@ -321,7 +403,7 @@ namespace VirtualObjects.Queries.Compilation
             //
             var accessor = ExtractAccessor(expression);
 
-            if (accessor.Type != typeof (DateTime))
+            if ( accessor.Type != typeof(DateTime) )
             {
                 return false;
             }
@@ -332,7 +414,7 @@ namespace VirtualObjects.Queries.Compilation
                 case ExpressionType.MemberAccess:
                     var member = (MemberExpression)expression;
 
-                    switch (member.Member.Name)
+                    switch ( member.Member.Name )
                     {
                         case "Now":
                             buffer.Predicates += _formatter.FormatGetDate();
@@ -342,7 +424,7 @@ namespace VirtualObjects.Queries.Compilation
 
                     return true;
 
-                default: 
+                default:
                     return false;
             }
 
@@ -363,15 +445,15 @@ namespace VirtualObjects.Queries.Compilation
 
         private void CompileBinaryExpression(Expression expression, CompilerBuffer buffer)
         {
-            var binary = (BinaryExpression)ExtractLambda(expression).Body;
+            var binary = expression as BinaryExpression ?? (BinaryExpression)ExtractLambda(expression).Body;
 
-            buffer.Predicates += "(";
-
-            CompilePredicateExpression(binary.Left, buffer);
-            CompileNodeType(binary.NodeType, buffer);
-            CompilePredicateExpression(binary.Right, buffer);
-
-            buffer.Predicates += new string(')', buffer.Parenthesis + 1);
+            buffer.Predicates += _formatter.BeginWrap();
+            {
+                CompilePredicateExpression(binary.Left, buffer);
+                CompileNodeType(binary.NodeType, buffer);
+                CompilePredicateExpression(binary.Right, buffer);
+            }
+            buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
         }
 
         private void CompileNodeType(ExpressionType nodeType, CompilerBuffer buffer)
@@ -399,11 +481,11 @@ namespace VirtualObjects.Queries.Compilation
 
             if ( arg is LambdaExpression )
             {
-                var lambda = (LambdaExpression) arg;
-                
-                if (lambda.Body is BinaryExpression)
+                var lambda = (LambdaExpression)arg;
+
+                if ( lambda.Body is BinaryExpression )
                 {
-                    return (LambdaExpression) arg;
+                    return (LambdaExpression)arg;
                 }
 
                 //
@@ -413,9 +495,9 @@ namespace VirtualObjects.Queries.Compilation
 
                 Expression body;
 
-                if (lambda.Body is UnaryExpression)
+                if ( lambda.Body is UnaryExpression )
                 {
-                    var unary = (UnaryExpression) lambda.Body;
+                    var unary = (UnaryExpression)lambda.Body;
 
                     body = Expression.NotEqual(unary.Operand, Expression.Constant(true));
                 }
@@ -451,10 +533,10 @@ namespace VirtualObjects.Queries.Compilation
         {
             var member = expression as MemberExpression;
 
-            if (member != null)
+            if ( member != null )
             {
                 var accessor = ExtractAccessor(member.Expression);
-                if (accessor != null)
+                if ( accessor != null )
                 {
                     expression = accessor;
                 }
@@ -513,11 +595,11 @@ namespace VirtualObjects.Queries.Compilation
             return null;
         }
 
-        private static string Merge(CompilerBuffer buffer)
+        private string Merge(CompilerBuffer buffer)
         {
             return new StringBuilder()
-                .Append("Select ").Append(buffer.Projection)
-                .Append(" From ").Append(buffer.From)
+                .Append(_formatter.Select + " ").Append(buffer.Projection)
+                .Append(" " + _formatter.From + " ").Append(buffer.From)
                 .Append(buffer.Predicates)
                 .Append(buffer.Joins)
                 .ToString();
@@ -526,14 +608,6 @@ namespace VirtualObjects.Queries.Compilation
         #endregion
     }
 
-    public class CompilerBuffer
-    {
-        public String Projection { get; set; }
-        public String From { get; set; }
-        public IEntityInfo EntityInfo { get; set; }
-        public String Predicates { get; set; }
-        public int Parenthesis { get; set; }
-        public String Joins { get; set; }
-    }
+
 
 }

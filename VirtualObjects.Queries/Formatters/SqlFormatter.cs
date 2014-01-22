@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
+using VirtualObjects.Config;
 
 namespace VirtualObjects.Queries.Formatters
 {
@@ -7,6 +11,15 @@ namespace VirtualObjects.Queries.Formatters
     {
         private const string Separator = ", ";
         private const string TablePrefix = "T";
+
+        public SqlFormatter()
+        {
+            Select = "Select";
+            From = "From";
+            Where = "Where";
+            And = "And";
+            In = "In";
+        }
 
         private static string Wrap(string name)
         {
@@ -18,6 +31,12 @@ namespace VirtualObjects.Queries.Formatters
             get { return Separator; }
         }
 
+        public string Select { get; private set; }
+        public string From { get; private set; }
+        public string Where { get; private set; }
+        public string And { get; private set; }
+        public string In { get; private set; }
+
         public String FormatField(String name)
         {
             return Wrap(name);
@@ -25,12 +44,12 @@ namespace VirtualObjects.Queries.Formatters
 
         public String FormatFieldWithTable(String name, int index)
         {
-            return string.Format("{0}.{1}", Wrap(TablePrefix + index), Wrap(name));
+            return string.Format("{0}.{1}", GetTableAlias(index), Wrap(name));
         }
 
         public String FormatTableName(String name, int index)
         {
-            return string.Format("{0} {1}", Wrap(name), Wrap(TablePrefix + index));
+            return string.Format("{0} {1}", Wrap(name), GetTableAlias(index));
         }
 
         public string FormatNode(ExpressionType nodeType)
@@ -63,6 +82,50 @@ namespace VirtualObjects.Queries.Formatters
         public string FormatGetDate()
         {
             return "GetDate()";
+        }
+
+        public string FormatTakeN(int take)
+        {
+            return "TOP " + take;
+        }
+
+        public string FormatRowNumber(IEnumerable<IEntityColumnInfo> keyColumns, int index)
+        {
+            var columns = keyColumns as IList<IEntityColumnInfo> ?? keyColumns.ToList();
+
+            return new StringBuilder()
+                .Append("ROW_NUMBER() OVER ( Order By ")
+                .Append(FormatFields(columns, 100 + index))
+                .Append(") as [Internal_Row_Index], *")
+                .ToString();
+        }
+
+        public string FormatFields(IEnumerable<IEntityColumnInfo> columns, int index)
+        {
+            return String.Join(
+                FieldSeparator,
+                columns.Select(e => FormatFieldWithTable(e.ColumnName, index))
+            );
+        }
+
+        public string GetRowNumberField(int index)
+        {
+            return FormatFieldWithTable("Internal_Row_Index", index);
+        }
+
+        public string GetTableAlias(int index)
+        {
+            return FormatField(TablePrefix + index);
+        }
+
+        public string BeginWrap()
+        {
+            return "(";
+        }
+
+        public string EndWrap(int i = 1)
+        {
+            return new string(')', i);
         }
     }
 }

@@ -85,7 +85,7 @@
     <Compile Include="Models\Northwind\Suppliers.cs" />
     <Compile Include="Models\Northwind\Territories.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queries\ExpressionBasedBuilderTests.cs" />
+    <Compile Include="Queries\SqlTranslationTests.cs" />
     <Compile Include="UtilityBelt.cs" />
   </ItemGroup>
   <ItemGroup>
