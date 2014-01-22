@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using VirtualObjects.Queries;
-using VirtualObjects.Queries.Compilation;
 using VirtualObjects.Queries.Formatters;
+using VirtualObjects.Queries.Translation;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Queries

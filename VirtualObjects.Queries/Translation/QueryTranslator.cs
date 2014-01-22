@@ -2,15 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq.Expressions;
-using VirtualObjects.Config;
-using Fasterflect;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
+using Fasterflect;
+using VirtualObjects.Config;
 using VirtualObjects.Queries.Annotations;
 using VirtualObjects.Queries.Formatters;
 
-namespace VirtualObjects.Queries.Compilation
+namespace VirtualObjects.Queries.Translation
 {
     class QueryTranslator : IQueryTranslator
     {
@@ -172,11 +172,15 @@ namespace VirtualObjects.Queries.Compilation
             switch ( expression.Method.Name )
             {
                 case "Select":
-                    CompileCustomPredicate(expression.Arguments[1], buffer);
+                    CompileCustomProjection(expression.Arguments[1], buffer);
                     break;
                 case "Take":
                 case "Skip":
                     CompileTakeSkip(expression, buffer);
+                    break;
+                case "GroupJoin":
+                case "Join":
+                    CompileJoin(expression, buffer);
                     break;
                 case "Where":
                     if ( String.IsNullOrEmpty(buffer.Predicates) )
@@ -198,7 +202,61 @@ namespace VirtualObjects.Queries.Compilation
 
         }
 
-        private void CompileCustomPredicate(Expression expression, CompilerBuffer buffer)
+        private void CompileJoin(MethodCallExpression expression, CompilerBuffer buffer)
+        {
+            var arg1 = ExtractQueryable(expression.Arguments[0]);
+            var arg2 = ExtractQueryable(expression.Arguments[1]);
+
+            var entityInfo1 = buffer.EntityInfo = _mapper.Map(arg1.ElementType);
+            var entityInfo2 = _mapper.Map(arg2.ElementType);
+
+            var newTranlator = CreateNewTranslator();
+            newTranlator.EntityInfo = entityInfo2;
+
+            //
+            // From [Source] Join [Other Source]
+            //
+
+            buffer.From += _formatter.FormatTableName(entityInfo1.EntityName, _index);
+            buffer.From += " Inner Join ";
+            buffer.From += _formatter.FormatTableName(entityInfo2.EntityName, newTranlator._index);
+            buffer.From += " On (";
+
+            //
+            // On Clause 
+            //
+            {
+                CompileJoinOnPart(expression.Arguments[2], buffer, this);
+
+                buffer.From += _formatter.FormatNode(ExpressionType.Equal);
+
+                CompileJoinOnPart(expression.Arguments[3], buffer, newTranlator);
+            }
+
+            buffer.From += _formatter.EndWrap();
+
+            //
+            // Custom Projection
+            //
+            CompileCustomProjection(expression.Arguments[4], buffer);
+
+        }
+
+        private void CompileJoinOnPart(Expression expression, CompilerBuffer buffer, QueryTranslator translator)
+        {
+            SafePredicate(buffer);
+            {
+                var lambda = ExtractLambda(expression, false);
+                Indexer[lambda.Parameters.First()] = translator;
+
+                CompilePredicateExpression(lambda.Body, buffer);
+                buffer.From += buffer.Predicates;
+            }
+            RestorePredicate(buffer);
+        }
+
+
+        private void CompileCustomProjection(Expression expression, CompilerBuffer buffer)
         {
             var lambda = ExtractLambda(expression, false);
 
@@ -301,6 +359,11 @@ namespace VirtualObjects.Queries.Compilation
                 }
                 buffer.Predicates += _formatter.EndWrap();
 
+                return;
+            }
+
+            if (buffer.From != null)
+            {
                 return;
             }
 
@@ -750,6 +813,19 @@ namespace VirtualObjects.Queries.Compilation
                 .Append(buffer.Predicates)
                 .Append(buffer.Joins)
                 .ToString();
+        }
+
+        private String _predicates;
+
+        private void SafePredicate(CompilerBuffer buffer)
+        {
+            _predicates = buffer.Predicates;
+            buffer.Predicates = null;
+        }
+
+        private void RestorePredicate(CompilerBuffer buffer)
+        {
+            buffer.Predicates = _predicates;
         }
 
         #endregion
