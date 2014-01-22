@@ -151,6 +151,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to extract the queryable from expression..
+        /// </summary>
+        public static string Translation_UnableToExtractQueryable {
+            get {
+                return ResourceManager.GetString("Translation_UnableToExtractQueryable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to get the type from {NodeType} because it&apos;s not yet supported..
         /// </summary>
         public static string UnableToGetType {

@@ -147,6 +147,9 @@
   <data name="Translation_UnableToExtractLambda" xml:space="preserve">
     <value>Unable to extract lambda from expression.</value>
   </data>
+  <data name="Translation_UnableToExtractQueryable" xml:space="preserve">
+    <value>Unable to extract the queryable from expression.</value>
+  </data>
   <data name="UnableToGetType" xml:space="preserve">
     <value>Unable to get the type from {NodeType} because it's not yet supported.</value>
   </data>

@@ -3,6 +3,7 @@ using System.Text;
 
 namespace VirtualObjects
 {
+    // TODO: Verify that using this is better than " " + " "
     public class StringBuffer
     {
         readonly StringBuilder _sb = new StringBuilder();

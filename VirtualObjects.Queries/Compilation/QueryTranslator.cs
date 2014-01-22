@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Linq;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Web.Compilation;
 using System.Web.UI.WebControls;
 using VirtualObjects.Config;
 using Fasterflect;
@@ -24,6 +26,24 @@ namespace VirtualObjects.Queries.Compilation
             public StringBuffer Joins { get; set; }
             public int Take { get; set; }
             public int Skip { get; set; }
+        }
+
+        class QueryableStub : IQueryable
+        {
+            public QueryableStub(Type elementType, Expression expression)
+            {
+                Expression = expression;
+                ElementType = elementType;
+            }
+
+            public IEnumerator GetEnumerator()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Expression Expression { get; private set; }
+            public Type ElementType { get; private set; }
+            public IQueryProvider Provider { get; private set; }
         }
 
         private readonly int _index;
@@ -91,6 +111,35 @@ namespace VirtualObjects.Queries.Compilation
             };
         }
 
+        private IQueryInfo TranslateQuery(Expression expression)
+        {
+            var queryable = ExtractQueryable(expression);
+
+            return TranslateQuery(new QueryableStub(queryable.ElementType, expression));
+        }
+
+        private IQueryable ExtractQueryable(Expression expression)
+        {
+            var callExpression = expression as MethodCallExpression;
+            if ( callExpression != null )
+            {
+                if ( !callExpression.Arguments.Any() )
+                {
+                    return new QueryableStub(callExpression.Method.ReturnType.GetGenericArguments().First(), null);
+                }
+
+                return ExtractQueryable(callExpression.Arguments.First());
+            }
+
+            var constant = ExtractConstant(expression) as ConstantExpression;
+            if ( constant != null )
+            {
+                return constant.Value as IQueryable;
+            }
+
+            throw new TranslationException(Errors.Translation_UnableToExtractQueryable);
+        }
+
         #region Compiling Methods
 
         private void CompileExpression(Expression expression, CompilerBuffer buffer)
@@ -105,6 +154,11 @@ namespace VirtualObjects.Queries.Compilation
 
         private void CompileMethodCall(MethodCallExpression expression, CompilerBuffer buffer)
         {
+            if ( !expression.Arguments.Any() )
+            {
+                return;
+            }
+
             CompileExpression(expression.Arguments.FirstOrDefault(), buffer);
 
             if ( expression.Arguments.Count == 1 )
@@ -114,7 +168,9 @@ namespace VirtualObjects.Queries.Compilation
 
             switch ( expression.Method.Name )
             {
-                case "Select": break;
+                case "Select":
+                    CompileCustomPredicate(expression.Arguments[1], buffer);
+                    break;
                 case "Take":
                 case "Skip":
                     CompileTakeSkip(expression, buffer);
@@ -135,6 +191,24 @@ namespace VirtualObjects.Queries.Compilation
                 case "OrderBy": break;
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
+            }
+
+        }
+
+        private void CompileCustomPredicate(Expression expression, CompilerBuffer buffer)
+        {
+            var lambda = ExtractLambda(expression, false);
+
+            if ( lambda.Body is MemberExpression )
+            {
+                CompileMemberAccess(lambda.Body, buffer);
+
+                //
+                // CompileMemberAccess compiles into buffer.Predicates
+                // Copy the result into the proper buffer.
+                //
+                buffer.Projection = buffer.Predicates;
+                buffer.Predicates = null;
             }
 
         }
@@ -194,7 +268,7 @@ namespace VirtualObjects.Queries.Compilation
                 //
                 // Append the conditions to the predicates.
                 //
-                if (buffer.Predicates == null)
+                if ( buffer.Predicates == null )
                 {
                     buffer.Predicates += " " + _formatter.Where + " ";
                 }
@@ -253,6 +327,10 @@ namespace VirtualObjects.Queries.Compilation
                     CompileNot(expression, buffer);
                     break;
 
+                case ExpressionType.Call:
+                    CompileCallPredicate((MethodCallExpression)expression, buffer);
+                    break;
+
                 case ExpressionType.Equal:
                 case ExpressionType.GreaterThan:
                 case ExpressionType.GreaterThanOrEqual:
@@ -272,6 +350,28 @@ namespace VirtualObjects.Queries.Compilation
                     throw new UnsupportedException(Errors.SQL_ExpressionTypeNotSupported, expression);
             }
 
+        }
+
+        private void CompileCallPredicate(MethodCallExpression expression, CompilerBuffer buffer)
+        {
+            if ( expression.Method.Name != "Contains" )
+            {
+                return;
+            }
+
+            var newTranslator = CreateNewTranslator();
+
+            var result = newTranslator.TranslateQuery(expression.Arguments.First());
+
+            CompileMemberAccess(expression.Arguments[1], buffer);
+
+            buffer.Predicates += " " + _formatter.In + " ";
+            buffer.Predicates += _formatter.BeginWrap();
+            buffer.Predicates += result.CommandText;
+
+            //
+            // To be closed later on.
+            buffer.Parenthesis++;
         }
 
         private void CompileNot(Expression expression, CompilerBuffer buffer)
@@ -380,7 +480,7 @@ namespace VirtualObjects.Queries.Compilation
             buffer.Predicates += _formatter.Select + " ";
             buffer.Parenthesis++;
 
-            var queryCompiler = CreateQueryCompiler();
+            var queryCompiler = CreateNewTranslator();
 
             //
             // Use the key of the other type to predicate.
@@ -445,7 +545,25 @@ namespace VirtualObjects.Queries.Compilation
 
         private void CompileBinaryExpression(Expression expression, CompilerBuffer buffer)
         {
-            var binary = expression as BinaryExpression ?? (BinaryExpression)ExtractLambda(expression).Body;
+            var binary = expression as BinaryExpression;
+            if (binary == null)
+            {
+                var lambda = ExtractLambda(expression);
+                var callExpression = lambda.Body as MethodCallExpression;
+
+                if (callExpression != null)
+                {
+                    buffer.Predicates += _formatter.BeginWrap();
+                    {
+                        CompileCallPredicate(callExpression, buffer);
+                    }
+                    buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+                    return;
+                }
+
+                binary = (BinaryExpression)lambda.Body;
+            }
+
 
             buffer.Predicates += _formatter.BeginWrap();
             {
@@ -465,7 +583,7 @@ namespace VirtualObjects.Queries.Compilation
 
         #region Auxiliary Methods
 
-        private QueryTranslator CreateQueryCompiler()
+        private QueryTranslator CreateNewTranslator()
         {
             return new QueryTranslator(_formatter, _mapper, ++_rootTranslator._depth)
             {
@@ -476,45 +594,43 @@ namespace VirtualObjects.Queries.Compilation
             };
         }
 
-        private static LambdaExpression ExtractLambda(Expression arg)
+        private static LambdaExpression ExtractLambda(Expression arg, bool shouldCreateBinary = true)
         {
-
-            if ( arg is LambdaExpression )
+            if (!(arg is LambdaExpression))
             {
-                var lambda = (LambdaExpression)arg;
-
-                if ( lambda.Body is BinaryExpression )
+                var unaryExpression = arg as UnaryExpression;
+                
+                if (unaryExpression != null)
                 {
-                    return (LambdaExpression)arg;
+                    return ExtractLambda(unaryExpression.Operand, shouldCreateBinary);
                 }
 
-                //
-                // In case of a MemberExpression Lambda return an explicit equality.
-                //
-                var parameters = lambda.Parameters;
-
-                Expression body;
-
-                if ( lambda.Body is UnaryExpression )
-                {
-                    var unary = (UnaryExpression)lambda.Body;
-
-                    body = Expression.NotEqual(unary.Operand, Expression.Constant(true));
-                }
-                else
-                {
-                    body = Expression.Equal(lambda.Body, Expression.Constant(true));
-                }
-
-                return Expression.Lambda(body, parameters);
+                throw new TranslationException(Errors.Translation_UnableToExtractLambda);
             }
 
-            if ( arg is UnaryExpression )
+            //
+            // From this point forward we know that arg is a LambdaExpression.
+            //
+
+            var lambda = (LambdaExpression)arg;
+
+            if ( !shouldCreateBinary || lambda.Body is BinaryExpression || lambda.Body is MethodCallExpression )
             {
-                return ExtractLambda(((UnaryExpression)arg).Operand);
+                return (LambdaExpression)arg;
             }
 
-            throw new TranslationException(Errors.Translation_UnableToExtractLambda);
+            //
+            // In case of a MemberExpression Lambda return an explicit equality.
+            //
+            var parameters = lambda.Parameters;
+
+            var unary = lambda.Body as UnaryExpression;
+            
+            Expression body = unary != null ? 
+                Expression.NotEqual(unary.Operand, Expression.Constant(true)) : // This is a NOT
+                Expression.Equal(lambda.Body, Expression.Constant(true));       // This is a Member Access
+
+            return Expression.Lambda(body, parameters);
         }
 
         private static Type ExtractType(Expression expression)
