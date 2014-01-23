@@ -133,6 +133,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Predicates with multiple member access on both sides is not yet supported..
+        /// </summary>
+        public static string Translation_ManyMembersAccess_On_BothSides_NotSupported {
+            get {
+                return ResourceManager.GetString("Translation_ManyMembersAccess_On_BothSides_NotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The method [{Method.Name}] used in a query is not yet supported..
         /// </summary>
         public static string Translation_MethodNotSupported {

@@ -235,9 +235,9 @@ namespace VirtualObjects.Queries.Translation
             //
 
             // The first table will only be added in the first call.
-            if (String.IsNullOrEmpty(buffer.From))
+            if ( String.IsNullOrEmpty(buffer.From) )
             {
-                buffer.From += _formatter.FormatTableName(entityInfo1.EntityName, _index);    
+                buffer.From += _formatter.FormatTableName(entityInfo1.EntityName, _index);
             }
 
             buffer.From += " " + _formatter.InnerJoin + " ";
@@ -296,7 +296,7 @@ namespace VirtualObjects.Queries.Translation
                 if ( newExpression != null )
                 {
 
-                    if (!String.IsNullOrEmpty(buffer.Projection ))
+                    if ( !String.IsNullOrEmpty(buffer.Projection) )
                     {
                         return;
                     }
@@ -305,12 +305,7 @@ namespace VirtualObjects.Queries.Translation
                     {
                         foreach ( var arg in newExpression.Arguments )
                         {
-                            var tmpExp = arg;
-
-                            while ( tmpExp is MemberExpression && IsDynamic(ExtractAccessor(arg).Type) )
-                            {
-                                tmpExp = RemoveDynamicType(tmpExp as MemberExpression);
-                            }
+                            var tmpExp = RemoveDynamicFromMemberAccess(arg);
 
                             var parameterExpression = tmpExp as ParameterExpression;
 
@@ -330,6 +325,16 @@ namespace VirtualObjects.Queries.Translation
 
                 }
             }
+        }
+
+        private Expression RemoveDynamicFromMemberAccess(Expression tmpExp)
+        {
+            while ( tmpExp is MemberExpression && IsDynamic(ExtractAccessor(tmpExp).Type) )
+            {
+                tmpExp = RemoveDynamicType(tmpExp as MemberExpression);
+            }
+
+            return tmpExp;
         }
 
         private static void CompileTakeSkip(MethodCallExpression expression, CompilerBuffer buffer)
@@ -608,7 +613,7 @@ namespace VirtualObjects.Queries.Translation
 
         private Expression RemoveDynamicType(MemberExpression member)
         {
-            if (member.Expression is ParameterExpression)
+            if ( member.Expression is ParameterExpression )
             {
                 return Expression.Parameter(member.Type, member.Member.Name);
             }
@@ -618,25 +623,25 @@ namespace VirtualObjects.Queries.Translation
             return Expression.MakeMemberAccess(expMember, member.Member);
         }
 
-        private IEntityInfo CompileMemberAccess(MemberExpression expression, Expression nextExpression, CompilerBuffer buffer)
+        private QueryTranslator CompileMemberAccess(MemberExpression expression, Expression nextExpression, CompilerBuffer buffer)
         {
             if ( nextExpression is ParameterExpression )
             {
-                return _mapper.Map(nextExpression.Type);
+                return Indexer[(ParameterExpression)nextExpression];
             }
 
             var nextMember = nextExpression as MemberExpression;
 
             Debug.Assert(nextMember != null, "CompileMemberAccess : nextMember != null");
 
-            var entityInfo = CompileMemberAccess(nextMember, nextMember.Expression, buffer);
+            var translator = CompileMemberAccess(nextMember, nextMember.Expression, buffer);
 
-            var foreignKey = entityInfo.GetFieldAssociatedWith(expression.Member.Name);
+            var foreignKey = translator.EntityInfo[nextMember.Member.Name];
 
             //
             // Use the binded field on the predicate.
             //
-            buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, _index);
+            buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, translator._index);
             buffer.Predicates += " " + _formatter.In + " ";
             buffer.Predicates += _formatter.BeginWrap();
             buffer.Predicates += _formatter.Select + " ";
@@ -652,9 +657,9 @@ namespace VirtualObjects.Queries.Translation
             buffer.Predicates += " " + _formatter.From + " ";
             buffer.Predicates += _formatter.FormatTableName(foreignKey.EntityInfo.EntityName, queryCompiler._index);
             buffer.Predicates += " " + _formatter.Where + " ";
-            buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, queryCompiler._index);
+            buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.EntityInfo[expression.Member.Name].ColumnName, queryCompiler._index);
 
-            return entityInfo;
+            return translator;
         }
 
         private bool CompileIfDatetime(Expression expression, CompilerBuffer buffer)
@@ -730,11 +735,43 @@ namespace VirtualObjects.Queries.Translation
 
             buffer.Predicates += _formatter.BeginWrap();
             {
-                CompilePredicateExpression(binary.Left, buffer);
+                var left = RemoveDynamicFromMemberAccess(binary.Left);
+                var right = RemoveDynamicFromMemberAccess(binary.Right);
+
+                //
+                // In case the constant part is in the left part.
+                // Not very used but still...
+                // e => 1 == e.EmployeeId
+                //
+                if ( IsConstant(binary.Left)  )
+                {
+                    left = binary.Right;
+                    right = binary.Left;
+                }
+                else if (!HasManyMemberAccess(left) && HasManyMemberAccess(right))
+                {
+                    left = binary.Right;
+                    right = binary.Left;
+                }
+                else if ( HasManyMemberAccess(left) && HasManyMemberAccess(right) )
+                {
+                    throw new TranslationException(Errors.Translation_ManyMembersAccess_On_BothSides_NotSupported);
+                }
+
+                CompilePredicateExpression(left, buffer);
                 CompileNodeType(binary.NodeType, buffer);
-                CompilePredicateExpression(binary.Right, buffer);
+                CompilePredicateExpression(right, buffer);
             }
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+        }
+
+
+        private Boolean HasManyMemberAccess(Expression expression)
+        {
+            
+            var member = expression as MemberExpression;
+
+            return member != null && member.Expression is MemberExpression;
         }
 
         private void CompileNodeType(ExpressionType nodeType, CompilerBuffer buffer)
@@ -822,6 +859,11 @@ namespace VirtualObjects.Queries.Translation
             }
 
             return expression;
+        }
+
+        private static Boolean IsConstant(Expression expression)
+        {
+            return ExtractConstant(expression) != null;
         }
 
         private static Expression ExtractConstant(Expression expression)

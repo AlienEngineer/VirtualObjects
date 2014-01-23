@@ -141,6 +141,9 @@
   <data name="Translation_DateTimeMemberNotSupported" xml:space="preserve">
     <value>The member {Member.Name} is not yet supported.</value>
   </data>
+  <data name="Translation_ManyMembersAccess_On_BothSides_NotSupported" xml:space="preserve">
+    <value>Predicates with multiple member access on both sides is not yet supported.</value>
+  </data>
   <data name="Translation_MethodNotSupported" xml:space="preserve">
     <value>The method [{Method.Name}] used in a query is not yet supported.</value>
   </data>
