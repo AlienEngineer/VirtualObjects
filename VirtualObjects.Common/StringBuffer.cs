@@ -55,5 +55,10 @@ namespace VirtualObjects
         {
             return _sb.ToString();
         }
+
+        public void RemoveLast(string fieldSeparator)
+        {
+            _sb.Remove(_sb.Length - fieldSeparator.Length, fieldSeparator.Length);
+        }
     }
 }

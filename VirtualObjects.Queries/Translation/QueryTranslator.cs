@@ -21,9 +21,23 @@ namespace VirtualObjects.Queries.Translation
             public IEntityInfo EntityInfo { get; set; }
             public StringBuffer Predicates { get; set; }
             public int Parenthesis { get; set; }
-            public StringBuffer Joins { get; set; }
             public int Take { get; set; }
             public int Skip { get; set; }
+        }
+
+        class ParameterEquality : IEqualityComparer<ParameterExpression>
+        {
+
+            public bool Equals(ParameterExpression x, ParameterExpression y)
+            {
+                return (x == null && y == null) || 
+                    (x != null && y != null && x.Name == y.Name && x.Type == y.Type);
+            }
+
+            public int GetHashCode(ParameterExpression obj)
+            {
+                return obj.Name.GetHashCode() + obj.Type.GetHashCode();
+            }
         }
 
         class QueryableStub : IQueryable
@@ -50,7 +64,7 @@ namespace VirtualObjects.Queries.Translation
         private readonly IDictionary<String, Object> _parameters;
         private int _depth;
         private QueryTranslator _rootTranslator;
-        private readonly IDictionary<Expression, QueryTranslator> _indexer;
+        private readonly IDictionary<ParameterExpression, QueryTranslator> _indexer;
 
         public QueryTranslator(IFormatter formatter, IMapper mapper)
         {
@@ -58,7 +72,7 @@ namespace VirtualObjects.Queries.Translation
             _mapper = mapper;
             _index = _depth = 0;
             _parameters = new Dictionary<String, Object>();
-            _indexer = new Dictionary<Expression, QueryTranslator>();
+            _indexer = new Dictionary<ParameterExpression, QueryTranslator>(new ParameterEquality());
             _rootTranslator = this;
         }
 
@@ -71,8 +85,8 @@ namespace VirtualObjects.Queries.Translation
 
         private IDictionary<string, object> Parameters { get { return _rootTranslator._parameters; } }
 
-        public IDictionary<Expression, QueryTranslator> Indexer { get { return _rootTranslator._indexer; } }
-        
+        public IDictionary<ParameterExpression, QueryTranslator> Indexer { get { return _rootTranslator._indexer; } }
+
         public IEntityInfo EntityInfo { get; set; }
 
         /// <summary>
@@ -106,7 +120,7 @@ namespace VirtualObjects.Queries.Translation
             //
             // Conditional Default Projection Compilation.
             //
-            CompileDefaultProjection(queryable, buffer);
+            CompileDefaultProjection(buffer);
 
             return new QueryInfo
             {
@@ -211,6 +225,8 @@ namespace VirtualObjects.Queries.Translation
             var entityInfo2 = _mapper.Map(arg2.ElementType);
 
             var newTranlator = CreateNewTranslator();
+
+            EntityInfo = entityInfo1;
             newTranlator.EntityInfo = entityInfo2;
 
             //
@@ -240,20 +256,20 @@ namespace VirtualObjects.Queries.Translation
             // Custom Projection
             //
             CompileCustomProjection(expression.Arguments[4], buffer);
-            
+
         }
 
         private void CompileJoinOnPart(Expression expression, CompilerBuffer buffer, QueryTranslator translator)
         {
-            SafePredicate(buffer);
+            buffer.From += CompileAndGetBuffer(() =>
             {
+                
                 var lambda = ExtractLambda(expression, false);
                 Indexer[lambda.Parameters.First()] = translator;
 
                 CompilePredicateExpression(lambda.Body, buffer);
-                buffer.From += buffer.Predicates;
-            }
-            RestorePredicate(buffer);
+
+            }, buffer);
         }
 
 
@@ -267,26 +283,35 @@ namespace VirtualObjects.Queries.Translation
 
                 buffer.Projection = CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
             }
-            else if ( lambda.Body is NewExpression )
+            else
             {
-                var newExp = (NewExpression)lambda.Body;
-
-                buffer.Projection = CompileAndGetBuffer(() =>
+                var newExpression = lambda.Body as NewExpression;
+                if ( newExpression != null )
                 {
-                    
-                    if (IsDynamic(newExp.Type) && newExp.Type.Properties().All(e => e.PropertyType.IsFrameworkType()))
+                    buffer.Projection = CompileAndGetBuffer(() =>
                     {
-
-                        foreach (var arg in ((NewExpression) lambda.Body).Arguments)
+                        foreach ( var arg in newExpression.Arguments )
                         {
-                            CompileMemberAccess(arg, buffer);
+                            //
+                            // Use the parameter as a projection. 
+                            // This indicates that we should use the default projection for that parameter type.
+                            //
+                            var parameterExpression = arg as ParameterExpression;
+                            if (parameterExpression != null)
+                            {
+                                var translator = Indexer[parameterExpression];
+
+                                buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns, translator._index);
+                            }
+
                             buffer.Predicates += _formatter.FieldSeparator;
                         }
-                    }
 
+                        buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
 
-                }, buffer);
+                    }, buffer);
 
+                }
             }
         }
 
@@ -300,11 +325,10 @@ namespace VirtualObjects.Queries.Translation
                 case "Take":
                     buffer.Take = (int)ParseValue(expression.Arguments[1]);
                     break;
-                default: break;
             }
         }
 
-        private void CompileDefaultProjection(IQueryable query, CompilerBuffer buffer)
+        private void CompileDefaultProjection(CompilerBuffer buffer)
         {
             if ( !String.IsNullOrEmpty(buffer.Projection) )
             {
@@ -369,7 +393,7 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            if (buffer.From != null)
+            if ( buffer.From != null )
             {
                 return;
             }
@@ -482,8 +506,7 @@ namespace VirtualObjects.Queries.Translation
         {
             var newExpression = (NewExpression)expression;
 
-            // This is a ReSharper bug this is not allways true...
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+// ReSharper disable once ConditionIsAlwaysTrueOrFalse
             var value = newExpression.Constructor != null ?
                 newExpression.Constructor.Invoke(GetParameters(newExpression)) :
                 newExpression.Type.CreateInstance();
@@ -542,11 +565,12 @@ namespace VirtualObjects.Queries.Translation
             //
             // If the member is from the current entity.
             //
-            if ( member.Expression is ParameterExpression )
+            var parameterExpression = member.Expression as ParameterExpression;
+            if ( parameterExpression != null )
             {
-                var entityInfo = Indexer[member.Expression].EntityInfo;
+                var entityInfo = Indexer[parameterExpression].EntityInfo;
 
-                buffer.Predicates += _formatter.FormatFieldWithTable(entityInfo[member.Member.Name].ColumnName, Indexer[member.Expression]._index);
+                buffer.Predicates += _formatter.FormatFieldWithTable(entityInfo[member.Member.Name].ColumnName, Indexer[parameterExpression]._index);
             }
             else
             {
@@ -625,8 +649,6 @@ namespace VirtualObjects.Queries.Translation
                 default:
                     return false;
             }
-
-            return false;
         }
 
         private bool CompileIfConstant(Expression expression, CompilerBuffer buffer)
@@ -644,7 +666,7 @@ namespace VirtualObjects.Queries.Translation
         private void CompileBinaryExpression(Expression expression, CompilerBuffer buffer)
         {
             var binary = expression as BinaryExpression;
-            if (binary == null)
+            if ( binary == null )
             {
                 var lambda = ExtractLambda(expression);
 
@@ -652,7 +674,7 @@ namespace VirtualObjects.Queries.Translation
 
                 var callExpression = lambda.Body as MethodCallExpression;
 
-                if (callExpression != null)
+                if ( callExpression != null )
                 {
                     buffer.Predicates += _formatter.BeginWrap();
                     {
@@ -674,7 +696,7 @@ namespace VirtualObjects.Queries.Translation
             }
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
         }
-        
+
         private void CompileNodeType(ExpressionType nodeType, CompilerBuffer buffer)
         {
             buffer.Predicates += _formatter.FormatNode(nodeType);
@@ -697,11 +719,11 @@ namespace VirtualObjects.Queries.Translation
 
         private static LambdaExpression ExtractLambda(Expression arg, bool shouldCreateBinary = true)
         {
-            if (!(arg is LambdaExpression))
+            if ( !(arg is LambdaExpression) )
             {
                 var unaryExpression = arg as UnaryExpression;
-                
-                if (unaryExpression != null)
+
+                if ( unaryExpression != null )
                 {
                     return ExtractLambda(unaryExpression.Operand, shouldCreateBinary);
                 }
@@ -726,8 +748,8 @@ namespace VirtualObjects.Queries.Translation
             var parameters = lambda.Parameters;
 
             var unary = lambda.Body as UnaryExpression;
-            
-            Expression body = unary != null ? 
+
+            Expression body = unary != null ?
                 Expression.NotEqual(unary.Operand, Expression.Constant(true)) : // This is a NOT
                 Expression.Equal(lambda.Body, Expression.Constant(true));       // This is a Member Access
 
@@ -818,7 +840,6 @@ namespace VirtualObjects.Queries.Translation
                 .Append(_formatter.Select + " ").Append(buffer.Projection)
                 .Append(" " + _formatter.From + " ").Append(buffer.From)
                 .Append(buffer.Predicates)
-                .Append(buffer.Joins)
                 .ToString();
         }
 
@@ -832,7 +853,7 @@ namespace VirtualObjects.Queries.Translation
             }
             finally
             {
-                RestorePredicate(buffer);    
+                RestorePredicate(buffer);
             }
         }
 

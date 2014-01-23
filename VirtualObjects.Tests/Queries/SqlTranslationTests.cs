@@ -358,7 +358,6 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-
         [Test]
         public void SqlTranslation_Joins_Predicated()
         {
