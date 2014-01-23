@@ -30,7 +30,7 @@ namespace VirtualObjects.Queries.Translation
 
             public bool Equals(ParameterExpression x, ParameterExpression y)
             {
-                return (x == null && y == null) || 
+                return (x == null && y == null) ||
                     (x != null && y != null && x.Name == y.Name && x.Type == y.Type);
             }
 
@@ -186,6 +186,7 @@ namespace VirtualObjects.Queries.Translation
             switch ( expression.Method.Name )
             {
                 case "Select":
+                    buffer.Projection = null;
                     CompileCustomProjection(expression.Arguments[1], buffer);
                     break;
                 case "Take":
@@ -233,7 +234,12 @@ namespace VirtualObjects.Queries.Translation
             // From [Source] Join [Other Source]
             //
 
-            buffer.From += _formatter.FormatTableName(entityInfo1.EntityName, _index);
+            // The first table will only be added in the first call.
+            if (String.IsNullOrEmpty(buffer.From))
+            {
+                buffer.From += _formatter.FormatTableName(entityInfo1.EntityName, _index);    
+            }
+
             buffer.From += " " + _formatter.InnerJoin + " ";
             buffer.From += _formatter.FormatTableName(entityInfo2.EntityName, newTranlator._index);
             buffer.From += " " + _formatter.On + " ";
@@ -255,6 +261,7 @@ namespace VirtualObjects.Queries.Translation
             //
             // Custom Projection
             //
+            buffer.Projection = null;
             CompileCustomProjection(expression.Arguments[4], buffer);
 
         }
@@ -263,7 +270,7 @@ namespace VirtualObjects.Queries.Translation
         {
             buffer.From += CompileAndGetBuffer(() =>
             {
-                
+
                 var lambda = ExtractLambda(expression, false);
                 Indexer[lambda.Parameters.First()] = translator;
 
@@ -288,34 +295,44 @@ namespace VirtualObjects.Queries.Translation
                 var newExpression = lambda.Body as NewExpression;
                 if ( newExpression != null )
                 {
+
+                    if (!String.IsNullOrEmpty(buffer.Projection ))
+                    {
+                        return;
+                    }
+
                     buffer.Projection = CompileAndGetBuffer(() =>
                     {
                         foreach ( var arg in newExpression.Arguments )
                         {
-                            //
-                            // Use the parameter as a projection. 
-                            // This indicates that we should use the default projection for that parameter type.
-                            //
-                            var parameterExpression = arg as ParameterExpression;
-                            if (parameterExpression != null)
+                            var tmpExp = arg;
+
+                            while ( tmpExp is MemberExpression && IsDynamic(ExtractAccessor(arg).Type) )
+                            {
+                                tmpExp = RemoveDynamicType(tmpExp as MemberExpression);
+                            }
+
+                            var parameterExpression = tmpExp as ParameterExpression;
+
+                            if ( parameterExpression != null )
                             {
                                 var translator = Indexer[parameterExpression];
 
-                                buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns, translator._index);
+                                buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns,
+                                    translator._index);
                             }
 
                             buffer.Predicates += _formatter.FieldSeparator;
                         }
 
                         buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
-
                     }, buffer);
 
                 }
             }
         }
 
-        private void CompileTakeSkip(MethodCallExpression expression, CompilerBuffer buffer)
+        private static void CompileTakeSkip(MethodCallExpression expression, CompilerBuffer buffer)
         {
             switch ( expression.Method.Name )
             {
@@ -506,7 +523,7 @@ namespace VirtualObjects.Queries.Translation
         {
             var newExpression = (NewExpression)expression;
 
-// ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             var value = newExpression.Constructor != null ?
                 newExpression.Constructor.Invoke(GetParameters(newExpression)) :
                 newExpression.Type.CreateInstance();
@@ -562,6 +579,17 @@ namespace VirtualObjects.Queries.Translation
 
             if ( CompileIfDatetime(expression, buffer) ) return;
 
+
+            //
+            // Indicates that the accessor is a Dynamic type.
+            // This will happend when using join queries when the projection 
+            // is a dynamic type and a Where clause is added using the dynamic type.
+            //
+            while ( IsDynamic(ExtractAccessor(member).Type) )
+            {
+                member = (MemberExpression)RemoveDynamicType(member);
+            }
+
             //
             // If the member is from the current entity.
             //
@@ -576,6 +604,18 @@ namespace VirtualObjects.Queries.Translation
             {
                 CompileMemberAccess(member, member.Expression, buffer);
             }
+        }
+
+        private Expression RemoveDynamicType(MemberExpression member)
+        {
+            if (member.Expression is ParameterExpression)
+            {
+                return Expression.Parameter(member.Type, member.Member.Name);
+            }
+
+            var expMember = RemoveDynamicType(member.Expression as MemberExpression);
+
+            return Expression.MakeMemberAccess(expMember, member.Member);
         }
 
         private IEntityInfo CompileMemberAccess(MemberExpression expression, Expression nextExpression, CompilerBuffer buffer)
