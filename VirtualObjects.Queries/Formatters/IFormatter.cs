@@ -20,6 +20,7 @@ namespace VirtualObjects.Queries.Formatters
         String InnerJoin { get; }
         String On { get; }
         String IsNull { get; }
+        String IsNotNull { get; }
 
         String FormatField(String name);
 

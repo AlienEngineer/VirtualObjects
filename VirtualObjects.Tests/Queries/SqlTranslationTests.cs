@@ -319,6 +319,33 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+        [Repeat(10)]
+        [TestCase("SomeName")]
+        [TestCase(null)]
+        public void SqlTranslation_FuncNull_Compare_Predicate(String lastName)
+        {
+            Func<String> getLastName = () => lastName;
+
+            var query = Query<Employee>().Where(e => e.LastName == getLastName());
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[LastName] = @p0)")
+            );
+        }
+
+        [Test, Repeat(10)]
+        public void SqlTranslation_Not_Null_Compare_Predicate()
+        {
+            var query = Query<Employee>().Where(e => e.LastName != null);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[LastName] Is Not Null)")
+            );
+        }
+
+
         /// <summary>
         /// 
         /// Sql translation for a multiple predicate where clauses
