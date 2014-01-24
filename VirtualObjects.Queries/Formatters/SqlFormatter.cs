@@ -20,6 +20,7 @@ namespace VirtualObjects.Queries.Formatters
             And = "And";
             In = "In";
             On = "On";
+            IsNull = "Is Null";
             InnerJoin = "Inner Join";
         }
 
@@ -40,6 +41,7 @@ namespace VirtualObjects.Queries.Formatters
         public string In { get; private set; }
         public string InnerJoin { get; private set; }
         public string On { get; private set; }
+        public string IsNull { get; private set; }
 
         public String FormatField(String name)
         {

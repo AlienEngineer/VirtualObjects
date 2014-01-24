@@ -782,8 +782,17 @@ namespace VirtualObjects.Queries.Translation
                 }
 
                 CompilePredicateExpression(left, buffer);
-                CompileNodeType(binary.NodeType, buffer);
-                CompilePredicateExpression(right, buffer);
+                
+                if (IsConstant(right) && ((ConstantExpression)ExtractConstant(right)).Value == null)
+                {
+                    buffer.Predicates += " " + _formatter.IsNull;
+                }
+                else 
+                {
+                    CompileNodeType(binary.NodeType, buffer);
+                    CompilePredicateExpression(right, buffer);    
+                }
+                
             }
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
         }
