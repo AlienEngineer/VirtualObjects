@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace VirtualObjects
 {
-    static class Diagnostic
+    public static class Diagnostic
     {
 
         class DiagnosticTimeSpan

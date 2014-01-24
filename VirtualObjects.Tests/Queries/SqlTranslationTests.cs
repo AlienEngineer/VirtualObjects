@@ -21,7 +21,7 @@ namespace VirtualObjects.Tests.Queries
     public class SqlTranslationTests : UtilityBelt
     {
 
-        private IQueryTranslator _translator;
+        private  IQueryTranslator _translator;
 
         public SqlTranslationTests()
         {
@@ -36,7 +36,7 @@ namespace VirtualObjects.Tests.Queries
 
         private String Translate(IQueryable query)
         {
-            _translator = new QueryTranslator(new SqlFormatter(), Mapper);
+           //_translator = new QueryTranslator(new SqlFormatter(), Mapper);
 
             var str =  Diagnostic.Timed(
                 func: () => _translator.TranslateQuery(query).CommandText, 
@@ -47,12 +47,34 @@ namespace VirtualObjects.Tests.Queries
             return str;
         }
 
+
+        int _count = 0;
+        [TearDown]
+        public void FlushTime()
+        {
+            if ( !TestContext.CurrentContext.Test.Properties.Contains("Repeat") )
+            {
+                return;
+            }
+
+            var times = (int)TestContext.CurrentContext.Test.Properties["Repeat"];
+
+            _count++;
+
+            if ( _count % times != 0 ) return;
+
+            Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => Translation parsed in time :   {1} ms", "Translation");
+
+        }
+
+        
+
         /// <summary>
         /// 
         /// Sql translation for a simple predicate
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Simple_Query()
         {
             var query = Query<Employee>();
@@ -63,7 +85,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Projected_Query()
         {
             var query = Query<Employee>()
@@ -80,7 +102,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation get the 10 first rows.
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Query_Top_N()
         {
             var query = Query<Employee>().Take(10);
@@ -96,7 +118,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation skip the 10 first rows.
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Query_Skip_N()
         {
             var query = Query<Employee>().Skip(1);
@@ -112,7 +134,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation skip the 1 and take 1 row.
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Query_Skip_Take_N()
         {
             var query = Query<Employee>().Take(1).Skip(1);
@@ -128,7 +150,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation skip the 1 and take 1 row predicated.
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Predicated_Query_Skip_Take_N()
         {
             var query = Query<Employee>()
@@ -146,7 +168,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple nested query
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_NestedQuery()
         {
             var query = Query<Orders>()
@@ -163,7 +185,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple nested query
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_NestedQuery_Predicated()
         {
             var query = Query<Orders>()
@@ -180,7 +202,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple nested query
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_NestedQuery_Predicated1()
         {
             var query = Query<Orders>()
@@ -201,7 +223,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple nested query
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_NestedQuery_Predicated2()
         {
             var query = Query<Orders>()
@@ -222,7 +244,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple predicate
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Simple_Predicate()
         {
             var query = Query<Employee>().Where(e => e.EmployeeId == 1);
@@ -238,7 +260,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple predicate
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Member_Predicate()
         {
             var query = Query<Employee>().Where(e => e.ReportsTo.EmployeeId == 1);
@@ -254,7 +276,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple predicate
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Member_Predicate_Inversed()
         {
             var query = Query<Employee>().Where(e => 1 == e.ReportsTo.EmployeeId);
@@ -270,7 +292,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple predicate
         /// 
         /// </summary>
-        [Test, Repeat(10), ExpectedException(typeof(TranslationException))]
+        [Test, Repeat(REPEAT), ExpectedException(typeof(TranslationException))]
         public void SqlTranslation_Two_Member_Predicate()
         {
             var query = Query<Employee>().Where(e => e.ReportsTo.City == e.ReportsTo.FirstName);
@@ -286,7 +308,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple predicate
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Simple_Dated_Predicate()
         {
             var query = Query<Employee>().Where(e => e.BirthDate == new DateTime(DateTime.Now.Ticks));
@@ -316,7 +338,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple predicate
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Simple_Members_Predicate()
         {
             var query = Query<Employee>().Where(e => e.LastName == e.City);
@@ -327,7 +349,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Null_Compare_Predicate()
         {
             var query = Query<Employee>().Where(e => e.LastName == null);
@@ -338,7 +360,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Repeat(10)]
+        [Repeat(REPEAT)]
         [TestCase("SomeName")]
         [TestCase(null)]
         public void SqlTranslation_FuncNull_Compare_Predicate(String lastName)
@@ -353,7 +375,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Not_Null_Compare_Predicate()
         {
             var query = Query<Employee>().Where(e => e.LastName != null);
@@ -369,7 +391,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a multiple predicate where clauses
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_MultipleCalls_Predicate()
         {
             var query = Query<Employee>()
@@ -387,7 +409,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a multiple predicate where clauses
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_MultipleCalls_Predicate1()
         {
             var query = Query<Employee>()
@@ -409,7 +431,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple predicate
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Simple_Boolean_Predicate()
         {
             var query = Query<Products>().Where(e => e.Discontinued);
@@ -432,7 +454,7 @@ namespace VirtualObjects.Tests.Queries
         /// Sql translation for a simple predicate
         /// 
         /// </summary>
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Simple_Join()
         {
             var query = from o in Query<Orders>()
@@ -445,7 +467,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Joins_Predicated()
         {
             var query = from o in Query<Orders>()
@@ -459,7 +481,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_2Joins()
         {
             var query = from o in Query<Orders>()
@@ -473,7 +495,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_2Joins_Predicated()
         {
             var query = from o in Query<Orders>()
@@ -488,7 +510,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_2Joins_Predicated_Reversed()
         {
             var query = from o in Query<Orders>()
@@ -503,7 +525,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Translate_GroupedJoins()
         {
             var query = from o in Query<Orders>()
@@ -516,7 +538,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        [Test, Repeat(10)]
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_Translate_GroupedJoins_Predicated()
         {
             var query = from o in Query<Orders>()

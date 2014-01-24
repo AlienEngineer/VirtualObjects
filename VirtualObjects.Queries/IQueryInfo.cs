@@ -9,6 +9,6 @@ namespace VirtualObjects.Queries
 
         DbCommand Command { get; }
         
-        IDictionary<string, object> Parameters { get; }
+        IDictionary<string, object> Parameters { get; set; }
     }
 }

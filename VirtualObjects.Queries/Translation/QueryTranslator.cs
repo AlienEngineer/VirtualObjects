@@ -138,6 +138,14 @@ namespace VirtualObjects.Queries.Translation
         {
             _parameterCount = howMany;
 
+            if ( howMany == 0 )
+            {
+                return new QueryInfo
+                {
+                    Parameters = Parameters
+                };
+            }
+
             queryable = EvaluateQuery(queryable);
 
             var buffer = CreateBuffer(queryable);
@@ -155,6 +163,16 @@ namespace VirtualObjects.Queries.Translation
 
         public IQueryInfo TranslateParametersOnly(Expression expression, int howMany)
         {
+            _parameterCount = howMany;
+
+            if ( howMany == 0 )
+            {
+                return new QueryInfo
+                {
+                    Parameters = Parameters
+                };
+            }
+
             var queryable = ExtractQueryable(expression);
 
             return TranslateParametersOnly(new QueryableStub(queryable.ElementType, expression), howMany);
