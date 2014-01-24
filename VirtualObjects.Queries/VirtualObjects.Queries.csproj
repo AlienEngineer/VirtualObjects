@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Translation\CachingTranslator.cs" />
     <Compile Include="Translation\QueryTranslator.cs" />
     <Compile Include="Formatters\IFormatter.cs" />
     <Compile Include="Formatters\SqlFormatter.cs" />

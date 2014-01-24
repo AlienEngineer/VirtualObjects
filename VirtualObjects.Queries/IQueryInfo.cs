@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data.Common;
 
 namespace VirtualObjects.Queries
@@ -7,5 +8,7 @@ namespace VirtualObjects.Queries
         string CommandText { get; }
 
         DbCommand Command { get; }
+        
+        IDictionary<string, object> Parameters { get; }
     }
 }

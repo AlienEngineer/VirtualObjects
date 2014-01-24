@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using VirtualObjects.Queries;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Translation;
 using VirtualObjects.Tests.Models.Northwind;
@@ -20,6 +21,14 @@ namespace VirtualObjects.Tests.Queries
     public class SqlTranslationTests : UtilityBelt
     {
 
+        private IQueryTranslator _translator;
+
+        public SqlTranslationTests()
+        {
+            
+            _translator = new CachingTranslator(new SqlFormatter(), Mapper);
+        }
+
         private static IQueryable<TEntity> Query<TEntity>()
         {
             return new List<TEntity>().AsQueryable();
@@ -27,16 +36,16 @@ namespace VirtualObjects.Tests.Queries
 
         private String Translate(IQueryable query)
         {
+            _translator = new QueryTranslator(new SqlFormatter(), Mapper);
 
             var str =  Diagnostic.Timed(
-                func: () => new QueryTranslator(new SqlFormatter(), Mapper).TranslateQuery(query).CommandText, 
+                func: () => _translator.TranslateQuery(query).CommandText, 
                 name: "Translation");
 
             Trace.WriteLine(str);
 
             return str;
         }
-
 
         /// <summary>
         /// 
@@ -54,6 +63,17 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+        [Test, Repeat(10)]
+        public void SqlTranslation_Projected_Query()
+        {
+            var query = Query<Employee>()
+                .Select(e => new { e.EmployeeId, e.LastName, e.FirstName });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName] From [Employees] [T0]")
+            );
+        }
 
         /// <summary>
         /// 
@@ -120,7 +140,6 @@ namespace VirtualObjects.Tests.Queries
                 Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index], * From [Employees] [T100] Where ([T100].[FirstName] = @p0) And ([T100].[FirstName] = @p1)) [T0] Where ([T0].[FirstName] = @p0) And ([T0].[FirstName] = @p1) And ([T0].[Internal_Row_Index] > 1 And [T0].[Internal_Row_Index] <= 2)")
             );
         }
-
 
         /// <summary>
         /// 
@@ -344,7 +363,6 @@ namespace VirtualObjects.Tests.Queries
                 Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[LastName] Is Not Null)")
             );
         }
-
 
         /// <summary>
         /// 
