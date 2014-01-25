@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using VirtualObjects.Config;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Translation;
@@ -9,7 +10,24 @@ using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Queries
 {
+
     using NUnit.Framework;
+
+    class CachingTranslatorProvider : IQueryTranslatorProvider
+    {
+        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper)
+        {
+            return new CachingTranslator(formatter, mapper);
+        }
+    }
+
+    class TranslatorProvider : IQueryTranslatorProvider
+    {
+        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper)
+        {
+            return new QueryTranslator(formatter, mapper);
+        }
+    }
 
     /// <summary>
     /// 
@@ -17,16 +35,18 @@ namespace VirtualObjects.Tests.Queries
     /// 
     /// Author: Sérgio
     /// </summary>
-    [TestFixture, Category("Query Building")]
-    public class SqlTranslationTests : UtilityBelt
+    [TestFixture(typeof(TranslatorProvider))]
+    [TestFixture(typeof(CachingTranslatorProvider))]
+    [Category("Query Building")]
+    public class SqlTranslationTests<TTranslatorProvider> : UtilityBelt where TTranslatorProvider : IQueryTranslatorProvider, new()
     {
 
-        private  IQueryTranslator _translator;
+        private IQueryTranslator _translator;
 
         public SqlTranslationTests()
         {
-            
-            _translator = new CachingTranslator(new SqlFormatter(), Mapper);
+            _translator = new TTranslatorProvider()
+                .CreateQueryTranslator(new SqlFormatter(), Mapper);
         }
 
         private static IQueryable<TEntity> Query<TEntity>()
@@ -36,10 +56,14 @@ namespace VirtualObjects.Tests.Queries
 
         private String Translate(IQueryable query)
         {
-           //_translator = new QueryTranslator(new SqlFormatter(), Mapper);
+            if (typeof(TTranslatorProvider) != typeof(CachingTranslatorProvider))
+            {
+                _translator = new TTranslatorProvider()
+                    .CreateQueryTranslator(new SqlFormatter(), Mapper);
+            }
 
-            var str =  Diagnostic.Timed(
-                func: () => _translator.TranslateQuery(query).CommandText, 
+            var str = Diagnostic.Timed(
+                func: () => _translator.TranslateQuery(query).CommandText,
                 name: "Translation");
 
             Trace.WriteLine(str);
@@ -48,11 +72,12 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        int _count = 0;
+        int _count;
+
         [TearDown]
         public void FlushTime()
         {
-            if ( !TestContext.CurrentContext.Test.Properties.Contains("Repeat") )
+            if (!TestContext.CurrentContext.Test.Properties.Contains("Repeat"))
             {
                 return;
             }
@@ -61,13 +86,13 @@ namespace VirtualObjects.Tests.Queries
 
             _count++;
 
-            if ( _count % times != 0 ) return;
+            if (_count % times != 0) return;
 
             Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => Translation parsed in time :   {1} ms", "Translation");
 
         }
 
-        
+
 
         /// <summary>
         /// 
@@ -280,7 +305,7 @@ namespace VirtualObjects.Tests.Queries
         public void SqlTranslation_Member_Predicate_Inversed()
         {
             var query = Query<Employee>().Where(e => 1 == e.ReportsTo.EmployeeId);
-             
+
             Assert.That(
                 Translate(query),
                 Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[ReportsTo] In (Select [T1].[EmployeeId] From [Employees] [T1] Where [T1].[EmployeeId] = @p0))")
