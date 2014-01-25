@@ -333,6 +333,178 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_Dated_Predicate_ByYear()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.BirthDate.Year == 2010)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Year([T0].[BirthDate]) = @p0)")
+            );
+
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_Dated_Predicate_ByMonth()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.BirthDate.Month == 6)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Month([T0].[BirthDate]) = @p0)")
+            );
+
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_Dated_Predicate_ByDay()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.BirthDate.Day == 6)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+            );
+
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_Dated_Predicate_ByDayOfTheWeek()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.BirthDate.DayOfWeek == DayOfWeek.Monday)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_Dated_Predicate_ByDayOfTheYear()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.BirthDate.DayOfYear == 6)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_Dated_Predicate_ByHour()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.BirthDate.Hour == 6)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+            );
+
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_Dated_Predicate_ByMinute()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.BirthDate.Minute == 6)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_Dated_Predicate_BySecond()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.BirthDate.Second == 6)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_String_Predicate_StartsWith()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.StartsWith("a"))
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] like '' + @p0 + '%')")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_String_Predicate_EndsWith()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.EndsWith("a"))
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] like '%' + @p0 + '')")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_String_Predicate_Contains()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.Contains("a"))
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] like '%' + @p0 + '%')")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_String_Predicate_Length()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.Length == 10)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (len([T0].[LastName]) = @p0)")
+            );
+
+        }
+
         /// <summary>
         /// 
         /// Sql translation for a simple predicate

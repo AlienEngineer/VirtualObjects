@@ -8,7 +8,7 @@ namespace VirtualObjects.Tests
 {
     public abstract class UtilityBelt
     {
-        public const int REPEAT = 1000;
+        public const int REPEAT = 10;
 
         protected UtilityBelt()
         {
