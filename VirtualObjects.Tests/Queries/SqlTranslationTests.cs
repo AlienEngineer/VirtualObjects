@@ -49,11 +49,6 @@ namespace VirtualObjects.Tests.Queries
                 .CreateQueryTranslator(new SqlFormatter(), Mapper);
         }
 
-        private static IQueryable<TEntity> Query<TEntity>()
-        {
-            return new List<TEntity>().AsQueryable();
-        }
-
         private String Translate(IQueryable query)
         {
             if (typeof(TTranslatorProvider) != typeof(CachingTranslatorProvider))

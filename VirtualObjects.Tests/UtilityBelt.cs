@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using VirtualObjects.Config;
+using VirtualObjects.Queries;
+using VirtualObjects.Queries.Formatters;
+using VirtualObjects.Queries.Translation;
 using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests
@@ -24,6 +29,36 @@ namespace VirtualObjects.Tests
                       Connect Timeout=30");
 
             Mapper = CreateBuilder().Build();
+        }
+
+        public IDataReader Execute(IQueryable query)
+        {
+            return CreateCommand(query).ExecuteReader();
+        }
+
+        public IDbCommand CreateCommand(IQueryable query)
+        {
+            var queryInfo = new QueryTranslator(new SqlFormatter(), Mapper).TranslateQuery(query);
+
+            var cmd = Connection.CreateCommand();
+            cmd.CommandText = queryInfo.CommandText;
+
+            queryInfo.Parameters
+                .Select(e => new { e, Parameter = cmd.CreateParameter()})
+                .Select(e =>
+                            {
+                                e.Parameter.ParameterName = e.e.Key;
+                                e.Parameter.Value = e.e.Value;
+                                cmd.Parameters.Add(e.Parameter);
+                                return e.Parameter;
+                            }).ToList();
+            return cmd;
+
+        }
+
+        public IQueryable<T> Query<T>()
+        {
+            return new List<T>().AsQueryable();
         }
         
         private MappingBuilder CreateBuilder()

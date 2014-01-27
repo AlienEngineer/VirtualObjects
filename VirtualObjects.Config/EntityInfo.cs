@@ -48,14 +48,10 @@ namespace VirtualObjects.Config
             {
                 return EntityName + " => no columns";
             }
-            else
-            {
-                return EntityName + " = {\n" +
-                       String.Join(",\n", Columns.Select(e => e.ToString())) +
-                       "} ";
-            }
-
-            return base.ToString();
+            
+            return EntityName + " = {\n" +
+                   String.Join(",\n", Columns.Select(e => e.ToString())) +
+                   "} ";
         }
     }
 }

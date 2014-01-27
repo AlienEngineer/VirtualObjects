@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.Common;
 using VirtualObjects.Config;
 
@@ -16,7 +17,7 @@ namespace VirtualObjects.Queries
         /// <param name="buffer">The buffer.</param>
         /// <param name="mapContext">The map context.</param>
         /// <returns></returns>
-        object MapEntity(DbDataReader reader, object buffer, MapperContext mapContext);
+        object MapEntity(IDataReader reader, object buffer, MapperContext mapContext);
 
     }
 
@@ -24,5 +25,11 @@ namespace VirtualObjects.Queries
     {
         public Type OutputType { get; set; }
         public IEntityInfo EntityInfo { get; set; }
+        public IEntityProvider EntityProvider { get; set; }
+
+        public object CreateEntity()
+        {
+            return EntityProvider.CreateEntity(OutputType);
+        }
     }
 }
