@@ -79,6 +79,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Provider for type {Name} not yet implemented..
+        /// </summary>
+        public static string Mapping_EntityTypeNotSupported {
+            get {
+                return ResourceManager.GetString("Mapping_EntityTypeNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to get the ForeignKey for field {Name} in type {PropertyType.Name}..
         /// </summary>
         public static string Mapping_UnableToGetForeignKey {

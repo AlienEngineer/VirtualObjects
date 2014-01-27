@@ -8,5 +8,15 @@ namespace VirtualObjects.EntityProvider
         {
             return Activator.CreateInstance(type);
         }
+
+        public bool CanCreate(Type type)
+        {
+            return !type.IsDynamic();
+        }
+
+        public IEntityProvider GetProviderForType(Type type)
+        {
+            return CanCreate(type) ? this : null;
+        }
     }
 }

@@ -171,4 +171,7 @@
   <data name="Mapping_UnableToSetValue" xml:space="preserve">
     <value>Its not possible to set the field [{FieldName}] with the value [{Value}]</value>
   </data>
+  <data name="Mapping_EntityTypeNotSupported">
+    <value xml:space="preserve">Provider for type {Name} not yet implemented.</value>
+  </data>
 </root>

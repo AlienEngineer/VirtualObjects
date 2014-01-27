@@ -25,7 +25,14 @@ namespace VirtualObjects.Tests.Queries
 
         public QueryMappingTests()
         {
-            entitiesMapper = new CollectionEntityMapper(Mapper, new EntityProvider.EntityProvider());
+            entitiesMapper = new CollectionEntityMapper(Mapper,
+                new EntityProvider.EntityProviderComposite(
+                    new List<IEntityProvider>
+                        {
+                            new EntityProvider.EntityProvider(),
+                            new EntityProvider.DynamicTypeProvider()
+                        }
+                    ));
         }
 
         int _count;
@@ -38,7 +45,7 @@ namespace VirtualObjects.Tests.Queries
                 return;
             }
 
-            var times = (int)TestContext.CurrentContext.Test.Properties["Repeat"] ;
+            var times = (int)TestContext.CurrentContext.Test.Properties["Repeat"];
 
             _count++;
 
@@ -72,11 +79,11 @@ namespace VirtualObjects.Tests.Queries
             }
 
             reader.Close();
-        
+
             entities.Should().NotBeEmpty();
             entities.Count.Should().Be(9);
         }
-        
+
         [SetUp]
         public void SetUpConnection()
         {
@@ -92,14 +99,14 @@ namespace VirtualObjects.Tests.Queries
         private IList<TEntity> MapEntities<TEntity>(IQueryable<TEntity> queryable)
         {
             var reader = Execute(queryable);
-            return Diagnostic.Timed(() => (IList<TEntity>) entitiesMapper.MapEntities<TEntity>(reader));
+            return Diagnostic.Timed(() => (IList<TEntity>)entitiesMapper.MapEntities<TEntity>(reader));
         }
 
         [Test, Repeat(REPEAT)]
         public void Mapper_GetAllEmployees()
         {
             var query = Query<Employee>();
-            
+
             var entities = MapEntities(query);
 
             entities.Should().NotBeNull();
