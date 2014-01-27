@@ -124,6 +124,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The datetime member [{Name}] is not yet supported..
+        /// </summary>
+        public static string Translation_Datetime_Member_NotSupported {
+            get {
+                return ResourceManager.GetString("Translation_Datetime_Member_NotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The member {Member.Name} is not yet supported..
         /// </summary>
         public static string Translation_DateTimeMemberNotSupported {

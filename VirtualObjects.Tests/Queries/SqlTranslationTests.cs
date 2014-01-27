@@ -412,7 +412,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Datepart('dw', [T0].[BirthDate]) = @p0)")
             );
 
         }
@@ -426,7 +426,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Datepart('dy', [T0].[BirthDate]) = @p0)")
             );
 
         }
@@ -440,7 +440,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Datepart('h', [T0].[BirthDate]) = @p0)")
             );
 
         }
@@ -455,7 +455,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Datepart('m', [T0].[BirthDate]) = @p0)")
             );
 
         }
@@ -469,7 +469,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Day([T0].[BirthDate]) = @p0)")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Datepart('s', [T0].[BirthDate]) = @p0)")
             );
 
         }

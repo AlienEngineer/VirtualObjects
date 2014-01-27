@@ -135,5 +135,70 @@ namespace VirtualObjects.Queries.Formatters
         {
             return new string(')', i);
         }
+
+        private String FormatFunctionCall(String function, String columnName, int index)
+        {
+            var buffer = new StringBuffer();
+            buffer += function;
+            buffer += BeginWrap();
+            buffer += FormatFieldWithTable(columnName, index);
+            buffer += EndWrap();
+
+            return buffer;
+        }
+
+        private String FormatFunctionCall(String function, String parameters, String columnName, int index)
+        {
+            var buffer = new StringBuffer();
+            buffer += function;
+            buffer += BeginWrap();
+            buffer += parameters;
+            buffer += ", ";
+            buffer += FormatFieldWithTable(columnName, index);
+            buffer += EndWrap();
+
+            return buffer;
+        }
+
+        public string FormatDayOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Day", columnName, index);
+        }
+
+        public string FormatDayOfYearOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Datepart", "'dy'", columnName, index);
+        }
+
+        public string FormatDayOfWeekOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Datepart", "'dw'", columnName, index);
+        }
+
+        public string FormatSecondOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Datepart", "'s'", columnName, index);
+        }
+
+        public string FormatHourOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Datepart", "'h'", columnName, index);
+        }
+
+        public string FormatMinuteOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Datepart", "'m'", columnName, index);
+        }
+
+        public string FormatMonthOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Month", columnName, index);
+        }
+
+        public string FormatYearOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Year", columnName, index);
+        }
+
     }
 }

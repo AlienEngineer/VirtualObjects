@@ -43,5 +43,14 @@ namespace VirtualObjects.Queries.Formatters
         String BeginWrap();
 
         string EndWrap(int i = 1);
+        
+        String FormatDayOf(string columnName, int index);
+        String FormatDayOfYearOf(string columnName, int index);
+        String FormatDayOfWeekOf(string columnName, int index);
+        String FormatSecondOf(string columnName, int index);
+        String FormatHourOf(string columnName, int index);
+        String FormatMonthOf(string columnName, int index);
+        String FormatYearOf(string columnName, int index);
+        String FormatMinuteOf(string columnName, int index);
     }
 }

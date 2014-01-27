@@ -684,9 +684,11 @@ namespace VirtualObjects.Queries.Translation
 
         private QueryTranslator CompileMemberAccess(MemberExpression expression, Expression nextExpression, CompilerBuffer buffer)
         {
-            if ( nextExpression is ParameterExpression )
+            var parameterExpression = nextExpression as ParameterExpression;
+            
+            if (parameterExpression != null)
             {
-                return Indexer[(ParameterExpression)nextExpression];
+                return Indexer[parameterExpression];
             }
 
             var nextMember = nextExpression as MemberExpression;
@@ -696,6 +698,45 @@ namespace VirtualObjects.Queries.Translation
             var translator = CompileMemberAccess(nextMember, nextMember.Expression, buffer);
 
             var foreignKey = translator.EntityInfo[nextMember.Member.Name];
+
+            //
+            // Handle DateTime Member Access
+            //
+            if (nextMember.Member.Type() == typeof(DateTime))
+            {
+                switch (expression.Member.Name)
+                {
+                    case "Year": 
+                        buffer.Predicates += _formatter.FormatYearOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Month": 
+                        buffer.Predicates += _formatter.FormatMonthOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Day":
+                        buffer.Predicates += _formatter.FormatDayOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Hour": 
+                        buffer.Predicates += _formatter.FormatHourOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Minute":
+                        buffer.Predicates += _formatter.FormatMinuteOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Second": 
+                        buffer.Predicates += _formatter.FormatSecondOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "DayOfWeek": 
+                        buffer.Predicates += _formatter.FormatDayOfWeekOf(foreignKey.ColumnName, translator._index); 
+                        break;
+                    case "DayOfYear": 
+                        buffer.Predicates += _formatter.FormatDayOfYearOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    default: 
+                        throw new TranslationException(Errors.Translation_Datetime_Member_NotSupported, expression.Member);
+                }
+
+                return translator;
+            }
+
 
             //
             // Use the binded field on the predicate.

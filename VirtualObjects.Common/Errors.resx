@@ -156,4 +156,7 @@
   <data name="UnableToGetType" xml:space="preserve">
     <value>Unable to get the type from {NodeType} because it's not yet supported.</value>
   </data>
+  <data name="Translation_Datetime_Member_NotSupported">
+    <value xml:space="preserve">The datetime member [{Name}] is not yet supported.</value>
+  </data>
 </root>
