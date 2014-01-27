@@ -88,7 +88,25 @@ namespace VirtualObjects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to find the proper Entity Info for {ElementType.Name}..
+        ///   Looks up a localized string similar to Its not possible to get the value of field [{FieldName}]..
+        /// </summary>
+        public static string Mapping_UnableToGetValue {
+            get {
+                return ResourceManager.GetString("Mapping_UnableToGetValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Its not possible to set the field [{FieldName}] with the value [{Value}].
+        /// </summary>
+        public static string Mapping_UnableToSetValue {
+            get {
+                return ResourceManager.GetString("Mapping_UnableToSetValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find the proper Entity Info for {ElementTypeName}..
         /// </summary>
         public static string Query_EntityInfoNotFound {
             get {

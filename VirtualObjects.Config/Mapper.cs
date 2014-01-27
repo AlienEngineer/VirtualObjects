@@ -31,7 +31,7 @@ namespace VirtualObjects.Config
 
         public IEntityInfo Map(Type entityType)
         {
-            if ( entityType.IsFrameworkType() )
+            if ( entityType.IsFrameworkType() || entityType.IsDynamic() )
             {
                 return null;
             }
@@ -54,12 +54,63 @@ namespace VirtualObjects.Config
 
             foreach (var column in entityInfo.Columns)
             {
-                column.ForeignKey = GetForeignKey(column.Property);
+                column.ForeignKey = GetForeignKey(column.Property);    
             }
+
+
+            entityInfo.Columns = WrapColumns(entityInfo.Columns).ToList();
 
             return entityInfo;
         }
 
+        private IEnumerable<IEntityColumnInfo> WrapColumns(IEnumerable<IEntityColumnInfo> columns)
+        {
+            foreach (var column in columns)
+            {
+                if (column.ForeignKey != null)
+                {
+                    yield return WrapWithBoundColumn(column);
+                }
+                else if (column.Property.PropertyType == typeof (DateTime))
+                {
+                    yield return WrapWithDatetimeColumn(column);
+                }
+                else
+                {
+                    yield return column;    
+                }
+            }
+        }
+
+        private static IEntityColumnInfo WrapWithDatetimeColumn(IEntityColumnInfo column)
+        {
+            return new EntityDateTimeColumnInfo
+            {
+                Property = column.Property,
+                ColumnName =  column.ColumnName,
+                EntityInfo = column.EntityInfo,
+                ForeignKey = column.ForeignKey,
+                IsIdentity = column.IsIdentity,
+                IsKey = column.IsKey,
+                ValueGetter = column.ValueGetter,
+                ValueSetter = column.ValueSetter
+            };
+        }
+
+        private static IEntityColumnInfo WrapWithBoundColumn(IEntityColumnInfo column)
+        {
+            return new EntityBoundColumnInfo
+            {
+                Property = column.Property,
+                ColumnName = column.ColumnName,
+                EntityInfo = column.EntityInfo,
+                ForeignKey = column.ForeignKey,
+                IsIdentity = column.IsIdentity,
+                IsKey = column.IsKey,
+                ValueGetter = column.ValueGetter,
+                ValueSetter = column.ValueSetter
+            };
+        }
 
         #endregion
 
@@ -85,19 +136,25 @@ namespace VirtualObjects.Config
 
         private IEntityColumnInfo MapColumn(PropertyInfo propertyInfo, EntityInfo entityInfo)
         {
-            return new EntityColumnInfo
+            var columnName = GetName(propertyInfo);
+
+            var column = new EntityColumnInfo
             {
                 EntityInfo = entityInfo,
-                ColumnName = GetName(propertyInfo),
+                ColumnName = columnName,
                 IsKey = GetIsKey(propertyInfo),
                 IsIdentity = GetIsIdentity(propertyInfo),
-                Property = propertyInfo
+                Property = propertyInfo,
+                ValueGetter = MakeValueGetter(columnName, propertyInfo.DelegateForGetPropertyValue()),
+                ValueSetter = MakeValueSetter(columnName, propertyInfo.DelegateForSetPropertyValue())
             };
+
+            return column;
         }
 
         private IEntityColumnInfo GetForeignKey(PropertyInfo propertyInfo)
         {
-            if (propertyInfo.PropertyType.IsFrameworkType())
+            if ( propertyInfo.PropertyType.IsFrameworkType() )
             {
                 return null;
             }
@@ -108,11 +165,11 @@ namespace VirtualObjects.Config
                 .Select(keyGetter => keyGetter(propertyInfo))
                 .FirstOrDefault();
 
-            var foreignKey = String.IsNullOrEmpty(keyName) ? 
-                entity.KeyColumns.FirstOrDefault() : 
+            var foreignKey = String.IsNullOrEmpty(keyName) ?
+                entity.KeyColumns.FirstOrDefault() :
                 entity[keyName];
 
-            if (foreignKey == null && ColumnForeignKey.Any())
+            if ( foreignKey == null && ColumnForeignKey.Any() )
             {
                 throw new VirtualObjectsException(Errors.Mapping_UnableToGetForeignKey, propertyInfo);
             }
@@ -135,6 +192,47 @@ namespace VirtualObjects.Config
             return ColumnNameGetters
                 .Select(nameGetter => nameGetter(propertyInfo))
                 .FirstOrDefault(name => !String.IsNullOrEmpty(name));
+        }
+
+        private static Func<Object, Object> MakeValueGetter(String fieldName, MemberGetter getter)
+        {
+            return (entity) =>
+            {
+                try
+                {
+                    return getter(entity);
+                }
+                catch ( Exception ex )
+                {
+                    throw new UnableToSetOrGetTheFieldValueException(
+                        Errors.Mapping_UnableToGetValue,
+                        new
+                        {
+                            FieldName = fieldName
+                        }, ex);
+                }
+            };
+        }
+
+        private static Action<Object, Object> MakeValueSetter(String fieldName, MemberSetter setter)
+        {
+            return (entity, value) =>
+            {
+                try
+                {
+                    setter(entity, value);
+                }
+                catch ( Exception ex )
+                {
+                    throw new UnableToSetOrGetTheFieldValueException(
+                        Errors.Mapping_UnableToSetValue,
+                        new
+                        {
+                            FieldName = fieldName,
+                            Value = value
+                        }, ex);
+                }
+            };
         }
 
         #endregion

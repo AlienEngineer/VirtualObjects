@@ -50,8 +50,10 @@
       <DependentUpon>Errors.resx</DependentUpon>
     </Compile>
     <Compile Include="netfx\System\StringFormatWith.cs" />
+    <Compile Include="ReflectionExtensions.cs" />
     <Compile Include="StringBuffer.cs" />
     <Compile Include="TranslationException.cs" />
+    <Compile Include="UnableToSetOrGetTheFieldValueException.cs" />
     <Compile Include="UnsupportedException.cs" />
     <Compile Include="VirtualObjectsException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

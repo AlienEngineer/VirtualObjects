@@ -693,7 +693,7 @@ namespace VirtualObjects.Queries.Translation
             // This will happend when using join queries when the projection 
             // is a dynamic type and a Where clause is added using the dynamic type.
             //
-            while ( IsDynamic(ExtractAccessor(member).Type) )
+            while ( ExtractAccessor(member).Type.IsDynamic() )
             {
                 member = (MemberExpression)RemoveDynamicType(member);
             }
@@ -1035,7 +1035,7 @@ namespace VirtualObjects.Queries.Translation
 
         private Expression RemoveDynamicFromMemberAccess(Expression tmpExp)
         {
-            while ( tmpExp is MemberExpression && IsDynamic(ExtractAccessor(tmpExp).Type) )
+            while ( tmpExp is MemberExpression && ExtractAccessor(tmpExp).Type.IsDynamic() )
             {
                 tmpExp = RemoveDynamicType(tmpExp as MemberExpression);
             }
@@ -1123,6 +1123,7 @@ namespace VirtualObjects.Queries.Translation
             return Expression.Lambda(body, parameters);
         }
 
+/*
         private static Type ExtractType(Expression expression)
         {
             switch ( expression.NodeType )
@@ -1134,6 +1135,7 @@ namespace VirtualObjects.Queries.Translation
                     throw new UnsupportedException(Errors.UnableToGetType, expression);
             }
         }
+*/
 
         private static Expression ExtractAccessor(Expression expression)
         {
@@ -1196,6 +1198,7 @@ namespace VirtualObjects.Queries.Translation
             return expression.Arguments.Select(ParseValue).ToArray();
         }
 
+/*
         private string ExtractName(Expression expression, IEntityInfo entityInfo)
         {
             if ( expression is MemberExpression )
@@ -1205,6 +1208,7 @@ namespace VirtualObjects.Queries.Translation
 
             return null;
         }
+*/
 
         private string Merge(CompilerBuffer buffer)
         {
@@ -1237,38 +1241,48 @@ namespace VirtualObjects.Queries.Translation
                 EntityInfo = _mapper.Map(queryable.ElementType)
             };
 
+            if (queryable.ElementType.IsDynamic())
+            {
+                return buffer;
+            }
+
             EntityInfo = buffer.EntityInfo;
 
-            buffer.EntityInfo.RaiseIfNull(Errors.Query_EntityInfoNotFound, queryable);
+            buffer.EntityInfo.RaiseIfNull(
+                Errors.Query_EntityInfoNotFound, 
+                new { ElementTypeName = queryable.ElementType.Name });
+
             return buffer;
         }
 
         private IQueryable EvaluateQuery(IQueryable queryable)
         {
-            if ( IsDynamic(queryable.ElementType) )
+            if (!queryable.ElementType.IsDynamic())
             {
-                var callExpression = queryable.Expression as MethodCallExpression;
+                return queryable;
+            }
 
-                if ( callExpression != null )
+            var callExpression = queryable.Expression as MethodCallExpression;
+
+            if ( callExpression != null )
+            {
+                switch ( callExpression.Method.Name )
                 {
-                    switch ( callExpression.Method.Name )
-                    {
-                        case "Select":
-                            var lambda = ExtractLambda(callExpression.Arguments[1], false);
+                    case "Select":
+                        var lambda = ExtractLambda(callExpression.Arguments[1], false);
 
-                            //
-                            // Unit-Test: SqlTranslation_2Joins
-                            // In multiple join situations the First parameter is a dynamic type. 
-                            // so we ignore this fact for now. Will be resolved later on.
-                            //
-                            if ( IsDynamic(lambda.Parameters.First().Type) )
-                            {
-                                return queryable;
-                            }
+                        //
+                        // Unit-Test: SqlTranslation_2Joins
+                        // In multiple join situations the First parameter is a dynamic type. 
+                        // so we ignore this fact for now. Will be resolved later on.
+                        //
+                        if ( lambda.Parameters.First().Type.IsDynamic() )
+                        {
+                            return queryable;
+                        }
 
-                            Indexer[lambda.Parameters.First()] = this;
-                            return new QueryableStub(lambda.Parameters.First().Type, queryable.Expression);
-                    }
+                        Indexer[lambda.Parameters.First()] = this;
+                        return new QueryableStub(lambda.Parameters.First().Type, queryable.Expression);
                 }
             }
 
@@ -1287,12 +1301,7 @@ namespace VirtualObjects.Queries.Translation
         {
             buffer.Predicates = _predicates;
         }
-
-        public static bool IsDynamic(Type type)
-        {
-            return type.Name.StartsWith("<>");
-        }
-
+        
         #endregion
     }
 

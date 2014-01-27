@@ -16,5 +16,23 @@ namespace VirtualObjects.Config
         IEntityInfo EntityInfo { get;  }
         
         IEntityColumnInfo ForeignKey { get; set; }
+
+        string BindOrName { get; }
+
+        Func<Object, Object> ValueGetter { get; }
+
+        Action<Object, Object> ValueSetter { get; }
+
+        void SetValue(Object entity, Object value);
+
+        object GetValue(Object entity);
+
+        object GetFieldFinalValue(object entity);
+
+        void SetFieldFinalValue(object entity, object value);
+
+        IEntityColumnInfo GetLastBind();
+        
+        
     }
 }

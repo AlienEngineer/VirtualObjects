@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributeMappingBuilder.cs" />
+    <Compile Include="EntityBoundColumnInfo.cs" />
     <Compile Include="EntityColumnInfo.cs" />
+    <Compile Include="EntityDateTimeColumnInfo.cs" />
     <Compile Include="EntityInfo.cs" />
     <Compile Include="IEntityColumnInfo.cs" />
     <Compile Include="IEntityInfo.cs" />
@@ -59,9 +61,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="netfx\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\VirtualObjects.Common\VirtualObjects.Common.csproj">
       <Project>{C486DFB8-EAFC-4A11-9EE2-EE6F6A59BB38}</Project>

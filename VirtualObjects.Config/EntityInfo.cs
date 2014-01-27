@@ -42,5 +42,20 @@ namespace VirtualObjects.Config
             }
         }
 
+        public override string ToString()
+        {
+            if (Columns == null)
+            {
+                return EntityName + " => no columns";
+            }
+            else
+            {
+                return EntityName + " = {\n" +
+                       String.Join(",\n", Columns.Select(e => e.ToString())) +
+                       "} ";
+            }
+
+            return base.ToString();
+        }
     }
 }

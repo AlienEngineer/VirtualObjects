@@ -16,13 +16,23 @@ namespace VirtualObjects
         }
 
         public VirtualObjectsException(String message, Exception innerException)
-            : base(message, innerException)
+            : base(AppendInnerExceptionToMessage(message, innerException), innerException)
         {
         }
 
         public VirtualObjectsException(String message, Object src, Exception innerException)
-            : base(message.FormatWith(src), innerException)
+            : base(AppendInnerExceptionToMessage(message.FormatWith(src), innerException), innerException)
         {
+        }
+
+        private static String AppendInnerExceptionToMessage(String message, Exception innerException)
+        {
+            return innerException == null ? 
+                message :
+                string.Format("{0}\n{1}\n{2}", 
+                    message, 
+                    new string('=', 50),
+                    innerException.Message);
         }
     }
 }

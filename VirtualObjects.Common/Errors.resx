@@ -127,7 +127,7 @@
     <value>Unable to get the ForeignKey for field {Name} in type {PropertyType.Name}.</value>
   </data>
   <data name="Query_EntityInfoNotFound" xml:space="preserve">
-    <value>Unable to find the proper Entity Info for {ElementType.Name}.</value>
+    <value>Unable to find the proper Entity Info for {ElementTypeName}.</value>
   </data>
   <data name="Query_SourceNotSet" xml:space="preserve">
     <value>The source of the query was not set.</value>
@@ -156,13 +156,19 @@
   <data name="UnableToGetType" xml:space="preserve">
     <value>Unable to get the type from {NodeType} because it's not yet supported.</value>
   </data>
-  <data name="Translation_Datetime_Member_NotSupported">
-    <value xml:space="preserve">The datetime member [{Name}] is not yet supported.</value>
+  <data name="Translation_Datetime_Member_NotSupported" xml:space="preserve">
+    <value>The datetime member [{Name}] is not yet supported.</value>
   </data>
-  <data name="Translation_String_MemberAccess_NotSupported">
-    <value xml:space="preserve">The string member [{Name}] is not yet supported.</value>
+  <data name="Translation_String_MemberAccess_NotSupported" xml:space="preserve">
+    <value>The string member [{Name}] is not yet supported.</value>
   </data>
   <data name="Translation_MethodCall_NotSupported" xml:space="preserve">
     <value>[{MethodName}] Method translation not yet supported.</value>
+  </data>
+  <data name="Mapping_UnableToGetValue" xml:space="preserve">
+    <value>Its not possible to get the value of field [{FieldName}].</value>
+  </data>
+  <data name="Mapping_UnableToSetValue" xml:space="preserve">
+    <value>Its not possible to set the field [{FieldName}] with the value [{Value}]</value>
   </data>
 </root>
