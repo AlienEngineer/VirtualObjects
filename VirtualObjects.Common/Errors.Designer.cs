@@ -151,6 +151,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [{MethodName}] Method translation not yet supported..
+        /// </summary>
+        public static string Translation_MethodCall_NotSupported {
+            get {
+                return ResourceManager.GetString("Translation_MethodCall_NotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The method [{Method.Name}] used in a query is not yet supported..
         /// </summary>
         public static string Translation_MethodNotSupported {

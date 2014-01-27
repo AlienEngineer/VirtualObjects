@@ -858,6 +858,8 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
+            var methodCalled = String.Empty;
+
             var binary = expression as BinaryExpression;
             if ( binary == null )
             {
@@ -884,7 +886,15 @@ namespace VirtualObjects.Queries.Translation
 
                 if (callExpression != null)
                 {
-                    // TODO: see if this Equal is good enough
+                    //
+                    // To be checked below.
+                    methodCalled = callExpression.Method.Name;
+
+                    //
+                    // Remake the Binary expresion using the callExpression Object
+                    // that should hold the member access without the method call.
+                    // use the argument as right side.
+                    //
                     binary = Expression.MakeBinary(
                         ExpressionType.Equal, 
                         callExpression.Object, 
@@ -939,9 +949,21 @@ namespace VirtualObjects.Queries.Translation
                 }
                 else
                 {
-                    // TODO: Handle Like that might come with the binary.
-                    CompileNodeType(binary.NodeType, buffer);
-                    CompilePredicateExpression(right, buffer);
+
+                    if (methodCalled != String.Empty)
+                    {
+
+                        buffer.Predicates += _formatter.BeginMethodCall(methodCalled);
+
+                        CompilePredicateExpression(right, buffer);
+                        
+                        buffer.Predicates += _formatter.EndMethodCall(methodCalled);
+                    }
+                    else
+                    {
+                        CompileNodeType(binary.NodeType, buffer);
+                        CompilePredicateExpression(right, buffer);
+                    }
                 }
 
             }

@@ -162,4 +162,7 @@
   <data name="Translation_String_MemberAccess_NotSupported">
     <value xml:space="preserve">The string member [{Name}] is not yet supported.</value>
   </data>
+  <data name="Translation_MethodCall_NotSupported" xml:space="preserve">
+    <value>[{MethodName}] Method translation not yet supported.</value>
+  </data>
 </root>

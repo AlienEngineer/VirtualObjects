@@ -483,7 +483,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] like '' + @p0 + '%')")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] like @p0 + '%')")
             );
 
         }
@@ -497,7 +497,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] like '%' + @p0 + '')")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] like '%' + @p0)")
             );
 
         }

@@ -190,24 +190,38 @@ namespace VirtualObjects.Queries.Formatters
             return FormatFunctionCall("Datepart", "'m'", columnName, index);
         }
 
-        public string FormatStartsWith(string columnName, int index)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string FormatEndsWith(string columnName, int index)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string FormatContainsWith(string columnName, int index)
-        {
-            throw new NotImplementedException();
-        }
-
         public string FormatLengthWith(string columnName, int index)
         {
             return FormatFunctionCall("Len", columnName, index);
+        }
+
+        public string BeginMethodCall(string methodCalled)
+        {
+            switch (methodCalled)
+            {
+                case "StartsWith" :
+                    return " like ";
+                case "EndsWith":
+                case "Contains":
+                    return " like '%' + ";
+            }
+
+            throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled});
+        }
+
+        public string EndMethodCall(string methodCalled)
+        {
+            switch ( methodCalled )
+            {
+                case "StartsWith":
+                case "Contains": 
+                    return " + '%'";
+                case "EndsWith": 
+                    return String.Empty;
+                
+            }
+
+            throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });
         }
 
         public string FormatMonthOf(string columnName, int index)
