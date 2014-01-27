@@ -703,33 +703,12 @@ namespace VirtualObjects.Queries.Translation
 
             //
             // Handle DateTime Member Access
+            // Handle String MemberAccess
             //
-            if (CompileDateTimeMemberAccess(expression, buffer, nextMember, foreignKey, translator, out queryTranslator))
+            if (CompileDateTimeMemberAccess(expression, buffer, nextMember, foreignKey, translator, out queryTranslator) ||
+                CompileStringMemberAccess(expression, buffer, nextMember, foreignKey, translator, out queryTranslator))
             {
                 return queryTranslator;
-            }
-
-            if (nextMember.Member.Type() == typeof(String))
-            {
-                switch (expression.Member.Name)
-                {
-                    case "StartsWith":
-                        buffer.Predicates += _formatter.FormatStartsWith(foreignKey.ColumnName, translator._index);
-                        break;
-                    case "EndsWith":
-                        buffer.Predicates += _formatter.FormatEndsWith(foreignKey.ColumnName, translator._index); 
-                        break;
-                    case "Contains":
-                        buffer.Predicates += _formatter.FormatContainsWith(foreignKey.ColumnName, translator._index);
-                        break;
-                    case "Length":
-                        buffer.Predicates += _formatter.FormatLengthWith(foreignKey.ColumnName, translator._index); 
-                        break;
-                    default:
-                        throw new TranslationException(Errors.Translation_String_MemberAccess_NotSupported, expression.Member);
-                }
-
-                return translator;
             }
 
             //
@@ -754,6 +733,29 @@ namespace VirtualObjects.Queries.Translation
             buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.EntityInfo[expression.Member.Name].ColumnName, queryCompiler._index);
 
             return translator;
+        }
+
+        private bool CompileStringMemberAccess(MemberExpression expression, CompilerBuffer buffer, MemberExpression nextMember,
+            IEntityColumnInfo foreignKey, QueryTranslator translator, out QueryTranslator queryTranslator)
+        {
+            if (nextMember.Member.Type() == typeof (String))
+            {
+                switch (expression.Member.Name)
+                {
+                    case "Length":
+                        buffer.Predicates += _formatter.FormatLengthWith(foreignKey.ColumnName, translator._index);
+                        break;
+                    default:
+                        throw new TranslationException(Errors.Translation_String_MemberAccess_NotSupported, expression.Member);
+                }
+
+                {
+                    queryTranslator = translator;
+                    return true;
+                }
+            }
+            queryTranslator = null;
+            return false;
         }
 
         private bool CompileDateTimeMemberAccess(MemberExpression expression, CompilerBuffer buffer, MemberExpression nextMember,
@@ -865,7 +867,7 @@ namespace VirtualObjects.Queries.Translation
 
                 var callExpression = lambda.Body as MethodCallExpression;
 
-                if ( callExpression != null )
+                if ( callExpression != null && !(callExpression.Object is MemberExpression) )
                 {
                     if (parametersOnly)
                     {
@@ -880,7 +882,19 @@ namespace VirtualObjects.Queries.Translation
                     return;
                 }
 
-                binary = (BinaryExpression)lambda.Body;
+                if (callExpression != null)
+                {
+                    // TODO: see if this Equal is good enough
+                    binary = Expression.MakeBinary(
+                        ExpressionType.Equal, 
+                        callExpression.Object, 
+                        callExpression.Arguments.First());
+                }
+                else
+                {
+                    binary = (BinaryExpression)lambda.Body;    
+                }
+                
             }
 
 
@@ -925,6 +939,7 @@ namespace VirtualObjects.Queries.Translation
                 }
                 else
                 {
+                    // TODO: Handle Like that might come with the binary.
                     CompileNodeType(binary.NodeType, buffer);
                     CompilePredicateExpression(right, buffer);
                 }
