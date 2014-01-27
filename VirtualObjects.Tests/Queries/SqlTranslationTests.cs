@@ -517,6 +517,20 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(REPEAT)]
+        public void SqlTranslation_String_Predicate_Contains_Field()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.Contains(e.City))
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] like '%' + [T0].[City] + '%')")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
         public void SqlTranslation_String_Predicate_Length()
         {
             var query = Query<Employee>()
