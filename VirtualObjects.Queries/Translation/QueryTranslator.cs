@@ -20,9 +20,12 @@ namespace VirtualObjects.Queries.Translation
             public StringBuffer From { get; set; }
             public IEntityInfo EntityInfo { get; set; }
             public StringBuffer Predicates { get; set; }
+            public StringBuffer OrderBy { get; set; }
+
             public int Parenthesis { get; set; }
             public int Take { get; set; }
             public int Skip { get; set; }
+
         }
 
         class ParameterEquality : IEqualityComparer<ParameterExpression>
@@ -154,7 +157,7 @@ namespace VirtualObjects.Queries.Translation
             // Compiles the ExpressionTree
             //
             CompileExpression(queryable.Expression, buffer, true);
-            
+
             return new QueryInfo
             {
                 Parameters = Parameters
@@ -189,7 +192,7 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileExpression(Expression expression, CompilerBuffer buffer, bool parametersOnly = false)
         {
-            if (ShouldReturn)
+            if ( ShouldReturn )
             {
                 return;
             }
@@ -226,7 +229,7 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            if ( parametersOnly && expression.Method.Name == "Where")
+            if ( parametersOnly && expression.Method.Name == "Where" )
             {
                 CompileBinaryExpression(expression.Arguments[1], buffer, parametersOnly);
                 return;
@@ -260,11 +263,40 @@ namespace VirtualObjects.Queries.Translation
                     CompileBinaryExpression(expression.Arguments[1], buffer);
                     break;
 
-                case "OrderBy": break;
+                case "ThenBy":
+                case "OrderBy":
+                    CompileOrderBy(expression.Arguments[1], buffer);
+                    break;
+                case "OrderByDescending":
+                    CompileOrderByDescending(expression.Arguments[1], buffer);
+                    break;
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
 
+        }
+
+        private void CompileOrderByDescending(Expression expression, CompilerBuffer buffer)
+        {
+            CompileOrderBy(expression, buffer);
+            buffer.OrderBy += " " + _formatter.Descending;
+        }
+
+        private void CompileOrderBy(Expression expression, CompilerBuffer buffer)
+        {
+            if (String.IsNullOrEmpty(buffer.OrderBy))
+            {
+                buffer.OrderBy += " " + _formatter.OrderBy + " ";
+            }
+            else
+            {
+                buffer.OrderBy += _formatter.FieldSeparator;
+            }
+
+            var lambda = ExtractLambda(expression, false);
+            Indexer[lambda.Parameters.First()] = this;
+
+            buffer.OrderBy += CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
         }
 
         private void CompileJoin(MethodCallExpression expression, CompilerBuffer buffer)
@@ -685,8 +717,8 @@ namespace VirtualObjects.Queries.Translation
         private QueryTranslator CompileMemberAccess(MemberExpression expression, Expression nextExpression, CompilerBuffer buffer)
         {
             var parameterExpression = nextExpression as ParameterExpression;
-            
-            if (parameterExpression != null)
+
+            if ( parameterExpression != null )
             {
                 return Indexer[parameterExpression];
             }
@@ -705,8 +737,8 @@ namespace VirtualObjects.Queries.Translation
             // Handle DateTime Member Access
             // Handle String MemberAccess
             //
-            if (CompileDateTimeMemberAccess(expression, buffer, nextMember, foreignKey, translator, out queryTranslator) ||
-                CompileStringMemberAccess(expression, buffer, nextMember, foreignKey, translator, out queryTranslator))
+            if ( CompileDateTimeMemberAccess(expression, buffer, nextMember, foreignKey, translator, out queryTranslator) ||
+                CompileStringMemberAccess(expression, buffer, nextMember, foreignKey, translator, out queryTranslator) )
             {
                 return queryTranslator;
             }
@@ -738,9 +770,9 @@ namespace VirtualObjects.Queries.Translation
         private bool CompileStringMemberAccess(MemberExpression expression, CompilerBuffer buffer, MemberExpression nextMember,
             IEntityColumnInfo foreignKey, QueryTranslator translator, out QueryTranslator queryTranslator)
         {
-            if (nextMember.Member.Type() == typeof (String))
+            if ( nextMember.Member.Type() == typeof(String) )
             {
-                switch (expression.Member.Name)
+                switch ( expression.Member.Name )
                 {
                     case "Length":
                         buffer.Predicates += _formatter.FormatLengthWith(foreignKey.ColumnName, translator._index);
@@ -762,9 +794,9 @@ namespace VirtualObjects.Queries.Translation
                                                  IEntityColumnInfo foreignKey, QueryTranslator translator,
                                                  out QueryTranslator queryTranslator)
         {
-            if (nextMember.Member.Type() == typeof (DateTime))
+            if ( nextMember.Member.Type() == typeof(DateTime) )
             {
-                switch (expression.Member.Name)
+                switch ( expression.Member.Name )
                 {
                     case "Year":
                         buffer.Predicates += _formatter.FormatYearOf(foreignKey.ColumnName, translator._index);
@@ -871,7 +903,7 @@ namespace VirtualObjects.Queries.Translation
 
                 if ( callExpression != null && !(callExpression.Object is MemberExpression) )
                 {
-                    if (parametersOnly)
+                    if ( parametersOnly )
                     {
                         return;
                     }
@@ -884,7 +916,7 @@ namespace VirtualObjects.Queries.Translation
                     return;
                 }
 
-                if (callExpression != null)
+                if ( callExpression != null )
                 {
                     //
                     // To be checked below.
@@ -896,15 +928,15 @@ namespace VirtualObjects.Queries.Translation
                     // use the argument as right side.
                     //
                     binary = Expression.MakeBinary(
-                        ExpressionType.Equal, 
-                        callExpression.Object, 
+                        ExpressionType.Equal,
+                        callExpression.Object,
                         callExpression.Arguments.First());
                 }
                 else
                 {
-                    binary = (BinaryExpression)lambda.Body;    
+                    binary = (BinaryExpression)lambda.Body;
                 }
-                
+
             }
 
 
@@ -950,13 +982,13 @@ namespace VirtualObjects.Queries.Translation
                 else
                 {
 
-                    if (methodCalled != String.Empty)
+                    if ( methodCalled != String.Empty )
                     {
 
                         buffer.Predicates += _formatter.BeginMethodCall(methodCalled);
 
                         CompilePredicateExpression(right, buffer);
-                        
+
                         buffer.Predicates += _formatter.EndMethodCall(methodCalled);
                     }
                     else
@@ -1023,12 +1055,22 @@ namespace VirtualObjects.Queries.Translation
             return Expression.MakeMemberAccess(expMember, member.Member);
         }
 
-        private Boolean HasManyMemberAccess(Expression expression)
+        private static Boolean HasManyMemberAccess(Expression expression)
         {
-
             var member = expression as MemberExpression;
 
+            if ( member != null && IsStringMember(member, member.Expression as MemberExpression) )
+            {
+                return HasManyMemberAccess(member.Expression);
+            }
+
             return member != null && member.Expression is MemberExpression;
+        }
+
+        private static bool IsStringMember(MemberExpression member, MemberExpression next)
+        {
+            return next != null && next.Member.Type() == typeof(String) && 
+                member.Member.Name == "Length";
         }
 
         private QueryTranslator CreateNewTranslator()
@@ -1170,6 +1212,7 @@ namespace VirtualObjects.Queries.Translation
                 .Append(_formatter.Select + " ").Append(buffer.Projection)
                 .Append(" " + _formatter.From + " ").Append(buffer.From)
                 .Append(buffer.Predicates)
+                .Append(buffer.OrderBy)
                 .ToString();
         }
 
@@ -1212,13 +1255,13 @@ namespace VirtualObjects.Queries.Translation
                     {
                         case "Select":
                             var lambda = ExtractLambda(callExpression.Arguments[1], false);
-                            
+
                             //
                             // Unit-Test: SqlTranslation_2Joins
                             // In multiple join situations the First parameter is a dynamic type. 
                             // so we ignore this fact for now. Will be resolved later on.
                             //
-                            if (IsDynamic(lambda.Parameters.First().Type))
+                            if ( IsDynamic(lambda.Parameters.First().Type) )
                             {
                                 return queryable;
                             }

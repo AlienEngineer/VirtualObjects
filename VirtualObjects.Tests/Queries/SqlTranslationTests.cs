@@ -530,6 +530,123 @@ namespace VirtualObjects.Tests.Queries
 
         }
 
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_String_Predicate_Length_Between_Members()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.Length == e.FirstName.Length)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Len([T0].[LastName]) = Len([T0].[FirstName]))")
+            );
+
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_OrderBy_EmployeeId()
+        {
+            var query = Query<Employee>()
+                .OrderBy(e => e.EmployeeId)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By [T0].[EmployeeId]")
+            );
+
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_OrderBy_EmployeeId_ThenBy_LastName()
+        {
+            var query = Query<Employee>()
+                .OrderBy(e => e.EmployeeId).ThenBy(e => e.LastName)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By [T0].[EmployeeId], [T0].[LastName]")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_OrderBy_EmployeeId_And_LastName()
+        {
+            var query = Query<Employee>()
+                .OrderBy(e => e.EmployeeId).OrderBy(e => e.LastName)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By [T0].[EmployeeId], [T0].[LastName]")
+            );
+
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_OrderBy_EmployeeId_And_LastName_Desc()
+        {
+            var query = Query<Employee>()
+                .OrderBy(e => e.EmployeeId).OrderByDescending(e => e.LastName)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By [T0].[EmployeeId], [T0].[LastName] Desc")
+            );
+
+        }
+
+
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_OrderBy_EmployeeId_Desc_And_LastName()
+        {
+            var query = Query<Employee>()
+                .OrderByDescending(e => e.EmployeeId).OrderBy(e => e.LastName)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By [T0].[EmployeeId] Desc, [T0].[LastName]")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_OrderBy_EmployeeId_Desc_And_LastName_Desc()
+        {
+            var query = Query<Employee>()
+                .OrderByDescending(e => e.EmployeeId).OrderByDescending(e => e.LastName)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By [T0].[EmployeeId] Desc, [T0].[LastName] Desc")
+            );
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_OrderBy_EmployeeId_Desc()
+        {
+            var query = Query<Employee>()
+                .OrderByDescending(e => e.EmployeeId)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By [T0].[EmployeeId] Desc")
+            );
+
+        }
+
         /// <summary>
         /// 
         /// Sql translation for a simple predicate

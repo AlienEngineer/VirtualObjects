@@ -23,6 +23,8 @@ namespace VirtualObjects.Queries.Formatters
             IsNull = "Is Null";
             IsNotNull = "Is Not Null";
             InnerJoin = "Inner Join";
+            OrderBy = "Order By";
+            Descending = "Desc";
         }
 
         private static string Wrap(string name)
@@ -44,6 +46,8 @@ namespace VirtualObjects.Queries.Formatters
         public string On { get; private set; }
         public string IsNull { get; private set; }
         public string IsNotNull { get; private set; }
+        public string OrderBy { get; private set; }
+        public string Descending { get; private set; }
 
         public String FormatField(String name)
         {
