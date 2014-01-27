@@ -160,6 +160,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The string member [{Name}] is not yet supported..
+        /// </summary>
+        public static string Translation_String_MemberAccess_NotSupported {
+            get {
+                return ResourceManager.GetString("Translation_String_MemberAccess_NotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to extract lambda from expression..
         /// </summary>
         public static string Translation_UnableToExtractLambda {

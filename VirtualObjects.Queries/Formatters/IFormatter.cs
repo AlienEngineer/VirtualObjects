@@ -52,5 +52,9 @@ namespace VirtualObjects.Queries.Formatters
         String FormatMonthOf(string columnName, int index);
         String FormatYearOf(string columnName, int index);
         String FormatMinuteOf(string columnName, int index);
+        String FormatStartsWith(string columnName, int index);
+        String FormatEndsWith(string columnName, int index);
+        String FormatContainsWith(string columnName, int index);
+        String FormatLengthWith(string columnName, int index);
     }
 }

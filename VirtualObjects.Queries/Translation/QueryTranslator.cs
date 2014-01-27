@@ -699,44 +699,38 @@ namespace VirtualObjects.Queries.Translation
 
             var foreignKey = translator.EntityInfo[nextMember.Member.Name];
 
+            QueryTranslator queryTranslator;
+
             //
             // Handle DateTime Member Access
             //
-            if (nextMember.Member.Type() == typeof(DateTime))
+            if (CompileDateTimeMemberAccess(expression, buffer, nextMember, foreignKey, translator, out queryTranslator))
+            {
+                return queryTranslator;
+            }
+
+            if (nextMember.Member.Type() == typeof(String))
             {
                 switch (expression.Member.Name)
                 {
-                    case "Year": 
-                        buffer.Predicates += _formatter.FormatYearOf(foreignKey.ColumnName, translator._index);
+                    case "StartsWith":
+                        buffer.Predicates += _formatter.FormatStartsWith(foreignKey.ColumnName, translator._index);
                         break;
-                    case "Month": 
-                        buffer.Predicates += _formatter.FormatMonthOf(foreignKey.ColumnName, translator._index);
+                    case "EndsWith":
+                        buffer.Predicates += _formatter.FormatEndsWith(foreignKey.ColumnName, translator._index); 
                         break;
-                    case "Day":
-                        buffer.Predicates += _formatter.FormatDayOf(foreignKey.ColumnName, translator._index);
+                    case "Contains":
+                        buffer.Predicates += _formatter.FormatContainsWith(foreignKey.ColumnName, translator._index);
                         break;
-                    case "Hour": 
-                        buffer.Predicates += _formatter.FormatHourOf(foreignKey.ColumnName, translator._index);
+                    case "Length":
+                        buffer.Predicates += _formatter.FormatLengthWith(foreignKey.ColumnName, translator._index); 
                         break;
-                    case "Minute":
-                        buffer.Predicates += _formatter.FormatMinuteOf(foreignKey.ColumnName, translator._index);
-                        break;
-                    case "Second": 
-                        buffer.Predicates += _formatter.FormatSecondOf(foreignKey.ColumnName, translator._index);
-                        break;
-                    case "DayOfWeek": 
-                        buffer.Predicates += _formatter.FormatDayOfWeekOf(foreignKey.ColumnName, translator._index); 
-                        break;
-                    case "DayOfYear": 
-                        buffer.Predicates += _formatter.FormatDayOfYearOf(foreignKey.ColumnName, translator._index);
-                        break;
-                    default: 
-                        throw new TranslationException(Errors.Translation_Datetime_Member_NotSupported, expression.Member);
+                    default:
+                        throw new TranslationException(Errors.Translation_String_MemberAccess_NotSupported, expression.Member);
                 }
 
                 return translator;
             }
-
 
             //
             // Use the binded field on the predicate.
@@ -760,6 +754,53 @@ namespace VirtualObjects.Queries.Translation
             buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.EntityInfo[expression.Member.Name].ColumnName, queryCompiler._index);
 
             return translator;
+        }
+
+        private bool CompileDateTimeMemberAccess(MemberExpression expression, CompilerBuffer buffer, MemberExpression nextMember,
+                                                 IEntityColumnInfo foreignKey, QueryTranslator translator,
+                                                 out QueryTranslator queryTranslator)
+        {
+            if (nextMember.Member.Type() == typeof (DateTime))
+            {
+                switch (expression.Member.Name)
+                {
+                    case "Year":
+                        buffer.Predicates += _formatter.FormatYearOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Month":
+                        buffer.Predicates += _formatter.FormatMonthOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Day":
+                        buffer.Predicates += _formatter.FormatDayOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Hour":
+                        buffer.Predicates += _formatter.FormatHourOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Minute":
+                        buffer.Predicates += _formatter.FormatMinuteOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Second":
+                        buffer.Predicates += _formatter.FormatSecondOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "DayOfWeek":
+                        buffer.Predicates += _formatter.FormatDayOfWeekOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "DayOfYear":
+                        buffer.Predicates += _formatter.FormatDayOfYearOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    default:
+                        throw new TranslationException(Errors.Translation_Datetime_Member_NotSupported, expression.Member);
+                }
+
+                {
+                    queryTranslator = translator;
+                    return true;
+                }
+            }
+
+            queryTranslator = null;
+
+            return false;
         }
 
         private bool CompileIfDatetime(Expression expression, CompilerBuffer buffer)

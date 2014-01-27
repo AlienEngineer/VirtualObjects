@@ -159,4 +159,7 @@
   <data name="Translation_Datetime_Member_NotSupported">
     <value xml:space="preserve">The datetime member [{Name}] is not yet supported.</value>
   </data>
+  <data name="Translation_String_MemberAccess_NotSupported">
+    <value xml:space="preserve">The string member [{Name}] is not yet supported.</value>
+  </data>
 </root>

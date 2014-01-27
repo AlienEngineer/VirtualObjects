@@ -190,6 +190,26 @@ namespace VirtualObjects.Queries.Formatters
             return FormatFunctionCall("Datepart", "'m'", columnName, index);
         }
 
+        public string FormatStartsWith(string columnName, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string FormatEndsWith(string columnName, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string FormatContainsWith(string columnName, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string FormatLengthWith(string columnName, int index)
+        {
+            return FormatFunctionCall("Len", columnName, index);
+        }
+
         public string FormatMonthOf(string columnName, int index)
         {
             return FormatFunctionCall("Month", columnName, index);
