@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using VirtualObjects.Config;
-using VirtualObjects.Queries;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Translation;
 using VirtualObjects.Tests.Config;
@@ -42,6 +42,8 @@ namespace VirtualObjects.Tests
 
             var cmd = Connection.CreateCommand();
             cmd.CommandText = queryInfo.CommandText;
+
+            Trace.WriteLine("Query: " + cmd.CommandText);
 
             queryInfo.Parameters
                 .Select(e => new { e, Parameter = cmd.CreateParameter()})
