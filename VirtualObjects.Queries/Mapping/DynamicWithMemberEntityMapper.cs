@@ -10,7 +10,7 @@ namespace VirtualObjects.Queries.Mapping
             var properties = context.OutputType.Fields();
 
             return context.OutputType.IsDynamic() &&
-                   properties.Any(e => !TypeExtensions.IsFrameworkType(e.FieldType)) &&
+                   properties.Any(e => !e.FieldType.IsFrameworkType()) &&
                    properties.Any(e => e.FieldType.IsFrameworkType());
         }
 
