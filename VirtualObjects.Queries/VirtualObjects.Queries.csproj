@@ -47,6 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConcurrentReader\BlockingDataReader.cs" />
+    <Compile Include="ConcurrentReader\ConcurrentDataReader.cs" />
+    <Compile Include="ConcurrentReader\ConcurrentDataReaderBase.cs" />
+    <Compile Include="ConcurrentReader\DataRow.cs" />
+    <Compile Include="ConcurrentReader\IConcurrentDataReader.cs" />
+    <Compile Include="ConcurrentReader\Tuple.cs" />
     <Compile Include="Mapping\DynamicEntityMapper.cs" />
     <Compile Include="Mapping\DynamicTypeEntityMapper.cs" />
     <Compile Include="IEntityMapper.cs" />
@@ -55,6 +61,7 @@
     <Compile Include="Mapping\DynamicWithMemberEntityMapper.cs" />
     <Compile Include="Mapping\OffsetedReader.cs" />
     <Compile Include="Mapping\OrderedEntityMapper.cs" />
+    <Compile Include="ReaderExtensions.cs" />
     <Compile Include="Translation\CachingTranslator.cs" />
     <Compile Include="Translation\QueryTranslator.cs" />
     <Compile Include="Formatters\IFormatter.cs" />

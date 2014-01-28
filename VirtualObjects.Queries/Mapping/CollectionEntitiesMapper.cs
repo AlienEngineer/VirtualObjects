@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using VirtualObjects.Config;
+using VirtualObjects.Queries.ConcurrentReader;
 
 namespace VirtualObjects.Queries.Mapping
 {
@@ -20,6 +21,8 @@ namespace VirtualObjects.Queries.Mapping
 
         public IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader, IQueryInfo queryInfo)
         {
+            // reader = new BlockingDataReader(reader);
+
             var result = new List<TEntity>();
             var context = new MapperContext
             {
@@ -47,6 +50,8 @@ namespace VirtualObjects.Queries.Mapping
             {
                 result.Add((TEntity)entityMapper.MapEntity(reader, context.CreateEntity(), context));
             }
+
+            reader.Close();
 
             return result;
         }
