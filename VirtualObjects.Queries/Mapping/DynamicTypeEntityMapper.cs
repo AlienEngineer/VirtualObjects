@@ -8,7 +8,7 @@ namespace VirtualObjects.Queries.Mapping
     class DynamicTypeEntityMapper : IEntityMapper
     {
 
-        public object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
+        public virtual object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
         {
             var i = 0;
             foreach ( var setter in mapContext.OutputTypeSetters )
@@ -19,15 +19,15 @@ namespace VirtualObjects.Queries.Mapping
             return buffer;
         }
 
-        public bool CanMapEntity(MapperContext context)
+        public virtual bool CanMapEntity(MapperContext context)
         {
-            var properties = context.OutputType.GetProperties();
+            var properties = context.OutputType.Fields();
 
             return context.OutputType.IsDynamic() &&
-                properties.All(e => e.PropertyType.IsFrameworkType());
+                properties.All(e => e.FieldType.IsFrameworkType());
         }
 
-        public void PrepareMapper(MapperContext context)
+        public virtual void PrepareMapper(MapperContext context)
         {
             context.OutputTypeSetters = context.OutputType
                 .Fields()

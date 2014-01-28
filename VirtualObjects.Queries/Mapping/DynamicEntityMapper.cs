@@ -45,15 +45,15 @@ namespace VirtualObjects.Queries.Mapping
 
             var outputType = context.OutputType;
 
-            context.PropertyGetters = outputType.Properties()
-                .Select(e => e.DelegateForGetPropertyValue())
+            context.PropertyGetters = outputType.Fields()
+                .Select(e => e.DelegateForGetFieldValue())
                 .ToList();
 
-            context.Contexts = outputType.Properties()
+            context.Contexts = outputType.Fields()
                 .Select(e => new MapperContext
                 {
-                    EntityInfo = context.Mapper.Map(e.PropertyType),
-                    OutputType = e.PropertyType,
+                    EntityInfo = context.Mapper.Map(e.FieldType),
+                    OutputType = e.FieldType,
                     EntityProvider = context.EntityProvider,
                     Mapper = context.Mapper
                 })

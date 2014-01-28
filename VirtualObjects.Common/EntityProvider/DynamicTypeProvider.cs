@@ -17,7 +17,13 @@ namespace VirtualObjects.EntityProvider
         public void PrepareProvider(Type outputType)
         {
             _type = outputType;
-            _arguments = GetArguments(_type);
+            
+            // 
+            // Store the arguments with the possibility to create entity of reference type.
+            // a reference type is detected by not beeing null.
+            //
+            _arguments = GetArguments(_type)
+                .Select(e => e != null ? MainProvider.CreateEntity(e.GetType()) : e);
         }
 
         public object CreateEntity(Type type)
