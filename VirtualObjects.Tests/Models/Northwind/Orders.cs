@@ -9,10 +9,10 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Db.Identity]
         public int OrderId { get; set; }
 
-        [Db.Column("CustomerId")]
+        [Db.Association("CustomerId", "CustomerId")]
         public virtual Customers Customer { get; set; }
 
-        [Db.Column("EmployeeId")]
+        [Db.Association("EmployeeId", "EmployeeId")]
         public virtual Employee Employee { get; set; }
 
         public DateTime OrderDate { get; set; }
