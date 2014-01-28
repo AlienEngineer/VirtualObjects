@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using System.Security.Policy;
 using Fasterflect;
 
 namespace VirtualObjects.Config
@@ -57,8 +58,11 @@ namespace VirtualObjects.Config
                 column.ForeignKey = GetForeignKey(column.Property);    
             }
 
-
             entityInfo.Columns = WrapColumns(entityInfo.Columns).ToList();
+
+            entityInfo.KeyHashCode = (obj) => entityInfo
+                .KeyColumns
+                .Sum(key => key.GetFieldFinalValue(obj).GetHashCode());
 
             return entityInfo;
         }

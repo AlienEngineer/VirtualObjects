@@ -222,6 +222,23 @@ namespace VirtualObjects.Tests.Queries
                 .Should().BeFalse();
 
         }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Mapper_GetAllOrders_Joined_Query_CustomProjection_With_ForeignKeyField_in_join()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order
+                        join e in Query<Employee>() on o.Employee equals e
+                        select new { o.OrderId, od.UnitPrice, od.Quantity, o.ShipName, Employee = e.FirstName };
+
+            var entities = MapEntities(query);
+
+            entities.Should().NotBeNull();
+            entities.Should().NotBeEmpty();
+            entities.Count().Should().Be(2155);
+            
+        }
     }
 
 }

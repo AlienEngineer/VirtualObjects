@@ -17,5 +17,6 @@ namespace VirtualObjects.Config
         Type EntityType { get; }
         
         IEntityColumnInfo GetFieldAssociatedWith(string name);
+        int GetKeyHashCode(Object obj);
     }
 }

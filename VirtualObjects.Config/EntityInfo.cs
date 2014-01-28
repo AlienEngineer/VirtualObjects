@@ -24,7 +24,13 @@ namespace VirtualObjects.Config
         public IList<IEntityColumnInfo> KeyColumns { get; set; }
         
         public Type EntityType { get; set; }
-        
+        public Func<Object, int> KeyHashCode { get; set; }
+
+        public int GetKeyHashCode(Object obj)
+        {
+            return KeyHashCode(obj);
+        }
+
         public IEntityColumnInfo GetFieldAssociatedWith(string name)
         {
             return Columns

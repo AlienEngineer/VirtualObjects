@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Fasterflect;
-using VirtualObjects.Config;
 
 namespace VirtualObjects.Queries.Mapping
 {
+    /// <summary>
+    /// TODO: This type of mapping can be quite slow. A way to improve this is cache the entities as they are mapped, and reuse them.
+    /// </summary>
     class DynamicWithMemberEntityMapper : DynamicTypeEntityMapper
     {
+
         public override bool CanMapEntity(MapperContext context)
         {
             var properties = context.OutputType.Fields();
