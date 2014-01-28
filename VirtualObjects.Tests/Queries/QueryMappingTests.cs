@@ -18,21 +18,26 @@ namespace VirtualObjects.Tests.Queries
     /// 
     /// Author: Sérgio
     /// </summary>
-    [TestFixture]
+    [TestFixture, Category("Entity Mapping")]
     public class QueryMappingTests : UtilityBelt
     {
-        readonly IEntitiesMapper entitiesMapper;
+        readonly IEntitiesMapper _entitiesMapper;
 
         public QueryMappingTests()
         {
-            entitiesMapper = new CollectionEntityMapper(Mapper,
+            _entitiesMapper = new CollectionEntityMapper(Mapper,
                 new EntityProvider.EntityProviderComposite(
                     new List<IEntityProvider>
                         {
                             new EntityProvider.EntityProvider(),
                             new EntityProvider.DynamicTypeProvider()
                         }
-                    ));
+                    ),
+                new List<IEntityMapper>
+                {
+                    new OrderedEntityMapper(),
+                    new DynamicTypeEntityMapper()
+                });
         }
 
         int _count;
@@ -99,7 +104,7 @@ namespace VirtualObjects.Tests.Queries
         private IList<TEntity> MapEntities<TEntity>(IQueryable<TEntity> queryable)
         {
             var reader = Execute(queryable);
-            return Diagnostic.Timed(() => (IList<TEntity>)entitiesMapper.MapEntities<TEntity>(reader));
+            return Diagnostic.Timed(() => (IList<TEntity>)_entitiesMapper.MapEntities<TEntity>(reader));
         }
 
         [Test, Repeat(REPEAT)]

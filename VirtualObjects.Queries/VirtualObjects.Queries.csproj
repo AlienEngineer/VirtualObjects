@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mapping\DynamicTypeEntityMapper.cs" />
     <Compile Include="IEntityMapper.cs" />
     <Compile Include="Mapping\CollectionEntityMapper.cs" />
     <Compile Include="IEntitiesMapper.cs" />

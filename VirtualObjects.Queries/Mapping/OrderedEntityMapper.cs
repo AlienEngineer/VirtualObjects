@@ -19,5 +19,10 @@ namespace VirtualObjects.Queries.Mapping
         {
             return context.EntityInfo != null && context.OutputType == context.EntityInfo.EntityType;
         }
+
+        public void PrepareMapper(MapperContext context)
+        {
+            // no prepare needed.
+        }
     }
 }

@@ -20,5 +20,10 @@ namespace VirtualObjects.EntityProvider
         }
 
         public IEntityProvider MainProvider { get; set; }
+
+        public void PrepareProvider(Type outputType)
+        {
+            // No prepare needed.
+        }
     }
 }

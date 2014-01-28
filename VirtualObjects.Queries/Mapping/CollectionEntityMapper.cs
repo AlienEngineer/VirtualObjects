@@ -9,14 +9,13 @@ namespace VirtualObjects.Queries.Mapping
     {
         private readonly IMapper _mapper;
         private readonly IEntityProvider _entityProvider;
-        
-        private readonly IEnumerable<IEntityMapper> entityMappers; 
+        private readonly IEnumerable<IEntityMapper> _entityMappers; 
 
         public CollectionEntityMapper(IMapper mapper, IEntityProvider entityProvider, IEnumerable<IEntityMapper> entityMappers)
         {
             _mapper = mapper;
             _entityProvider = entityProvider;
-            this.entityMappers = entityMappers;
+            _entityMappers = entityMappers;
         }
 
         public IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader)
@@ -29,12 +28,15 @@ namespace VirtualObjects.Queries.Mapping
                 EntityProvider = _entityProvider
             };
 
-            var entityMapper = entityMappers.First(e => e.CanMapEntity(context));
+            var entityMapper = _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));
 
             if (entityMapper == null)
             {
                 throw new MappingException(Errors.Mapping_OutputTypeNotSupported, context);
             }
+
+            _entityProvider.PrepareProvider(context.OutputType);
+            entityMapper.PrepareMapper(context);
 
             while(reader.Read())
             {
