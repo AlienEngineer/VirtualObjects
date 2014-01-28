@@ -59,6 +59,7 @@
     <Compile Include="Mapping\CollectionEntitiesMapper.cs" />
     <Compile Include="IEntitiesMapper.cs" />
     <Compile Include="Mapping\DynamicWithMemberEntityMapper.cs" />
+    <Compile Include="Mapping\GroupedDynamicEntityMapper.cs" />
     <Compile Include="Mapping\OffsetedReader.cs" />
     <Compile Include="Mapping\OrderedEntityMapper.cs" />
     <Compile Include="ReaderExtensions.cs" />

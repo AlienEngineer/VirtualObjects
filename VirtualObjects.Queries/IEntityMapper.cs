@@ -40,7 +40,7 @@ namespace VirtualObjects.Queries
         public Type OutputType { get; set; }
         public IEntityInfo EntityInfo { get; set; }
         public IEntityProvider EntityProvider { get; set; }
-        public IEnumerable<MemberSetter> OutputTypeSetters { get; set; }
+        public IList<MemberSetter> OutputTypeSetters { get; set; }
         public IMapper Mapper { get; set; }
         public List<MapperContext> Contexts { get; set; }
         public List<MemberGetter> PropertyGetters { get; set; }

@@ -36,7 +36,8 @@ namespace VirtualObjects.Tests.Queries
                     new OrderedEntityMapper(),
                     new DynamicTypeEntityMapper(),
                     new DynamicEntityMapper(),
-                    new DynamicWithMemberEntityMapper()
+                    new DynamicWithMemberEntityMapper(),
+                    new GroupedDynamicEntityMapper()
                 });
         }
 
