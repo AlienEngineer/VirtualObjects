@@ -38,6 +38,10 @@ namespace VirtualObjects.Queries.Mapping
 
                         var name = ParseName(e.Name);
 
+                        //
+                        // This works fine if the mapping between table is made by the key.
+                        // if this is not a join that includes this type should be made.
+                        //
                         var column = ctx.EntityInfo.KeyColumns.FirstOrDefault();
 
                         if (column != null)

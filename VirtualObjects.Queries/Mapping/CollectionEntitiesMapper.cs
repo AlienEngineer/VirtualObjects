@@ -5,20 +5,20 @@ using VirtualObjects.Config;
 
 namespace VirtualObjects.Queries.Mapping
 {
-    class CollectionEntityMapper : IEntitiesMapper
+    class CollectionEntitiesMapper : IEntitiesMapper
     {
         private readonly IMapper _mapper;
         private readonly IEntityProvider _entityProvider;
         private readonly IEnumerable<IEntityMapper> _entityMappers; 
 
-        public CollectionEntityMapper(IMapper mapper, IEntityProvider entityProvider, IEnumerable<IEntityMapper> entityMappers)
+        public CollectionEntitiesMapper(IMapper mapper, IEntityProvider entityProvider, IEnumerable<IEntityMapper> entityMappers)
         {
             _mapper = mapper;
             _entityProvider = entityProvider;
             _entityMappers = entityMappers;
         }
 
-        public IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader)
+        public IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader, IQueryInfo queryInfo)
         {
             var result = new List<TEntity>();
             var context = new MapperContext
@@ -26,7 +26,8 @@ namespace VirtualObjects.Queries.Mapping
                 EntityInfo = _mapper.Map(typeof(TEntity)),
                 OutputType = typeof(TEntity),
                 EntityProvider = _entityProvider,
-                Mapper = _mapper
+                Mapper = _mapper,
+                QueryInfo = queryInfo
             };
 
             var entityMapper = _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));

@@ -22,7 +22,7 @@ namespace VirtualObjects.Tests.Queries
 
         public QueryMappingTests()
         {
-            _entitiesMapper = new CollectionEntityMapper(Mapper,
+            _entitiesMapper = new CollectionEntitiesMapper(Mapper,
                 new EntityProvider.EntityProviderComposite(
                     new List<IEntityProvider>
                         {
@@ -67,7 +67,8 @@ namespace VirtualObjects.Tests.Queries
         [Repeat(REPEAT)]
         public void Manual_Query_Mapping()
         {
-            var reader = Execute(Query<Employee>());
+            var queryInfo = TranslateQuery(Query<Employee>());
+            var reader = Execute(queryInfo);
             var mapper = new OrderedEntityMapper();
             var mapperContext = new MapperContext
             {
@@ -102,8 +103,9 @@ namespace VirtualObjects.Tests.Queries
 
         private IList<TEntity> MapEntities<TEntity>(IQueryable<TEntity> queryable)
         {
-            var reader = Execute(queryable);
-            return Diagnostic.Timed(() => (IList<TEntity>)_entitiesMapper.MapEntities<TEntity>(reader));
+            var queryInfo = TranslateQuery(queryable);
+            var reader = Execute(queryInfo);
+            return Diagnostic.Timed(() => (IList<TEntity>)_entitiesMapper.MapEntities<TEntity>(reader, queryInfo));
         }
 
         [Test, Repeat(REPEAT)]
@@ -190,6 +192,25 @@ namespace VirtualObjects.Tests.Queries
             var query = from o in Query<Orders>()
                         join od in Query<OrderDetails>() on o equals od.Order
                         select new { o.OrderId, od.UnitPrice, od.Quantity, o.ShipName, o.Employee };
+
+            var entities = MapEntities(query);
+
+            entities.Should().NotBeNull();
+            entities.Should().NotBeEmpty();
+            entities.Count().Should().Be(2155);
+
+            entities.All(e => e.Employee.EmployeeId == 1)
+                .Should().BeFalse();
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Mapper_GetAllOrders_Joined_Query_CustomProjection_With_ForeignKey_in_join()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order
+                        join e in Query<Employee>() on o.Employee equals e
+                        select new { o.OrderId, od.UnitPrice, od.Quantity, o.ShipName, Employee = e };
 
             var entities = MapEntities(query);
 

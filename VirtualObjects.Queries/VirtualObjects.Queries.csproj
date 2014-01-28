@@ -50,7 +50,7 @@
     <Compile Include="Mapping\DynamicEntityMapper.cs" />
     <Compile Include="Mapping\DynamicTypeEntityMapper.cs" />
     <Compile Include="IEntityMapper.cs" />
-    <Compile Include="Mapping\CollectionEntityMapper.cs" />
+    <Compile Include="Mapping\CollectionEntitiesMapper.cs" />
     <Compile Include="IEntitiesMapper.cs" />
     <Compile Include="Mapping\DynamicWithMemberEntityMapper.cs" />
     <Compile Include="Mapping\OffsetedReader.cs" />

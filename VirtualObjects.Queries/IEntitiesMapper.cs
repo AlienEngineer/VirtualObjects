@@ -5,6 +5,6 @@ namespace VirtualObjects.Queries
 {
     public interface IEntitiesMapper
     {
-        IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader);
+        IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader, IQueryInfo context);
     }
 }

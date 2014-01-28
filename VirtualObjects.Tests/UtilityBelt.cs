@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using VirtualObjects.Config;
+using VirtualObjects.Queries;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Translation;
 using VirtualObjects.Tests.Config;
@@ -31,15 +32,14 @@ namespace VirtualObjects.Tests
             Mapper = CreateBuilder().Build();
         }
 
-        public IDataReader Execute(IQueryable query)
+        public IDataReader Execute(IQueryInfo query)
         {
             return CreateCommand(query).ExecuteReader();
         }
 
-        public IDbCommand CreateCommand(IQueryable query)
+        public IDbCommand CreateCommand(IQueryInfo queryInfo)
         {
-            var queryInfo = new QueryTranslator(new SqlFormatter(), Mapper).TranslateQuery(query);
-
+            
             var cmd = Connection.CreateCommand();
             cmd.CommandText = queryInfo.CommandText;
 
@@ -56,6 +56,11 @@ namespace VirtualObjects.Tests
                             }).ToList();
             return cmd;
 
+        }
+
+        public IQueryInfo TranslateQuery(IQueryable query)
+        {
+            return new QueryTranslator(new SqlFormatter(), Mapper).TranslateQuery(query);
         }
 
         public IQueryable<T> Query<T>()
