@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data.Common;
+using VirtualObjects.Config;
 
 namespace VirtualObjects.Queries
 {
@@ -13,6 +14,8 @@ namespace VirtualObjects.Queries
         public string CommandText { get; set; }
         
         public IDictionary<string, object> Parameters { get; set; }
+
+        public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
 
         #endregion
     }

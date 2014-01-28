@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
@@ -16,11 +17,42 @@ namespace VirtualObjects.Queries.Translation
     {
         class CompilerBuffer
         {
-            public StringBuffer Projection { get; set; }
+            private StringBuffer _projection;
+
+            public StringBuffer Projection
+            {
+                get { return _projection; }
+                set
+                {
+                    _projection = value;
+                    if ( value == null )
+                    {
+                        PredicatedColumns.Clear();
+                    }
+                }
+            }
+
             public StringBuffer From { get; set; }
             public IEntityInfo EntityInfo { get; set; }
             public StringBuffer Predicates { get; set; }
             public StringBuffer OrderBy { get; set; }
+            public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
+
+            public void AddPredicatedColumn(IEntityColumnInfo column)
+            {
+                if ( String.IsNullOrEmpty(Projection) )
+                {
+                    PredicatedColumns.Add(column);
+                }
+            }
+
+            public void AddPredicatedColumns(IEnumerable<IEntityColumnInfo> columns)
+            {
+                if ( String.IsNullOrEmpty(Projection) )
+                {
+                    columns.ForEach(AddPredicatedColumn);
+                }
+            }
 
             public int Parenthesis { get; set; }
             public int Take { get; set; }
@@ -133,7 +165,8 @@ namespace VirtualObjects.Queries.Translation
             return new QueryInfo
             {
                 CommandText = Merge(buffer),
-                Parameters = Parameters
+                Parameters = Parameters,
+                PredicatedColumns = buffer.PredicatedColumns
             };
         }
 
@@ -284,7 +317,7 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileOrderBy(Expression expression, CompilerBuffer buffer)
         {
-            if (String.IsNullOrEmpty(buffer.OrderBy))
+            if ( String.IsNullOrEmpty(buffer.OrderBy) )
             {
                 buffer.OrderBy += " " + _formatter.OrderBy + " ";
             }
@@ -416,6 +449,8 @@ namespace VirtualObjects.Queries.Translation
 
                                 buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns,
                                     translator._index);
+
+                                buffer.AddPredicatedColumns(translator.EntityInfo.Columns);
                             }
 
                             var memberExpression = tmpExp as MemberExpression;
@@ -707,6 +742,8 @@ namespace VirtualObjects.Queries.Translation
                 var entityInfo = Indexer[parameterExpression].EntityInfo;
 
                 buffer.Predicates += _formatter.FormatFieldWithTable(entityInfo[member.Member.Name].ColumnName, Indexer[parameterExpression]._index);
+
+                buffer.AddPredicatedColumn(entityInfo[member.Member.Name]);
             }
             else
             {
@@ -1069,7 +1106,7 @@ namespace VirtualObjects.Queries.Translation
 
         private static bool IsStringMember(MemberExpression member, MemberExpression next)
         {
-            return next != null && next.Member.Type() == typeof(String) && 
+            return next != null && next.Member.Type() == typeof(String) &&
                 member.Member.Name == "Length";
         }
 
@@ -1123,19 +1160,19 @@ namespace VirtualObjects.Queries.Translation
             return Expression.Lambda(body, parameters);
         }
 
-/*
-        private static Type ExtractType(Expression expression)
-        {
-            switch ( expression.NodeType )
-            {
-                case ExpressionType.New:
-                case ExpressionType.Parameter:
-                    return expression.Type;
-                default:
-                    throw new UnsupportedException(Errors.UnableToGetType, expression);
-            }
-        }
-*/
+        /*
+                private static Type ExtractType(Expression expression)
+                {
+                    switch ( expression.NodeType )
+                    {
+                        case ExpressionType.New:
+                        case ExpressionType.Parameter:
+                            return expression.Type;
+                        default:
+                            throw new UnsupportedException(Errors.UnableToGetType, expression);
+                    }
+                }
+        */
 
         private static Expression ExtractAccessor(Expression expression)
         {
@@ -1198,17 +1235,17 @@ namespace VirtualObjects.Queries.Translation
             return expression.Arguments.Select(ParseValue).ToArray();
         }
 
-/*
-        private string ExtractName(Expression expression, IEntityInfo entityInfo)
-        {
-            if ( expression is MemberExpression )
-                return ((MemberExpression)expression).Member.Name;
-            if ( expression is ParameterExpression )
-                return entityInfo.KeyColumns.First().ColumnName;
+        /*
+                private string ExtractName(Expression expression, IEntityInfo entityInfo)
+                {
+                    if ( expression is MemberExpression )
+                        return ((MemberExpression)expression).Member.Name;
+                    if ( expression is ParameterExpression )
+                        return entityInfo.KeyColumns.First().ColumnName;
 
-            return null;
-        }
-*/
+                    return null;
+                }
+        */
 
         private string Merge(CompilerBuffer buffer)
         {
@@ -1238,10 +1275,11 @@ namespace VirtualObjects.Queries.Translation
         {
             var buffer = new CompilerBuffer
             {
-                EntityInfo = _mapper.Map(queryable.ElementType)
+                EntityInfo = _mapper.Map(queryable.ElementType),
+                PredicatedColumns = new Collection<IEntityColumnInfo>()
             };
 
-            if (queryable.ElementType.IsDynamic())
+            if ( queryable.ElementType.IsDynamic() )
             {
                 return buffer;
             }
@@ -1249,7 +1287,7 @@ namespace VirtualObjects.Queries.Translation
             EntityInfo = buffer.EntityInfo;
 
             buffer.EntityInfo.RaiseIfNull(
-                Errors.Query_EntityInfoNotFound, 
+                Errors.Query_EntityInfoNotFound,
                 new { ElementTypeName = queryable.ElementType.Name });
 
             return buffer;
@@ -1257,7 +1295,7 @@ namespace VirtualObjects.Queries.Translation
 
         private IQueryable EvaluateQuery(IQueryable queryable)
         {
-            if (!queryable.ElementType.IsDynamic())
+            if ( !queryable.ElementType.IsDynamic() )
             {
                 return queryable;
             }
@@ -1301,7 +1339,7 @@ namespace VirtualObjects.Queries.Translation
         {
             buffer.Predicates = _predicates;
         }
-        
+
         #endregion
     }
 

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Fasterflect;
+using VirtualObjects.Config;
 
 namespace VirtualObjects.Queries.Mapping
 {
@@ -16,53 +18,55 @@ namespace VirtualObjects.Queries.Mapping
 
         public override void PrepareMapper(MapperContext context)
         {
-            context.OutputTypeSetters = context.OutputType
-                .Fields()
-                .Select(e =>
+            var setters = new List<MemberSetter>();
+            var fieldCount = 0;
+
+            context.OutputType.Fields().ForEach(e =>
+            {
+
+                if ( e.FieldType.IsFrameworkType() )
                 {
-                    if (e.FieldType.IsFrameworkType())
-                    {
-                        return e.DelegateForSetFieldValue();    
-                    }
+                    setters.Add(e.DelegateForSetFieldValue());
+                    fieldCount++;
+                    return;
+                }
 
-                    var ctx = new MapperContext
-                    {
-                        EntityInfo = context.Mapper.Map(e.FieldType),
-                        OutputType = e.FieldType,
-                        EntityProvider = context.EntityProvider,
-                        Mapper = context.Mapper
-                    };
+                var ctx = new MapperContext
+                {
+                    EntityInfo = context.Mapper.Map(e.FieldType),
+                    OutputType = e.FieldType,
+                    EntityProvider = context.EntityProvider,
+                    Mapper = context.Mapper,
+                    QueryInfo = context.QueryInfo
+                };
 
-                    return (o, value) =>
-                    {
+                var predictedColumn = ctx.QueryInfo.PredicatedColumns[fieldCount];
+                var type = predictedColumn.EntityInfo.EntityType;
+                var i = fieldCount;
+                
 
-                        var name = ParseName(e.Name);
+                //
+                // Created setters for each column of the same type.
+                //
+                while ( predictedColumn.EntityInfo.EntityType == type)
+                {
+                    //
+                    // Use the last bind because the value that comes from the database is not a complex type.
+                    //
+                    var column = predictedColumn.GetLastBind();
 
-                        //
-                        // This works fine if the mapping between table is made by the key.
-                        // if this is not a join that includes this type should be made.
-                        //
-                        var column = ctx.EntityInfo.KeyColumns.FirstOrDefault();
+                    setters.Add((o, value) => column.SetFieldFinalValue(e.Get(o), value));
 
-                        if (column != null)
-                        {
-                            column.SetValue(e.Get(o), value);
-                            return;
-                        }
+                    if (++i == ctx.QueryInfo.PredicatedColumns.Count) break;
 
-                        throw new MappingException("Unable to map the field {Name} with {EntityName}.", new { Name = name, ctx.EntityInfo.EntityName });
-                    };
-                })
-                .ToList();
+                    predictedColumn = ctx.QueryInfo.PredicatedColumns[i];
+                }
 
+                fieldCount++;
+            });
+
+            context.OutputTypeSetters = setters;
         }
 
-        private string ParseName(string name)
-        {
-            name = name.Substring(1, name.Length - 1);
-            name = name.Substring(0, name.LastIndexOf('>'));
-
-            return name;
-        }
     }
 }
