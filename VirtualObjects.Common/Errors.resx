@@ -174,4 +174,7 @@
   <data name="Mapping_EntityTypeNotSupported">
     <value xml:space="preserve">Provider for type {Name} not yet implemented.</value>
   </data>
+  <data name="Mapping_OutputTypeNotSupported">
+    <value xml:space="preserve">Type {OutputType} is not yet supported.</value>
+  </data>
 </root>

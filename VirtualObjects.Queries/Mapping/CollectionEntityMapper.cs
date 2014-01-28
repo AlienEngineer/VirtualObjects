@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using VirtualObjects.Config;
 
 namespace VirtualObjects.Queries.Mapping
@@ -8,12 +9,14 @@ namespace VirtualObjects.Queries.Mapping
     {
         private readonly IMapper _mapper;
         private readonly IEntityProvider _entityProvider;
-        readonly IEntityMapper orderedMapper = new OrderedEntityMapper();
+        
+        private readonly IEnumerable<IEntityMapper> entityMappers; 
 
-        public CollectionEntityMapper(IMapper mapper, IEntityProvider entityProvider)
+        public CollectionEntityMapper(IMapper mapper, IEntityProvider entityProvider, IEnumerable<IEntityMapper> entityMappers)
         {
             _mapper = mapper;
             _entityProvider = entityProvider;
+            this.entityMappers = entityMappers;
         }
 
         public IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader)
@@ -26,10 +29,16 @@ namespace VirtualObjects.Queries.Mapping
                 EntityProvider = _entityProvider
             };
 
+            var entityMapper = entityMappers.First(e => e.CanMapEntity(context));
+
+            if (entityMapper == null)
+            {
+                throw new MappingException(Errors.Mapping_OutputTypeNotSupported, context);
+            }
 
             while(reader.Read())
             {
-                result.Add((TEntity)orderedMapper.MapEntity(reader, context.CreateEntity(), context));
+                result.Add((TEntity)entityMapper.MapEntity(reader, context.CreateEntity(), context));
             }
 
             return result;

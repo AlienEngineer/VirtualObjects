@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace VirtualObjects
 {
@@ -13,5 +11,17 @@ namespace VirtualObjects
             return type.Name.StartsWith("<>");
         }
 
+    }
+
+    public static class IEnumerableExtenstions
+    {
+        public static  IEnumerable<T> ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        {
+            foreach (var item in collection)
+            {
+                action(item);
+                yield return item;
+            }
+        } 
     }
 }

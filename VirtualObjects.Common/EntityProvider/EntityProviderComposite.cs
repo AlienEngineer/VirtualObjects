@@ -8,9 +8,15 @@ namespace VirtualObjects.EntityProvider
     {
         readonly IEnumerable<IEntityProvider> entityProviders;
 
+        public IEntityProvider MainProvider { get; set; }
+
         public EntityProviderComposite(IEnumerable<IEntityProvider> entityProviders)
         {
-            this.entityProviders = entityProviders;
+            this.entityProviders = entityProviders
+                .ForEach(e => e.MainProvider = this)
+                .ToList();
+            
+            MainProvider = this;
         }
 
         public Boolean CanCreate(Type type)

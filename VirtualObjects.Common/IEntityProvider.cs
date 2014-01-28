@@ -16,6 +16,9 @@ namespace VirtualObjects
         Object CreateEntity(Type type);
 
         bool CanCreate(Type type);
+        
         IEntityProvider GetProviderForType(Type type);
+        
+        IEntityProvider MainProvider { get; set; }
     }
 }

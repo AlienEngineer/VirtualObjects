@@ -88,6 +88,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Type {OutputType} is not yet supported..
+        /// </summary>
+        public static string Mapping_OutputTypeNotSupported {
+            get {
+                return ResourceManager.GetString("Mapping_OutputTypeNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to get the ForeignKey for field {Name} in type {PropertyType.Name}..
         /// </summary>
         public static string Mapping_UnableToGetForeignKey {

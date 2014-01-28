@@ -18,5 +18,7 @@ namespace VirtualObjects.EntityProvider
         {
             return CanCreate(type) ? this : null;
         }
+
+        public IEntityProvider MainProvider { get; set; }
     }
 }

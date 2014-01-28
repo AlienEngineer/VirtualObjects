@@ -14,5 +14,10 @@ namespace VirtualObjects.Queries.Mapping
 
             return buffer;
         }
+
+        public bool CanMapEntity(MapperContext context)
+        {
+            return context.EntityInfo != null && context.OutputType == context.EntityInfo.EntityType;
+        }
     }
 }

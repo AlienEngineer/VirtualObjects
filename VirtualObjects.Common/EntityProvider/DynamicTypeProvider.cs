@@ -1,23 +1,33 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Fasterflect;
 
 namespace VirtualObjects.EntityProvider
 {
     public class DynamicTypeProvider : IEntityProvider
     {
+        public IEntityProvider MainProvider { get; set; }
+
         public object CreateEntity(Type type)
         {
-            var ctor = type.Constructors().First();
+            ICollection<Object> args = new List<Object>();
+            foreach ( var field in type.GetConstructors().First().GetParameters() )
+            {
+                Object arg = null;
 
-            return ctor.Invoke(MakeParameters(ctor));
-        }
+                if ( !field.ParameterType.IsFrameworkType() || (field.ParameterType.InheritsOrImplements<IEnumerable>() && field.ParameterType != typeof(string)) )
+                {
+                    arg = MainProvider.CreateEntity(field.ParameterType);
+                }
 
-        private object[] MakeParameters(ConstructorInfo ctor)
-        {
-            return ctor.Parameters().Select(e => e.DefaultValue).ToArray();
+                args.Add(arg);
+            }
+
+            return Activator.CreateInstance(type, args.ToArray());
         }
+        
 
         public bool CanCreate(Type type)
         {

@@ -19,6 +19,7 @@ namespace VirtualObjects.Queries
         /// <returns></returns>
         object MapEntity(IDataReader reader, object buffer, MapperContext mapContext);
 
+        bool CanMapEntity(MapperContext context);
     }
 
     public class MapperContext
