@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Fasterflect;
 
@@ -15,8 +16,9 @@ namespace VirtualObjects.Queries.Mapping
             var properties = context.OutputType.Fields();
 
             return context.OutputType.IsDynamic() &&
-                   properties.Any(e => !e.FieldType.IsFrameworkType()) &&
-                   properties.Any(e => e.FieldType.IsFrameworkType());
+                !properties.Any(e => e.FieldType.InheritsOrImplements<IEnumerable>()) &&
+                properties.Any(e => !e.FieldType.IsFrameworkType()) &&
+                properties.Any(e => e.FieldType.IsFrameworkType());
         }
 
         public override void PrepareMapper(MapperContext context)

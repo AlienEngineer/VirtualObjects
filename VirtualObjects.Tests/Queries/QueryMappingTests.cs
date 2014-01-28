@@ -27,7 +27,8 @@ namespace VirtualObjects.Tests.Queries
                     new List<IEntityProvider>
                         {
                             new EntityProvider.EntityProvider(),
-                            new EntityProvider.DynamicTypeProvider()
+                            new EntityProvider.DynamicTypeProvider(),
+                            new EntityProvider.CollectionTypeEntityProvider()
                         }
                     ),
                 new List<IEntityMapper>
@@ -44,7 +45,7 @@ namespace VirtualObjects.Tests.Queries
         [TearDown]
         public void FlushTime()
         {
-            if (!TestContext.CurrentContext.Test.Properties.Contains("Repeat"))
+            if ( !TestContext.CurrentContext.Test.Properties.Contains("Repeat") )
             {
                 return;
             }
@@ -53,7 +54,7 @@ namespace VirtualObjects.Tests.Queries
 
             _count++;
 
-            if (_count % times != 0) return;
+            if ( _count % times != 0 ) return;
 
             Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => Query mapping in time :   {1} ms");
         }
@@ -78,7 +79,7 @@ namespace VirtualObjects.Tests.Queries
 
             var entities = new List<Employee>();
 
-            while (reader.Read())
+            while ( reader.Read() )
             {
                 entities.Add((Employee)mapper.MapEntity(reader, new Employee(), mapperContext));
             }
@@ -237,7 +238,21 @@ namespace VirtualObjects.Tests.Queries
             entities.Should().NotBeNull();
             entities.Should().NotBeEmpty();
             entities.Count().Should().Be(2155);
-            
+
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Mapper_GetAllOrders_GroupJoined_Query()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order into ods
+                        select new { Order = o, Details = ods };
+
+            var entities = MapEntities(query);
+
+            entities.Should().NotBeNull();
+            entities.Should().NotBeEmpty();
+            entities.Count().Should().Be(2155);
         }
     }
 

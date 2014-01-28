@@ -53,35 +53,38 @@ namespace VirtualObjects.Config
             entityInfo.Columns = MapColumns(entityType.Properties(), entityInfo).ToList();
             entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey).ToList();
 
-            foreach (var column in entityInfo.Columns)
+            foreach ( var column in entityInfo.Columns )
             {
-                column.ForeignKey = GetForeignKey(column.Property);    
+                column.ForeignKey = GetForeignKey(column.Property);
             }
 
             entityInfo.Columns = WrapColumns(entityInfo.Columns).ToList();
 
-            entityInfo.KeyHashCode = (obj) => entityInfo
-                .KeyColumns
-                .Sum(key => key.GetFieldFinalValue(obj).GetHashCode());
+            //
+            // Calculation of the entity Key.
+            //
+            entityInfo.KeyHashCode = (obj) => entityInfo.KeyColumns
+                .Aggregate(new StringBuffer(), (current, key) => current + key.GetFieldFinalValue(obj).ToString())
+                .GetHashCode();
 
             return entityInfo;
         }
 
         private IEnumerable<IEntityColumnInfo> WrapColumns(IEnumerable<IEntityColumnInfo> columns)
         {
-            foreach (var column in columns)
+            foreach ( var column in columns )
             {
-                if (column.ForeignKey != null)
+                if ( column.ForeignKey != null )
                 {
                     yield return WrapWithBoundColumn(column);
                 }
-                else if (column.Property.PropertyType == typeof (DateTime))
+                else if ( column.Property.PropertyType == typeof(DateTime) )
                 {
                     yield return WrapWithDatetimeColumn(column);
                 }
                 else
                 {
-                    yield return column;    
+                    yield return column;
                 }
             }
         }
@@ -91,7 +94,7 @@ namespace VirtualObjects.Config
             return new EntityDateTimeColumnInfo
             {
                 Property = column.Property,
-                ColumnName =  column.ColumnName,
+                ColumnName = column.ColumnName,
                 EntityInfo = column.EntityInfo,
                 ForeignKey = column.ForeignKey,
                 IsIdentity = column.IsIdentity,

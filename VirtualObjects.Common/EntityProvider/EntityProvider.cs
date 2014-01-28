@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Collections;
+using Fasterflect;
 
 namespace VirtualObjects.EntityProvider
 {
     class EntityProvider : IEntityProvider
     {
-        public object CreateEntity(Type type)
+        public virtual object CreateEntity(Type type)
         {
             return Activator.CreateInstance(type);
         }
 
-        public bool CanCreate(Type type)
+        public virtual bool CanCreate(Type type)
         {
-            return !type.IsDynamic();
+            return !type.IsDynamic() && !type.InheritsOrImplements<IEnumerable>();
         }
 
         public IEntityProvider GetProviderForType(Type type)

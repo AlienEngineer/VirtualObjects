@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Diagnostic.cs" />
+    <Compile Include="EntityProvider\CollectionTypeEntityProvider.cs" />
     <Compile Include="EntityProvider\DynamicTypeProvider.cs" />
     <Compile Include="EntityProvider\EntityProvider.cs" />
     <Compile Include="EntityProvider\EntityProviderComposite.cs" />
