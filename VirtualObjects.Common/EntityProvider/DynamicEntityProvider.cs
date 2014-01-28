@@ -2,28 +2,29 @@
 
 namespace VirtualObjects.EntityProvider
 {
-    class EntityProvider : IEntityProvider
+    class DynamicEntityProvider : IEntityProvider
     {
+        public IEntityProvider MainProvider { get; set; }
+
         public object CreateEntity(Type type)
         {
-            return Activator.CreateInstance(type);
+            throw new NotImplementedException();
         }
 
         public bool CanCreate(Type type)
         {
-            return !type.IsDynamic();
+            throw new NotImplementedException();
         }
 
         public IEntityProvider GetProviderForType(Type type)
         {
-            return CanCreate(type) ? this : null;
+            throw new NotImplementedException();
         }
 
-        public IEntityProvider MainProvider { get; set; }
-
+        
         public void PrepareProvider(Type outputType)
         {
-            // No prepare needed.
+            throw new NotImplementedException();
         }
     }
 }

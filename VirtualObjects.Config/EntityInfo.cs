@@ -6,12 +6,12 @@ namespace VirtualObjects.Config
 {
     class EntityInfo : IEntityInfo
     {
-        private IEnumerable<IEntityColumnInfo> _columns;
+        private IList<IEntityColumnInfo> _columns;
         private IDictionary<string, IEntityColumnInfo> _columnsDictionary;
 
         public string EntityName { get; set; }
 
-        public IEnumerable<IEntityColumnInfo> Columns
+        public IList<IEntityColumnInfo> Columns
         {
             get { return _columns; }
             set
@@ -20,8 +20,8 @@ namespace VirtualObjects.Config
                 _columnsDictionary = value.ToDictionary(e => e.Property.Name);
             }
         }
-        
-        public IEnumerable<IEntityColumnInfo> KeyColumns { get; set; }
+
+        public IList<IEntityColumnInfo> KeyColumns { get; set; }
         
         public Type EntityType { get; set; }
         

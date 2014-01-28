@@ -7,11 +7,6 @@ namespace VirtualObjects.Queries.Mapping
 {
     class DynamicTypeEntityMapper : IEntityMapper
     {
-        class Data
-        {
-            public MemberSetter Setter { get; set; }
-            public Object Value { get; set; }
-        }
 
         public object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
         {

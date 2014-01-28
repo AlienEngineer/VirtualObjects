@@ -23,7 +23,7 @@ namespace VirtualObjects
                 Count++;
             }
 
-            public void Reset()
+            private void Reset()
             {
                 Count = 0;
                 Time = new TimeSpan();

@@ -41,6 +41,9 @@ namespace VirtualObjects.Queries
         public IEntityInfo EntityInfo { get; set; }
         public IEntityProvider EntityProvider { get; set; }
         public IEnumerable<MemberSetter> OutputTypeSetters { get; set; }
+        public IMapper Mapper { get; set; }
+        public List<MapperContext> Contexts { get; set; }
+        public List<MemberGetter> PropertyGetters { get; set; }
 
         public object CreateEntity()
         {

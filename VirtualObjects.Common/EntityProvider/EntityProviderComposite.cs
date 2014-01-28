@@ -16,18 +16,13 @@ namespace VirtualObjects.EntityProvider
         {
             _tmpProvider = GetProviderForType(outputType);
             
-            if ( _tmpProvider == null )
-            {
-                throw new MappingException(Errors.Mapping_EntityTypeNotSupported, outputType);
-            }
-
             _tmpProvider.PrepareProvider(outputType);
             _type = outputType;
         }
 
         public EntityProviderComposite(IEnumerable<IEntityProvider> entityProviders)
         {
-            this._entityProviders = entityProviders
+            _entityProviders = entityProviders
                 .ForEach(e => e.MainProvider = this)
                 .ToList();
             
@@ -41,21 +36,22 @@ namespace VirtualObjects.EntityProvider
 
         public IEntityProvider GetProviderForType(Type type)
         {
-            return type == _type ? 
+            var provider = type == _type ? 
                 _tmpProvider : 
                 _entityProviders.FirstOrDefault(e => e.CanCreate(type));
-        }
 
-        public object CreateEntity(Type type)
-        {
-            var provider = GetProviderForType(type);
 
-            if (provider == null)
+            if ( provider == null )
             {
                 throw new MappingException(Errors.Mapping_EntityTypeNotSupported, type);
             }
 
-            return provider.CreateEntity(type);
+            return provider;
+        }
+
+        public object CreateEntity(Type type)
+        {
+            return GetProviderForType(type).CreateEntity(type);
         }
     }
 }

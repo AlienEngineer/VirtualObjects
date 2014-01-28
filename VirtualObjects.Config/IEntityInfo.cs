@@ -10,9 +10,9 @@ namespace VirtualObjects.Config
 
         String EntityName { get; }
 
-        IEnumerable<IEntityColumnInfo> Columns { get; }
+        IList<IEntityColumnInfo> Columns { get; }
 
-        IEnumerable<IEntityColumnInfo> KeyColumns { get; }
+        IList<IEntityColumnInfo> KeyColumns { get; }
         
         Type EntityType { get; }
         

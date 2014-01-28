@@ -36,7 +36,8 @@ namespace VirtualObjects.Tests.Queries
                 new List<IEntityMapper>
                 {
                     new OrderedEntityMapper(),
-                    new DynamicTypeEntityMapper()
+                    new DynamicTypeEntityMapper(),
+                    new DynamicEntityMapper()
                 });
         }
 
@@ -154,6 +155,34 @@ namespace VirtualObjects.Tests.Queries
             entities.Should().NotBeNull();
             entities.Should().NotBeEmpty();
             entities.Count().Should().Be(830);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Mapper_GetAllOrders_Joined_Query_AllFields()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order
+                        select new { Order = o, Detail = od };
+
+            var entities = MapEntities(query);
+
+            entities.Should().NotBeNull();
+            entities.Should().NotBeEmpty();
+            entities.Count().Should().Be(2155);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Mapper_GetAllOrders_Joined_Query_CustomProjection()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order
+                        select new { Order = o, Detail = od };
+
+            var entities = MapEntities(query);
+
+            entities.Should().NotBeNull();
+            entities.Should().NotBeEmpty();
+            entities.Count().Should().Be(2155);
         }
 
     }

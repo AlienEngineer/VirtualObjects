@@ -6,7 +6,8 @@ using Fasterflect;
 
 namespace VirtualObjects.EntityProvider
 {
-    public class DynamicTypeProvider : IEntityProvider
+
+    class DynamicTypeProvider : IEntityProvider
     {
         public IEntityProvider MainProvider { get; set; }
 
@@ -56,4 +57,6 @@ namespace VirtualObjects.EntityProvider
             return CanCreate(type) ? this : null;
         }
     }
+
+
 }

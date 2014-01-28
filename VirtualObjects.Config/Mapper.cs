@@ -50,7 +50,7 @@ namespace VirtualObjects.Config
             };
 
             entityInfo.Columns = MapColumns(entityType.Properties(), entityInfo).ToList();
-            entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey);
+            entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey).ToList();
 
             foreach (var column in entityInfo.Columns)
             {
