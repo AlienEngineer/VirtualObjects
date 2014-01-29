@@ -73,11 +73,76 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(REPEAT)]
-        public void Aggregate_Query_Avg()
+        public void Aggregate_Query_LongCount()
         {
-            var avg = Diagnostic.Timed(() => Query<Employee>().Average(e => e.EmployeeId));
+            var count = Diagnostic.Timed(() => Query<Employee>().LongCount());
+
+            count.Should().Be(5);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Max()
+        {
+            var max = Diagnostic.Timed(() => Query<Employee>().Max(e => e.EmployeeId));
+
+            max.Should().Be(5);
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Min()
+        {
+            var min = Diagnostic.Timed(() => Query<Employee>().Min(e => e.EmployeeId));
+
+            min.Should().Be(5);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_First()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().First());
+
+            employee.Should().Be(5);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_First_Predicated()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().First());
+
+            employee.Should().Be(5);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_FirstOrDefault()
+        {
+            var avg = Diagnostic.Timed(() => Query<Employee>().FirstOrDefault());
 
             avg.Should().Be(5);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_FirstOrDefault_Predicated()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().FirstOrDefault());
+
+            employee.Should().Be(5);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Min_Entity()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().Min());
+
+            employee.Should().Be(5);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Max_Entity()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().Min());
+
+            employee.Should().Be(5);
         }
     }
 }
