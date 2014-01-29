@@ -107,52 +107,100 @@ namespace VirtualObjects.Tests.Queries
             min.Should().Be(1);
         }
 
+
+
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_First()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().First());
 
-            employee.Should().Be(5);
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(1);
         }
 
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_First_Predicated()
         {
-            var employee = Diagnostic.Timed(() => Query<Employee>().First());
+            var employee = Diagnostic.Timed(() => Query<Employee>().First(e => e.EmployeeId == 2));
 
-            employee.Should().Be(5);
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(2);
         }
 
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_FirstOrDefault()
         {
-            var avg = Diagnostic.Timed(() => Query<Employee>().FirstOrDefault());
+            var employee = Diagnostic.Timed(() => Query<Employee>().FirstOrDefault());
 
-            avg.Should().Be(5);
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(1);
         }
+
 
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_FirstOrDefault_Predicated()
         {
-            var employee = Diagnostic.Timed(() => Query<Employee>().FirstOrDefault());
+            var employee = Diagnostic.Timed(() => Query<Employee>().FirstOrDefault(e => e.EmployeeId == 2));
 
-            employee.Should().Be(5);
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(2);
         }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Single()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().Single());
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(1);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Single_Predicated()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().Single(e => e.EmployeeId == 2));
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(2);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_SingleOrDefault()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().SingleOrDefault());
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(1);
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_SingleOrDefault_Predicated()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().SingleOrDefault(e => e.EmployeeId == 2));
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(2);
+        }
+
 
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_Min_Entity()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().Min());
 
-            employee.Should().Be(5);
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(1);
         }
 
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_Max_Entity()
         {
-            var employee = Diagnostic.Timed(() => Query<Employee>().Min());
+            var employee = Diagnostic.Timed(() => Query<Employee>().Max());
 
-            employee.Should().Be(5);
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(9);
         }
+
     }
 }
