@@ -253,7 +253,22 @@ namespace VirtualObjects.Tests.Queries
 
             entities.Should().NotBeNull();
             entities.Should().NotBeEmpty();
-            entities.Count().Should().Be(2155);
+            entities.Count().Should().Be(830);
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Mapper_GetAllOrders_GroupJoined_Query_InversedProjection()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o equals od.Order into ods
+                        select new { Details = ods, Order = o };
+
+            var entities = MapEntities(query);
+
+            entities.Should().NotBeNull();
+            entities.Should().NotBeEmpty();
+            entities.Count().Should().Be(830);
         }
     }
 

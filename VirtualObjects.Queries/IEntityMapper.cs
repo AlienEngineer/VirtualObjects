@@ -45,6 +45,7 @@ namespace VirtualObjects.Queries
         public List<MapperContext> Contexts { get; set; }
         public List<MemberGetter> PropertyGetters { get; set; }
         public IQueryInfo QueryInfo { get; set; }
+        public bool Read { get; set; }
 
         public object CreateEntity()
         {

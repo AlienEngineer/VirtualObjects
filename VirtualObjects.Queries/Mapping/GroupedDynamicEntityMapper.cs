@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -17,66 +18,113 @@ namespace VirtualObjects.Queries.Mapping
             var properties = context.OutputType.Fields();
 
             return context.OutputType.IsDynamic() &&
-                   properties.Any(e => e.FieldType.InheritsOrImplements<IEnumerable>());
+                   properties.Any(e => e.FieldType.InheritsOrImplements<IEnumerable>() && e.FieldType != typeof(String));
         }
 
         public override object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
         {
-            int i = 0;
+            var columns = mapContext.QueryInfo.PredicatedColumns;
+            var fieldInfos = mapContext.OutputType.Fields();
+
+            //
+            // Handle non collection type of field.
+            //
+            var entityInfo = MapNonCollectionMembers(reader, buffer, mapContext, fieldInfos, columns);
+
+            //
+            // Handle collection type of field.
+            //
+            MapCollectionMembers(reader, buffer, mapContext, fieldInfos, columns, entityInfo);
+
+            return buffer;
+        }
+
+        private static IEntityInfo MapNonCollectionMembers(
+            IDataReader reader,
+            object buffer,
+            MapperContext mapContext,
+            IEnumerable<FieldInfo> fieldInfos,
+            IList<IEntityColumnInfo> columns)
+        {
             IEntityInfo entityInfo = null;
-
-            foreach (var fieldInfo in mapContext.OutputType.Fields())
+            foreach ( var fieldInfo in fieldInfos.Where(e => !e.FieldType.Implements<IEnumerable>() || e.FieldType == typeof(String)) )
             {
-                
-                //
-                // Handle collection type of field.
-                //
-                if (fieldInfo.FieldType.Implements<IEnumerable>())
+                var i = FindColumnIndexOfType(fieldInfo.FieldType, 0, columns);
+
+                entityInfo = columns[i].EntityInfo;
+                while ( i < columns.Count && fieldInfo.FieldType == columns[i].EntityInfo.EntityType )
                 {
-                    var collection = (IList)fieldInfo.Get(buffer);
-                    int j;
-
-                    var key = GetKey(reader, entityInfo);
-                    do
-                    {
-                        j = i;
-                        var entityType = mapContext.QueryInfo.PredicatedColumns[i].EntityInfo.EntityType;
-                        var itemBuffer = mapContext.EntityProvider.CreateEntity(entityType);
-
-                        while (fieldInfo.FieldType == mapContext.QueryInfo.PredicatedColumns[j].EntityInfo.EntityType)
-                        {
-                            mapContext.OutputTypeSetters[j](itemBuffer, reader.GetValue(j));
-                            ++j;
-                        }
-
-                        collection.Add(itemBuffer);
-                    
-                    } while (reader.Read() && key == GetKey(reader, entityInfo));
-                    
-                    i = j;
-                }
-
-                //
-                // Handle non collection type of field.
-                //
-                else
-                {
-                    entityInfo = mapContext.QueryInfo.PredicatedColumns[i].EntityInfo;
-                    while(fieldInfo.FieldType == mapContext.QueryInfo.PredicatedColumns[i].EntityInfo.EntityType)
-                    {
-                        mapContext.OutputTypeSetters[i](buffer, reader.GetValue(i));
-                        ++i;
-                    }
+                    mapContext.OutputTypeSetters[i](buffer, reader.GetValue(i));
+                    ++i;
                 }
             }
 
-            return buffer;
+            return entityInfo;
+        }
+
+        private void MapCollectionMembers(
+            IDataReader reader,
+            object buffer,
+            MapperContext mapContext,
+            IEnumerable<FieldInfo> fieldInfos,
+            IList<IEntityColumnInfo> columns,
+            IEntityInfo entityInfo)
+        {
+            foreach ( var fieldInfo in fieldInfos.Where(e => e.FieldType.Implements<IEnumerable>() && e.FieldType != typeof(String)) )
+            {
+                var collection = (IList)fieldInfo.Get(buffer);
+                var enumerableType = fieldInfo.FieldType.GetGenericArguments().First();
+
+                var j = FindColumnIndexOfType(enumerableType, 0, columns);
+
+                var key = GetKey(reader, entityInfo);
+                do
+                {
+                    if ( key != GetKey(reader, entityInfo) )
+                    {
+                        break;
+                    }
+
+                    var entityType = columns[j].EntityInfo.EntityType;
+                    var itemBuffer = mapContext.EntityProvider.CreateEntity(entityType);
+
+                    while ( j < columns.Count && enumerableType == columns[j].EntityInfo.EntityType )
+                    {
+                        mapContext.OutputTypeSetters[j](itemBuffer, reader.GetValue(j));
+                        ++j;
+                    }
+
+                    collection.Add(itemBuffer);
+
+
+                    mapContext.Read = reader.Read();
+                } while ( mapContext.Read );
+            }
+        }
+
+        private static int FindColumnIndexOfType(Type type, int i, IList<IEntityColumnInfo> columns)
+        {
+            if ( i < columns.Count && columns[i].EntityInfo.EntityType == type )
+            {
+                return i;
+            }
+
+            for ( int j = 0; j < columns.Count; j++ )
+            {
+                if ( columns[j].EntityInfo.EntityType == type )
+                {
+                    return j;
+                }
+            }
+
+            throw new MappingException("Something whent wrong.");
         }
 
         private int GetKey(IDataReader reader, IEntityInfo info)
         {
             return info.KeyColumns
                 .Aggregate(new StringBuffer(), (current, keyColumn) => current + reader[keyColumn.ColumnName].ToString())
+                .ToString()
                 .GetHashCode();
         }
 
@@ -86,15 +134,18 @@ namespace VirtualObjects.Queries.Mapping
             var predicatedCount = 0;
             var fieldCount = 0;
 
+
             context.OutputType.Fields().ForEach(e =>
             {
+                var collectionField = false;
                 var fieldType = e.FieldType;
-                if (e.FieldType.InheritsOrImplements<IEnumerable>())
+                if ( e.FieldType.InheritsOrImplements<IEnumerable>() && e.FieldType != typeof(String) )
                 {
                     fieldType = e.FieldType.GetGenericArguments().First();
+                    collectionField = true;
                 }
 
-                if (fieldType.IsFrameworkType())
+                if ( fieldType.IsFrameworkType() )
                 {
                     setters.Add(e.DelegateForSetFieldValue());
                     fieldCount++;
@@ -112,20 +163,27 @@ namespace VirtualObjects.Queries.Mapping
 
                 var predictedColumn = ctx.QueryInfo.PredicatedColumns[predicatedCount];
                 var type = predictedColumn.EntityInfo.EntityType;
-                
+
                 //
                 // Created setters for each column of the same type.
                 //
-                while (predictedColumn.EntityInfo.EntityType == type)
+                while ( predictedColumn.EntityInfo.EntityType == type )
                 {
                     //
                     // Use the last bind because the value that comes from the database is not a complex type.
                     //
-                    var column = predictedColumn.GetLastBind();
+                    var column = predictedColumn;
 
-                    setters.Add((o, value) => column.SetFieldFinalValue(e.Get(o), value));
+                    if ( collectionField )
+                    {
+                        setters.Add((o, value) => column.SetFieldFinalValue(o, value));
+                    }
+                    else
+                    {
+                        setters.Add((o, value) => column.SetFieldFinalValue(e.Get(o), value));
+                    }
 
-                    if (++predicatedCount == ctx.QueryInfo.PredicatedColumns.Count) break;
+                    if ( ++predicatedCount == ctx.QueryInfo.PredicatedColumns.Count ) break;
 
                     predictedColumn = ctx.QueryInfo.PredicatedColumns[predicatedCount];
                 }

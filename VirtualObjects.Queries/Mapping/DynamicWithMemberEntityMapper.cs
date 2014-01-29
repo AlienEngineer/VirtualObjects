@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +19,7 @@ namespace VirtualObjects.Queries.Mapping
 
             return context.OutputType.IsDynamic() &&
                 properties.Any(e => !e.FieldType.IsFrameworkType()) &&
-                !properties.Any(e => e.FieldType.InheritsOrImplements<IEnumerable>()) &&
+                !properties.Any(e => e.FieldType.InheritsOrImplements<IEnumerable>() && e.FieldType != typeof(String)) &&
                 properties.Any(e => e.FieldType.IsFrameworkType());
         }
 
