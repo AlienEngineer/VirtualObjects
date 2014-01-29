@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using VirtualObjects.Config;
+using VirtualObjects.Exceptions;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Translation;
@@ -787,6 +788,19 @@ namespace VirtualObjects.Tests.Queries
             Assert.That(
                 Translate(query),
                 Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
+            );
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void SqlTranslation_Simple_NonKey_Join()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o.Freight equals od.UnitPrice
+                        select new { o.OrderId, od.UnitPrice, o.ShipCity };
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T1].[UnitPrice], [T0].[ShipCity] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[Freight] = [T1].[UnitPrice])")
             );
         }
 

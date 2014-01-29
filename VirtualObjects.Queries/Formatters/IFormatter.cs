@@ -23,6 +23,9 @@ namespace VirtualObjects.Queries.Formatters
         String IsNotNull { get; }
         String OrderBy { get; }
         String Descending{ get; }
+        String Count { get; }
+        String Sum { get; }
+        String Avg { get; }
 
         String FormatField(String name);
 

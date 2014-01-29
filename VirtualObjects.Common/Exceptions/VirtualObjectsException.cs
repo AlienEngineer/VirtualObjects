@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 
-namespace VirtualObjects
+namespace VirtualObjects.Exceptions
 {
+
     public class VirtualObjectsException : Exception
     {
         public VirtualObjectsException(String message) 
@@ -24,7 +24,6 @@ namespace VirtualObjects
             : base(AppendInnerExceptionToMessage(message.FormatWith(src), innerException), innerException)
         {
         }
-
         private static String AppendInnerExceptionToMessage(String message, Exception innerException)
         {
             return innerException == null ? 

@@ -4,15 +4,17 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
+using NUnit.Framework;
 using VirtualObjects.Config;
 using VirtualObjects.Queries;
+using VirtualObjects.Queries.Execution;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Translation;
 using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests
 {
-    public abstract class UtilityBelt
+    public abstract class UtilityBelt : IConnection
     {
         public const int REPEAT = 10;
 
@@ -23,6 +25,7 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
+
             Connection = new SqlConnection(@"
                       Data Source=(LocalDB)\v11.0;
                       AttachDbFilename=" + Environment.CurrentDirectory + @"\Data\northwnd.mdf;
@@ -30,44 +33,77 @@ namespace VirtualObjects.Tests
                       Connect Timeout=30");
 
             Mapper = CreateBuilder().Build();
+
+            Translator = new CachingTranslator(new SqlFormatter(), Mapper);
+
+            ConnectionManager = this;
+
+            QueryProvider = new QueryProvider(
+                new CompositeExecutor(
+                    new List<IQueryExecutor>
+                    {
+                        new CountQueryExecutor(Translator)
+                    }), new Context { Connection = ConnectionManager });
         }
 
-        public IDataReader Execute(IQueryInfo query)
+
+
+        [SetUp]
+        public void SetUpConnection()
+        {
+            Connection.Open();
+        }
+
+        [TearDown]
+        public void CleanUpConnection()
+        {
+            Connection.Close();
+        }
+
+        public IDataReader ExecuteReader(IQueryInfo query)
         {
             return CreateCommand(query).ExecuteReader();
         }
 
+        public Object ExecuteScalar(IQueryInfo query)
+        {
+            return CreateCommand(query).ExecuteScalar();
+        }
+
         public IDbCommand CreateCommand(IQueryInfo queryInfo)
         {
-            
+            return CreateCommand(queryInfo.CommandText, queryInfo.Parameters);
+        }
+
+        private IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, object>> parameters)
+        {
             var cmd = Connection.CreateCommand();
-            cmd.CommandText = queryInfo.CommandText;
+            cmd.CommandText = commandText;
 
             Trace.WriteLine("Query: " + cmd.CommandText);
 
-            queryInfo.Parameters
-                .Select(e => new { e, Parameter = cmd.CreateParameter()})
-                .Select(e =>
-                            {
-                                e.Parameter.ParameterName = e.e.Key;
-                                e.Parameter.Value = e.e.Value;
-                                cmd.Parameters.Add(e.Parameter);
-                                return e.Parameter;
-                            }).ToList();
-            return cmd;
+            parameters
+                .Select(e => new { e, Parameter = cmd.CreateParameter() })
+                .ForEach(e =>
+                {
+                    e.Parameter.ParameterName = e.e.Key;
+                    e.Parameter.Value = e.e.Value;
+                    cmd.Parameters.Add(e.Parameter);
+                });
 
+            return cmd;
         }
 
         public IQueryInfo TranslateQuery(IQueryable query)
         {
-            return new QueryTranslator(new SqlFormatter(), Mapper).TranslateQuery(query);
+            return Translator.TranslateQuery(query);
         }
 
         public IQueryable<T> Query<T>()
         {
-            return new List<T>().AsQueryable();
+            return QueryProvider.CreateQuery<T>(null);
         }
-        
+
         private MappingBuilder CreateBuilder()
         {
             var builder = new MappingBuilder();
@@ -97,5 +133,14 @@ namespace VirtualObjects.Tests
 
         public IDbConnection Connection { get; private set; }
         public IMapper Mapper { get; private set; }
+        public IQueryProvider QueryProvider { get; private set; }
+        public IQueryTranslator Translator { get; private set; }
+        public IConnection ConnectionManager { get; private set; }
+
+        public object ExecuteScalar(string commandText, IDictionary<string, object> parameters)
+        {
+            var cmd = CreateCommand(commandText, parameters);
+            return cmd.ExecuteScalar();
+        }
     }
 }

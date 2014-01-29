@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using VirtualObjects.Config;
+using VirtualObjects.Exceptions;
 using VirtualObjects.Queries.ConcurrentReader;
 
 namespace VirtualObjects.Queries.Mapping

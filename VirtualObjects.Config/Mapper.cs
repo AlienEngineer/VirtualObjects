@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Linq;
 using System.Security.Policy;
 using Fasterflect;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Config
 {

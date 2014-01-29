@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Text;
 using Fasterflect;
 using VirtualObjects.Config;
+using VirtualObjects.Exceptions;
 using VirtualObjects.Queries.Annotations;
 using VirtualObjects.Queries.Formatters;
 
@@ -252,17 +253,26 @@ namespace VirtualObjects.Queries.Translation
 
             CompileExpression(expression.Arguments.FirstOrDefault(), buffer);
 
-            if ( expression.Arguments.Count == 1 )
-            {
-                return;
-            }
+            //if ( expression.Arguments.Count == 1 )
+            //{
+            //    return;
+            //}
 
-            if ( parametersOnly && expression.Method.Name != "Where" )
+            if ( parametersOnly
+                && expression.Arguments.Count > 1
+                && expression.Method.Name != "Where"
+                && expression.Method.Name != "Count" )
             {
                 return;
             }
 
             if ( parametersOnly && expression.Method.Name == "Where" )
+            {
+                CompileBinaryExpression(expression.Arguments[1], buffer, parametersOnly);
+                return;
+            }
+
+            if ( parametersOnly && expression.Method.Name == "Count" )
             {
                 CompileBinaryExpression(expression.Arguments[1], buffer, parametersOnly);
                 return;
@@ -284,15 +294,7 @@ namespace VirtualObjects.Queries.Translation
                     CompileJoin(expression, buffer);
                     break;
                 case "Where":
-                    if ( String.IsNullOrEmpty(buffer.Predicates) )
-                    {
-                        buffer.Predicates += " Where ";
-                    }
-                    else
-                    {
-                        buffer.Predicates += " And ";
-                    }
-
+                    InitBinaryExpressionCall(buffer);
                     CompileBinaryExpression(expression.Arguments[1], buffer);
                     break;
 
@@ -303,10 +305,69 @@ namespace VirtualObjects.Queries.Translation
                 case "OrderByDescending":
                     CompileOrderByDescending(expression.Arguments[1], buffer);
                     break;
+                case "Count":
+                    CompileCountCall(expression.Arguments, buffer);
+                    break;
+                case "Sum":
+                    CompileSumCall(expression.Arguments[1], buffer);
+                    break;
+                case "Average":
+                    CompileAvgCall(expression.Arguments[1], buffer);
+                    break;
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
 
+        }
+
+        private void CompileAvgCall(Expression expression, CompilerBuffer buffer)
+        {
+            CompileMethod(expression, _formatter.Avg, buffer);
+        }
+
+        private void CompileSumCall(Expression expression, CompilerBuffer buffer)
+        {
+            CompileMethod(expression, _formatter.Sum, buffer);
+        }
+
+        private void CompileMethod(Expression expression, String functionName, CompilerBuffer buffer)
+        {
+            var lambda = ExtractLambda(expression, false);
+            Indexer[lambda.Parameters.First()] = this;
+
+            buffer.Projection = CompileAndGetBuffer(() =>
+            {
+                buffer.Predicates += functionName;
+                buffer.Predicates += _formatter.BeginWrap();
+                CompileMemberAccess(lambda.Body, buffer);
+                buffer.Predicates += _formatter.EndWrap();
+            }, buffer);
+        }
+
+        private void CompileCountCall(ReadOnlyCollection<Expression> arguments, CompilerBuffer buffer)
+        {
+            if ( arguments.Count > 1 )
+            {
+                //
+                // Appends Where or And before the next predicate.
+                //
+                InitBinaryExpressionCall(buffer);
+                CompileBinaryExpression(arguments[1], buffer);
+            }
+
+            buffer.Projection = _formatter.Count;
+        }
+
+        private static void InitBinaryExpressionCall(CompilerBuffer buffer)
+        {
+            if ( String.IsNullOrEmpty(buffer.Predicates) )
+            {
+                buffer.Predicates += " Where ";
+            }
+            else
+            {
+                buffer.Predicates += " And ";
+            }
         }
 
         private void CompileOrderByDescending(Expression expression, CompilerBuffer buffer)

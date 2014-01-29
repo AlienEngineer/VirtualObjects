@@ -1,4 +1,4 @@
-namespace VirtualObjects
+namespace VirtualObjects.Exceptions
 {
     public class UnsupportedException : VirtualObjectsException
     {

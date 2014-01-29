@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Fasterflect;
 using VirtualObjects.Config;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Queries.Mapping
 {

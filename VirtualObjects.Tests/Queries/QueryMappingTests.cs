@@ -70,7 +70,7 @@ namespace VirtualObjects.Tests.Queries
         public void Manual_Query_Mapping()
         {
             var queryInfo = TranslateQuery(Query<Employee>());
-            var reader = Execute(queryInfo);
+            var reader = ExecuteReader(queryInfo);
             var mapper = new OrderedEntityMapper();
             var mapperContext = new MapperContext
             {
@@ -91,22 +91,10 @@ namespace VirtualObjects.Tests.Queries
             entities.Count.Should().Be(9);
         }
 
-        [SetUp]
-        public void SetUpConnection()
-        {
-            Connection.Open();
-        }
-
-        [TearDown]
-        public void CleanUpConnection()
-        {
-            Connection.Close();
-        }
-
         private IList<TEntity> MapEntities<TEntity>(IQueryable<TEntity> queryable)
         {
             var queryInfo = TranslateQuery(queryable);
-            var reader = Execute(queryInfo);
+            var reader = ExecuteReader(queryInfo);
             return Diagnostic.Timed(() => (IList<TEntity>)_entitiesMapper.MapEntities<TEntity>(reader, queryInfo));
         }
 
@@ -187,7 +175,19 @@ namespace VirtualObjects.Tests.Queries
             entities.Count().Should().Be(2155);
         }
 
+        [Test, Repeat(REPEAT)]
+        public void Mapper_GetAllOrders_NonKey_Joined_Query_CustomProjection()
+        {
+            var query = from o in Query<Orders>()
+                        join od in Query<OrderDetails>() on o.Freight equals od.UnitPrice
+                        select new { o.OrderId, od.UnitPrice, o.ShipCity };
 
+            var entities = MapEntities(query);
+
+            entities.Should().NotBeNull();
+            entities.Should().NotBeEmpty();
+            entities.Count().Should().Be(169);
+        }
         [Test, Repeat(REPEAT)]
         public void Mapper_GetAllOrders_Joined_Query_CustomProjection_With_ForeignKey()
         {
@@ -270,6 +270,8 @@ namespace VirtualObjects.Tests.Queries
             entities.Should().NotBeEmpty();
             entities.Count().Should().Be(830);
         }
+
+
     }
 
 }

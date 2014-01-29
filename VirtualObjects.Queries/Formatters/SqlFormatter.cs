@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using VirtualObjects.Config;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Queries.Formatters
 {
@@ -25,6 +26,9 @@ namespace VirtualObjects.Queries.Formatters
             InnerJoin = "Inner Join";
             OrderBy = "Order By";
             Descending = "Desc";
+            Count = "Count(*)";
+            Sum = "Sum";
+            Avg = "Avg";
         }
 
         private static string Wrap(string name)
@@ -48,6 +52,9 @@ namespace VirtualObjects.Queries.Formatters
         public string IsNotNull { get; private set; }
         public string OrderBy { get; private set; }
         public string Descending { get; private set; }
+        public string Count { get; private set; }
+        public string Sum { get; private set; }
+        public string Avg { get; private set; }
 
         public String FormatField(String name)
         {

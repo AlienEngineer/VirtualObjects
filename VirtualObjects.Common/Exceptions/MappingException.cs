@@ -1,6 +1,6 @@
 using System;
 
-namespace VirtualObjects
+namespace VirtualObjects.Exceptions
 {
     public class MappingException : VirtualObjectsException
     {
