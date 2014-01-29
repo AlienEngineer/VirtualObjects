@@ -75,11 +75,13 @@ namespace VirtualObjects.Queries.Mapping
                 var collection = (IList)fieldInfo.Get(buffer);
                 var enumerableType = fieldInfo.FieldType.GetGenericArguments().First();
 
-                var j = FindColumnIndexOfType(enumerableType, 0, columns);
+                int i;
+                var j = i = FindColumnIndexOfType(enumerableType, 0, columns);
 
                 var key = GetKey(reader, entityInfo);
                 do
                 {
+                    j = i;
                     if ( key != GetKey(reader, entityInfo) )
                     {
                         break;
