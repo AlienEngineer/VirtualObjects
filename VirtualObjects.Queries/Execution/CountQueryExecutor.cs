@@ -28,7 +28,8 @@ namespace VirtualObjects.Queries.Execution
         public bool CanExecute(MethodInfo method)
         {
             return method != null && (
-                method.Name == "Count" || 
+                method.Name == "Count" ||
+                method.Name == "LongCount" || 
                 method.Name == "Sum" || 
                 method.Name == "Average");
         }

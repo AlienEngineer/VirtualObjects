@@ -77,8 +77,18 @@ namespace VirtualObjects.Tests.Queries
         {
             var count = Diagnostic.Timed(() => Query<Employee>().LongCount());
 
-            count.Should().Be(5);
+            count.Should().Be(9);
         }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_PredicatedLongCount()
+        {
+            var count = Diagnostic.Timed(() => Query<Employee>().LongCount());
+
+            count.Should().Be(9);
+        }
+
 
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_Max()

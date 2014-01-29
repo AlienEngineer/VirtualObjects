@@ -261,7 +261,8 @@ namespace VirtualObjects.Queries.Translation
             if ( parametersOnly
                 && expression.Arguments.Count > 1
                 && expression.Method.Name != "Where"
-                && expression.Method.Name != "Count" )
+                && expression.Method.Name != "Count"
+                && expression.Method.Name != "LongCount" )
             {
                 return;
             }
@@ -272,7 +273,7 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            if ( parametersOnly && expression.Method.Name == "Count" )
+            if ( parametersOnly && (expression.Method.Name == "Count" || expression.Method.Name == "LongCount" ) )
             {
                 CompileBinaryExpression(expression.Arguments[1], buffer, parametersOnly);
                 return;
@@ -305,6 +306,7 @@ namespace VirtualObjects.Queries.Translation
                 case "OrderByDescending":
                     CompileOrderByDescending(expression.Arguments[1], buffer);
                     break;
+                case "LongCount":
                 case "Count":
                     CompileCountCall(expression.Arguments, buffer);
                     break;
