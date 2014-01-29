@@ -135,6 +135,7 @@ namespace VirtualObjects.Queries.Translation
         public Boolean ShouldReturn { get { return ParameterCount > 0 && ParameterCount == Parameters.Count; } }
 
         public IEntityInfo EntityInfo { get; set; }
+        public Type OutputType { get; set; }
 
         /// <summary>
         /// Translates the query.
@@ -167,7 +168,8 @@ namespace VirtualObjects.Queries.Translation
             {
                 CommandText = Merge(buffer),
                 Parameters = Parameters,
-                PredicatedColumns = buffer.PredicatedColumns
+                PredicatedColumns = buffer.PredicatedColumns,
+                OutputType = OutputType
             };
         }
 
@@ -273,7 +275,11 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            if ( parametersOnly && (expression.Method.Name == "Count" || expression.Method.Name == "LongCount" ) )
+            if ( parametersOnly && (
+                expression.Method.Name == "Count" || 
+                expression.Method.Name == "LongCount" ||
+                expression.Method.Name == "FirstOrDefault" ||
+                expression.Method.Name == "SingleOrDefault") )
             {
                 CompileBinaryExpression(expression.Arguments[1], buffer, parametersOnly);
                 return;
@@ -288,6 +294,10 @@ namespace VirtualObjects.Queries.Translation
                     break;
                 case "Take":
                 case "Skip":
+                case "First":
+                case "FirstOrDefault":
+                case "Single":
+                case "SingleOrDefault":
                     CompileTakeSkip(expression, buffer);
                     break;
                 case "GroupJoin":
@@ -331,7 +341,7 @@ namespace VirtualObjects.Queries.Translation
         {
             var callExpression = expression as MethodCallExpression;
 
-            if (callExpression.Arguments.Count > 1)
+            if (callExpression != null && callExpression.Arguments.Count > 1)
             {
                 return callExpression.Arguments[1];
             }
@@ -476,6 +486,7 @@ namespace VirtualObjects.Queries.Translation
 
             if ( lambda.Body is MemberExpression )
             {
+                OutputType = lambda.ReturnType;
                 buffer.Projection = CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
             }
             else
@@ -488,6 +499,8 @@ namespace VirtualObjects.Queries.Translation
                     {
                         return;
                     }
+                    
+                    OutputType = newExpression.Type;
 
                     buffer.Projection = CompileAndGetBuffer(() =>
                     {
@@ -544,7 +557,7 @@ namespace VirtualObjects.Queries.Translation
             }
         }
 
-        private static void CompileTakeSkip(MethodCallExpression expression, CompilerBuffer buffer)
+        private void CompileTakeSkip(MethodCallExpression expression, CompilerBuffer buffer)
         {
             switch ( expression.Method.Name )
             {
@@ -553,6 +566,19 @@ namespace VirtualObjects.Queries.Translation
                     break;
                 case "Take":
                     buffer.Take = (int)ParseValue(expression.Arguments[1]);
+                    break;
+                case "FirstOrDefault":
+                case "SingleOrDefault":
+                    if (expression.Arguments.Count > 1)
+                    {
+                        InitBinaryExpressionCall(buffer);
+                        CompileBinaryExpression(expression.Arguments[1], buffer);
+                    }
+                    buffer.Take = 1;
+                    break;
+                case "First":
+                case "Single":
+                    buffer.Take = 1;
                     break;
             }
         }
@@ -627,6 +653,7 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
+            OutputType = buffer.EntityInfo.EntityType;
             buffer.From = _formatter.FormatTableName(buffer.EntityInfo.EntityName, _index);
         }
 

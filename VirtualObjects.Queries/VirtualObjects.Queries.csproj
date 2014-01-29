@@ -53,9 +53,11 @@
     <Compile Include="ConcurrentReader\DataRow.cs" />
     <Compile Include="ConcurrentReader\IConcurrentDataReader.cs" />
     <Compile Include="ConcurrentReader\Tuple.cs" />
+    <Compile Include="Execution\QueryExecutor.cs" />
     <Compile Include="Execution\CompositeExecutor.cs" />
     <Compile Include="Execution\CountQueryExecutor.cs" />
     <Compile Include="Execution\IQueryExecutor.cs" />
+    <Compile Include="Execution\SingleQueryExecutor.cs" />
     <Compile Include="IQueryInfo.cs" />
     <Compile Include="Mapping\DynamicEntityMapper.cs" />
     <Compile Include="Mapping\DynamicTypeEntityMapper.cs" />

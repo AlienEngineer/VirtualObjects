@@ -13,5 +13,6 @@ namespace VirtualObjects
     public interface IConnection
     {
         object ExecuteScalar(string commandText, IDictionary<string, object> parameters);
+        IDataReader ExecuteReader(string commandText, IDictionary<string, object> parameters);
     }
 }

@@ -12,19 +12,19 @@ namespace VirtualObjects.Queries.Execution
         /// <summary>
         /// Executes the query.
         /// </summary>
-        /// <param name="query">The query.</param>
-        /// <param name="context"></param>
+        /// <param name="expression">The expression.</param>
+        /// <param name="context">The context.</param>
         /// <returns></returns>
-        object ExecuteQuery(Expression query, Context context);
+        object ExecuteQuery(Expression expression, Context context);
 
         /// <summary>
         /// Executes the query.
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="query">The query.</param>
-        /// <param name="context"></param>
+        /// <param name="expression">The expression.</param>
+        /// <param name="context">The context.</param>
         /// <returns></returns>
-        TResult ExecuteQuery<TResult>(Expression query, Context context);
+        TResult ExecuteQuery<TResult>(Expression expression, Context context);
 
         /// <summary>
         /// Determines whether this instance can execute the specified method.

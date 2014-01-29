@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using VirtualObjects.Config;
@@ -16,6 +17,8 @@ namespace VirtualObjects.Queries
         public IDictionary<string, object> Parameters { get; set; }
 
         public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
+        
+        public Type OutputType { get; set; }
 
         #endregion
     }

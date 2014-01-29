@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using VirtualObjects.Config;
@@ -24,11 +25,16 @@ namespace VirtualObjects.Queries.Mapping
         {
             // reader = new BlockingDataReader(reader);
 
-            var result = new List<TEntity>();
+            return MapEntities(reader, queryInfo, typeof (TEntity)).Cast<TEntity>();
+        }
+
+        public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType)
+        {
+            var result = new List<Object>();
             var context = new MapperContext
             {
-                EntityInfo = _mapper.Map(typeof(TEntity)),
-                OutputType = typeof(TEntity),
+                EntityInfo = _mapper.Map(outputType),
+                OutputType = outputType,
                 EntityProvider = _entityProvider,
                 Mapper = _mapper,
                 QueryInfo = queryInfo
@@ -49,7 +55,7 @@ namespace VirtualObjects.Queries.Mapping
 
             while ( context.Read || reader.Read() )
             {
-                result.Add((TEntity)entityMapper.MapEntity(reader, context.CreateEntity(), context));
+                result.Add(entityMapper.MapEntity(reader, context.CreateEntity(), context));
             }
 
             reader.Close();

@@ -9,6 +9,7 @@ using VirtualObjects.Config;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Execution;
 using VirtualObjects.Queries.Formatters;
+using VirtualObjects.Queries.Mapping;
 using VirtualObjects.Queries.Translation;
 using VirtualObjects.Tests.Config;
 
@@ -38,14 +39,39 @@ namespace VirtualObjects.Tests
 
             ConnectionManager = this;
 
-            QueryProvider = new QueryProvider(
+            QueryProvider = MakeQueryProvider();
+        }
+
+        private IQueryProvider MakeQueryProvider()
+        {
+            var entityProvider = new EntityProvider.EntityProviderComposite(
+                new List<IEntityProvider>
+                {
+                    new EntityProvider.EntityProvider(),
+                    new EntityProvider.DynamicTypeProvider(),
+                    new EntityProvider.CollectionTypeEntityProvider()
+                });
+
+            var entitiesMapper = new CollectionEntitiesMapper(Mapper,
+                entityProvider,
+                new List<IEntityMapper>
+                {
+                    new OrderedEntityMapper(),
+                    new DynamicTypeEntityMapper(),
+                    new DynamicEntityMapper(),
+                    new DynamicWithMemberEntityMapper(),
+                    new GroupedDynamicEntityMapper()
+                });
+
+            return new QueryProvider(
                 new CompositeExecutor(
                     new List<IQueryExecutor>
                     {
-                        new CountQueryExecutor(Translator)
+                        new CountQueryExecutor(Translator),
+                        new QueryExecutor(entitiesMapper, Translator),
+                        new SingleQueryExecutor(entitiesMapper, Translator)
                     }), new Context { Connection = ConnectionManager });
         }
-
 
 
         [SetUp]
@@ -141,6 +167,12 @@ namespace VirtualObjects.Tests
         {
             var cmd = CreateCommand(commandText, parameters);
             return cmd.ExecuteScalar();
+        }
+
+        public IDataReader ExecuteReader(string commandText, IDictionary<string, object> parameters)
+        {
+            var cmd = CreateCommand(commandText, parameters);
+            return cmd.ExecuteReader();
         }
     }
 }
