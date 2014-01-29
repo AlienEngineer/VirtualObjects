@@ -317,15 +317,30 @@ namespace VirtualObjects.Queries.Translation
                     CompileMethod(expression.Arguments[1], _formatter.Avg, buffer);
                     break;
                 case "Min":
-                    CompileMethod(expression.Arguments[1], _formatter.Min, buffer);
+                    CompileMethod(CreateLambdaWithArgument(expression), _formatter.Min, buffer);
                     break;
                 case "Max":
-                    CompileMethod(expression.Arguments[1], _formatter.Max, buffer);
+                    CompileMethod(CreateLambdaWithArgument(expression), _formatter.Max, buffer);
                     break;
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
+        }
 
+        private Expression CreateLambdaWithArgument(Expression expression)
+        {
+            var callExpression = expression as MethodCallExpression;
+
+            if (callExpression.Arguments.Count > 1)
+            {
+                return callExpression.Arguments[1];
+            }
+
+            var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
+
+            var body = Expression.MakeMemberAccess(parameter, EntityInfo.KeyColumns.First().Property);
+
+            return Expression.Lambda(body, parameter);
         }
 
         private void CompileMethod(Expression expression, String functionName, CompilerBuffer buffer)
