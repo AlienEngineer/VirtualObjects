@@ -275,12 +275,12 @@ namespace VirtualObjects.Queries.Translation
 
             if ( parametersOnly && (
                 expression.Method.Name == "Where" ||
-                expression.Method.Name == "Count" || 
+                expression.Method.Name == "Count" ||
                 expression.Method.Name == "LongCount" ||
                 expression.Method.Name == "FirstOrDefault" ||
                 expression.Method.Name == "First" ||
                 expression.Method.Name == "SingleOrDefault" ||
-                expression.Method.Name == "Single" ) )
+                expression.Method.Name == "Single") )
             {
                 CompileBinaryExpression(expression.Arguments[1], buffer, parametersOnly);
                 return;
@@ -328,26 +328,61 @@ namespace VirtualObjects.Queries.Translation
                     CompileMethod(expression.Arguments[1], _formatter.Avg, buffer);
                     break;
                 case "Min":
-                    CompileMethod(CreateLambdaWithArgument(expression), _formatter.Min, buffer);
+                    CompileMinMaxMethod(expression, _formatter.Min, buffer);
                     break;
                 case "Max":
-                    CompileMethod(CreateLambdaWithArgument(expression), _formatter.Max, buffer);
+                    CompileMinMaxMethod(expression, _formatter.Max, buffer);
                     break;
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
         }
 
-        private Expression CreateLambdaWithArgument(Expression expression)
+        private void CompileMinMaxMethod(MethodCallExpression callExpression, string method, CompilerBuffer buffer)
         {
-            var callExpression = expression as MethodCallExpression;
-
-            if (callExpression != null && callExpression.Arguments.Count > 1)
+            //
+            // If there are arguments on min or max use it.
+            //
+            if ( callExpression.Arguments.Count > 1 )
             {
-                return callExpression.Arguments[1];
+                CompileMethod(callExpression.Arguments[1], method, buffer);
+                return;
             }
 
+            //
+            // Create the proper binary clause to filter the query by min or max.
+            // the first key is used by default for this.
+            //
+
+            throw new TranslationException("The method {Name} without arguments is not supported.", callExpression.Method);
+
             var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
+
+            var member = Expression.MakeMemberAccess(parameter, EntityInfo.KeyColumns.First().Property);
+
+            Indexer[parameter] = this;
+
+            InitBinaryExpressionCall(buffer);
+            buffer.Predicates += _formatter.BeginWrap();
+            {
+                buffer.Predicates += method;
+                buffer.Predicates += _formatter.BeginWrap();
+                {
+                    CompileMemberAccess(member, buffer);    
+                }
+                buffer.Predicates += _formatter.EndWrap();
+
+                buffer.Predicates += " ";
+                buffer.Predicates += _formatter.FormatNode(ExpressionType.Equal);
+                buffer.Predicates += " ";
+                CompileMemberAccess(member, buffer);
+            }
+
+            buffer.Predicates += _formatter.EndWrap();
+        }
+
+        private Expression CreateLambdaWithArgument(ParameterExpression parameter, Expression expression)
+        {
 
             var body = Expression.MakeMemberAccess(parameter, EntityInfo.KeyColumns.First().Property);
 
@@ -500,7 +535,7 @@ namespace VirtualObjects.Queries.Translation
                     {
                         return;
                     }
-                    
+
                     OutputType = newExpression.Type;
 
                     buffer.Projection = CompileAndGetBuffer(() =>
@@ -572,7 +607,7 @@ namespace VirtualObjects.Queries.Translation
                 case "SingleOrDefault":
                 case "First":
                 case "Single":
-                    if (expression.Arguments.Count > 1)
+                    if ( expression.Arguments.Count > 1 )
                     {
                         InitBinaryExpressionCall(buffer);
                         CompileBinaryExpression(expression.Arguments[1], buffer);

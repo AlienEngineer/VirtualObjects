@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using VirtualObjects.Exceptions;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Queries
@@ -184,7 +185,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(REPEAT), ExpectedException(typeof(TranslationException))]
         public void Aggregate_Query_Min_Entity()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().Min());
@@ -193,7 +194,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(1);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(REPEAT), ExpectedException(typeof(TranslationException))]
         public void Aggregate_Query_Max_Entity()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().Max());

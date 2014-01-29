@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Fasterflect;
 
 namespace VirtualObjects.Queries.Execution
 {
@@ -28,7 +29,9 @@ namespace VirtualObjects.Queries.Execution
             return method != null && 
                     !method.ReturnType.IsAssignableFrom(typeof(IEnumerable)) && (
                     method.Name.StartsWith("First") ||
-                    method.Name.StartsWith("Single"));
+                    method.Name.StartsWith("Single") ||
+                    method.Name == "Min" && method.Parameters().Count == 1 ||
+                    method.Name == "Max" && method.Parameters().Count == 1);
         }
     }
 }
