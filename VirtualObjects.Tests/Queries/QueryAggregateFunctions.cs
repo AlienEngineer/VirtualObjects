@@ -67,9 +67,17 @@ namespace VirtualObjects.Tests.Queries
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_Avg()
         {
-            var sum = Diagnostic.Timed(() => Query<Employee>().Average(e => e.EmployeeId));
+            var avg = Diagnostic.Timed(() => Query<Employee>().Average(e => e.EmployeeId));
 
-            sum.Should().Be(5);
+            avg.Should().Be(5);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Avg()
+        {
+            var avg = Diagnostic.Timed(() => Query<Employee>().Average(e => e.EmployeeId));
+
+            avg.Should().Be(5);
         }
     }
 }
