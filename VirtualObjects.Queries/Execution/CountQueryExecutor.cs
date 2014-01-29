@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -22,7 +23,7 @@ namespace VirtualObjects.Queries.Execution
 
         public TResult ExecuteQuery<TResult>(Expression query, Context context)
         {
-            return (TResult) ExecuteQuery(query, context);
+            return (TResult) Convert.ChangeType( ExecuteQuery(query, context), typeof(TResult));
         }
 
         public bool CanExecute(MethodInfo method)

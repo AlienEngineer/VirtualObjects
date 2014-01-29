@@ -264,22 +264,23 @@ namespace VirtualObjects.Queries.Translation
                 && expression.Arguments.Count > 1
                 && expression.Method.Name != "Where"
                 && expression.Method.Name != "Count"
-                && expression.Method.Name != "LongCount" )
+                && expression.Method.Name != "LongCount"
+                && expression.Method.Name != "FirstOrDefault"
+                && expression.Method.Name != "First"
+                && expression.Method.Name != "SingleOrDefault"
+                && expression.Method.Name != "Single" )
             {
-                return;
-            }
-
-            if ( parametersOnly && expression.Method.Name == "Where" )
-            {
-                CompileBinaryExpression(expression.Arguments[1], buffer, parametersOnly);
                 return;
             }
 
             if ( parametersOnly && (
+                expression.Method.Name == "Where" ||
                 expression.Method.Name == "Count" || 
                 expression.Method.Name == "LongCount" ||
                 expression.Method.Name == "FirstOrDefault" ||
-                expression.Method.Name == "SingleOrDefault") )
+                expression.Method.Name == "First" ||
+                expression.Method.Name == "SingleOrDefault" ||
+                expression.Method.Name == "Single" ) )
             {
                 CompileBinaryExpression(expression.Arguments[1], buffer, parametersOnly);
                 return;
@@ -569,15 +570,13 @@ namespace VirtualObjects.Queries.Translation
                     break;
                 case "FirstOrDefault":
                 case "SingleOrDefault":
+                case "First":
+                case "Single":
                     if (expression.Arguments.Count > 1)
                     {
                         InitBinaryExpressionCall(buffer);
                         CompileBinaryExpression(expression.Arguments[1], buffer);
                     }
-                    buffer.Take = 1;
-                    break;
-                case "First":
-                case "Single":
                     buffer.Take = 1;
                     break;
             }

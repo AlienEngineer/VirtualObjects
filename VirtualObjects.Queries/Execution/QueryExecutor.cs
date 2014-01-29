@@ -27,13 +27,13 @@ namespace VirtualObjects.Queries.Execution
 
         public virtual object ExecuteQuery(Expression expression, Context context)
         {
-            return MapEntities(expression, context);
-        }
-
-        private object MapEntities(Expression expression, Context context)
-        {
             var queryInfo = _translator.TranslateQuery(expression);
 
+            return MapEntities(queryInfo, context);
+        }
+
+        private object MapEntities(IQueryInfo queryInfo, Context context)
+        {
             var reader = context.Connection.ExecuteReader(queryInfo.CommandText, queryInfo.Parameters);
 
             return _mapper.MapEntities(reader, queryInfo, queryInfo.OutputType);
@@ -41,8 +41,10 @@ namespace VirtualObjects.Queries.Execution
 
         public virtual TResult ExecuteQuery<TResult>(Expression expression, Context context)
         {
-            var methodIterator = ProxyGenericIteratorMethod.MakeGenericMethod(typeof(TResult));
-            var result = MapEntities(expression, context);
+            var queryInfo = _translator.TranslateQuery(expression);
+            
+            var methodIterator = ProxyGenericIteratorMethod.MakeGenericMethod(queryInfo.OutputType);
+            var result = MapEntities(queryInfo, context);
 
             return (TResult)methodIterator.Invoke(null, new[] { result });
         }

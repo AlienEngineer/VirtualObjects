@@ -20,11 +20,18 @@ namespace VirtualObjects.Queries.Execution
 
         public object ExecuteQuery(Expression expression, Context context)
         {
+            var executor = GetQueryExecutor(expression);
+
+            return executor.ExecuteQuery(expression, context);
+        }
+
+        private IQueryExecutor GetQueryExecutor(Expression expression)
+        {
             MethodInfo method = ExtractFistMethod(expression);
 
             var executor = _executors.FirstOrDefault(e => e.CanExecute(method));
 
-            if ( executor == null )
+            if (executor == null)
             {
                 if (method == null)
                 {
@@ -35,8 +42,7 @@ namespace VirtualObjects.Queries.Execution
                     throw new ExecutionException("Unable to find the proper executor for {Name} method.", method);
                 }
             }
-
-            return executor.ExecuteQuery(expression, context);
+            return executor;
         }
 
         private MethodInfo ExtractFistMethod(Expression expression)
@@ -48,7 +54,9 @@ namespace VirtualObjects.Queries.Execution
 
         public TResult ExecuteQuery<TResult>(Expression expression, Context context)
         {
-            return (TResult)Convert.ChangeType(ExecuteQuery(expression, context), typeof(TResult));
+            var executor = GetQueryExecutor(expression);
+
+            return executor.ExecuteQuery<TResult>(expression, context);
         }
 
         public bool CanExecute(MethodInfo method)
