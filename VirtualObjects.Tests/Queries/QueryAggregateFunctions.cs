@@ -95,7 +95,7 @@ namespace VirtualObjects.Tests.Queries
         {
             var max = Diagnostic.Timed(() => Query<Employee>().Max(e => e.EmployeeId));
 
-            max.Should().Be(5);
+            max.Should().Be(9);
         }
 
 
@@ -104,7 +104,7 @@ namespace VirtualObjects.Tests.Queries
         {
             var min = Diagnostic.Timed(() => Query<Employee>().Min(e => e.EmployeeId));
 
-            min.Should().Be(5);
+            min.Should().Be(1);
         }
 
         [Test, Repeat(REPEAT)]

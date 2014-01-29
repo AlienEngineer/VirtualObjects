@@ -26,6 +26,8 @@ namespace VirtualObjects.Queries.Formatters
         String Count { get; }
         String Sum { get; }
         String Avg { get; }
+        String Min { get; }
+        String Max { get; }
 
         String FormatField(String name);
 

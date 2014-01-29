@@ -29,6 +29,8 @@ namespace VirtualObjects.Queries.Formatters
             Count = "Count(*)";
             Sum = "Sum";
             Avg = "Avg";
+            Min = "Min";
+            Max = "Max";
         }
 
         private static string Wrap(string name)
@@ -55,6 +57,8 @@ namespace VirtualObjects.Queries.Formatters
         public string Count { get; private set; }
         public string Sum { get; private set; }
         public string Avg { get; private set; }
+        public string Min { get; private set; }
+        public string Max { get; private set; }
 
         public String FormatField(String name)
         {

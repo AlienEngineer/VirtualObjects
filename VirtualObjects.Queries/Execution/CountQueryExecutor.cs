@@ -30,7 +30,9 @@ namespace VirtualObjects.Queries.Execution
             return method != null && (
                 method.Name == "Count" ||
                 method.Name == "LongCount" || 
-                method.Name == "Sum" || 
+                method.Name == "Sum" ||
+                method.Name == "Min" ||
+                method.Name == "Max" || 
                 method.Name == "Average");
         }
     }

@@ -311,25 +311,21 @@ namespace VirtualObjects.Queries.Translation
                     CompileCountCall(expression.Arguments, buffer);
                     break;
                 case "Sum":
-                    CompileSumCall(expression.Arguments[1], buffer);
+                    CompileMethod(expression.Arguments[1], _formatter.Sum, buffer);
                     break;
                 case "Average":
-                    CompileAvgCall(expression.Arguments[1], buffer);
+                    CompileMethod(expression.Arguments[1], _formatter.Avg, buffer);
+                    break;
+                case "Min":
+                    CompileMethod(expression.Arguments[1], _formatter.Min, buffer);
+                    break;
+                case "Max":
+                    CompileMethod(expression.Arguments[1], _formatter.Max, buffer);
                     break;
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
 
-        }
-
-        private void CompileAvgCall(Expression expression, CompilerBuffer buffer)
-        {
-            CompileMethod(expression, _formatter.Avg, buffer);
-        }
-
-        private void CompileSumCall(Expression expression, CompilerBuffer buffer)
-        {
-            CompileMethod(expression, _formatter.Sum, buffer);
         }
 
         private void CompileMethod(Expression expression, String functionName, CompilerBuffer buffer)
