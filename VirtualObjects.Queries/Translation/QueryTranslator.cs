@@ -254,28 +254,11 @@ namespace VirtualObjects.Queries.Translation
             }
 
             CompileExpression(expression.Arguments.FirstOrDefault(), buffer);
-
-            //if ( expression.Arguments.Count == 1 )
-            //{
-            //    return;
-            //}
-
-            if ( parametersOnly
-                && expression.Arguments.Count > 1
-                && expression.Method.Name != "Where"
-                && expression.Method.Name != "Count"
-                && expression.Method.Name != "LongCount"
-                && expression.Method.Name != "FirstOrDefault"
-                && expression.Method.Name != "First"
-                && expression.Method.Name != "SingleOrDefault"
-                && expression.Method.Name != "Single" )
-            {
-                return;
-            }
-
-            if ( parametersOnly && (
+            
+            if ( parametersOnly &&  expression.Arguments.Count > 1 && (
                 expression.Method.Name == "Where" ||
                 expression.Method.Name == "Count" ||
+                expression.Method.Name == "Any" ||
                 expression.Method.Name == "LongCount" ||
                 expression.Method.Name == "FirstOrDefault" ||
                 expression.Method.Name == "First" ||
@@ -317,9 +300,10 @@ namespace VirtualObjects.Queries.Translation
                 case "OrderByDescending":
                     CompileOrderByDescending(expression.Arguments[1], buffer);
                     break;
+                case "Any":
                 case "LongCount":
                 case "Count":
-                    CompileCountCall(expression.Arguments, buffer);
+                    CompileCountOrAnyCall(expression, buffer);
                     break;
                 case "Sum":
                     CompileMethod(expression.Arguments[1], _formatter.Sum, buffer);
@@ -354,7 +338,7 @@ namespace VirtualObjects.Queries.Translation
             // the first key is used by default for this.
             //
 
-            throw new TranslationException("The method {Name} without arguments is not supported.", callExpression.Method);
+            throw new TranslationException(Errors.Translation_Method_NoArgs_NotSupported, callExpression.Method);
 
             var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
 
@@ -403,18 +387,28 @@ namespace VirtualObjects.Queries.Translation
             }, buffer);
         }
 
-        private void CompileCountCall(ReadOnlyCollection<Expression> arguments, CompilerBuffer buffer)
+        private void CompileCountOrAnyCall(MethodCallExpression callExpression, CompilerBuffer buffer)
         {
-            if ( arguments.Count > 1 )
+            if ( callExpression.Arguments.Count > 1 )
             {
                 //
                 // Appends Where or And before the next predicate.
                 //
                 InitBinaryExpressionCall(buffer);
-                CompileBinaryExpression(arguments[1], buffer);
+                CompileBinaryExpression(callExpression.Arguments[1], buffer);
             }
 
-            buffer.Projection = _formatter.Count;
+            switch ( callExpression.Method.Name)
+            {
+                case "LongCount":
+                case "Count":
+                    buffer.Projection = _formatter.Count;
+                    break;
+                case "Any":
+                    buffer.Projection = _formatter.Any;
+                    break;
+            }
+            
         }
 
         private static void InitBinaryExpressionCall(CompilerBuffer buffer)

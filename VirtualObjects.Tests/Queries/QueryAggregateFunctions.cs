@@ -78,7 +78,7 @@ namespace VirtualObjects.Tests.Queries
         {
             var count = Diagnostic.Timed(() => Query<Employee>().Any(e => e.EmployeeId == 50));
 
-            count.Should().BeTrue();
+            count.Should().BeFalse();
         }
 
 

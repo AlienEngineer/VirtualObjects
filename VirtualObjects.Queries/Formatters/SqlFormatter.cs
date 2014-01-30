@@ -27,6 +27,7 @@ namespace VirtualObjects.Queries.Formatters
             OrderBy = "Order By";
             Descending = "Desc";
             Count = "Count(*)";
+            Any = "Case When Count(*) > 0 Then 1 When Count(*) = 0 Then 0 End";
             Sum = "Sum";
             Avg = "Avg";
             Min = "Min";
@@ -59,6 +60,7 @@ namespace VirtualObjects.Queries.Formatters
         public string Avg { get; private set; }
         public string Min { get; private set; }
         public string Max { get; private set; }
+        public string Any { get; private set; }
 
         public String FormatField(String name)
         {
