@@ -265,7 +265,7 @@ namespace VirtualObjects.Queries.Translation
                 expression.Method.Name == "SingleOrDefault" ||
                 expression.Method.Name == "Single") )
             {
-                CompileBinaryExpression(expression.Arguments[1], buffer, parametersOnly);
+                CompileBinaryExpression(expression.Arguments[1], buffer, true);
                 return;
             }
 
@@ -340,38 +340,38 @@ namespace VirtualObjects.Queries.Translation
 
             throw new TranslationException(Errors.Translation_Method_NoArgs_NotSupported, callExpression.Method);
 
-            var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
+            //var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
 
-            var member = Expression.MakeMemberAccess(parameter, EntityInfo.KeyColumns.First().Property);
+            //var member = Expression.MakeMemberAccess(parameter, EntityInfo.KeyColumns.First().Property);
 
-            Indexer[parameter] = this;
+            //Indexer[parameter] = this;
 
-            InitBinaryExpressionCall(buffer);
-            buffer.Predicates += _formatter.BeginWrap();
-            {
-                buffer.Predicates += method;
-                buffer.Predicates += _formatter.BeginWrap();
-                {
-                    CompileMemberAccess(member, buffer);    
-                }
-                buffer.Predicates += _formatter.EndWrap();
+            //InitBinaryExpressionCall(buffer);
+            //buffer.Predicates += _formatter.BeginWrap();
+            //{
+            //    buffer.Predicates += method;
+            //    buffer.Predicates += _formatter.BeginWrap();
+            //    {
+            //        CompileMemberAccess(member, buffer);    
+            //    }
+            //    buffer.Predicates += _formatter.EndWrap();
 
-                buffer.Predicates += " ";
-                buffer.Predicates += _formatter.FormatNode(ExpressionType.Equal);
-                buffer.Predicates += " ";
-                CompileMemberAccess(member, buffer);
-            }
+            //    buffer.Predicates += " ";
+            //    buffer.Predicates += _formatter.FormatNode(ExpressionType.Equal);
+            //    buffer.Predicates += " ";
+            //    CompileMemberAccess(member, buffer);
+            //}
 
-            buffer.Predicates += _formatter.EndWrap();
+            //buffer.Predicates += _formatter.EndWrap();
         }
 
-        private Expression CreateLambdaWithArgument(ParameterExpression parameter, Expression expression)
-        {
+        //private Expression CreateLambdaWithArgument(ParameterExpression parameter, Expression expression)
+        //{
 
-            var body = Expression.MakeMemberAccess(parameter, EntityInfo.KeyColumns.First().Property);
+        //    var body = Expression.MakeMemberAccess(parameter, EntityInfo.KeyColumns.First().Property);
 
-            return Expression.Lambda(body, parameter);
-        }
+        //    return Expression.Lambda(body, parameter);
+        //}
 
         private void CompileMethod(Expression expression, String functionName, CompilerBuffer buffer)
         {
