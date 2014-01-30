@@ -34,9 +34,9 @@ namespace VirtualObjects.Queries.Execution
                 method.Name == "LongCount" ||
                 method.Name == "Any" ||
                 method.Name == "Sum" ||
-                method.Name == "Min" && method.Parameters().Count == 2 ||
-                method.Name == "Max" && method.Parameters().Count == 2 || 
-                method.Name == "Average");
+                method.Name == "Contains" ||
+                method.Name == "Average" ||
+                (method.Parameters().Count == 2 && (method.Name == "Min" || method.Name == "Max")));
         }
     }
 }

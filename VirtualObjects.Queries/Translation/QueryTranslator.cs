@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Web.UI.WebControls;
 using Fasterflect;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
@@ -300,6 +301,9 @@ namespace VirtualObjects.Queries.Translation
                 case "OrderByDescending":
                     CompileOrderByDescending(expression.Arguments[1], buffer);
                     break;
+                case "Contains":
+                    CompileContains(expression, buffer);
+                    break;
                 case "Any":
                 case "LongCount":
                 case "Count":
@@ -320,6 +324,31 @@ namespace VirtualObjects.Queries.Translation
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
+        }
+
+        private void CompileContains(MethodCallExpression expression, CompilerBuffer buffer)
+        {
+            // Strategy
+            // Create a new MethodCallExpression to Any with the proper predicate.
+
+            var method = typeof (Queryable)
+                .Methods(Flags.Static | Flags.StaticPublic, "Any")
+                .First(e => e.Parameters().Count == 2)
+                .MakeGenericMethod(EntityInfo.EntityType);
+
+            
+            var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
+
+            var lambda = Expression.Lambda(
+                Expression.MakeBinary(
+                    ExpressionType.Equal,
+                    parameter,
+                    expression.Arguments[1]),
+                parameter);
+
+
+            var call = Expression.Call(method, expression.Arguments.First(), lambda);
+            CompileCountOrAnyCall(call, buffer);
         }
 
         private void CompileMinMaxMethod(MethodCallExpression callExpression, string method, CompilerBuffer buffer)
@@ -1116,7 +1145,7 @@ namespace VirtualObjects.Queries.Translation
                 // Not very used but still...
                 // e => 1 == e.EmployeeId
                 //
-                if ( IsConstant(binary.Left) )
+                if ( IsConstant(left) )
                 {
                     left = binary.Right;
                     right = binary.Left;
@@ -1130,6 +1159,12 @@ namespace VirtualObjects.Queries.Translation
                 {
                     throw new TranslationException(Errors.Translation_ManyMembersAccess_On_BothSides_NotSupported);
                 }
+                else if (left is ParameterExpression && IsConstant(right) && right.Type == left.Type)
+                {
+                    CompileParameterToObject((ParameterExpression)left, right, buffer);
+                    return;
+                }
+
 
                 CompilePredicateExpression(left, buffer);
 
@@ -1165,6 +1200,24 @@ namespace VirtualObjects.Queries.Translation
                 }
 
             }
+            buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+        }
+
+        private void CompileParameterToObject(ParameterExpression left, Expression right, CompilerBuffer buffer)
+        {
+            var value = ParseValue(right);
+
+            foreach (var keyColumn in EntityInfo.KeyColumns)
+            {
+                CompileBinaryExpression(
+                    Expression.MakeBinary(
+                        ExpressionType.Equal, 
+                        Expression.MakeMemberAccess(left, keyColumn.Property), 
+                        Expression.Constant(keyColumn.GetValue(value))),
+                    buffer
+                );
+            }
+
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
         }
 
