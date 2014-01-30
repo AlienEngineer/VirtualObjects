@@ -57,9 +57,26 @@ namespace VirtualObjects.Config
             foreach ( var column in entityInfo.Columns )
             {
                 column.ForeignKey = GetForeignKey(column.Property);
-            }
 
+            }
+            
             entityInfo.Columns = WrapColumns(entityInfo.Columns).ToList();
+            entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey).ToList();
+
+            entityInfo.Columns.ForEach(e =>
+            {
+
+                if (e.ForeignKey == null && !e.Property.PropertyType.IsFrameworkType())
+                {
+                    throw new ConfigException("The column [{ColumnName}] returns a complex type but is not associated with another key.",e);
+                }
+
+                if ( e.ForeignKey != null && !(e is EntityBoundColumnInfo) )
+                {
+                    throw new ConfigException("The column [{ColumnName}] returns a complex type but is not associated with another key.", e);
+                }
+
+            });
 
             //
             // Calculation of the entity Key.
@@ -179,7 +196,7 @@ namespace VirtualObjects.Config
 
             if ( foreignKey == null && ColumnForeignKey.Any() )
             {
-                throw new VirtualObjectsException(Errors.Mapping_UnableToGetForeignKey, propertyInfo);
+                throw new ConfigException(Errors.Mapping_UnableToGetForeignKey, propertyInfo);
             }
 
             return foreignKey;
@@ -212,7 +229,7 @@ namespace VirtualObjects.Config
                 }
                 catch ( Exception ex )
                 {
-                    throw new UnableToSetOrGetTheFieldValueException(
+                    throw new ConfigException(
                         Errors.Mapping_UnableToGetValue,
                         new
                         {
@@ -232,7 +249,7 @@ namespace VirtualObjects.Config
                 }
                 catch ( Exception ex )
                 {
-                    throw new UnableToSetOrGetTheFieldValueException(
+                    throw new ConfigException(
                         Errors.Mapping_UnableToSetValue,
                         new
                         {

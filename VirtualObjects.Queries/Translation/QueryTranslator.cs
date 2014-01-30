@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using System.Web.UI.WebControls;
 using Fasterflect;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
@@ -59,6 +58,14 @@ namespace VirtualObjects.Queries.Translation
             public int Parenthesis { get; set; }
             public int Take { get; set; }
             public int Skip { get; set; }
+
+            public void ActAsStub()
+            {
+                From = new StubBuffer();
+                Predicates = new StubBuffer();
+                OrderBy = new StubBuffer();
+                Projection = new StubBuffer();
+            }
 
         }
 
@@ -189,6 +196,11 @@ namespace VirtualObjects.Queries.Translation
             queryable = EvaluateQuery(queryable);
 
             var buffer = CreateBuffer(queryable);
+            
+            //
+            // Use a different type of buffer that doesn't append nothing.
+            //
+            buffer.ActAsStub();
 
             //
             // Compiles the ExpressionTree
@@ -1161,7 +1173,7 @@ namespace VirtualObjects.Queries.Translation
                 }
                 else if (left is ParameterExpression && IsConstant(right) && right.Type == left.Type)
                 {
-                    CompileParameterToObject((ParameterExpression)left, right, buffer);
+                    CompileParameterToObject((ParameterExpression)left, right, buffer, parametersOnly);
                     return;
                 }
 
@@ -1203,20 +1215,33 @@ namespace VirtualObjects.Queries.Translation
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
         }
 
-        private void CompileParameterToObject(ParameterExpression left, Expression right, CompilerBuffer buffer)
+        private void CompileParameterToObject(ParameterExpression left, Expression right, CompilerBuffer buffer, bool parametersOnly)
         {
             var value = ParseValue(right);
 
             foreach (var keyColumn in EntityInfo.KeyColumns)
             {
-                CompileBinaryExpression(
-                    Expression.MakeBinary(
-                        ExpressionType.Equal, 
-                        Expression.MakeMemberAccess(left, keyColumn.Property), 
-                        Expression.Constant(keyColumn.GetValue(value))),
-                    buffer
-                );
+                var fieldFinalValue = keyColumn.GetFieldFinalValue(value);
+                if (parametersOnly)
+                {
+                    CompileConstant(Expression.Constant(fieldFinalValue), buffer);
+                    continue;
+                }
+                
+                buffer.Predicates += _formatter.FormatFieldWithTable(keyColumn.ColumnName, _rootTranslator._index);
+                buffer.Predicates += " " + _formatter.FormatNode(ExpressionType.Equal) + " ";
+
+                CompileConstant(Expression.Constant(fieldFinalValue), buffer);
+                
+                buffer.Predicates += " " + _formatter.And + " ";
             }
+
+            if ( parametersOnly )
+            {
+                return;
+            }
+
+            buffer.Predicates.RemoveLast(_formatter.And.Length + 2);
 
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
         }

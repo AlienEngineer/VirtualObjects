@@ -68,6 +68,21 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Contains_MultipleKeys()
+        {
+
+            var employeeTerritory = new EmployeeTerritories
+            {
+                Employee = new Employee { EmployeeId = 1 },
+                Territories = new Territories { TerritoryId = "06897" }
+            };
+
+            var count = Diagnostic.Timed(() => Query<EmployeeTerritories>().Contains(employeeTerritory));
+
+            count.Should().BeTrue();
+        }
+
+        [Test, Repeat(REPEAT)]
         public void Aggregate_Query_Contains_False()
         {
             var employee = new Employee { EmployeeId = 50 };

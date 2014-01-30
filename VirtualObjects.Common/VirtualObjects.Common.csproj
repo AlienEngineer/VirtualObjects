@@ -57,6 +57,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Errors.resx</DependentUpon>
     </Compile>
+    <Compile Include="Exceptions\ConfigException.cs" />
     <Compile Include="Exceptions\ExecutionException.cs" />
     <Compile Include="IEntityProvider.cs" />
     <Compile Include="Exceptions\MappingException.cs" />

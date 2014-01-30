@@ -24,6 +24,8 @@ namespace VirtualObjects.Exceptions
             : base(AppendInnerExceptionToMessage(message.FormatWith(src), innerException), innerException)
         {
         }
+
+
         private static String AppendInnerExceptionToMessage(String message, Exception innerException)
         {
             return innerException == null ? 

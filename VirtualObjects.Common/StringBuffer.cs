@@ -6,11 +6,11 @@ namespace VirtualObjects
     // TODO: Verify that using this is better than " " + " "
     public class StringBuffer
     {
-        readonly StringBuilder _sb = new StringBuilder();
+        protected readonly StringBuilder Sb = new StringBuilder();
 
         private StringBuffer(string str)
         {
-            _sb.Append(str);
+            Sb.Append(str);
         }
 
         public StringBuffer() {}
@@ -32,7 +32,7 @@ namespace VirtualObjects
 
         public static implicit operator StringBuilder(StringBuffer str)
         {
-            return str._sb;
+            return str.Sb;
         }
 
         public static StringBuffer operator +(StringBuffer sb1, String sb2)
@@ -42,23 +42,57 @@ namespace VirtualObjects
                 sb1 = new StringBuffer();
             }
 
-            sb1._sb.Append(sb2);
+            sb1.Sb.Append(sb2);
             return sb1;
         }
 
         public String Replace(String oldStr, String newStr)
         {
-            return _sb.ToString().Replace(oldStr, newStr);
+            return Sb.ToString().Replace(oldStr, newStr);
         }
 
         public override string ToString()
         {
-            return _sb.ToString();
+            return Sb.ToString();
         }
 
         public void RemoveLast(string fieldSeparator)
         {
-            _sb.Remove(_sb.Length - fieldSeparator.Length, fieldSeparator.Length);
+            // _sb.Remove(_sb.Length - fieldSeparator.Length, fieldSeparator.Length);
+            RemoveLast(fieldSeparator.Length);
+        }
+
+        public void RemoveLast(int nChars)
+        {
+            Sb.Remove(Sb.Length - nChars, nChars);
+        }
+    }
+
+    public class StubBuffer : StringBuffer
+    {
+        public static implicit operator StubBuffer(String str)
+        {
+            return new StubBuffer();
+        }
+
+        public static implicit operator StubBuffer(StringBuilder str)
+        {
+            return (str == null) ? null : str.ToString();
+        }
+
+        public static implicit operator String(StubBuffer str)
+        {
+            return (str == null) ? null : str.ToString();
+        }
+
+        public static implicit operator StringBuilder(StubBuffer str)
+        {
+            return str.Sb;
+        }
+
+        public static StringBuffer operator +(StubBuffer sb1, String sb2)
+        {
+            return sb1;
         }
     }
 }
