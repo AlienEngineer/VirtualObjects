@@ -187,6 +187,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The method {Name} without arguments is not supported..
+        /// </summary>
+        public static string Translation_Method_NoArgs_NotSupported {
+            get {
+                return ResourceManager.GetString("Translation_Method_NoArgs_NotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{MethodName}] Method translation not yet supported..
         /// </summary>
         public static string Translation_MethodCall_NotSupported {

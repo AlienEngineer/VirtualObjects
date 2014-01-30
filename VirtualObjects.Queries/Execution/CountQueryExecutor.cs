@@ -31,7 +31,8 @@ namespace VirtualObjects.Queries.Execution
         {
             return method != null && (
                 method.Name == "Count" ||
-                method.Name == "LongCount" || 
+                method.Name == "LongCount" ||
+                method.Name == "Any" ||
                 method.Name == "Sum" ||
                 method.Name == "Min" && method.Parameters().Count == 2 ||
                 method.Name == "Max" && method.Parameters().Count == 2 || 
