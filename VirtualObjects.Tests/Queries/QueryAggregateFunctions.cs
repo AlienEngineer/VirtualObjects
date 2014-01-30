@@ -277,7 +277,8 @@ namespace VirtualObjects.Tests.Queries
             // Select [T0].* from Employees [T0] Order By [T0].[City]
             // 
             // grouping of this should be made by the entity mapper. While the key is the same.
-
+            // Should this be supported?! This will be done locally... 
+            // Support this if there is any way to group on the SQL Server side.
 
             employee.Should().NotBeNull();
             employee.Count().Should().Be(9);
@@ -298,5 +299,89 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(9);
         }
 
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_GroupBy_With_Avg()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { City = e.Key, Average = e.Average(o => o.EmployeeId) }));
+
+            // Select [T0].[City], Avg([T0].[EmployeeId]) as Average from Employees [T0] Group By [T0].[City]
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_GroupBy_With_Max()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { City = e.Key, Max = e.Max(o => o.EmployeeId) }));
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_GroupBy_With_Min()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { City = e.Key, Min = e.Min(o => o.EmployeeId) }));
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_GroupBy_With_Count()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { City = e.Key, Min = e.Count() }));
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_GroupBy_With_PredicatedCount_OnProjection_Unsupported()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { City = e.Key, Min = e.Count(o => o.EmployeeId == 1) }));
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_GroupBy_With_LongCount()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { City = e.Key, Min = e.LongCount() }));
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
     }
 }
