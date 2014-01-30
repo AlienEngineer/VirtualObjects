@@ -56,6 +56,27 @@ namespace VirtualObjects.Tests.Queries
             count.Should().Be(4);
         }
 
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Contains()
+        {
+            var employee = new Employee { EmployeeId = 1 };
+
+            var count = Diagnostic.Timed(() => Query<Employee>().Contains(employee));
+
+            count.Should().BeTrue();
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Contains_False()
+        {
+            var employee = new Employee { EmployeeId = 50 };
+
+            var count = Diagnostic.Timed(() => Query<Employee>().Contains(employee));
+
+            count.Should().BeFalse();
+        }
+
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_Any()
         {
@@ -230,6 +251,6 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        
+
     }
 }
