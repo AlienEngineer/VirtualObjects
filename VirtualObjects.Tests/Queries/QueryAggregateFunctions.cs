@@ -266,6 +266,37 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_GroupBy()
+        {
+            var employee = Diagnostic.Timed(() => 
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { City = e.Key, Employees = e }));
+
+            // Select [T0].* from Employees [T0] Order By [T0].[City]
+            // 
+            // grouping of this should be made by the entity mapper. While the key is the same.
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_GroupBy_With_Sum()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { City = e.Key, Sum = e.Sum(o => o.EmployeeId) }));
+
+            // Select [T0].[City], Sum([T0].[EmployeeId]) as N'Sum' from Employees [T0] Group By [T0].[City]
+            
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
 
     }
 }
