@@ -32,6 +32,7 @@ namespace VirtualObjects.Queries.Formatters
             Avg = "Avg";
             Min = "Min";
             Max = "Max";
+            GroupBy = "Group By";
         }
 
         private static string Wrap(string name)
@@ -61,6 +62,7 @@ namespace VirtualObjects.Queries.Formatters
         public string Min { get; private set; }
         public string Max { get; private set; }
         public string Any { get; private set; }
+        public string GroupBy { get; private set; }
 
         public String FormatField(String name)
         {

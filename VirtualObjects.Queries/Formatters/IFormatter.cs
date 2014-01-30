@@ -29,6 +29,7 @@ namespace VirtualObjects.Queries.Formatters
         String Min { get; }
         String Max { get; }
         String Any { get; }
+        String GroupBy { get; }
 
         String FormatField(String name);
 

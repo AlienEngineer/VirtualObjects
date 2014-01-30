@@ -37,6 +37,7 @@ namespace VirtualObjects.Queries.Translation
             public IEntityInfo EntityInfo { get; set; }
             public StringBuffer Predicates { get; set; }
             public StringBuffer OrderBy { get; set; }
+            public StringBuffer GroupBy { get; set; }
             public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
 
             public void AddPredicatedColumn(IEntityColumnInfo column)
@@ -65,6 +66,7 @@ namespace VirtualObjects.Queries.Translation
                 Predicates = new StubBuffer();
                 OrderBy = new StubBuffer();
                 Projection = new StubBuffer();
+                GroupBy = new StubBuffer();
             }
 
         }
@@ -318,10 +320,13 @@ namespace VirtualObjects.Queries.Translation
 
                 case "ThenBy":
                 case "OrderBy":
-                    CompileOrderBy(expression.Arguments[1], buffer);
+                    CompileOrderBy(expression, buffer);
                     break;
                 case "OrderByDescending":
-                    CompileOrderByDescending(expression.Arguments[1], buffer);
+                    CompileOrderByDescending(expression, buffer);
+                    break;
+                case "GroupBy":
+                    CompileGroupBy(expression, buffer);
                     break;
                 case "Contains":
                     CompileContains(expression, buffer);
@@ -346,6 +351,11 @@ namespace VirtualObjects.Queries.Translation
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
+        }
+
+        private void CompileGroupBy(MethodCallExpression expression, CompilerBuffer buffer)
+        {
+            buffer.GroupBy = CompileOrderOrGroupBy(expression.Arguments[1], buffer, buffer.GroupBy, _formatter.GroupBy);
         }
 
         private void CompileContains(MethodCallExpression expression, CompilerBuffer buffer)
@@ -474,27 +484,33 @@ namespace VirtualObjects.Queries.Translation
             }
         }
 
-        private void CompileOrderByDescending(Expression expression, CompilerBuffer buffer)
+        private void CompileOrderByDescending(MethodCallExpression expression, CompilerBuffer buffer)
         {
             CompileOrderBy(expression, buffer);
             buffer.OrderBy += " " + _formatter.Descending;
         }
 
-        private void CompileOrderBy(Expression expression, CompilerBuffer buffer)
+        private void CompileOrderBy(MethodCallExpression expression, CompilerBuffer buffer)
         {
-            if ( String.IsNullOrEmpty(buffer.OrderBy) )
+            buffer.OrderBy = CompileOrderOrGroupBy(expression.Arguments[1], buffer, buffer.OrderBy, _formatter.OrderBy);
+        }
+
+        private StringBuffer CompileOrderOrGroupBy(Expression expression, CompilerBuffer buffer, StringBuffer stringBuffer, string starter)
+        {
+            if (String.IsNullOrEmpty(stringBuffer))
             {
-                buffer.OrderBy += " " + _formatter.OrderBy + " ";
+                stringBuffer += " " + starter + " ";
             }
             else
             {
-                buffer.OrderBy += _formatter.FieldSeparator;
+                stringBuffer += _formatter.FieldSeparator;
             }
 
             var lambda = ExtractLambda(expression, false);
             Indexer[lambda.Parameters.First()] = this;
 
-            buffer.OrderBy += CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
+            stringBuffer += CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
+            return stringBuffer;
         }
 
         private void CompileJoin(MethodCallExpression expression, CompilerBuffer buffer)
