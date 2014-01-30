@@ -282,6 +282,16 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
+            if (parametersOnly && expression.Method.Name == "Contains")
+            {
+                CompileContains(expression, buffer);
+                return;
+            }
+
+            if (parametersOnly)
+            {
+                return;
+            }
 
             switch ( expression.Method.Name )
             {

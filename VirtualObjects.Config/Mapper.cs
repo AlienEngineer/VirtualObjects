@@ -63,9 +63,9 @@ namespace VirtualObjects.Config
             entityInfo.Columns = WrapColumns(entityInfo.Columns).ToList();
             entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey).ToList();
 
+#if DEBUG
             entityInfo.Columns.ForEach(e =>
             {
-
                 if (e.ForeignKey == null && !e.Property.PropertyType.IsFrameworkType())
                 {
                     throw new ConfigException("The column [{ColumnName}] returns a complex type but is not associated with another key.",e);
@@ -75,9 +75,8 @@ namespace VirtualObjects.Config
                 {
                     throw new ConfigException("The column [{ColumnName}] returns a complex type but is not associated with another key.", e);
                 }
-
             });
-
+#endif
             //
             // Calculation of the entity Key.
             //
