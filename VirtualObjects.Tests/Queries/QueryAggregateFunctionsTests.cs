@@ -515,8 +515,8 @@ namespace VirtualObjects.Tests.Queries
         public void Aggregate_Query_Union()
         {
             var employee = Diagnostic.Timed(() => 
-                Query<Employee>().Select(e => new { e.EmployeeId })
-                .Union(Query<Employee>().Select(e => new { e.EmployeeId })).ToList());
+                Query<Employee>().Select(e => new { e.EmployeeId }).Union(
+                Query<Employee>().Select(e => new { e.EmployeeId })).ToList());
 
             employee.Should().NotBeNull();
             employee.Count().Should().Be(18);
@@ -533,5 +533,15 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(9);
         }
 
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().ToList());
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
     }
 }
