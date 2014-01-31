@@ -22,7 +22,8 @@ namespace VirtualObjects.Config
         }
 
         public IList<IEntityColumnInfo> KeyColumns { get; set; }
-        
+        public IEntityColumnInfo Identity { get; set; }
+
         public Type EntityType { get; set; }
         public Func<Object, int> KeyHashCode { get; set; }
 
@@ -56,7 +57,7 @@ namespace VirtualObjects.Config
             }
             
             return EntityName + " = {\n" +
-                   String.Join(",\n", Columns.Select(e => e.ToString())) +
+                   String.Join(",\n", Columns.Select(e => e.ColumnName)) +
                    "} ";
         }
     }

@@ -43,9 +43,12 @@
     <Compile Include="CRUD\IOperations.cs" />
     <Compile Include="CRUD\IOperationsExecutor.cs" />
     <Compile Include="CRUD\OperationsExecutor.cs" />
+    <Compile Include="CRUD\Operations\DeleteOperation.cs" />
+    <Compile Include="CRUD\Operations\GetOperation.cs" />
     <Compile Include="CRUD\Operations\InsertOperation.cs" />
     <Compile Include="CRUD\Operations\Operation.cs" />
     <Compile Include="CRUD\Operations\Operations.cs" />
+    <Compile Include="CRUD\Operations\UpdateOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,9 @@ namespace VirtualObjects.Queries.Mapping
 {
     class GroupedDynamicEntityMapper : DynamicWithMemberEntityMapper
     {
+/*
         private IList<IEntityInfo> entityInfos;
+*/
 
         public override bool CanMapEntity(MapperContext context)
         {
@@ -135,7 +137,7 @@ namespace VirtualObjects.Queries.Mapping
         {
             var setters = new List<MemberSetter>();
             var predicatedCount = 0;
-            var fieldCount = 0;
+            int fieldCount = 0;
 
 
             context.OutputType.Fields().ForEach(e =>

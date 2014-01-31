@@ -26,6 +26,7 @@ namespace VirtualObjects.Core.CRUD.Operations
 
         public IOperation PrepareOperation(object entityModel)
         {
+            _entityModel = entityModel;
             _parameters = GetParameters(_entityInfo)
                 .Select(e => new { Key = e.ColumnName, Value = e.GetFieldFinalValue(entityModel) })
                 .ToDictionary(e => e.Key, e => e.Value);

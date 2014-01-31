@@ -174,5 +174,11 @@ namespace VirtualObjects.Tests
             var cmd = CreateCommand(commandText, parameters);
             return cmd.ExecuteReader();
         }
+
+        public void ExecuteNonQuery(string commandText, IDictionary<string, object> parameters)
+        {
+            var cmd = CreateCommand(commandText, parameters);
+            cmd.ExecuteNonQuery();
+        }
     }
 }
