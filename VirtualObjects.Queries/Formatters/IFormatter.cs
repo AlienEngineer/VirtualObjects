@@ -31,6 +31,7 @@ namespace VirtualObjects.Queries.Formatters
         String Any { get; }
         String GroupBy { get; }
         String Distinct { get; }
+        String Union { get; }
 
         String FormatField(String name);
 

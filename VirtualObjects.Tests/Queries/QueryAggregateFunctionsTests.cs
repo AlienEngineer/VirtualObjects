@@ -511,5 +511,27 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(2);
         }
 
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Union()
+        {
+            var employee = Diagnostic.Timed(() => 
+                Query<Employee>().Select(e => new { e.EmployeeId })
+                .Union(Query<Employee>().Select(e => new { e.EmployeeId })).ToList());
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(18);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Union_Predicated()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>().Where(e=> e.EmployeeId > 5).Select(e => new { e.EmployeeId }).Union(
+                Query<Employee>().Where(e => e.EmployeeId <= 5).Select(e => new { e.EmployeeId })).ToList());
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(9);
+        }
+
     }
 }

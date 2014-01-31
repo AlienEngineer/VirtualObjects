@@ -35,10 +35,12 @@ namespace VirtualObjects.Queries.Translation
             }
 
             public StringBuffer From { get; set; }
-            public IEntityInfo EntityInfo { get; set; }
             public StringBuffer Predicates { get; set; }
             public StringBuffer OrderBy { get; set; }
             public StringBuffer GroupBy { get; set; }
+            public StringBuffer Union { get; set; }
+            
+            public IEntityInfo EntityInfo { get; set; }
             public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
 
             public void AddPredicatedColumn(IEntityColumnInfo column)
@@ -61,6 +63,7 @@ namespace VirtualObjects.Queries.Translation
             public int Take { get; set; }
             public int Skip { get; set; }
             public bool Distinct { get; set; }
+            
 
             public void ActAsStub()
             {
@@ -69,6 +72,7 @@ namespace VirtualObjects.Queries.Translation
                 OrderBy = new StubBuffer();
                 Projection = new StubBuffer();
                 GroupBy = new StubBuffer();
+                Union = new StubBuffer();
             }
 
         }
@@ -199,7 +203,6 @@ namespace VirtualObjects.Queries.Translation
             };
         }
 
-
         public IQueryInfo TranslateParametersOnly(IQueryable queryable, int howMany)
         {
             _parameterCount = howMany;
@@ -317,6 +320,12 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
+            if ( parametersOnly && expression.Method.Name == "Union" )
+            {
+                CompileUnion(expression.Arguments[1], buffer, true);
+                return;
+            }
+
             if ( parametersOnly )
             {
                 return;
@@ -324,6 +333,9 @@ namespace VirtualObjects.Queries.Translation
 
             switch ( expression.Method.Name )
             {
+                case "Union":
+                    CompileUnion(expression.Arguments[1], buffer);
+                    break;
                 case "Select":
                     buffer.Projection = null;
                     CompileCustomProjection(expression.Arguments[1], buffer, expression);
@@ -384,6 +396,20 @@ namespace VirtualObjects.Queries.Translation
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
+        }
+
+        private void CompileUnion(Expression expression, CompilerBuffer buffer, bool parametersOnly = false)
+        {
+            var translator = CreateNewTranslator();
+
+            if (parametersOnly)
+            {
+                translator.TranslateParametersOnly(expression, _parameterCount);
+                return;
+            }
+
+            buffer.Union += " " + _formatter.Union + " ";
+            buffer.Union += translator.TranslateQuery(expression).CommandText;
         }
 
         private void CompileLastMethodCall(MethodCallExpression expression, CompilerBuffer buffer)
@@ -1694,6 +1720,7 @@ namespace VirtualObjects.Queries.Translation
                 .Append(buffer.Predicates)
                 .Append(buffer.GroupBy)
                 .Append(buffer.OrderBy)
+                .Append(buffer.Union)
                 .ToString();
         }
 

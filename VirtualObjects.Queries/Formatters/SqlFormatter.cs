@@ -35,6 +35,7 @@ namespace VirtualObjects.Queries.Formatters
             Max = "Max";
             GroupBy = "Group By";
             Distinct = "Distinct";
+            Union = "Union All";
         }
 
         private static string Wrap(string name)
@@ -66,6 +67,7 @@ namespace VirtualObjects.Queries.Formatters
         public string Any { get; private set; }
         public string GroupBy { get; private set; }
         public string Distinct { get; private set; }
+        public string Union { get; private set; }
 
         public String FormatField(String name)
         {

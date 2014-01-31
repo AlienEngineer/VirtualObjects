@@ -54,6 +54,7 @@ namespace VirtualObjects.Queries.Execution
             return method == null ||
                 method.ReturnType.IsAssignableFrom(typeof(IEnumerable)) ||
                 method.Name == "Select" ||
+                method.Name == "Union" ||
                 method.Name == "Distinct";
         }
 
