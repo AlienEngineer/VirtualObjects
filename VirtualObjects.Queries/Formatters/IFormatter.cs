@@ -64,5 +64,6 @@ namespace VirtualObjects.Queries.Formatters
         String FormatLengthWith(string columnName, int index);
         String BeginMethodCall(string methodCalled);
         String EndMethodCall(string methodCalled);
+        String FormatConstant(object parseValue);
     }
 }

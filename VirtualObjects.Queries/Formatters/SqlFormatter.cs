@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -241,6 +242,16 @@ namespace VirtualObjects.Queries.Formatters
             }
 
             throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });
+        }
+
+        public string FormatConstant(object parseValue)
+        {
+            if (parseValue is Double)
+            {
+                return String.Format(CultureInfo.InvariantCulture, "{0: 0.0#}", parseValue);
+            }
+
+            return parseValue.ToString();
         }
 
         public string FormatMonthOf(string columnName, int index)

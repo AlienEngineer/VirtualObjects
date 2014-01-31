@@ -379,7 +379,7 @@ namespace VirtualObjects.Tests.Queries
             Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Min = e.Count(o => o.EmployeeId == 1) })
+                    .Select(e => new { City = e.Key, Count = e.Count(o => o.EmployeeId == 1) })
                     .ToList());
 
         }
@@ -391,7 +391,71 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Min = e.LongCount() })
+                    .Select(e => new { City = e.Key, Count = e.LongCount() })
+                    .ToList());
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(5);
+        }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_ManyAggreagates()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { 
+                        City = e.Key, 
+                        Min = e.Min(o => o.EmployeeId),
+                        Max = e.Max(o => o.EmployeeId),
+                        Sum = e.Sum(o => o.EmployeeId),
+                        Count = e.Count(),
+                        Average = e.Average(o => o.EmployeeId)
+                    })
+                    .ToList());
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(5);
+        }
+
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Calced_Average()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new
+                    {
+                        City = e.Key,
+                        Sum = e.Sum(o => o.EmployeeId),
+                        Count = e.Count(),
+                        Average = e.Sum(o => o.EmployeeId) / e.Count()
+                    })
+                    .ToList());
+
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(5);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Calced_With_Factor()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => e.City)
+                    .Select(e => new
+                    {
+                        City = e.Key,
+                        Sum = e.Sum(o => o.EmployeeId),
+                        Count = e.Count(),
+                        Average = e.Sum(o => o.EmployeeId) / (e.Count()*1.0) * 100.0
+                    })
                     .ToList());
 
 
