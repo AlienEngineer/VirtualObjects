@@ -1270,12 +1270,13 @@ namespace VirtualObjects.Queries.Translation
         {
             var constant = ExtractConstant(expression);
 
-            if ( constant != null )
+            if (constant == null)
             {
-                CompileConstant(constant, buffer);
-                return true;
+                return false;
             }
-            return false;
+            
+            CompileConstant(constant, buffer);
+            return true;
         }
 
         private void CompileBinaryExpression(Expression expression, CompilerBuffer buffer, bool parametersOnly = false)

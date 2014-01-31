@@ -458,7 +458,6 @@ namespace VirtualObjects.Tests.Queries
                     })
                     .ToList());
 
-
             employee.Should().NotBeNull();
             employee.Count().Should().Be(5);
         }
