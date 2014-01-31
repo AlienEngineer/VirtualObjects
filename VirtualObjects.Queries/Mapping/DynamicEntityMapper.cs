@@ -58,8 +58,6 @@ namespace VirtualObjects.Queries.Mapping
                     Mapper = context.Mapper
                 })
                 .ToList();
-
-
         }
     }
 }

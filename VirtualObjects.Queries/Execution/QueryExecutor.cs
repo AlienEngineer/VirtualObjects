@@ -51,7 +51,9 @@ namespace VirtualObjects.Queries.Execution
 
         public virtual bool CanExecute(MethodInfo method)
         {
-            return method == null || method.ReturnType.IsAssignableFrom(typeof(IEnumerable));
+            return method == null || 
+                method.ReturnType.IsAssignableFrom(typeof(IEnumerable)) ||
+                method.Name == "Select";
         }
 
         private static IEnumerable<T> ProxyGenericIterator<T>(IEnumerable enumerable)

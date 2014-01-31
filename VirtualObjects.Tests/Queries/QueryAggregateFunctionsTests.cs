@@ -272,7 +272,8 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() => 
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Employees = e }));
+                    .Select(e => new { City = e.Key, Employees = e })
+                    .ToList());
 
             // Select [T0].* from Employees [T0] Order By [T0].[City]
             // 
@@ -290,7 +291,8 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Sum = e.Sum(o => o.EmployeeId) }));
+                    .Select(e => new { City = e.Key, Sum = e.Sum(o => o.EmployeeId) })
+                    .ToList());
 
             // Select [T0].[City], Sum([T0].[EmployeeId]) as N'Sum' from Employees [T0] Group By [T0].[City]
             
@@ -307,7 +309,8 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Average = e.Average(o => o.EmployeeId) }));
+                    .Select(e => new { City = e.Key, Average = e.Average(o => o.EmployeeId) })
+                    .ToList());
 
             // Select [T0].[City], Avg([T0].[EmployeeId]) as Average from Employees [T0] Group By [T0].[City]
 
@@ -323,7 +326,8 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Max = e.Max(o => o.EmployeeId) }));
+                    .Select(e => new { City = e.Key, Max = e.Max(o => o.EmployeeId) })
+                    .ToList());
 
 
             employee.Should().NotBeNull();
@@ -336,7 +340,8 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Min = e.Min(o => o.EmployeeId) }));
+                    .Select(e => new { City = e.Key, Min = e.Min(o => o.EmployeeId) })
+                    .ToList());
 
 
             employee.Should().NotBeNull();
@@ -349,7 +354,8 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Min = e.Count() }));
+                    .Select(e => new { City = e.Key, Min = e.Count() })
+                    .ToList());
 
 
             employee.Should().NotBeNull();
@@ -363,7 +369,8 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Min = e.Count(o => o.EmployeeId == 1) }));
+                    .Select(e => new { City = e.Key, Min = e.Count(o => o.EmployeeId == 1) })
+                    .ToList());
 
 
             employee.Should().NotBeNull();
@@ -377,7 +384,8 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Min = e.LongCount() }));
+                    .Select(e => new { City = e.Key, Min = e.LongCount() })
+                    .ToList());
 
 
             employee.Should().NotBeNull();

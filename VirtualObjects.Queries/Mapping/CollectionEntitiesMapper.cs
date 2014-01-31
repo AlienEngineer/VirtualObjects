@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
-using VirtualObjects.Queries.ConcurrentReader;
 
 namespace VirtualObjects.Queries.Mapping
 {
@@ -50,17 +49,30 @@ namespace VirtualObjects.Queries.Mapping
             //
             // This line enables about 50% more code eficiency.
             //
-            _entityProvider.PrepareProvider(context.OutputType);
-            entityMapper.PrepareMapper(context);
-
-            while ( context.Read || reader.Read() )
+            try
             {
-                result.Add(entityMapper.MapEntity(reader, context.CreateEntity(), context));
+
+                _entityProvider.PrepareProvider(context.OutputType);
+                entityMapper.PrepareMapper(context);
+
+                while (context.Read || reader.Read())
+                {
+                    result.Add(entityMapper.MapEntity(reader, context.CreateEntity(), context));
+                }
+
+                reader.Close();
+
+                return result;
             }
+            catch (Exception ex)
+            {
+                if (ex is MappingException)
+                {
+                    throw;
+                }
 
-            reader.Close();
-
-            return result;
+                throw new MappingException("Unable to map the query into [{Name}]", outputType, ex);
+            }
         }
     }
 }
