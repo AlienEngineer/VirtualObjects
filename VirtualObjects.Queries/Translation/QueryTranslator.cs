@@ -646,10 +646,17 @@ namespace VirtualObjects.Queries.Translation
 
                                 translator = translator ?? Indexer[parameterExpression];
 
-                                buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns,
-                                    translator._index);
+                                buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns, translator._index);
 
                                 buffer.AddPredicatedColumns(translator.EntityInfo.Columns);
+                                
+                                //
+                                // If the whole entity is used we need to ungroup.
+                                //
+                                if (!String.IsNullOrEmpty(buffer.GroupBy))
+                                {
+                                    throw new TranslationException("\nIts not possible to have a detailed entity and GroupBy clause.\nTo achieve this use .ToList() before the GroupBy methodCall.");
+                                }
                             }
 
                             var memberExpression = tmpExp as MemberExpression;
@@ -989,7 +996,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 var entityInfo = Indexer[parameterExpression].EntityInfo;
 
-                var column = entityInfo[memberInfo.Name];
+                var column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
 
                 buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, Indexer[parameterExpression]._index);
 

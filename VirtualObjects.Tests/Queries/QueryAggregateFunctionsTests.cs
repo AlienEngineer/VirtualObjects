@@ -266,23 +266,31 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
-        public void Aggregate_Query_GroupBy()
+        [Test, Repeat(REPEAT), ExpectedException(typeof(TranslationException))]
+        public void Aggregate_Query_GroupBy_Unsupported()
         {
-            var employee = Diagnostic.Timed(() => 
+            Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
                     .Select(e => new { City = e.Key, Employees = e })
                     .ToList());
+        }
 
-            // Select [T0].* from Employees [T0] Order By [T0].[City]
-            // 
-            // grouping of this should be made by the entity mapper. While the key is the same.
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_GroupBy()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>().ToList()
+                    .GroupBy(e => e.City)
+                    .Select(e => new { City = e.Key, Employees = e })
+                    .ToList());
+
+
             // Should this be supported?! This will be done locally... 
             // Support this if there is any way to group on the SQL Server side.
 
             employee.Should().NotBeNull();
-            employee.Count().Should().Be(9);
+            employee.Count().Should().Be(5);
         }
 
         [Test, Repeat(REPEAT)]
