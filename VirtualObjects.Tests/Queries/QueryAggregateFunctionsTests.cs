@@ -533,8 +533,6 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(9);
         }
 
-
-
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_()
         {

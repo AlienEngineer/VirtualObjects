@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("VirtualObjects.Common")]
+[assembly: AssemblyTitle("VirtualObjects.Core")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("VirtualObjects.Common")]
+[assembly: AssemblyProduct("VirtualObjects.Core")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ded736fc-111b-488c-9bac-5b89d9333db5")]
+[assembly: Guid("b1cba429-a1c4-4ef2-9a32-33b04311bbf7")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,4 +34,3 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.2")]
 [assembly: AssemblyFileVersion("1.0.0.2")]
-[assembly: InternalsVisibleTo("VirtualObjects.Tests")]

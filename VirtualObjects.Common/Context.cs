@@ -14,5 +14,6 @@ namespace VirtualObjects
     {
         object ExecuteScalar(string commandText, IDictionary<string, object> parameters);
         IDataReader ExecuteReader(string commandText, IDictionary<string, object> parameters);
+        void ExecuteNonQuery(string commandText, IDictionary<string, object> parameters);
     }
 }

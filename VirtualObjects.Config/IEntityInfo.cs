@@ -14,8 +14,11 @@ namespace VirtualObjects.Config
 
         IList<IEntityColumnInfo> KeyColumns { get; }
         
+        IEntityColumnInfo Identity { get; }
+
         Type EntityType { get; }
         
+
         IEntityColumnInfo GetFieldAssociatedWith(string name);
         int GetKeyHashCode(Object obj);
     }

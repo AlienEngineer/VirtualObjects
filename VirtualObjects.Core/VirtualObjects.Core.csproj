@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C1DC7907-F05A-476F-98B2-8B25DF440061}</ProjectGuid>
+    <ProjectGuid>{53FFC3D4-5C34-432E-989B-6363B3ECFA5E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VirtualObjects</RootNamespace>
-    <AssemblyName>VirtualObjects</AssemblyName>
+    <RootNamespace>VirtualObjects.Core</RootNamespace>
+    <AssemblyName>VirtualObjects.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,7 +39,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ISession.cs" />
+    <Compile Include="CRUD\IOperation.cs" />
+    <Compile Include="CRUD\IOperations.cs" />
+    <Compile Include="CRUD\IOperationsExecutor.cs" />
+    <Compile Include="CRUD\OperationsExecutor.cs" />
+    <Compile Include="CRUD\Operations\InsertOperation.cs" />
+    <Compile Include="CRUD\Operations\Operation.cs" />
+    <Compile Include="CRUD\Operations\Operations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -50,10 +56,6 @@
     <ProjectReference Include="..\VirtualObjects.Config\VirtualObjects.Config.csproj">
       <Project>{84453362-1924-4f00-bf56-859ad828febb}</Project>
       <Name>VirtualObjects.Config</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VirtualObjects.Core\VirtualObjects.Core.csproj">
-      <Project>{53ffc3d4-5c34-432e-989b-6363b3ecfa5e}</Project>
-      <Name>VirtualObjects.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\VirtualObjects.Queries\VirtualObjects.Queries.csproj">
       <Project>{0a1ec294-d82c-40af-be1e-d2ffcf692eb6}</Project>
