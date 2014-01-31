@@ -170,8 +170,6 @@ namespace VirtualObjects.Tests.Queries
             min.Should().Be(1);
         }
 
-
-
         [Test, Repeat(REPEAT)]
         public void Aggregate_Query_First()
         {
@@ -475,5 +473,43 @@ namespace VirtualObjects.Tests.Queries
             employee.Should().NotBeNull();
             employee.Count().Should().Be(6);
         }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Last()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().Last());
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(1);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Last_Predicated()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().Last(e => e.EmployeeId == 2));
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(2);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_LastOrDefault()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().LastOrDefault());
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(1);
+        }
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_LastOrDefault_Predicated()
+        {
+            var employee = Diagnostic.Timed(() => Query<Employee>().LastOrDefault(e => e.EmployeeId == 2));
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(2);
+        }
+
     }
 }
