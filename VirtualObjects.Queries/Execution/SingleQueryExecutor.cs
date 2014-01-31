@@ -29,6 +29,7 @@ namespace VirtualObjects.Queries.Execution
             return method != null && 
                     !method.ReturnType.IsAssignableFrom(typeof(IEnumerable)) && (
                     method.Name.StartsWith("First") ||
+                    method.Name.StartsWith("Last") ||
                     method.Name.StartsWith("Single") ||
                     method.Name == "Min" && method.Parameters().Count == 1 ||
                     method.Name == "Max" && method.Parameters().Count == 1);

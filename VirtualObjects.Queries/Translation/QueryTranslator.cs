@@ -260,7 +260,7 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileDistinct(CompilerBuffer buffer)
         {
-            if (buffer.Distinct)
+            if ( buffer.Distinct )
             {
                 buffer.Projection = _formatter.Distinct + " " + buffer.Projection;
             }
@@ -300,6 +300,8 @@ namespace VirtualObjects.Queries.Translation
                 expression.Method.Name == "Count" ||
                 expression.Method.Name == "Any" ||
                 expression.Method.Name == "LongCount" ||
+                expression.Method.Name == "LastOrDefault" ||
+                expression.Method.Name == "Last" ||
                 expression.Method.Name == "FirstOrDefault" ||
                 expression.Method.Name == "First" ||
                 expression.Method.Name == "SingleOrDefault" ||
@@ -325,6 +327,10 @@ namespace VirtualObjects.Queries.Translation
                 case "Select":
                     buffer.Projection = null;
                     CompileCustomProjection(expression.Arguments[1], buffer, expression);
+                    break;
+                case "Last":
+                case "LastOrDefault":
+                    CompileLastMethodCall(expression, buffer);
                     break;
                 case "Take":
                 case "Skip":
@@ -378,6 +384,37 @@ namespace VirtualObjects.Queries.Translation
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
+        }
+
+        private void CompileLastMethodCall(MethodCallExpression expression, CompilerBuffer buffer)
+        {
+            var firstMethod = typeof(Queryable)
+                .Methods(Flags.Static | Flags.StaticPublic, "First").First(e => e.Parameters().Count == expression.Arguments.Count)
+                .MakeGenericMethod(EntityInfo.EntityType);
+
+            
+
+            CompileMethodCall(Expression.Call(firstMethod, expression.Arguments), buffer, false);
+
+            foreach ( var column in EntityInfo.KeyColumns )
+            {
+                var orderByDesc = typeof(Queryable)
+                .Methods(Flags.Static | Flags.StaticPublic, "OrderByDescending").First(e => e.Parameters().Count == 2)
+                .MakeGenericMethod(EntityInfo.EntityType, column.Property.PropertyType);
+
+                var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
+
+                var args = new []
+                {
+                    expression.Arguments.First(),
+                    Expression.Lambda(Expression.MakeMemberAccess(parameter, column.Property), parameter)
+                };
+
+                var orderByCall = Expression.Call(orderByDesc, args);
+
+                CompileMethodCall(orderByCall, buffer, false);
+            }
+
         }
 
         private void CompileGroupBy(MethodCallExpression expression, CompilerBuffer buffer)
@@ -648,7 +685,7 @@ namespace VirtualObjects.Queries.Translation
                    CompileCustomProjectionConvert(buffer, callExpression, tmpExp, member, finalize) )
             {
 
-                if (finalize)
+                if ( finalize )
                 {
                     buffer.Predicates += _formatter.FieldSeparator;
                 }
@@ -672,12 +709,12 @@ namespace VirtualObjects.Queries.Translation
 
             return true;
         }
-        
+
         private bool CompileCustomProjectionConstant(CompilerBuffer buffer, Expression tmpExp)
         {
             var constant = tmpExp as ConstantExpression;
 
-            if (constant == null)
+            if ( constant == null )
             {
                 return false;
             }
@@ -694,7 +731,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 return false;
             }
-            
+
             buffer.Predicates += _formatter.BeginWrap();
             {
                 CompileCustomProjectionArgument(buffer, callExpression, binary.Left, member, false);
@@ -1276,11 +1313,11 @@ namespace VirtualObjects.Queries.Translation
         {
             var constant = ExtractConstant(expression);
 
-            if (constant == null)
+            if ( constant == null )
             {
                 return false;
             }
-            
+
             CompileConstant(constant, buffer);
             return true;
         }

@@ -481,7 +481,7 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() => Query<Employee>().Last());
 
             employee.Should().NotBeNull();
-            employee.EmployeeId.Should().Be(1);
+            employee.EmployeeId.Should().Be(9);
         }
 
         [Test, Repeat(REPEAT)]
@@ -499,7 +499,7 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() => Query<Employee>().LastOrDefault());
 
             employee.Should().NotBeNull();
-            employee.EmployeeId.Should().Be(1);
+            employee.EmployeeId.Should().Be(9);
         }
 
         [Test, Repeat(REPEAT)]
