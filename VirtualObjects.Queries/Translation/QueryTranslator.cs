@@ -60,6 +60,7 @@ namespace VirtualObjects.Queries.Translation
             public int Parenthesis { get; set; }
             public int Take { get; set; }
             public int Skip { get; set; }
+            public bool Distinct { get; set; }
 
             public void ActAsStub()
             {
@@ -187,6 +188,8 @@ namespace VirtualObjects.Queries.Translation
             //
             CompileDefaultProjection(buffer);
 
+            CompileDistinct(buffer);
+
             return new QueryInfo
             {
                 CommandText = Merge(buffer),
@@ -195,6 +198,7 @@ namespace VirtualObjects.Queries.Translation
                 OutputType = OutputType
             };
         }
+
 
         public IQueryInfo TranslateParametersOnly(IQueryable queryable, int howMany)
         {
@@ -253,6 +257,14 @@ namespace VirtualObjects.Queries.Translation
         }
 
         #region Compiling Methods
+
+        private void CompileDistinct(CompilerBuffer buffer)
+        {
+            if (buffer.Distinct)
+            {
+                buffer.Projection = _formatter.Distinct + " " + buffer.Projection;
+            }
+        }
 
         private void CompileExpression(Expression expression, CompilerBuffer buffer, bool parametersOnly = false)
         {
@@ -330,7 +342,9 @@ namespace VirtualObjects.Queries.Translation
                     InitBinaryExpressionCall(buffer);
                     CompileBinaryExpression(expression.Arguments[1], buffer);
                     break;
-
+                case "Distinct":
+                    buffer.Distinct = true;
+                    break;
                 case "ThenBy":
                 case "OrderBy":
                     CompileOrderBy(expression, buffer);
@@ -438,14 +452,6 @@ namespace VirtualObjects.Queries.Translation
 
             //buffer.Predicates += _formatter.EndWrap();
         }
-
-        //private Expression CreateLambdaWithArgument(ParameterExpression parameter, Expression expression)
-        //{
-
-        //    var body = Expression.MakeMemberAccess(parameter, EntityInfo.KeyColumns.First().Property);
-
-        //    return Expression.Lambda(body, parameter);
-        //}
 
         private void CompileMethod(Expression expression, String functionName, CompilerBuffer buffer)
         {

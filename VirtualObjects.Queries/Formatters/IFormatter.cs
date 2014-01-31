@@ -30,6 +30,7 @@ namespace VirtualObjects.Queries.Formatters
         String Max { get; }
         String Any { get; }
         String GroupBy { get; }
+        String Distinct { get; }
 
         String FormatField(String name);
 

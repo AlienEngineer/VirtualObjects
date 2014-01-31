@@ -461,5 +461,19 @@ namespace VirtualObjects.Tests.Queries
             employee.Should().NotBeNull();
             employee.Count().Should().Be(5);
         }
+
+
+        [Test, Repeat(REPEAT)]
+        public void Aggregate_Query_Distinct()
+        {
+            var employee = Diagnostic.Timed(() => 
+                Query<Employee>()
+                    .Distinct()
+                    .Select(e => new { e.City, e.TitleOfCourtesy })
+                    .ToList());
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(6);
+        }
     }
 }
