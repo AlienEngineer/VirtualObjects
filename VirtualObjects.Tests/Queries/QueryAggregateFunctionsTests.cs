@@ -298,7 +298,9 @@ namespace VirtualObjects.Tests.Queries
             
 
             employee.Should().NotBeNull();
-            employee.Count().Should().Be(9);
+            employee.Count().Should().Be(5);
+            employee.First().City.Should().Be("Kirkland");
+            employee.First().Sum.Should().Be(3);
         }
 
 
@@ -316,7 +318,7 @@ namespace VirtualObjects.Tests.Queries
 
 
             employee.Should().NotBeNull();
-            employee.Count().Should().Be(9);
+            employee.Count().Should().Be(5);
         }
 
 
@@ -331,7 +333,7 @@ namespace VirtualObjects.Tests.Queries
 
 
             employee.Should().NotBeNull();
-            employee.Count().Should().Be(9);
+            employee.Count().Should().Be(5);
         }
 
         [Test, Repeat(REPEAT)]
@@ -345,7 +347,7 @@ namespace VirtualObjects.Tests.Queries
 
 
             employee.Should().NotBeNull();
-            employee.Count().Should().Be(9);
+            employee.Count().Should().Be(5);
         }
 
         [Test, Repeat(REPEAT)]
@@ -354,27 +356,24 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { City = e.Key, Min = e.Count() })
+                    .Select(e => new { City = e.Key, Count = e.Count() })
                     .ToList());
 
 
             employee.Should().NotBeNull();
-            employee.Count().Should().Be(9);
+            employee.Count().Should().Be(5);
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(REPEAT), ExpectedException(typeof(TranslationException))]
         public void Aggregate_Query_GroupBy_With_PredicatedCount_OnProjection_Unsupported()
         {
-            var employee = Diagnostic.Timed(() =>
+            Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
                     .Select(e => new { City = e.Key, Min = e.Count(o => o.EmployeeId == 1) })
                     .ToList());
 
-
-            employee.Should().NotBeNull();
-            employee.Count().Should().Be(9);
         }
 
 
@@ -389,7 +388,7 @@ namespace VirtualObjects.Tests.Queries
 
 
             employee.Should().NotBeNull();
-            employee.Count().Should().Be(9);
+            employee.Count().Should().Be(5);
         }
     }
 }

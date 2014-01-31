@@ -214,6 +214,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Its not valid to have a predicate in a projection..
+        /// </summary>
+        public static string Translation_PredicateOnProjection {
+            get {
+                return ResourceManager.GetString("Translation_PredicateOnProjection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The string member [{Name}] is not yet supported..
         /// </summary>
         public static string Translation_String_MemberAccess_NotSupported {

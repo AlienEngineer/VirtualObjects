@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 using Fasterflect;
 
@@ -30,8 +31,11 @@ namespace VirtualObjects.Queries.Mapping
         {
             context.OutputTypeSetters = context.OutputType
                 .Fields()
-                .Select(e => e.DelegateForSetFieldValue())
+                .Select(e => new { e.FieldType, SetValue = e.DelegateForSetFieldValue()})
+                .Select(field => (MemberSetter)((o, value) => field.SetValue(o, Convert.ChangeType(value, field.FieldType))))
                 .ToList();
         }
+
+
     }
 }

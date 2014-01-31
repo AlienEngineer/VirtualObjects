@@ -180,4 +180,7 @@
   <data name="Translation_Method_NoArgs_NotSupported" xml:space="preserve">
     <value>The method {Name} without arguments is not supported.</value>
   </data>
+  <data name="Translation_PredicateOnProjection" xml:space="preserve">
+    <value>Its not valid to have a predicate in a projection.</value>
+  </data>
 </root>

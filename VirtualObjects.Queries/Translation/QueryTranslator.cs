@@ -146,7 +146,19 @@ namespace VirtualObjects.Queries.Translation
         public Boolean ShouldReturn { get { return ParameterCount > 0 && ParameterCount == Parameters.Count; } }
 
         public IEntityInfo EntityInfo { get; set; }
-        public Type OutputType { get; set; }
+
+        public Type OutputType
+        {
+            get { return _outputType; }
+            set
+            {
+                if (_outputType != null)
+                {
+                    return;
+                }
+                _outputType = value;
+            }
+        }
 
         /// <summary>
         /// Translates the query.
@@ -652,6 +664,8 @@ namespace VirtualObjects.Queries.Translation
                             if (call != null)
                             {
 
+                                ThrowIfContainsAPredicate(call);
+
                                 //
                                 // The CompileMethodCall for a sum or other aggregate function
                                 // will save the predicates on stack. So we need to forget this save.
@@ -671,6 +685,18 @@ namespace VirtualObjects.Queries.Translation
                         buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
                     }, buffer);
 
+                }
+            }
+        }
+
+        private static void ThrowIfContainsAPredicate(MethodCallExpression call)
+        {
+            if (call.Arguments.Count == 2)
+            {
+                var tmpLambda = ExtractLambda(call.Arguments[1], false);
+                if (tmpLambda.ReturnType == typeof (Boolean))
+                {
+                    throw new TranslationException(Errors.Translation_PredicateOnProjection);
                 }
             }
         }
@@ -1227,7 +1253,7 @@ namespace VirtualObjects.Queries.Translation
                 }
                 else if (left is ParameterExpression && IsConstant(right) && right.Type == left.Type)
                 {
-                    CompileParameterToObject((ParameterExpression)left, right, buffer, parametersOnly);
+                    CompileParameterToObject(right, buffer, parametersOnly);
                     return;
                 }
 
@@ -1269,7 +1295,7 @@ namespace VirtualObjects.Queries.Translation
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
         }
 
-        private void CompileParameterToObject(ParameterExpression left, Expression right, CompilerBuffer buffer, bool parametersOnly)
+        private void CompileParameterToObject(Expression right, CompilerBuffer buffer, bool parametersOnly)
         {
             var value = ParseValue(right);
 
@@ -1590,6 +1616,7 @@ namespace VirtualObjects.Queries.Translation
         }
 
         private readonly Stack<String> _predicates = new Stack<string>();
+        private Type _outputType;
 
         private void SafePredicate(CompilerBuffer buffer)
         {
