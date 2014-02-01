@@ -33,6 +33,10 @@ namespace VirtualObjects.Queries.Formatters
         String Distinct { get; }
         String Union { get; }
         String Delete { get; }
+        String Values { get; }
+        String Insert { get; }
+        String Update { get; }
+        String Set { get; }
 
         String FormatField(String name);
 

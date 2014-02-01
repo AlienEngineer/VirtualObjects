@@ -37,6 +37,10 @@ namespace VirtualObjects.Queries.Formatters
             Distinct = "Distinct";
             Union = "Union All";
             Delete = "Delete";
+            Insert = "Insert Into";
+            Values = "Values";
+            Update = "Update";
+            Set = "Set";
         }
 
         private static string Wrap(string name)
@@ -70,6 +74,10 @@ namespace VirtualObjects.Queries.Formatters
         public string Distinct { get; private set; }
         public string Union { get; private set; }
         public string Delete { get; private set; }
+        public string Values { get; private set; }
+        public string Insert { get; private set; }
+        public string Update { get; private set; }
+        public string Set { get; private set; }
 
         public String FormatField(String name)
         {

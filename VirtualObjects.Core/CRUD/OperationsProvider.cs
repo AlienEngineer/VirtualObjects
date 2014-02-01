@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using VirtualObjects.Config;
 using VirtualObjects.Core.CRUD.Operations;
@@ -36,12 +37,51 @@ namespace VirtualObjects.Core.CRUD
 
         private IOperation CreateUpdateOperation(IEntityInfo entityInfo)
         {
+            StringBuffer text = _formatter.Update;
+            text += " ";
+            text += _formatter.FormatTableName(entityInfo.EntityName, 0);
+            text += " ";
+            text += _formatter.Set;
+            text += " ";
+
+            foreach (var column in entityInfo.Columns.Where(e => !e.IsKey))
+            {
+                AppendEquality(text, column);
+                text += _formatter.FieldSeparator;
+            }
+
+            text.RemoveLast(_formatter.FieldSeparator);
+
+            CreateWhereClause(text, entityInfo);
+
             return new UpdateOperation(text, entityInfo);
         }
 
         private IOperation CreateInsertOperation(IEntityInfo entityInfo)
         {
+            StringBuffer text = _formatter.Insert;
+            
+            text += " ";
+            text += _formatter.FormatTableName(entityInfo.EntityName, 0);
+            text += " ";
+            
+            text += _formatter.BeginWrap();
+            text += CreateProjection(entityInfo.Columns);
+            text += _formatter.EndWrap();
+            
+            text += " ";
+            text += _formatter.Values;
+            text += " ";
+            
+            text += _formatter.BeginWrap();
+            
+            text += string.Join(_formatter.FieldSeparator,
+                                entityInfo.Columns
+                                    .Where(e => !e.IsIdentity)
+                                    .Select(e => "@" + e.ColumnName.Replace(' ', '_')));
 
+            text += _formatter.EndWrap();
+            
             return new InsertOperation(text, entityInfo);
         }
 
@@ -65,7 +105,7 @@ namespace VirtualObjects.Core.CRUD
         {
             StringBuffer text = _formatter.Select;
             text += " ";
-            text += string.Join(_formatter.FieldSeparator, entityInfo.Columns.Select(e => _formatter.FormatField(e.ColumnName)));
+            text += CreateProjection(entityInfo.Columns);
             text += " ";
             text += _formatter.From;
             text += " ";
@@ -79,15 +119,16 @@ namespace VirtualObjects.Core.CRUD
             return new GetOperation(text, entityInfo, _mapper);
         }
 
+        private string CreateProjection(IEnumerable<IEntityColumnInfo> columns)
+        {
+            return string.Join(_formatter.FieldSeparator, columns.Select(e => _formatter.FormatField(e.ColumnName)));
+        }
+
         private StringBuffer CreateWhereClause(StringBuffer text, IEntityInfo entityInfo)
         {
             foreach (var keyColumn in entityInfo.KeyColumns)
             {
-                text += _formatter.FormatField(keyColumn.ColumnName);
-                text += " ";
-                text += _formatter.FormatNode(ExpressionType.Equal);
-                text += " "; 
-                text += "@" + keyColumn.ColumnName.Replace(' ', '_');
+                text = AppendEquality(text, keyColumn);
                 text += _formatter.FieldSeparator;
             }
 
@@ -95,5 +136,14 @@ namespace VirtualObjects.Core.CRUD
             return text;
         }
 
+        private StringBuffer AppendEquality(StringBuffer text, IEntityColumnInfo keyColumn)
+        {
+            text += _formatter.FormatField(keyColumn.ColumnName);
+            text += " ";
+            text += _formatter.FormatNode(ExpressionType.Equal);
+            text += " ";
+            text += "@" + keyColumn.ColumnName.Replace(' ', '_');
+            return text;
+        }
     }
 }
