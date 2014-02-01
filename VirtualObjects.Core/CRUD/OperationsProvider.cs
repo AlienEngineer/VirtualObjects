@@ -124,26 +124,24 @@ namespace VirtualObjects.Core.CRUD
             return string.Join(_formatter.FieldSeparator, columns.Select(e => _formatter.FormatField(e.ColumnName)));
         }
 
-        private StringBuffer CreateWhereClause(StringBuffer text, IEntityInfo entityInfo)
+        private void CreateWhereClause(StringBuffer text, IEntityInfo entityInfo)
         {
             foreach (var keyColumn in entityInfo.KeyColumns)
             {
-                text = AppendEquality(text, keyColumn);
+                AppendEquality(text, keyColumn);
                 text += _formatter.FieldSeparator;
             }
 
             text.RemoveLast(_formatter.FieldSeparator);
-            return text;
         }
 
-        private StringBuffer AppendEquality(StringBuffer text, IEntityColumnInfo keyColumn)
+        private void AppendEquality(StringBuffer text, IEntityColumnInfo keyColumn)
         {
             text += _formatter.FormatField(keyColumn.ColumnName);
             text += " ";
             text += _formatter.FormatNode(ExpressionType.Equal);
             text += " ";
             text += "@" + keyColumn.ColumnName.Replace(' ', '_');
-            return text;
         }
     }
 }
