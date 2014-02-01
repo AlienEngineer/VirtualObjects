@@ -41,11 +41,23 @@ namespace VirtualObjects.Core.CRUD
 
         private IOperation CreateInsertOperation(IEntityInfo entityInfo)
         {
+
             return new InsertOperation(text, entityInfo);
         }
 
         private IOperation CreateDeleteOperation(IEntityInfo entityInfo)
         {
+            StringBuffer text = _formatter.Delete;
+            text += " ";
+            text += _formatter.From;
+            text += " ";
+            text += _formatter.FormatTableName(entityInfo.EntityName, 0);
+            text += " ";
+            text += _formatter.Where;
+            text += " ";
+
+            CreateWhereClause(text, entityInfo);
+
             return new DeleteOperation(text, entityInfo);
         }
 
@@ -57,6 +69,8 @@ namespace VirtualObjects.Core.CRUD
             text += " ";
             text += _formatter.From;
             text += " ";
+            text += _formatter.FormatTableName(entityInfo.EntityName, 0);
+            text += " "; 
             text += _formatter.Where;
             text += " ";
             
