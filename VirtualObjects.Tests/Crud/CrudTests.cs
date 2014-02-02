@@ -10,7 +10,7 @@ using VirtualObjects.Tests.Models.Northwind;
 namespace VirtualObjects.Tests.Crud
 {
     [TestFixture]
-    public class CrusTests : UtilityBelt
+    public class CrudTests : UtilityBelt
     {
         
         [Test]
