@@ -74,6 +74,9 @@ namespace VirtualObjects.Tests
         }
 
 
+
+        IDbTransaction dbTransaction;
+
         [SetUp]
         public void SetUpConnection()
         {
@@ -83,7 +86,22 @@ namespace VirtualObjects.Tests
         [TearDown]
         public void CleanUpConnection()
         {
+            if (dbTransaction != null)
+            {
+                dbTransaction.Rollback();
+            }
             Connection.Close();
+        }
+
+        /// <summary>
+        /// This helper will begin a transaction and will rollback any changes at every unit-test TearDown
+        /// </summary>
+        public void RollBackOnTearDown()
+        {
+            if (dbTransaction == null)
+            {
+                dbTransaction = Connection.BeginTransaction();    
+            }
         }
 
         public IDataReader ExecuteReader(IQueryInfo query)
