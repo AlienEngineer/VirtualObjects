@@ -268,6 +268,11 @@ namespace VirtualObjects.Queries.Formatters
             return parseValue.ToString();
         }
 
+        public string FormatTableName(string entityName)
+        {
+            return Wrap(entityName);
+        }
+
         public string FormatMonthOf(string columnName, int index)
         {
             return FormatFunctionCall("Month", columnName, index);

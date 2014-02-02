@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="Config\Db.cs" />
     <Compile Include="Config\MappingTests.cs" />
+    <Compile Include="Crud\Class1.cs" />
     <Compile Include="Models\Northwind\Categories.cs" />
     <Compile Include="Models\Northwind\CustomerCustomerDemo.cs" />
     <Compile Include="Models\Northwind\CustomerDemographics.cs" />

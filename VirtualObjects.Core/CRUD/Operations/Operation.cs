@@ -8,20 +8,21 @@ namespace VirtualObjects.Core.CRUD.Operations
 {
     abstract class Operation : IOperation
     {
-        private readonly string _commandText;
         private readonly IEntityInfo _entityInfo;
         private IDictionary<String, Object> _parameters;
         private object _entityModel;
 
         protected Operation(String commandText, IEntityInfo entityInfo)
         {
-            _commandText = commandText;
+            CommandText = commandText;
             _entityInfo = entityInfo;
         }
 
+        public string CommandText { get; private set; }
+
         public object Execute(IConnection connection)
         {
-            return Execute(connection, _entityModel, _entityInfo, _commandText, _parameters);
+            return Execute(connection, _entityModel, _entityInfo, CommandText, _parameters);
         }
 
         public IOperation PrepareOperation(object entityModel)

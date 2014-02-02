@@ -39,7 +39,7 @@ namespace VirtualObjects.Core.CRUD
         {
             StringBuffer text = _formatter.Update;
             text += " ";
-            text += _formatter.FormatTableName(entityInfo.EntityName, 0);
+            text += _formatter.FormatTableName(entityInfo.EntityName);
             text += " ";
             text += _formatter.Set;
             text += " ";
@@ -52,6 +52,10 @@ namespace VirtualObjects.Core.CRUD
 
             text.RemoveLast(_formatter.FieldSeparator);
 
+            text += " ";
+            text += _formatter.Where;
+            text += " ";
+
             CreateWhereClause(text, entityInfo);
 
             return new UpdateOperation(text, entityInfo);
@@ -62,7 +66,7 @@ namespace VirtualObjects.Core.CRUD
             StringBuffer text = _formatter.Insert;
             
             text += " ";
-            text += _formatter.FormatTableName(entityInfo.EntityName, 0);
+            text += _formatter.FormatTableName(entityInfo.EntityName);
             text += " ";
             
             text += _formatter.BeginWrap();
@@ -91,7 +95,7 @@ namespace VirtualObjects.Core.CRUD
             text += " ";
             text += _formatter.From;
             text += " ";
-            text += _formatter.FormatTableName(entityInfo.EntityName, 0);
+            text += _formatter.FormatTableName(entityInfo.EntityName);
             text += " ";
             text += _formatter.Where;
             text += " ";
@@ -109,7 +113,7 @@ namespace VirtualObjects.Core.CRUD
             text += " ";
             text += _formatter.From;
             text += " ";
-            text += _formatter.FormatTableName(entityInfo.EntityName, 0);
+            text += _formatter.FormatTableName(entityInfo.EntityName);
             text += " "; 
             text += _formatter.Where;
             text += " ";
@@ -138,9 +142,7 @@ namespace VirtualObjects.Core.CRUD
         private void AppendEquality(StringBuffer text, IEntityColumnInfo keyColumn)
         {
             text += _formatter.FormatField(keyColumn.ColumnName);
-            text += " ";
             text += _formatter.FormatNode(ExpressionType.Equal);
-            text += " ";
             text += "@" + keyColumn.ColumnName.Replace(' ', '_');
         }
     }

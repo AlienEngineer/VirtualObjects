@@ -72,5 +72,6 @@ namespace VirtualObjects.Queries.Formatters
         String BeginMethodCall(string methodCalled);
         String EndMethodCall(string methodCalled);
         String FormatConstant(object parseValue);
+        String FormatTableName(string entityName);
     }
 }
