@@ -17,6 +17,13 @@ namespace VirtualObjects
 {
     public class VirtualObjectsModule : NinjectModule
     {
+        private readonly SessionConfiguration _configuration;
+
+        public VirtualObjectsModule(SessionConfiguration configuration)
+        {
+            _configuration = configuration ?? new SessionConfiguration();
+        }
+
         public override void Load()
         {
             //
@@ -26,10 +33,30 @@ namespace VirtualObjects
 
             Bind<IConnection>().To<Connection>().InThreadScope();
 
+            Bind<ISession>().To<InternalSession>().InThreadScope();
+            Bind<SessionContext>().ToMethod(context => new SessionContext
+            {
+                Mapper = Kernel.Get<IMapper>(),
+                Connection = Kernel.Get<IConnection>(),
+                QueryProvider = Kernel.Get<IQueryProvider>()
+            });
+
             //
             // Entity info Mapper
             //
-            Bind<IMapper>().ToMethod(context => CreateBuilder(context.Kernel.Get<IOperationsProvider>()).Build()).InThreadScope();
+            if (_configuration.MappingBuilder == null)
+            {
+                Bind<IMapper>()
+                    .ToMethod(context => CreateBuilder(context.Kernel.Get<IOperationsProvider>()).Build())
+                    .InThreadScope();
+            }
+            else
+            {
+                Bind<IMapper>()
+                    .ToMethod(context => _configuration.MappingBuilder.Build())
+                    .InThreadScope();
+            }
+            
             
             //
             // QueryTranslation

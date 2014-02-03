@@ -6,8 +6,8 @@ namespace VirtualObjects
     {
         readonly ISession _session;
 
-        public Session()
-            : this(new NinjectContainer())
+        public Session(SessionConfiguration configuration = null)
+            : this(new NinjectContainer(configuration))
         {
         }
 

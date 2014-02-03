@@ -11,7 +11,12 @@ namespace VirtualObjects
 
     class NinjectContainer : IOcContainer
     {
-        readonly IKernel _kernel = new StandardKernel(new VirtualObjectsModule());
+        readonly IKernel _kernel;
+
+        public NinjectContainer(SessionConfiguration configuration)
+        {
+            _kernel = new StandardKernel(new VirtualObjectsModule(configuration));
+        }
 
         public TResult Get<TResult>()
         {

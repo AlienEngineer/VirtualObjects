@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace VirtualObjects.Config
 {
-    internal interface IMappingBuilder
+    public interface IMappingBuilder
     {
         IMapper Build();
     }
