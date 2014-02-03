@@ -5,7 +5,7 @@ using Fasterflect;
 
 namespace VirtualObjects.EntityProvider
 {
-    class CollectionTypeEntityProvider : EntityProvider
+    class CollectionTypeEntityProvider : EntityModelProvider
     {
         public override bool CanCreate(Type type)
         {

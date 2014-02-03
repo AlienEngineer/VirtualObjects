@@ -69,7 +69,7 @@ namespace VirtualObjects.Tests
             var entityProvider = new EntityProvider.EntityProviderComposite(
                 new List<IEntityProvider>
                 {
-                    new EntityProvider.EntityProvider(),
+                    new EntityProvider.EntityModelProvider(),
                     new EntityProvider.DynamicTypeProvider(),
                     new EntityProvider.CollectionTypeEntityProvider()
                 });
@@ -92,7 +92,9 @@ namespace VirtualObjects.Tests
                         new CountQueryExecutor(Translator),
                         new QueryExecutor(entitiesMapper, Translator),
                         new SingleQueryExecutor(entitiesMapper, Translator)
-                    }), new Context { Connection = ConnectionManager });
+                    }), 
+                    new Context { Connection = ConnectionManager }
+               );
         }
 
 

@@ -4,11 +4,11 @@ using Fasterflect;
 
 namespace VirtualObjects.EntityProvider
 {
-    class EntityProvider : IEntityProvider
+    class EntityModelProvider : IEntityProvider
     {
         public virtual object CreateEntity(Type type)
         {
-            return Activator.CreateInstance(type);
+            return type.CreateInstance();
         }
 
         public virtual bool CanCreate(Type type)

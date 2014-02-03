@@ -26,7 +26,7 @@ namespace VirtualObjects.Tests.Queries
                 new EntityProvider.EntityProviderComposite(
                     new List<IEntityProvider>
                         {
-                            new EntityProvider.EntityProvider(),
+                            new EntityProvider.EntityModelProvider(),
                             new EntityProvider.DynamicTypeProvider(),
                             new EntityProvider.CollectionTypeEntityProvider()
                         }

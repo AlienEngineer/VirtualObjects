@@ -49,7 +49,7 @@
     <Compile Include="Diagnostic.cs" />
     <Compile Include="EntityProvider\CollectionTypeEntityProvider.cs" />
     <Compile Include="EntityProvider\DynamicTypeProvider.cs" />
-    <Compile Include="EntityProvider\EntityProvider.cs" />
+    <Compile Include="EntityProvider\EntityModelProvider.cs" />
     <Compile Include="EntityProvider\EntityProviderComposite.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Errors.Designer.cs">
