@@ -58,9 +58,7 @@ namespace VirtualObjects.Tests.Queries
                     .CreateQueryTranslator(new SqlFormatter(), Mapper);
             }
 
-            var str = Diagnostic.Timed(
-                func: () => _translator.TranslateQuery(query).CommandText,
-                name: "Translation");
+            var str = Diagnostic.Timed(() => _translator.TranslateQuery(query).CommandText);
 
             Trace.WriteLine(str);
 
@@ -68,25 +66,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        int _count;
-
-        [TearDown]
-        public void FlushTime()
-        {
-            if (!TestContext.CurrentContext.Test.Properties.Contains("Repeat"))
-            {
-                return;
-            }
-
-            var times = (int)TestContext.CurrentContext.Test.Properties["Repeat"];
-
-            _count++;
-
-            if (_count % times != 0) return;
-
-            Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => Translation parsed in time :   {1} ms", "Translation");
-
-        }
+        
 
 
 

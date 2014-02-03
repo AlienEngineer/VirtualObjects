@@ -19,6 +19,16 @@ namespace VirtualObjects
 
             public void Add(TimeSpan time)
             {
+                // Removes the first timer.
+                // The first time will always be greater than the rest.
+                // This is meaningless since this system resuses resources all the time.
+                // the second time as it would be the first.
+                if (Count == 1)
+                {
+                    Time = new TimeSpan();
+                    Time = Time.Add(time);
+                }
+
                 Time = Time.Add(time);
                 Count++;
             }

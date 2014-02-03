@@ -20,26 +20,7 @@ namespace VirtualObjects.Tests.Queries
     [TestFixture, Category("Query Aggregate Functions")]
     public class QueryAggregateFunctionsTests : UtilityBelt
     {
-
-        int _count;
-
-        [TearDown]
-        public void FlushTime()
-        {
-            if ( !TestContext.CurrentContext.Test.Properties.Contains("Repeat") )
-            {
-                return;
-            }
-
-            var times = (int)TestContext.CurrentContext.Test.Properties["Repeat"];
-
-            _count++;
-
-            if ( _count % times != 0 ) return;
-
-            Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => Aggregate execution in time :   {1} ms");
-        }
-
+        
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_Count()
         {

@@ -35,32 +35,10 @@ namespace VirtualObjects.Tests.Crud
                 .Should().Be("Update [Employees] Set [LastName] = @LastName, [FirstName] = @FirstName, [Title] = @Title, [TitleOfCourtesy] = @TitleOfCourtesy, [BirthDate] = @BirthDate, [HireDate] = @HireDate, [Address] = @Address, [City] = @City, [Region] = @Region, [PostalCode] = @PostalCode, [Country] = @Country, [HomePhone] = @HomePhone, [Extension] = @Extension, [Notes] = @Notes, [Photo] = @Photo, [ReportsTo] = @ReportsTo, [PhotoPath] = @PhotoPath Where [EmployeeId] = @EmployeeId");
         }
 
-
-        int _count;
-
-        [TearDown]
-        public void FlushTime()
-        {
-            if ( !TestContext.CurrentContext.Test.Properties.Contains("Repeat") )
-            {
-                return;
-            }
-
-            var times = (int)TestContext.CurrentContext.Test.Properties["Repeat"];
-
-            _count++;
-
-            if ( _count % times != 0 ) return;
-
-            Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => Operation executed in time :   {1} ms", "Operation");
-
-        }
-
-
         private TResult Execute<TResult>(IOperation operation, TResult entity)
         {
 
-            return Diagnostic.Timed(() => (TResult)operation.PrepareOperation(entity).Execute(this), name: "Operation");
+            return Diagnostic.Timed(() => (TResult)operation.PrepareOperation(entity).Execute(this));
         }
 
         [Test, Repeat(Repeat)]
