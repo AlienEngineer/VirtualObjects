@@ -60,6 +60,7 @@
     <Compile Include="Exceptions\ConfigException.cs" />
     <Compile Include="Exceptions\ConnectionProviderException.cs" />
     <Compile Include="Exceptions\ExecutionException.cs" />
+    <Compile Include="IConnection.cs" />
     <Compile Include="IEntityColumnInfo.cs" />
     <Compile Include="IEntityInfo.cs" />
     <Compile Include="IEntityProvider.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="IOperationParameter.cs" />
     <Compile Include="IOperations.cs" />
     <Compile Include="IOperationsProvider.cs" />
+    <Compile Include="ITransaction.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
     <Compile Include="ReflectionExtensions.cs" />
     <Compile Include="StringBuffer.cs" />

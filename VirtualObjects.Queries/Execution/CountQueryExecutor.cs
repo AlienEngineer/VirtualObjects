@@ -17,9 +17,16 @@ namespace VirtualObjects.Queries.Execution
 
         public object ExecuteQuery(Expression expression, Context context)
         {
-            var queryInfo = _translator.TranslateQuery(expression);
+            try
+            {
+                var queryInfo = _translator.TranslateQuery(expression);
 
-            return context.Connection.ExecuteScalar(queryInfo.CommandText, queryInfo.Parameters);
+                return context.Connection.ExecuteScalar(queryInfo.CommandText, queryInfo.Parameters);
+            }
+            finally
+            {
+                context.Connection.Close();
+            }
         }
 
         public TResult ExecuteQuery<TResult>(Expression query, Context context)

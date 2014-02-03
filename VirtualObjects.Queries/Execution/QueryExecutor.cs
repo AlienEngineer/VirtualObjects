@@ -34,9 +34,16 @@ namespace VirtualObjects.Queries.Execution
 
         private object MapEntities(IQueryInfo queryInfo, Context context)
         {
-            var reader = context.Connection.ExecuteReader(queryInfo.CommandText, queryInfo.Parameters);
+            try
+            {
+                var reader = context.Connection.ExecuteReader(queryInfo.CommandText, queryInfo.Parameters);
 
-            return _mapper.MapEntities(reader, queryInfo, queryInfo.OutputType);
+                return _mapper.MapEntities(reader, queryInfo, queryInfo.OutputType);
+            }
+            finally
+            {
+                context.Connection.Close();
+            }
         }
 
         public virtual TResult ExecuteQuery<TResult>(Expression expression, Context context)

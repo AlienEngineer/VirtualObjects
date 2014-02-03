@@ -45,9 +45,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Db.cs" />
+    <Compile Include="InternalSession.cs" />
+    <Compile Include="IOCContainer.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Strapper.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="SessionContext.cs" />
+    <Compile Include="VirtualObjectsModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtualObjects.Common\VirtualObjects.Common.csproj">

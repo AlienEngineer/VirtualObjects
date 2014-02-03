@@ -237,7 +237,7 @@ namespace VirtualObjects.Tests
             cmd.ExecuteNonQuery();
         }
 
-        public ITranslation BeginTranslation()
+        public ITransaction BeginTranslation()
         {
             throw new NotImplementedException();
         }

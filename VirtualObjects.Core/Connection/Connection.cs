@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace VirtualObjects.Core.Connection
 {
-    class Connection : IConnection, ITranslation
+    class Connection : IConnection, ITransaction
     {
         private readonly IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
@@ -38,7 +38,7 @@ namespace VirtualObjects.Core.Connection
             CreateCommand(commandText, parameters).ExecuteNonQuery();
         }
 
-        public ITranslation BeginTranslation()
+        public ITransaction BeginTranslation()
         {
             if ( _dbTransaction != null )
             {

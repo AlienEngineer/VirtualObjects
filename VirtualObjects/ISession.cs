@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace VirtualObjects
 {
@@ -27,12 +25,12 @@ namespace VirtualObjects
         TEntity GetById<TEntity>(TEntity entity) where TEntity : class, new();
 
         /// <summary>
-        /// Adds the specified entity.
+        /// Inserts the specified entity.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        TEntity Add<TEntity>(TEntity entity) where TEntity : class, new();
+        TEntity Insert<TEntity>(TEntity entity) where TEntity : class, new();
 
         /// <summary>
         /// Updates the specified entity.
@@ -50,5 +48,10 @@ namespace VirtualObjects
         /// <returns></returns>
         Boolean Delete<TEntity>(TEntity entity) where TEntity : class, new();
 
+        /// <summary>
+        /// Begins the transaction.
+        /// </summary>
+        /// <returns></returns>
+        ITransaction BeginTransaction();
     }
 }

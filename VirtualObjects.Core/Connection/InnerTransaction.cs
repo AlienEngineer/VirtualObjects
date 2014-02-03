@@ -2,23 +2,23 @@
 
 namespace VirtualObjects.Core.Connection
 {
-    class InnerTransaction : ITranslation
+    class InnerTransaction : ITransaction
     {
-        private readonly ITranslation _translation;
+        private readonly ITransaction _transaction;
 
-        public InnerTransaction(ITranslation translation)
+        public InnerTransaction(ITransaction transaction)
         {
-            _translation = translation;
+            _transaction = transaction;
         }
 
         public IDbConnection DbConnection
         {
-            get { return _translation.DbConnection; }
+            get { return _transaction.DbConnection; }
         }
 
         public void Rollback()
         {
-            _translation.Rollback();
+            _transaction.Rollback();
         }
 
         public void Commit()
