@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Data.SqlClient;
+using FluentAssertions;
 using NUnit.Framework;
 using VirtualObjects.Core.CRUD;
 using VirtualObjects.Queries.Formatters;
@@ -34,14 +35,41 @@ namespace VirtualObjects.Tests.Crud
                 .Should().Be("Update [Employees] Set [LastName] = @LastName, [FirstName] = @FirstName, [Title] = @Title, [TitleOfCourtesy] = @TitleOfCourtesy, [BirthDate] = @BirthDate, [HireDate] = @HireDate, [Address] = @Address, [City] = @City, [Region] = @Region, [PostalCode] = @PostalCode, [Country] = @Country, [HomePhone] = @HomePhone, [Extension] = @Extension, [Notes] = @Notes, [Photo] = @Photo, [ReportsTo] = @ReportsTo, [PhotoPath] = @PhotoPath Where [EmployeeId] = @EmployeeId");
         }
 
+
+        int _count;
+
+        [TearDown]
+        public void FlushTime()
+        {
+            if ( !TestContext.CurrentContext.Test.Properties.Contains("Repeat") )
+            {
+                return;
+            }
+
+            var times = (int)TestContext.CurrentContext.Test.Properties["Repeat"];
+
+            _count++;
+
+            if ( _count % times != 0 ) return;
+
+            Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => Operation executed in time :   {1} ms", "Operation");
+
+        }
+
+
+        private TResult Execute<TResult>(IOperation operation, TResult entity)
+        {
+
+            return Diagnostic.Timed(() => (TResult)operation.PrepareOperation(entity).Execute(this), name: "Operation");
+        }
+
         [Test, Repeat(REPEAT)]
         public void GetOperation_Employee_Test()
         {
-            var employee = _operations.GetOperation
-                .PrepareOperation(new Employee
-                {
-                    EmployeeId = 1
-                }).Execute(this) as Employee;
+            var employee = Execute(_operations.GetOperation, new Employee
+            {
+                EmployeeId = 1
+            });
 
             employee.Should().NotBeNull();
             employee.EmployeeId.Should().Be(1);
@@ -53,13 +81,12 @@ namespace VirtualObjects.Tests.Crud
         {
             RollBackOnTearDown();
 
-            var employee = _operations.InsertOperation
-                .PrepareOperation(new Employee
-                {
-                    EmployeeId = 10,
-                    FirstName = "Sérgio",
-                    LastName = "Ferreira"
-                }).Execute(this) as Employee;
+            var employee = Execute(_operations.InsertOperation, new Employee
+            {
+                EmployeeId = 10,
+                FirstName = "Sérgio",
+                LastName = "Ferreira"
+            });
 
             employee.Should().NotBeNull();
             employee.EmployeeId.Should().BeGreaterThan(9);
@@ -67,18 +94,34 @@ namespace VirtualObjects.Tests.Crud
 
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(REPEAT), ExpectedException(typeof(SqlException))]
         public void DeleteOperation_Employee_Test()
         {
             RollBackOnTearDown();
-        
+
+            var employee = Execute(_operations.DeleteOperation, new Employee
+            {
+                EmployeeId = 5
+            });
+            
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(1);
         }
 
         [Test, Repeat(REPEAT)]
         public void UpdateOperation_Employee_Test()
         {
             RollBackOnTearDown();
-        
+
+            var employee = Execute(_operations.UpdateOperation, new Employee
+            {
+                EmployeeId = 1,
+                FirstName = "Sérgio",
+                LastName = "Ferreira"
+            });
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().Be(1);
         }
 
     }
