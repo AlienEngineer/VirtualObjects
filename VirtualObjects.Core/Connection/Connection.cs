@@ -11,6 +11,7 @@ namespace VirtualObjects.Core.Connection
         private readonly IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
+        private bool _endedTransaction;
 
         public Connection(IDbConnectionProvider provider)
         {
@@ -44,7 +45,6 @@ namespace VirtualObjects.Core.Connection
                 return new InnerTransaction(this);
             }
 
-
             Open();
             _dbTransaction = DbConnection.BeginTransaction();
 
@@ -63,14 +63,14 @@ namespace VirtualObjects.Core.Connection
 
         public void Close()
         {
-            if ( _dbConnection.State == ConnectionState.Closed )
+            if ( !_endedTransaction || _dbConnection.State == ConnectionState.Closed )
             {
                 return;
             }
 
             _dbConnection.Close();
-            _dbTransaction = null;
             _rolledBack = false;
+            _dbTransaction = null;
         }
 
         private IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
@@ -121,6 +121,7 @@ namespace VirtualObjects.Core.Connection
             }
 
             _rolledBack = true;
+            _endedTransaction = true;
         }
 
         public void Commit()
@@ -131,33 +132,7 @@ namespace VirtualObjects.Core.Connection
             }
 
             _dbTransaction.Commit();
-        }
-
-    }
-
-
-    class InnerTransaction : ITranslation
-    {
-        private readonly ITranslation _translation;
-
-        public InnerTransaction(ITranslation translation)
-        {
-            _translation = translation;
-        }
-
-        public IDbConnection DbConnection
-        {
-            get { return _translation.DbConnection; }
-        }
-
-        public void Rollback()
-        {
-            _translation.Rollback();
-        }
-
-        public void Commit()
-        {
-
+            _endedTransaction = true;
         }
 
     }

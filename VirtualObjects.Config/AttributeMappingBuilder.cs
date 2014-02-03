@@ -7,7 +7,12 @@ namespace VirtualObjects.Config
 {
     public class AttributeMappingBuilder : IMappingBuilder
     {
-        readonly MappingBuilder _innerBuilder = new MappingBuilder();
+        private readonly MappingBuilder _innerBuilder;
+
+        public AttributeMappingBuilder(IOperationsProvider operationsProvider)
+        {
+            _innerBuilder = new MappingBuilder(operationsProvider);
+        }
 
         public IMapper Build()
         {

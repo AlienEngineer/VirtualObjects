@@ -8,11 +8,6 @@ using VirtualObjects.Queries.Formatters;
 
 namespace VirtualObjects.Core.CRUD
 {
-    public interface IOperationsProvider
-    {
-        IOperations CreateOperations(IEntityInfo entityInfo);
-    }
-
     class OperationsProvider : IOperationsProvider
     {
         private readonly IFormatter _formatter;

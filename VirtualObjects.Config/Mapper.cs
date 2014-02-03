@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using System.Security.Policy;
 using Fasterflect;
 using VirtualObjects.Exceptions;
 
@@ -15,6 +14,7 @@ namespace VirtualObjects.Config
     /// </summary>
     class Mapper : IMapper
     {
+        private readonly IOperationsProvider _operationsProvider;
         public IEnumerable<Func<PropertyInfo, String>> ColumnNameGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnKeyGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnIdentityGetters { get; set; }
@@ -24,11 +24,11 @@ namespace VirtualObjects.Config
 
         private readonly IDictionary<Type, EntityInfo> _cacheEntityInfos;
 
-        public Mapper()
+        public Mapper(IOperationsProvider operationsProvider)
         {
+            _operationsProvider = operationsProvider;
             _cacheEntityInfos = new Dictionary<Type, EntityInfo>();
         }
-
 
         #region IMapper Members
 
@@ -86,6 +86,8 @@ namespace VirtualObjects.Config
                 .GetHashCode();
 
             entityInfo.Identity = entityInfo.KeyColumns.FirstOrDefault(e => e.IsIdentity);
+
+            entityInfo.Operations = _operationsProvider.CreateOperations(entityInfo);
 
             return entityInfo;
         }

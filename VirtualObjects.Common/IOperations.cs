@@ -1,5 +1,5 @@
 ﻿
-namespace VirtualObjects.Core.CRUD
+namespace VirtualObjects
 {
     public interface IOperations
     {

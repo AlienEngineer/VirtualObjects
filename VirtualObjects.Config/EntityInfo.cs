@@ -32,6 +32,8 @@ namespace VirtualObjects.Config
             return KeyHashCode(obj);
         }
 
+        public IOperations Operations { get; set; }
+
         public IEntityColumnInfo GetFieldAssociatedWith(string name)
         {
             return Columns

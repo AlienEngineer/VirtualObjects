@@ -51,8 +51,6 @@
     <Compile Include="EntityColumnInfo.cs" />
     <Compile Include="EntityDateTimeColumnInfo.cs" />
     <Compile Include="EntityInfo.cs" />
-    <Compile Include="IEntityColumnInfo.cs" />
-    <Compile Include="IEntityInfo.cs" />
     <Compile Include="IMapper.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="MappingBuilder.cs" />

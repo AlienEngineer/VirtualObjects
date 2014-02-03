@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using VirtualObjects.Config;
+using VirtualObjects.Core.CRUD;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Execution;
 using VirtualObjects.Queries.Formatters;
@@ -184,7 +185,7 @@ namespace VirtualObjects.Tests
 
         private MappingBuilder CreateBuilder()
         {
-            var builder = new MappingBuilder();
+            var builder = new MappingBuilder(new OperationsProvider(new SqlFormatter(), new OrderedEntityMapper()));
 
             //
             // TableName getters
@@ -234,6 +235,18 @@ namespace VirtualObjects.Tests
         {
             var cmd = CreateCommand(commandText, parameters);
             cmd.ExecuteNonQuery();
+        }
+
+        public ITranslation BeginTranslation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDbConnection DbConnection { get; private set; }
+
+        public void Close()
+        {
+            throw new NotImplementedException();
         }
     }
 }

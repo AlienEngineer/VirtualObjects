@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Linq;
+using Ninject;
+using Ninject.Activation;
 using Ninject.Modules;
 using VirtualObjects.Config;
 using VirtualObjects.Core.Connection;
+using VirtualObjects.Core.CRUD;
 using VirtualObjects.EntityProvider;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Execution;
@@ -19,25 +22,25 @@ namespace VirtualObjects
             //
             // Connection
             //
-            Bind<IDbConnectionProvider>().To<NamedDbConnectionProvider>();
+            Bind<IDbConnectionProvider>().To<NamedDbConnectionProvider>().InSingletonScope();
 
-            Bind<IConnection>();
+            Bind<IConnection>().To<Connection>().InThreadScope();
 
             //
             // Entity info Mapper
             //
-            Bind<IMapper>().ToConstant(CreateBuilder().Build());
+            Bind<IMapper>().ToMethod(context => CreateBuilder(context.Kernel.Get<IOperationsProvider>()).Build()).InThreadScope();
             
             //
             // QueryTranslation
             //
-            Bind<IFormatter>().To<SqlFormatter>();
-            Bind<IQueryTranslator>().To<CachingTranslator>();
+            Bind<IFormatter>().To<SqlFormatter>().InSingletonScope();
+            Bind<IQueryTranslator>().To<CachingTranslator>().InThreadScope();
 
             //
             // Entities Provider
             //
-            Bind<IEntityProvider>().To<EntityProviderComposite>();
+            Bind<IEntityProvider>().To<EntityProviderComposite>().InSingletonScope();
             Bind<IEntityProvider>().To<EntityModelProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<DynamicTypeProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<CollectionTypeEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
@@ -45,8 +48,8 @@ namespace VirtualObjects
             //
             // Entities Mappers
             //
-            Bind<IEntitiesMapper>().To<CollectionEntitiesMapper>();
-            Bind<IEntityMapper>().To<OrderedEntityMapper>();
+            Bind<IEntitiesMapper>().To<CollectionEntitiesMapper>().InSingletonScope();
+            Bind<IEntityMapper>().To<OrderedEntityMapper>().InSingletonScope();
             Bind<IEntityMapper>().To<DynamicTypeEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
             Bind<IEntityMapper>().To<DynamicEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
             Bind<IEntityMapper>().To<DynamicWithMemberEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
@@ -55,23 +58,33 @@ namespace VirtualObjects
             //
             // Query Executors
             //
-            Bind<IQueryExecutor>().To<CompositeExecutor>();
+            Bind<IQueryExecutor>().To<CompositeExecutor>().InThreadScope();
             Bind<IQueryExecutor>().To<CountQueryExecutor>().WhenInjectedInto<CompositeExecutor>();
             Bind<IQueryExecutor>().To<QueryExecutor>().WhenInjectedInto<CompositeExecutor>();
             Bind<IQueryExecutor>().To<SingleQueryExecutor>().WhenInjectedInto<CompositeExecutor>();
 
-            Bind<Context>().ToSelf();
+            Bind<Context>().ToMethod(context => 
+                new Context
+                {
+                   Connection = context.Kernel.Get<IConnection>()    
+                });
 
             //
             // Query Provider
             //
             Bind<IQueryProvider>().To<QueryProvider>();
 
+
+            //
+            // CRUD Operations
+            //
+            Bind<IOperationsProvider>().To<OperationsProvider>();
+
         }
 
-        private MappingBuilder CreateBuilder()
+        private MappingBuilder CreateBuilder(IOperationsProvider operationsProvider)
         {
-            var builder = new MappingBuilder();
+            var builder = new MappingBuilder(operationsProvider);
 
             //
             // TableName getters

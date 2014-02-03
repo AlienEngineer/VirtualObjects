@@ -1,6 +1,6 @@
 using System;
 
-namespace VirtualObjects.Core.CRUD
+namespace VirtualObjects
 {
     public interface IOperation
     {

@@ -14,6 +14,7 @@ namespace VirtualObjects.Config
 
     public class MappingBuilder : IMappingBuilder
     {
+        private readonly IOperationsProvider _operationsProvider;
         private readonly ICollection<Func<PropertyInfo, String>> _columnNameGetters;
         private readonly ICollection<Func<PropertyInfo, String>> _columnForeignKeyGetters;
         private readonly ICollection<Func<PropertyInfo, Boolean>> _columnKeyGetters;
@@ -21,10 +22,11 @@ namespace VirtualObjects.Config
         private readonly ICollection<Func<PropertyInfo, Boolean>> _columnVersionGetters;
         private readonly ICollection<Func<Type, String>> _entityNameGetters;
 
-        private Func<Attribute, Boolean> _defaultBooleanGetter;
+        private readonly Func<Attribute, Boolean> _defaultBooleanGetter;
 
-        public MappingBuilder()
+        public MappingBuilder(IOperationsProvider operationsProvider)
         {
+            _operationsProvider = operationsProvider;
             _columnNameGetters = new Collection<Func<PropertyInfo, String>>();
             _columnKeyGetters = new Collection<Func<PropertyInfo, Boolean>>();
             _columnIdentityGetters = new Collection<Func<PropertyInfo, Boolean>>();
@@ -140,7 +142,7 @@ namespace VirtualObjects.Config
         
         public IMapper Build()
         {
-            return new Mapper
+            return new Mapper(_operationsProvider)
             {
                 ColumnNameGetters = _columnNameGetters.Reverse(),
                 EntityNameGetters = _entityNameGetters.Reverse(),

@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace VirtualObjects.Config
+namespace VirtualObjects
 {
     public interface IEntityColumnInfo
     {

@@ -43,9 +43,8 @@
     <Compile Include="Connection\Connection.cs" />
     <Compile Include="Connection\DbConnectionProvider.cs" />
     <Compile Include="Connection\IDbConnectionProvider.cs" />
+    <Compile Include="Connection\InnerTransaction.cs" />
     <Compile Include="Connection\NamedDbConnectionProvider.cs" />
-    <Compile Include="CRUD\IOperation.cs" />
-    <Compile Include="CRUD\IOperations.cs" />
     <Compile Include="CRUD\IOperationsExecutor.cs" />
     <Compile Include="CRUD\OperationParameter.cs" />
     <Compile Include="CRUD\OperationsExecutor.cs" />
