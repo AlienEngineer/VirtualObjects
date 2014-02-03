@@ -63,7 +63,7 @@ namespace VirtualObjects.Tests.Crud
             return Diagnostic.Timed(() => (TResult)operation.PrepareOperation(entity).Execute(this), name: "Operation");
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void GetOperation_Employee_Test()
         {
             var employee = Execute(_operations.GetOperation, new Employee
@@ -76,7 +76,7 @@ namespace VirtualObjects.Tests.Crud
             employee.LastName.Should().Be("Davolio");
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void InsertOperation_Employee_Test()
         {
             RollBackOnTearDown();
@@ -94,7 +94,7 @@ namespace VirtualObjects.Tests.Crud
 
         }
 
-        [Test, Repeat(REPEAT), ExpectedException(typeof(SqlException))]
+        [Test, Repeat(Repeat), ExpectedException(typeof(SqlException))]
         public void DeleteOperation_Employee_Test()
         {
             RollBackOnTearDown();
@@ -108,7 +108,7 @@ namespace VirtualObjects.Tests.Crud
             employee.EmployeeId.Should().Be(1);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void UpdateOperation_Employee_Test()
         {
             RollBackOnTearDown();

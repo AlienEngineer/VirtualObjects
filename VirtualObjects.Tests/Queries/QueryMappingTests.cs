@@ -66,7 +66,7 @@ namespace VirtualObjects.Tests.Queries
         /// 
         /// </summary>
         [Test]
-        [Repeat(REPEAT)]
+        [Repeat(Repeat)]
         public void Manual_Query_Mapping()
         {
             var queryInfo = TranslateQuery(Query<Employee>());
@@ -98,7 +98,7 @@ namespace VirtualObjects.Tests.Queries
             return Diagnostic.Timed(() => _entitiesMapper.MapEntities<TEntity>(reader, queryInfo)).ToList();
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllEmployees()
         {
             var query = Query<Employee>();
@@ -110,7 +110,7 @@ namespace VirtualObjects.Tests.Queries
             entities.Count().Should().Be(9);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllEmployees_Predicated()
         {
             var query = Query<Employee>().Where(e => e.EmployeeId > 0);
@@ -122,7 +122,7 @@ namespace VirtualObjects.Tests.Queries
             entities.Count().Should().Be(9);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders()
         {
             var query = Query<Orders>();
@@ -135,7 +135,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders_CustomProjection()
         {
             var query = Query<Orders>().Select(e => new { e.OrderId, e.OrderDate });
@@ -147,7 +147,7 @@ namespace VirtualObjects.Tests.Queries
             entities.Count().Should().Be(830);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders_Joined_Query_AllFields()
         {
             var query = from o in Query<Orders>()
@@ -161,7 +161,7 @@ namespace VirtualObjects.Tests.Queries
             entities.Count().Should().Be(2155);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders_Joined_Query_CustomProjection()
         {
             var query = from o in Query<Orders>()
@@ -175,7 +175,7 @@ namespace VirtualObjects.Tests.Queries
             entities.Count().Should().Be(2155);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders_NonKey_Joined_Query_CustomProjection()
         {
             var query = from o in Query<Orders>()
@@ -188,7 +188,7 @@ namespace VirtualObjects.Tests.Queries
             entities.Should().NotBeEmpty();
             entities.Count().Should().Be(169);
         }
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders_Joined_Query_CustomProjection_With_ForeignKey()
         {
             var query = from o in Query<Orders>()
@@ -206,7 +206,7 @@ namespace VirtualObjects.Tests.Queries
 
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders_Joined_Query_CustomProjection_With_ForeignKey_in_join()
         {
             var query = from o in Query<Orders>()
@@ -226,7 +226,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders_Joined_Query_CustomProjection_With_ForeignKeyField_in_join()
         {
             var query = from o in Query<Orders>()
@@ -242,7 +242,7 @@ namespace VirtualObjects.Tests.Queries
 
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders_GroupJoined_Query()
         {
             var query = from o in Query<Orders>()
@@ -257,7 +257,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Mapper_GetAllOrders_GroupJoined_Query_InversedProjection()
         {
             var query = from o in Query<Orders>()

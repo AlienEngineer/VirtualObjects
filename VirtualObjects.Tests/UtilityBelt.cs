@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
 using VirtualObjects.Config;
-using VirtualObjects.Core.CRUD;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Execution;
 using VirtualObjects.Queries.Formatters;
@@ -18,7 +17,7 @@ namespace VirtualObjects.Tests
 {
     public abstract class UtilityBelt : IConnection
     {
-        public const int REPEAT = 10;
+        public const int Repeat = 10;
 
         protected UtilityBelt()
         {
@@ -76,7 +75,7 @@ namespace VirtualObjects.Tests
 
 
 
-        IDbTransaction dbTransaction;
+        IDbTransaction _dbTransaction;
 
         [SetUp]
         public void SetUpConnection()
@@ -87,10 +86,10 @@ namespace VirtualObjects.Tests
         [TearDown]
         public void CleanUpConnection()
         {
-            if (dbTransaction != null)
+            if (_dbTransaction != null)
             {
-                dbTransaction.Rollback();
-                dbTransaction = null;
+                _dbTransaction.Rollback();
+                _dbTransaction = null;
             }
             Connection.Close();
         }
@@ -100,9 +99,9 @@ namespace VirtualObjects.Tests
         /// </summary>
         public void RollBackOnTearDown()
         {
-            if (dbTransaction == null)
+            if (_dbTransaction == null)
             {
-                dbTransaction = Connection.BeginTransaction();    
+                _dbTransaction = Connection.BeginTransaction();    
             }
         }
 
@@ -125,10 +124,10 @@ namespace VirtualObjects.Tests
         {
             var cmd = Connection.CreateCommand();
 
-            cmd.Transaction = dbTransaction;
+            cmd.Transaction = _dbTransaction;
             cmd.CommandText = commandText;
 
-            Trace.WriteLine("Query: " + cmd.CommandText);
+            Trace.WriteLine("Command: " + cmd.CommandText);
 
             parameters
                 .Select(e => new { OperParameter = e, Parameter = cmd.CreateParameter() })
@@ -155,6 +154,7 @@ namespace VirtualObjects.Tests
 
         public IQueryable<T> Query<T>()
         {
+// ReSharper disable once AssignNullToNotNullAttribute
             return QueryProvider.CreateQuery<T>(null);
         }
 

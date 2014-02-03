@@ -40,7 +40,7 @@ namespace VirtualObjects.Tests.Queries
             Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => Aggregate execution in time :   {1} ms");
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Count()
         {
             var count = Diagnostic.Timed(() => Query<Employee>().Count());
@@ -48,7 +48,7 @@ namespace VirtualObjects.Tests.Queries
             count.Should().Be(9);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_PredicatedCount()
         {
             var count = Diagnostic.Timed(() => Query<Employee>().Count(e => e.EmployeeId > 5));
@@ -57,7 +57,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Contains()
         {
             var employee = new Employee { EmployeeId = 1 };
@@ -67,7 +67,7 @@ namespace VirtualObjects.Tests.Queries
             count.Should().BeTrue();
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Contains_MultipleKeys()
         {
 
@@ -82,7 +82,7 @@ namespace VirtualObjects.Tests.Queries
             count.Should().BeTrue();
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Contains_False()
         {
             var employee = new Employee { EmployeeId = 50 };
@@ -92,7 +92,7 @@ namespace VirtualObjects.Tests.Queries
             count.Should().BeFalse();
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Any()
         {
             var count = Diagnostic.Timed(() => Query<Employee>().Any());
@@ -100,7 +100,7 @@ namespace VirtualObjects.Tests.Queries
             count.Should().BeTrue();
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_PredicatedAny()
         {
             var count = Diagnostic.Timed(() => Query<Employee>().Any(e => e.EmployeeId > 5));
@@ -109,7 +109,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_PredicatedAny_False()
         {
             var count = Diagnostic.Timed(() => Query<Employee>().Any(e => e.EmployeeId == 50));
@@ -118,7 +118,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Sum()
         {
             var sum = Diagnostic.Timed(() => Query<Employee>().Sum(e => e.EmployeeId));
@@ -127,7 +127,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Avg()
         {
             var avg = Diagnostic.Timed(() => Query<Employee>().Average(e => e.EmployeeId));
@@ -135,7 +135,7 @@ namespace VirtualObjects.Tests.Queries
             avg.Should().Be(5);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_LongCount()
         {
             var count = Diagnostic.Timed(() => Query<Employee>().LongCount());
@@ -144,7 +144,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_PredicatedLongCount()
         {
             var count = Diagnostic.Timed(() => Query<Employee>().LongCount());
@@ -153,7 +153,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Max()
         {
             var max = Diagnostic.Timed(() => Query<Employee>().Max(e => e.EmployeeId));
@@ -162,7 +162,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Min()
         {
             var min = Diagnostic.Timed(() => Query<Employee>().Min(e => e.EmployeeId));
@@ -170,7 +170,7 @@ namespace VirtualObjects.Tests.Queries
             min.Should().Be(1);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_First()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().First());
@@ -179,7 +179,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(1);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_First_Predicated()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().First(e => e.EmployeeId == 2));
@@ -188,7 +188,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(2);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_FirstOrDefault()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().FirstOrDefault());
@@ -198,7 +198,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_FirstOrDefault_Predicated()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().FirstOrDefault(e => e.EmployeeId == 2));
@@ -207,7 +207,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(2);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Single()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().Single());
@@ -216,7 +216,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(1);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Single_Predicated()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().Single(e => e.EmployeeId == 2));
@@ -225,7 +225,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(2);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_SingleOrDefault()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().SingleOrDefault());
@@ -235,7 +235,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_SingleOrDefault_Predicated()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().SingleOrDefault(e => e.EmployeeId == 2));
@@ -245,7 +245,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT), ExpectedException(typeof(TranslationException))]
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Aggregate_Query_Min_Entity()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().Min());
@@ -254,7 +254,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(1);
         }
 
-        [Test, Repeat(REPEAT), ExpectedException(typeof(TranslationException))]
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Aggregate_Query_Max_Entity()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().Max());
@@ -264,7 +264,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT), ExpectedException(typeof(TranslationException))]
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Aggregate_Query_GroupBy_Unsupported()
         {
             Diagnostic.Timed(() =>
@@ -274,7 +274,7 @@ namespace VirtualObjects.Tests.Queries
                     .ToList());
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy()
         {
             var employee = Diagnostic.Timed(() =>
@@ -291,7 +291,7 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(5);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy_With_Sum()
         {
             var employee = Diagnostic.Timed(() =>
@@ -311,7 +311,7 @@ namespace VirtualObjects.Tests.Queries
 
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy_With_Avg()
         {
             var employee = Diagnostic.Timed(() =>
@@ -328,7 +328,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy_With_Max()
         {
             var employee = Diagnostic.Timed(() =>
@@ -342,7 +342,7 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(5);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy_With_Min()
         {
             var employee = Diagnostic.Timed(() =>
@@ -356,7 +356,7 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(5);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy_With_Count()
         {
             var employee = Diagnostic.Timed(() =>
@@ -371,7 +371,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT), ExpectedException(typeof(TranslationException))]
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Aggregate_Query_GroupBy_With_PredicatedCount_OnProjection_Unsupported()
         {
             Diagnostic.Timed(() =>
@@ -383,7 +383,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy_With_LongCount()
         {
             var employee = Diagnostic.Timed(() =>
@@ -398,7 +398,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_ManyAggreagates()
         {
             var employee = Diagnostic.Timed(() =>
@@ -421,7 +421,7 @@ namespace VirtualObjects.Tests.Queries
 
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Calced_Average()
         {
             var employee = Diagnostic.Timed(() =>
@@ -441,7 +441,7 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(5);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Calced_With_Factor()
         {
             var employee = Diagnostic.Timed(() =>
@@ -461,7 +461,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Distinct()
         {
             var employee = Diagnostic.Timed(() => 
@@ -475,7 +475,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Last()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().Last());
@@ -484,7 +484,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(9);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Last_Predicated()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().Last(e => e.EmployeeId == 2));
@@ -493,7 +493,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(2);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_LastOrDefault()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().LastOrDefault());
@@ -502,7 +502,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(9);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_LastOrDefault_Predicated()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().LastOrDefault(e => e.EmployeeId == 2));
@@ -511,7 +511,7 @@ namespace VirtualObjects.Tests.Queries
             employee.EmployeeId.Should().Be(2);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Union()
         {
             var employee = Diagnostic.Timed(() => 
@@ -522,7 +522,7 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(18);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_Union_Predicated()
         {
             var employee = Diagnostic.Timed(() =>
@@ -533,7 +533,7 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(9);
         }
 
-        [Test, Repeat(REPEAT)]
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().ToList());
