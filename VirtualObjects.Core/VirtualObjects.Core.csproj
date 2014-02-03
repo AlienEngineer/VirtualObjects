@@ -42,6 +42,7 @@
     <Compile Include="CRUD\IOperation.cs" />
     <Compile Include="CRUD\IOperations.cs" />
     <Compile Include="CRUD\IOperationsExecutor.cs" />
+    <Compile Include="CRUD\OperationParameter.cs" />
     <Compile Include="CRUD\OperationsExecutor.cs" />
     <Compile Include="CRUD\OperationsProvider.cs" />
     <Compile Include="CRUD\Operations\DeleteOperation.cs" />

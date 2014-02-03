@@ -61,6 +61,7 @@
     <Compile Include="Exceptions\ExecutionException.cs" />
     <Compile Include="IEntityProvider.cs" />
     <Compile Include="Exceptions\MappingException.cs" />
+    <Compile Include="IOperationParameter.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
     <Compile Include="ReflectionExtensions.cs" />
     <Compile Include="StringBuffer.cs" />

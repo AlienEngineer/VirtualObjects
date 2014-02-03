@@ -85,7 +85,7 @@ namespace VirtualObjects.Config
                 .Aggregate(new StringBuffer(), (current, key) => current + key.GetFieldFinalValue(obj).ToString())
                 .GetHashCode();
 
-            entityInfo.Identity = entityInfo.KeyColumns.First(e => e.IsIdentity);
+            entityInfo.Identity = entityInfo.KeyColumns.FirstOrDefault(e => e.IsIdentity);
 
             return entityInfo;
         }

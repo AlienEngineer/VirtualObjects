@@ -13,8 +13,8 @@ namespace VirtualObjects.Queries
         public DbCommand Command { get; set; }
 
         public string CommandText { get; set; }
-        
-        public IDictionary<string, object> Parameters { get; set; }
+
+        public IDictionary<string, IOperationParameter> Parameters { get; set; }
 
         public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
         

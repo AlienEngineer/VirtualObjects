@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using VirtualObjects.Config;
 
@@ -11,7 +12,7 @@ namespace VirtualObjects.Core.CRUD.Operations
         {
         }
 
-        protected override object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, object> parameters)
+        protected override object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters)
         {
             if (entityInfo.Identity == null)
             {
@@ -19,9 +20,10 @@ namespace VirtualObjects.Core.CRUD.Operations
             }
             else
             {
-                var id = connection.ExecuteScalar(commandText, parameters);    
+                var id = connection.ExecuteScalar(commandText, parameters);
+                var idValue = Convert.ChangeType(id, entityInfo.Identity.Property.PropertyType);
 
-                entityInfo.Identity.SetFieldFinalValue(entityModel, id);
+                entityInfo.Identity.SetFieldFinalValue(entityModel, idValue);
             }
 
             return entityModel;

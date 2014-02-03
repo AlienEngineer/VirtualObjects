@@ -41,6 +41,7 @@ namespace VirtualObjects.Queries.Formatters
             Values = "Values";
             Update = "Update";
             Set = "Set";
+            Identity = "Select @@IDENTITY";
         }
 
         private static string Wrap(string name)
@@ -78,6 +79,7 @@ namespace VirtualObjects.Queries.Formatters
         public string Insert { get; private set; }
         public string Update { get; private set; }
         public string Set { get; private set; }
+        public string Identity { get; private set; }
 
         public String FormatField(String name)
         {

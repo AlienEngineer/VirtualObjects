@@ -9,7 +9,7 @@ namespace VirtualObjects.Core.CRUD.Operations
     abstract class Operation : IOperation
     {
         private readonly IEntityInfo _entityInfo;
-        private IDictionary<String, Object> _parameters;
+        private IDictionary<String, IOperationParameter> _parameters;
         private object _entityModel;
 
         protected Operation(String commandText, IEntityInfo entityInfo)
@@ -29,13 +29,20 @@ namespace VirtualObjects.Core.CRUD.Operations
         {
             _entityModel = entityModel;
             _parameters = GetParameters(_entityInfo)
-                .Select(e => new { Key = e.ColumnName, Value = e.GetFieldFinalValue(entityModel) })
-                .ToDictionary(e => e.Key, e => e.Value);
+                .Select(e => new { Key = e.ColumnName, Value = e.GetFieldFinalValue(entityModel), e.Property })
+                .ToDictionary(
+                    e => e.Key, 
+                    e => (IOperationParameter)new OperationParameter
+                    {
+                        Type = e.Property.PropertyType, 
+                        Value = e.Value,
+                        Name = e.Key
+                    });
 
             return this;
         }
 
-        protected abstract object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, object> parameters);
+        protected abstract object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters);
         protected abstract IEnumerable<IEntityColumnInfo> GetParameters(IEntityInfo entityInfo);
     }
 }

@@ -113,7 +113,7 @@ namespace VirtualObjects.Queries.Translation
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
-        private readonly IDictionary<String, Object> _parameters;
+        private readonly IDictionary<String, IOperationParameter> _parameters;
         private int _depth;
         private int _parameterCount = -1;
         private QueryTranslator _rootTranslator;
@@ -124,7 +124,7 @@ namespace VirtualObjects.Queries.Translation
             _formatter = formatter;
             _mapper = mapper;
             _index = _depth = 0;
-            _parameters = new Dictionary<String, Object>();
+            _parameters = new Dictionary<String, IOperationParameter>();
             _indexer = new Dictionary<ParameterExpression, QueryTranslator>(new ParameterEquality());
             _rootTranslator = this;
         }
@@ -136,7 +136,7 @@ namespace VirtualObjects.Queries.Translation
             _index = index;
         }
 
-        private IDictionary<string, object> Parameters { get { return _rootTranslator._parameters; } }
+        private IDictionary<string, IOperationParameter> Parameters { get { return _rootTranslator._parameters; } }
 
         public IDictionary<ParameterExpression, QueryTranslator> Indexer { get { return _rootTranslator._indexer; } }
 
@@ -1124,7 +1124,10 @@ namespace VirtualObjects.Queries.Translation
 
             var formatted = _formatter.FormatConstant(constant.Value, Parameters.Count);
 
-            Parameters[formatted] = constant.Value;
+            Parameters[formatted] = new QueryParameter
+            {
+                Value = constant.Value
+            };
 
             buffer.Predicates += formatted;
         }
@@ -1818,6 +1821,10 @@ namespace VirtualObjects.Queries.Translation
         #endregion
     }
 
-
-
+    class QueryParameter : IOperationParameter
+    {
+        public Type Type { get; set; }
+        public object Value { get; set; }
+        public string Name { get; set; }
+    }
 }

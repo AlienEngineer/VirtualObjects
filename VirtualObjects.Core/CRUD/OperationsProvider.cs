@@ -86,6 +86,13 @@ namespace VirtualObjects.Core.CRUD
                                 columns.Select(e => "@" + e.ColumnName.Replace(' ', '_')));
 
             text += _formatter.EndWrap();
+
+            if (entityInfo.Identity != null)
+            {
+                text += " ";
+                text += _formatter.Identity;
+            }
+
             
             return new InsertOperation(text, entityInfo);
         }

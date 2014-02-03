@@ -37,6 +37,7 @@ namespace VirtualObjects.Queries.Formatters
         String Insert { get; }
         String Update { get; }
         String Set { get; }
+        String Identity { get; }
 
         String FormatField(String name);
 

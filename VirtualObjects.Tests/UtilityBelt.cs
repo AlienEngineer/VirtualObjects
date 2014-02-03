@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
 using VirtualObjects.Config;
+using VirtualObjects.Core.CRUD;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Execution;
 using VirtualObjects.Queries.Formatters;
@@ -120,7 +121,7 @@ namespace VirtualObjects.Tests
             return CreateCommand(queryInfo.CommandText, queryInfo.Parameters);
         }
 
-        private IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, object>> parameters)
+        private IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
         {
             var cmd = Connection.CreateCommand();
 
@@ -130,13 +131,13 @@ namespace VirtualObjects.Tests
             Trace.WriteLine("Query: " + cmd.CommandText);
 
             parameters
-                .Select(e => new { e, Parameter = cmd.CreateParameter() })
+                .Select(e => new { OperParameter = e, Parameter = cmd.CreateParameter() })
                 .ForEach(e =>
                 {
-                    e.Parameter.ParameterName = e.e.Key;
-                    e.Parameter.Value = e.e.Value ?? DBNull.Value;
+                    e.Parameter.ParameterName = e.OperParameter.Key;
+                    e.Parameter.Value = e.OperParameter.Value.Value ?? DBNull.Value;
 
-                    if ( e.Parameter.Value.GetType() == typeof(Byte[]) )
+                    if ( e.OperParameter.Value.Type == typeof(Byte[]) )
                     {
                         e.Parameter.DbType = DbType.Binary;
                     }
@@ -193,19 +194,19 @@ namespace VirtualObjects.Tests
         public IQueryTranslator Translator { get; private set; }
         public IConnection ConnectionManager { get; private set; }
 
-        public object ExecuteScalar(string commandText, IDictionary<string, object> parameters)
+        public object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
             var cmd = CreateCommand(commandText, parameters);
             return cmd.ExecuteScalar();
         }
 
-        public IDataReader ExecuteReader(string commandText, IDictionary<string, object> parameters)
+        public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
             var cmd = CreateCommand(commandText, parameters);
             return cmd.ExecuteReader();
         }
 
-        public void ExecuteNonQuery(string commandText, IDictionary<string, object> parameters)
+        public void ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
             var cmd = CreateCommand(commandText, parameters);
             cmd.ExecuteNonQuery();

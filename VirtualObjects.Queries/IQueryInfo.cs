@@ -10,8 +10,8 @@ namespace VirtualObjects.Queries
         string CommandText { get; }
 
         DbCommand Command { get; }
-        
-        IDictionary<string, object> Parameters { get; set; }
+
+        IDictionary<string, IOperationParameter> Parameters { get; set; }
         IList<IEntityColumnInfo> PredicatedColumns { get; }
         
         Type OutputType { get; }
