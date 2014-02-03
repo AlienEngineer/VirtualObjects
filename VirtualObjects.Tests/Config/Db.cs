@@ -54,6 +54,14 @@ namespace VirtualObjects.Tests.Config
                 OtherKey = otherKey;
             }
         }
+
+        public class VersionAttribute : ColumnAttribute
+        {
+            public VersionAttribute(string fieldName = null)
+                : base(fieldName)
+            {
+            }
+        }
     }
     
 }

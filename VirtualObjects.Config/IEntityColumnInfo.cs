@@ -22,6 +22,7 @@ namespace VirtualObjects.Config
         Func<Object, Object> ValueGetter { get; }
 
         Action<Object, Object> ValueSetter { get; }
+        bool IsVersionControl { get; }
 
         void SetValue(Object entity, Object value);
 

@@ -13,5 +13,17 @@ namespace VirtualObjects.Config
 
             SetValue(entity, value ?? default(DateTime));
         }
+
+        public override object GetFieldFinalValue(object entity)
+        {
+            var value = (DateTime)base.GetFieldFinalValue(entity);
+
+            if (value.Year < 1753 || value.Year > 1999)
+            {
+                return null;
+            }
+
+            return value;
+        }
     }
 }

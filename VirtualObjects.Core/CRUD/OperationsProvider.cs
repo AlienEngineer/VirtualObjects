@@ -44,7 +44,7 @@ namespace VirtualObjects.Core.CRUD
             text += _formatter.Set;
             text += " ";
 
-            foreach (var column in entityInfo.Columns.Where(e => !e.IsKey))
+            foreach ( var column in entityInfo.Columns.Where(e => !e.IsKey && !e.IsVersionControl) )
             {
                 AppendEquality(text, column);
                 text += _formatter.FieldSeparator;
@@ -63,6 +63,8 @@ namespace VirtualObjects.Core.CRUD
 
         private IOperation CreateInsertOperation(IEntityInfo entityInfo)
         {
+            var columns = entityInfo.Columns.Where(e => !e.IsIdentity && !e.IsVersionControl).ToList();
+
             StringBuffer text = _formatter.Insert;
             
             text += " ";
@@ -70,7 +72,8 @@ namespace VirtualObjects.Core.CRUD
             text += " ";
             
             text += _formatter.BeginWrap();
-            text += CreateProjection(entityInfo.Columns);
+            
+            text += CreateProjection(columns);
             text += _formatter.EndWrap();
             
             text += " ";
@@ -80,9 +83,7 @@ namespace VirtualObjects.Core.CRUD
             text += _formatter.BeginWrap();
             
             text += string.Join(_formatter.FieldSeparator,
-                                entityInfo.Columns
-                                    .Where(e => !e.IsIdentity)
-                                    .Select(e => "@" + e.ColumnName.Replace(' ', '_')));
+                                columns.Select(e => "@" + e.ColumnName.Replace(' ', '_')));
 
             text += _formatter.EndWrap();
             

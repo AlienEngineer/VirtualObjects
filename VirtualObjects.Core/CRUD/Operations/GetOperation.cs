@@ -18,15 +18,27 @@ namespace VirtualObjects.Core.CRUD.Operations
         {
             var reader = connection.ExecuteReader(commandText, parameters);
 
-            var context = new MapperContext
+            if (!reader.Read())
             {
-                EntityInfo = entityInfo,
-                OutputType = entityInfo.EntityType
-            };
+                return null;
+            }
 
-            _mapper.PrepareMapper(context);
+            try
+            {
+                var context = new MapperContext
+                {
+                    EntityInfo = entityInfo,
+                    OutputType = entityInfo.EntityType
+                };
 
-            return _mapper.MapEntity(reader, entityModel, context);
+                _mapper.PrepareMapper(context);
+
+                return _mapper.MapEntity(reader, entityModel, context);
+            }
+            finally
+            {
+                reader.Close();
+            }
         }
 
         protected override IEnumerable<IEntityColumnInfo> GetParameters(IEntityInfo entityInfo)

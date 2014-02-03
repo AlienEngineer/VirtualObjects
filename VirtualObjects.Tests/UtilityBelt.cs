@@ -89,6 +89,7 @@ namespace VirtualObjects.Tests
             if (dbTransaction != null)
             {
                 dbTransaction.Rollback();
+                dbTransaction = null;
             }
             Connection.Close();
         }
@@ -122,6 +123,8 @@ namespace VirtualObjects.Tests
         private IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var cmd = Connection.CreateCommand();
+
+            cmd.Transaction = dbTransaction;
             cmd.CommandText = commandText;
 
             Trace.WriteLine("Query: " + cmd.CommandText);
@@ -131,7 +134,13 @@ namespace VirtualObjects.Tests
                 .ForEach(e =>
                 {
                     e.Parameter.ParameterName = e.e.Key;
-                    e.Parameter.Value = e.e.Value;
+                    e.Parameter.Value = e.e.Value ?? DBNull.Value;
+
+                    if ( e.Parameter.Value.GetType() == typeof(Byte[]) )
+                    {
+                        e.Parameter.DbType = DbType.Binary;
+                    }
+
                     cmd.Parameters.Add(e.Parameter);
                 });
 
@@ -165,12 +174,15 @@ namespace VirtualObjects.Tests
             builder.ColumnNameFromAttribute<Db.ColumnAttribute>(e => e.FieldName);
 
             builder.ColumnKeyFromProperty(e => e.Name == "Id");
-            builder.ColumnKeyFromAttribute<Db.KeyAttribute>(e => e != null);
-            builder.ColumnKeyFromAttribute<Db.IdentityAttribute>(e => e != null);
+            builder.ColumnKeyFromAttribute<Db.KeyAttribute>();
+            builder.ColumnKeyFromAttribute<Db.IdentityAttribute>();
 
-            builder.ColumnIdentityFromAttribute<Db.IdentityAttribute>(e => e != null);
+            builder.ColumnIdentityFromAttribute<Db.IdentityAttribute>();
 
             builder.ForeignKeyFromAttribute<Db.AssociationAttribute>(e => e.OtherKey);
+
+            builder.ColumnVersionFromProperty(e => e.Name == "Version");
+            builder.ColumnVersionFromAttribute<Db.VersionAttribute>();
 
             return builder;
         }

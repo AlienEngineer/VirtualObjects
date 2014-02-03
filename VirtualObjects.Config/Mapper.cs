@@ -20,6 +20,7 @@ namespace VirtualObjects.Config
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnIdentityGetters { get; set; }
         public IEnumerable<Func<Type, String>> EntityNameGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKey { get; set; }
+        public IEnumerable<Func<PropertyInfo, bool>> ColumnVersionField { get; set; }
 
         private readonly IDictionary<Type, EntityInfo> _cacheEntityInfos;
 
@@ -84,6 +85,8 @@ namespace VirtualObjects.Config
                 .Aggregate(new StringBuffer(), (current, key) => current + key.GetFieldFinalValue(obj).ToString())
                 .GetHashCode();
 
+            entityInfo.Identity = entityInfo.KeyColumns.First(e => e.IsIdentity);
+
             return entityInfo;
         }
 
@@ -117,7 +120,8 @@ namespace VirtualObjects.Config
                 IsIdentity = column.IsIdentity,
                 IsKey = column.IsKey,
                 ValueGetter = column.ValueGetter,
-                ValueSetter = column.ValueSetter
+                ValueSetter = column.ValueSetter,
+                IsVersionControl = column.IsVersionControl
             };
         }
 
@@ -168,6 +172,7 @@ namespace VirtualObjects.Config
                 ColumnName = columnName,
                 IsKey = GetIsKey(propertyInfo),
                 IsIdentity = GetIsIdentity(propertyInfo),
+                IsVersionControl = ColumnVersionField.Any(isVersion => isVersion(propertyInfo)),
                 Property = propertyInfo,
                 ValueGetter = MakeValueGetter(columnName, propertyInfo.DelegateForGetPropertyValue()),
                 ValueSetter = MakeValueSetter(columnName, propertyInfo.DelegateForSetPropertyValue())
