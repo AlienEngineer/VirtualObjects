@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using VirtualObjects.Config;
@@ -46,10 +47,11 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
+            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(TestContext.CurrentContext.TestDirectory, "Data"));
 
             Connection = new SqlConnection(@"
                       Data Source=(LocalDB)\v11.0;
-                      AttachDbFilename=" + Environment.CurrentDirectory + @"\Data\northwnd.mdf;
+                      AttachDbFilename=|DataDirectory|\northwnd.mdf;
                       Integrated Security=True;
                       Connect Timeout=30");
 

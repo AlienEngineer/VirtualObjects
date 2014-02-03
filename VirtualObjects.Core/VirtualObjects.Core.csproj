@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -39,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection\DbConnectionProvider.cs" />
+    <Compile Include="Connection\IDbConnectionProvider.cs" />
     <Compile Include="CRUD\IOperation.cs" />
     <Compile Include="CRUD\IOperations.cs" />
     <Compile Include="CRUD\IOperationsExecutor.cs" />

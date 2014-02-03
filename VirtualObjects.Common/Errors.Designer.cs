@@ -61,6 +61,28 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 
+        ///Unable to create a connection for {ProviderName}.
+        ///ConnectionString: [{ConnectionString}]
+        ///Exception: {Message}.
+        /// </summary>
+        public static string ConnectionProvider_UnableToCreate {
+            get {
+                return ResourceManager.GetString("ConnectionProvider_UnableToCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///Unable to find a connection string with the name [{ConnectionName}]..
+        /// </summary>
+        public static string ConnectionProvider_UnableToFindConnectionName {
+            get {
+                return ResourceManager.GetString("ConnectionProvider_UnableToFindConnectionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Init method on Mapper not called..
         /// </summary>
         public static string Internal_MapperNotInitialized {
