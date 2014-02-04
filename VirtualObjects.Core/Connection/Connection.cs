@@ -8,10 +8,45 @@ namespace VirtualObjects.Core.Connection
 {
     class Connection : IConnection, ITransaction
     {
-        private readonly IDbConnection _dbConnection;
+        private IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
         private bool _endedTransaction;
+
+
+        #region IDisposable Members
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if ( !_disposed )
+            {
+                if ( disposing )
+                {
+                    _dbConnection.Dispose();
+                    if (_dbTransaction != null)
+                    {
+                        Commit();
+                        _dbTransaction.Dispose();
+                    }
+                }
+
+                _dbConnection = null;
+                _dbTransaction = null;
+
+                _disposed = true;
+            }
+        }
+
+        #endregion
+
 
         public Connection(IDbConnectionProvider provider)
         {
@@ -47,6 +82,7 @@ namespace VirtualObjects.Core.Connection
 
             Open();
             _dbTransaction = DbConnection.BeginTransaction();
+            _endedTransaction = false;
 
             return this;
         }
@@ -71,6 +107,7 @@ namespace VirtualObjects.Core.Connection
             _dbConnection.Close();
             _rolledBack = false;
             _dbTransaction = null;
+            _endedTransaction = true;
         }
 
         private IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
@@ -126,7 +163,7 @@ namespace VirtualObjects.Core.Connection
 
         public void Commit()
         {
-            if ( _rolledBack )
+            if ( _rolledBack || _endedTransaction )
             {
                 return;
             }

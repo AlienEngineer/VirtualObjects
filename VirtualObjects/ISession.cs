@@ -6,7 +6,7 @@ namespace VirtualObjects
     /// <summary>
     /// Represents a connection session.
     /// </summary>
-    public interface ISession
+    public interface ISession : IDisposable
     {
 
         /// <summary>

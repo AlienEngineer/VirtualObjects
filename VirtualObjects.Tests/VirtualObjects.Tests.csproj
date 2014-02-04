@@ -90,6 +90,7 @@
     <Compile Include="Queries\QueryAggregateFunctionsTests.cs" />
     <Compile Include="Queries\QueryMappingTests.cs" />
     <Compile Include="Queries\SqlTranslationTests.cs" />
+    <Compile Include="Sessions\SessionTests.cs" />
     <Compile Include="UtilityBelt.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -118,7 +119,9 @@
       <Name>VirtualObjects</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Session\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Data\northwnd.ldf">
       <DependentUpon>northwnd.mdf</DependentUpon>

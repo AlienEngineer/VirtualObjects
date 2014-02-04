@@ -22,7 +22,7 @@ namespace VirtualObjects.Config
         public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKey { get; set; }
         public IEnumerable<Func<PropertyInfo, bool>> ColumnVersionField { get; set; }
 
-        private readonly IDictionary<Type, EntityInfo> _cacheEntityInfos;
+        private IDictionary<Type, EntityInfo> _cacheEntityInfos;
 
         public Mapper(IOperationsProvider operationsProvider)
         {
@@ -60,16 +60,16 @@ namespace VirtualObjects.Config
                 column.ForeignKey = GetForeignKey(column.Property);
 
             }
-            
+
             entityInfo.Columns = WrapColumns(entityInfo.Columns).ToList();
             entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey).ToList();
 
 #if DEBUG
             entityInfo.Columns.ForEach(e =>
             {
-                if (e.ForeignKey == null && !e.Property.PropertyType.IsFrameworkType())
+                if ( e.ForeignKey == null && !e.Property.PropertyType.IsFrameworkType() )
                 {
-                    throw new ConfigException("The column [{ColumnName}] returns a complex type but is not associated with another key.",e);
+                    throw new ConfigException("The column [{ColumnName}] returns a complex type but is not associated with another key.", e);
                 }
 
                 if ( e.ForeignKey != null && !(e is EntityBoundColumnInfo) )
@@ -268,5 +268,37 @@ namespace VirtualObjects.Config
 
         #endregion
 
+        #region IDisposable Members
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if ( !_disposed )
+            {
+                if ( disposing )
+                {
+                    _cacheEntityInfos.Clear();
+                }
+
+                _cacheEntityInfos = null;
+                ColumnNameGetters = null;
+                ColumnKeyGetters = null;
+                ColumnIdentityGetters = null;
+                EntityNameGetters = null;
+                ColumnForeignKey = null;
+                ColumnVersionField = null;
+
+                _disposed = true;
+            }
+        }
+
+        #endregion
     }
 }

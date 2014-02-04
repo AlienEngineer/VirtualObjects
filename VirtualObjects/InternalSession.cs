@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace VirtualObjects
 {
     public class InternalSession : ISession
     {
-        private readonly SessionContext _context;
+        private SessionContext _context;
 
         public InternalSession(SessionContext context)
         {
@@ -45,5 +46,32 @@ namespace VirtualObjects
         {
             return (TEntity)operation.PrepareOperation(entityModel).Execute(_context.Connection);
         }
+
+        #region IDisposable Members
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if ( !_disposed )
+            {
+                if ( disposing )
+                {
+                    _context.Dispose();
+                }
+
+                _context = null;
+
+                _disposed = true;
+            }
+        }
+
+        #endregion
     }
 }

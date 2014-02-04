@@ -1,14 +1,29 @@
+using System;
 using System.Linq;
+using VirtualObjects.Core.Connection;
 
 namespace VirtualObjects
 {
     public class Session : ISession
     {
-        readonly ISession _session;
+        ISession _session;
 
-        public Session(SessionConfiguration configuration = null)
-            : this(new NinjectContainer(configuration))
+        public Session()
+            : this(configuration: null, connectionName: null)
         {
+
+        }
+
+        public Session(SessionConfiguration configuration = null, IDbConnectionProvider connectionProvider = null)
+            : this(new NinjectContainer(configuration, connectionProvider))
+        {
+
+        }
+
+        public Session(SessionConfiguration configuration = null, String connectionName = null)
+            : this(new NinjectContainer(configuration, connectionName))
+        {
+
         }
 
         public Session(IOcContainer container)
@@ -45,5 +60,36 @@ namespace VirtualObjects
         {
             return _session.BeginTransaction();
         }
+
+        #region IDisposable Members
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if ( !_disposed )
+            {
+                if ( disposing )
+                {
+                    _session.Dispose();
+                }
+
+                _session = null;
+                _disposed = true;
+            }
+        }
+
+        #endregion
+
     }
+
+
+
+
 }

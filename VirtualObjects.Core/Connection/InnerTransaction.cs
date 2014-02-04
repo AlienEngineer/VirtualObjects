@@ -26,5 +26,9 @@ namespace VirtualObjects.Core.Connection
 
         }
 
+        public void Dispose()
+        {
+            Commit();
+        }
     }
 }

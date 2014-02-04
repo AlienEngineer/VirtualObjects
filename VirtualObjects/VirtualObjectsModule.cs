@@ -27,7 +27,14 @@ namespace VirtualObjects
             //
             // Connection
             //
-            Bind<IDbConnectionProvider>().To<NamedDbConnectionProvider>().InSingletonScope();
+            if (_configuration.ConnectionProvider == null)
+            {
+                Bind<IDbConnectionProvider>().To<NamedDbConnectionProvider>().InSingletonScope();
+            }
+            else
+            {
+                Bind<IDbConnectionProvider>().ToConstant(_configuration.ConnectionProvider).InSingletonScope();
+            }
 
             Bind<IConnection>().To<Connection>().InThreadScope();
 

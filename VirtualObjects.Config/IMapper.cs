@@ -5,7 +5,7 @@ namespace VirtualObjects.Config
     /// <summary>
     /// 
     /// </summary>
-    public interface IMapper
+    public interface IMapper : IDisposable
     {
         /// <summary>
         /// Maps the specified entity type.

@@ -1,4 +1,5 @@
 using VirtualObjects.Config;
+using VirtualObjects.Core.Connection;
 
 namespace VirtualObjects
 {
@@ -8,6 +9,8 @@ namespace VirtualObjects
         {
             get { return InternalConfigureMappingBuilder(_container.Get<IMappingBuilder>()); }
         }
+
+        public IDbConnectionProvider ConnectionProvider { get; set; }
 
         private IOcContainer _container;
 
@@ -53,5 +56,6 @@ namespace VirtualObjects
             builder.ColumnVersionFromAttribute<VersionAttribute>();
 
         }
+
     }
 }

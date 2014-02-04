@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace VirtualObjects
 {
-    public interface IConnection
+    public interface IConnection : IDisposable
     {
         object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters);
         IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters);

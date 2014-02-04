@@ -1,8 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 namespace VirtualObjects
 {
-    public interface ITransaction
+    public interface ITransaction : IDisposable
     {
         IDbConnection DbConnection { get; }
         void Rollback();

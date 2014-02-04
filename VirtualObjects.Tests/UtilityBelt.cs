@@ -17,14 +17,10 @@ using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests
 {
-    public abstract class UtilityBelt : IConnection
+
+    public class TimedTests
     {
         public const int Repeat = 10;
-
-        protected UtilityBelt()
-        {
-            InitBelt();
-        }
 
         int _count;
 
@@ -44,6 +40,16 @@ namespace VirtualObjects.Tests
 
             Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => executed in time :   {1} ms");
 
+        }
+    }
+
+    public abstract class UtilityBelt : TimedTests, IConnection
+    {
+        
+
+        protected UtilityBelt()
+        {
+            InitBelt();
         }
 
         private void InitBelt()
@@ -97,8 +103,6 @@ namespace VirtualObjects.Tests
                     new Context { Connection = ConnectionManager }
                );
         }
-
-
 
         IDbTransaction _dbTransaction;
 
@@ -246,7 +250,12 @@ namespace VirtualObjects.Tests
 
         public void Close()
         {
-            throw new NotImplementedException();
+
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }
