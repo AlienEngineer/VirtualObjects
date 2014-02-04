@@ -18,6 +18,11 @@ namespace VirtualObjects
             _kernel = new StandardKernel(new VirtualObjectsModule(configuration));
         }
 
+        public NinjectContainer(IKernel kernel)
+        {
+            _kernel = kernel;
+        }
+
         public TResult Get<TResult>()
         {
             return _kernel.Get<TResult>();

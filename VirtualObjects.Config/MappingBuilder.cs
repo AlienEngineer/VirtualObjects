@@ -10,6 +10,19 @@ namespace VirtualObjects.Config
     public interface IMappingBuilder
     {
         IMapper Build();
+
+        void EntityNameFromAttribute<TAttribute>(Func<TAttribute, String> nameGetter) where TAttribute : Attribute;
+        void EntityNameFromType(Func<Type, String> nameGetter);
+        void ColumnNameFromAttribute<TAttribute>(Func<TAttribute, String> nameGetter) where TAttribute : Attribute;
+        void ColumnNameFromProperty(Func<PropertyInfo, String> nameGetter);
+        void ColumnKeyFromAttribute<TAttribute>(Func<TAttribute, Boolean> keyGetter = null) where TAttribute : Attribute;
+        void ColumnKeyFromProperty(Func<PropertyInfo, Boolean> keyGetter);
+        void ColumnIdentityFromAttribute<TAttribute>(Func<TAttribute, Boolean> keyGetter = null) where TAttribute : Attribute;
+        void ColumnIdentityFromProperty(Func<PropertyInfo, Boolean> keyGetter);
+        void ColumnVersionFromAttribute<TAttribute>(Func<TAttribute, Boolean> keyGetter = null) where TAttribute : Attribute;
+        void ColumnVersionFromProperty(Func<PropertyInfo, Boolean> keyGetter);
+        void ForeignKeyFromProperty(Func<PropertyInfo, String> foreignKeyGetter);
+        void ForeignKeyFromAttribute<TAttribute>(Func<TAttribute, String> foreignKeyGetter) where TAttribute : Attribute;
     }
 
     public class MappingBuilder : IMappingBuilder

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Ninject;
-using Ninject.Activation;
 using Ninject.Modules;
 using VirtualObjects.Config;
 using VirtualObjects.Core.Connection;
@@ -44,20 +42,12 @@ namespace VirtualObjects
             //
             // Entity info Mapper
             //
-            if (_configuration.MappingBuilder == null)
-            {
-                Bind<IMapper>()
-                    .ToMethod(context => CreateBuilder(context.Kernel.Get<IOperationsProvider>()).Build())
-                    .InThreadScope();
-            }
-            else
-            {
-                Bind<IMapper>()
-                    .ToMethod(context => _configuration.MappingBuilder.Build())
-                    .InThreadScope();
-            }
-            
-            
+            Bind<IMapper>()
+                .ToMethod(context => _configuration.MappingBuilder.Build())
+                .InThreadScope();
+
+            Bind<IMappingBuilder>().To<MappingBuilder>();
+
             //
             // QueryTranslation
             //
@@ -90,10 +80,10 @@ namespace VirtualObjects
             Bind<IQueryExecutor>().To<QueryExecutor>().WhenInjectedInto<CompositeExecutor>();
             Bind<IQueryExecutor>().To<SingleQueryExecutor>().WhenInjectedInto<CompositeExecutor>();
 
-            Bind<Context>().ToMethod(context => 
+            Bind<Context>().ToMethod(context =>
                 new Context
                 {
-                   Connection = context.Kernel.Get<IConnection>()    
+                    Connection = context.Kernel.Get<IConnection>()
                 });
 
             //
@@ -107,35 +97,8 @@ namespace VirtualObjects
             //
             Bind<IOperationsProvider>().To<OperationsProvider>();
 
+            _configuration.Init(new NinjectContainer(Kernel));
         }
-
-        private MappingBuilder CreateBuilder(IOperationsProvider operationsProvider)
-        {
-            var builder = new MappingBuilder(operationsProvider);
-
-            //
-            // TableName getters
-            //
-            builder.EntityNameFromType(e => e.Name);
-            builder.EntityNameFromAttribute<TableAttribute>(e => e.TableName);
-
-            //
-            // ColumnName getters
-            //
-            builder.ColumnNameFromProperty(e => e.Name);
-            builder.ColumnNameFromAttribute<ColumnAttribute>(e => e.FieldName);
-
-            builder.ColumnKeyFromAttribute<KeyAttribute>();
-            builder.ColumnKeyFromAttribute<IdentityAttribute>();
-
-            builder.ColumnIdentityFromAttribute<IdentityAttribute>();
-
-            builder.ForeignKeyFromAttribute<AssociationAttribute>(e => e.OtherKey);
-
-            builder.ColumnVersionFromProperty(e => e.Name == "Version");
-            builder.ColumnVersionFromAttribute<VersionAttribute>();
-
-            return builder;
-        }
+        
     }
 }
