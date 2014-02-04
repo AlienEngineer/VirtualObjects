@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using Fasterflect;
 
 namespace VirtualObjects.Queries.Execution
 {
@@ -59,7 +60,7 @@ namespace VirtualObjects.Queries.Execution
         public virtual bool CanExecute(MethodInfo method)
         {
             return method == null ||
-                method.ReturnType.IsAssignableFrom(typeof(IEnumerable)) ||
+                method.ReturnType.InheritsOrImplements<IEnumerable>() ||
                 method.Name == "Select" ||
                 method.Name == "Union" ||
                 method.Name == "Distinct";

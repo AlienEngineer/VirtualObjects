@@ -193,4 +193,10 @@ Exception: {Message}</value>
     <value>
 Unable to find a connection string with the name [{ConnectionName}].</value>
   </data>
+  <data name="Execution_UnableToFindExecutor" xml:space="preserve">
+    <value>Unable to find the proper executor for the given query.</value>
+  </data>
+  <data name="Execution_UnableToFindSpecificExecutor" xml:space="preserve">
+    <value>Unable to find the proper executor for {Name} method.</value>
+  </data>
 </root>

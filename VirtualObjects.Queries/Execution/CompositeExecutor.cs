@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Queries.Execution
@@ -35,12 +33,10 @@ namespace VirtualObjects.Queries.Execution
             {
                 if (method == null)
                 {
-                    throw new ExecutionException("Unable to find the proper executor for the given query.");
+                    throw new ExecutionException(Errors.Execution_UnableToFindExecutor);
                 }
-                else
-                {
-                    throw new ExecutionException("Unable to find the proper executor for {Name} method.", method);
-                }
+                
+                throw new ExecutionException(Errors.Execution_UnableToFindSpecificExecutor, method);
             }
             return executor;
         }

@@ -49,7 +49,7 @@ namespace VirtualObjects.Tests.Config
 
         private IEntityInfo MapTestModel()
         {
-            return base.Mapper.Map(typeof(TestModel));
+            return Mapper.Map(typeof(TestModel));
         }
   
         [Test]

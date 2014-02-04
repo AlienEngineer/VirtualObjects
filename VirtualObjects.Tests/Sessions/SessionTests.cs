@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Security.Principal;
+using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using VirtualObjects.Tests.Models.Northwind;
 
@@ -19,9 +19,9 @@ namespace VirtualObjects.Tests.Sessions
 
         private ISession CreateSession()
         {
-            return  new Session(new SessionConfiguration
+            return new Session(new SessionConfiguration
             {
-             //   Logger = Console.Out
+                //   Logger = Console.Out
             }, "northwind");
         }
 
@@ -42,7 +42,7 @@ namespace VirtualObjects.Tests.Sessions
 
             using ( var session = CreateSession() )
             {
-                using (var transaction = session.BeginTransaction())
+                using ( var transaction = session.BeginTransaction() )
                 {
 
 
@@ -76,7 +76,18 @@ namespace VirtualObjects.Tests.Sessions
                     });
                 });
             }
-            
+
         }
+
+        [Test, Repeat(Repeat)]
+        public void Session_Queries()
+        {
+            using ( var session = CreateSession() )
+            {
+                var employees = Diagnostic.Timed(() => session.GetAll<Employee>().Where(e => e.EmployeeId > 0).ToList());
+                employees.Count.Should().Be(9);
+            }
+        }
+
     }
 }

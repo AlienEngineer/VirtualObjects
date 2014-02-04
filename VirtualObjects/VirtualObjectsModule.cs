@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Fasterflect;
 using Ninject;
 using Ninject.Modules;
 using Ninject.Syntax;
@@ -80,7 +81,7 @@ namespace VirtualObjects
             //
             // Entities Provider
             //
-            Bind<IEntityProvider>().To<EntityProviderComposite>().InSingletonScope();
+            Bind<IEntityProvider>().To<EntityProviderComposite>().ExcludeSelf().InSingletonScope();
             Bind<IEntityProvider>().To<EntityModelProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<DynamicTypeProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<CollectionTypeEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
@@ -98,7 +99,7 @@ namespace VirtualObjects
             //
             // Query Executors
             //
-            Bind<IQueryExecutor>().To<CompositeExecutor>().InThreadScope();
+            Bind<IQueryExecutor>().To<CompositeExecutor>().ExcludeSelf().InThreadScope();
             Bind<IQueryExecutor>().To<CountQueryExecutor>().WhenInjectedInto<CompositeExecutor>();
             Bind<IQueryExecutor>().To<QueryExecutor>().WhenInjectedInto<CompositeExecutor>();
             Bind<IQueryExecutor>().To<SingleQueryExecutor>().WhenInjectedInto<CompositeExecutor>();
@@ -121,6 +122,36 @@ namespace VirtualObjects
 
             _configuration.Init(new NinjectContainer(Kernel));
         }
+
+    }
+
+    internal static class NinjectExtensions
+    {
+        public static IBindingInNamedWithOrOnSyntax<TImplementation> WhenInjectedInto<TImplementation, TInclude1, TInclude2>(this IBindingWhenInNamedWithOrOnSyntax<TImplementation> bind)
+        {
+            return bind.When(e => e.Target != null &&
+                                  (e.Target.Type.InheritsOrImplements<TInclude1>() ||
+                                   e.Target.Type == typeof(TInclude1) ||
+                                   e.Target.Type.InheritsOrImplements<TInclude2>() ||
+                                   e.Target.Type == typeof(TInclude2)));
+        }
+
+        public static IBindingInNamedWithOrOnSyntax<T> ExcludeSelf<T>(this IBindingWhenInNamedWithOrOnSyntax<T> bind)
+        {
+            return bind.When(e => e.Target == null ||
+                                  e.Target.Member.ReflectedType != typeof(T));
+        }
+
+        ///// <summary>
+        ///// Valid for composite type class. Annotated with [Composite].
+        ///// </summary>
+        ///// <typeparam name="TImplementation">The type of the implementation.</typeparam>
+        ///// <param name="bind">The bind.</param>
+        ///// <returns></returns>
+        //public static IBindingInNamedWithOrOnSyntax<TImplementation> WhenInjectedIntoComposite<TImplementation>(this IBindingWhenInNamedWithOrOnSyntax<TImplementation> bind)
+        //{
+        //    return bind.WhenClassHas<CompositeAttribute>();
+        //}
 
     }
 }

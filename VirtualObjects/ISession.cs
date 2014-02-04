@@ -81,9 +81,16 @@ namespace VirtualObjects
             session.WithinTransaction<Object>(() => { execute(); return null; });
         }
 
+        /// <summary>
+        /// Keeps the session alive. Doesn't close the connection to the database after each operation is complete.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="session">The session.</param>
+        /// <param name="execute">The execute.</param>
+        /// <returns></returns>
         public static TResult KeepAlive<TResult>(this ISession session, Func<TResult> execute)
         {
-            var internalSession = (InternalSession) session;
+            var internalSession = (InternalSession)((Session) session).InternalSession;
             try
             {
                 internalSession.Context.Connection.KeepAlive = true;
@@ -95,6 +102,11 @@ namespace VirtualObjects
             }
         }
 
+        /// <summary>
+        /// Keeps the session alive. Doesn't close the database connection after each operation is complete.
+        /// </summary>
+        /// <param name="session">The session.</param>
+        /// <param name="execute">The execute.</param>
         public static void KeepAlive(this ISession session, Action execute)
         {
             session.KeepAlive<Object>(() => { execute(); return null; });

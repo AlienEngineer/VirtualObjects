@@ -83,6 +83,24 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find the proper executor for the given query..
+        /// </summary>
+        public static string Execution_UnableToFindExecutor {
+            get {
+                return ResourceManager.GetString("Execution_UnableToFindExecutor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find the proper executor for {Name} method..
+        /// </summary>
+        public static string Execution_UnableToFindSpecificExecutor {
+            get {
+                return ResourceManager.GetString("Execution_UnableToFindSpecificExecutor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Init method on Mapper not called..
         /// </summary>
         public static string Internal_MapperNotInitialized {

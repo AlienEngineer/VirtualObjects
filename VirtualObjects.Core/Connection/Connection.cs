@@ -134,15 +134,6 @@ namespace VirtualObjects.Core.Connection
                     e.Parameter.ParameterName = e.OperParameter.Key;
                     e.Parameter.Value = e.OperParameter.Value.Value ?? DBNull.Value;
 
-                    if (e.OperParameter.Value.Column.ForeignKey != null)
-                    {
-                        if (e.Parameter.Value == null)
-                        {
-                            
-                        }
-
-                    }
-
                     if ( e.OperParameter.Value.Type == typeof(Byte[]) )
                     {
                         e.Parameter.DbType = DbType.Binary;
