@@ -46,7 +46,7 @@ namespace VirtualObjects
                 .ToMethod(context => _configuration.MappingBuilder.Build())
                 .InThreadScope();
 
-            Bind<IMappingBuilder>().To<MappingBuilder>();
+            Bind<IMappingBuilder>().To<MappingBuilder>().InSingletonScope();
 
             //
             // QueryTranslation
@@ -84,13 +84,12 @@ namespace VirtualObjects
                 new Context
                 {
                     Connection = context.Kernel.Get<IConnection>()
-                });
+                }).InThreadScope();
 
             //
             // Query Provider
             //
             Bind<IQueryProvider>().To<QueryProvider>();
-
 
             //
             // CRUD Operations
