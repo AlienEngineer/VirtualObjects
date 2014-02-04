@@ -6,13 +6,13 @@ namespace VirtualObjects.Tests.Models.Northwind
 {
     public class Orders
     {
-        [Db.Identity]
+        [Identity]
         public int OrderId { get; set; }
 
-        [Db.Association("CustomerId", "CustomerId")]
+        [Association("CustomerId", "CustomerId")]
         public virtual Customers Customer { get; set; }
 
-        [Db.Association("EmployeeId", "EmployeeId")]
+        [Association("EmployeeId", "EmployeeId")]
         public virtual Employee Employee { get; set; }
 
         public DateTime OrderDate { get; set; }
@@ -21,7 +21,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public DateTime ShippedDate { get; set; }
 
-        [Db.Association("ShipVia", "ShipperId")]
+        [Association("ShipVia", "ShipperId")]
         public virtual Shippers Shipper { get; set; }
 
         public Decimal Freight { get; set; }

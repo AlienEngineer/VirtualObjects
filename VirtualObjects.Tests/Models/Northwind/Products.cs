@@ -5,15 +5,15 @@ namespace VirtualObjects.Tests.Models.Northwind
 {
     public class Products
     {
-        [Db.Identity]
+        [Identity]
         public int ProductId { get; set; }
 
         public String ProductName { get; set; }
 
-        [Db.Association("SupplierId", "SupplierId")]
+        [Association("SupplierId", "SupplierId")]
         public virtual Suppliers Supplier { get; set; }
 
-        [Db.Association("CategoryId", "CategoryId")]
+        [Association("CategoryId", "CategoryId")]
         public virtual Categories Category { get; set; }
 
         public String QuantityPerUnit { get; set; }

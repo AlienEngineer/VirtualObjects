@@ -56,6 +56,7 @@
     <Compile Include="CRUD\Operations\Operations.cs" />
     <Compile Include="CRUD\Operations\UpdateOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextWriterStub.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtualObjects.Common\VirtualObjects.Common.csproj">

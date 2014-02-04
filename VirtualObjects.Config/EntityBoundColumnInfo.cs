@@ -16,13 +16,13 @@ namespace VirtualObjects.Config
         {
             if ( ForeignKey != null )
             {
-                var instance = ForeignKey.EntityInfo.EntityType.CreateInstance();
-                SetValue(entity, instance);
-
                 if ( value == DBNull.Value )
                 {
                     return;
                 }
+
+                var instance = ForeignKey.EntityInfo.EntityType.CreateInstance();
+                SetValue(entity, instance);
 
                 ForeignKey.SetFieldFinalValue(instance, value);
             }

@@ -5,10 +5,10 @@ namespace VirtualObjects.Tests.Models.Northwind
 {
     public class Region
     {
-        [Db.Key("RegionID")]
+        [Key("RegionID")]
         public int Id { get; set; }
 
-        [Db.Column("RegionDescription")]
+        [Column("RegionDescription")]
         public String Description { get; set; }
     }
 }

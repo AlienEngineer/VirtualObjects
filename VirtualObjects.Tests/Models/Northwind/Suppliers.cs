@@ -5,7 +5,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 {
     public class Suppliers
     {
-        [Db.Identity]
+        [Identity]
         public int SupplierId { get; set; }
 
         public String CompanyName { get; set; }

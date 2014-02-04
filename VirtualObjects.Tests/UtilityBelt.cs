@@ -17,8 +17,17 @@ using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests
 {
+    public class TestsBase
+    {
 
-    public class TimedTests
+        public TestsBase()
+        {
+            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(TestContext.CurrentContext.TestDirectory, "Data"));
+        }
+ 
+    }
+
+    public class TimedTests : TestsBase
     {
         public const int Repeat = 10;
 
@@ -45,8 +54,6 @@ namespace VirtualObjects.Tests
 
     public abstract class UtilityBelt : TimedTests, IConnection
     {
-        
-
         protected UtilityBelt()
         {
             InitBelt();
@@ -54,7 +61,7 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
-            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(TestContext.CurrentContext.TestDirectory, "Data"));
+            
 
             Connection = new SqlConnection(@"
                       Data Source=(LocalDB)\v11.0;
@@ -195,24 +202,24 @@ namespace VirtualObjects.Tests
             // TableName getters
             //
             builder.EntityNameFromType(e => e.Name);
-            builder.EntityNameFromAttribute<Db.TableAttribute>(e => e.TableName);
+            builder.EntityNameFromAttribute<TableAttribute>(e => e.TableName);
 
             //
             // ColumnName getters
             //
             builder.ColumnNameFromProperty(e => e.Name);
-            builder.ColumnNameFromAttribute<Db.ColumnAttribute>(e => e.FieldName);
+            builder.ColumnNameFromAttribute<ColumnAttribute>(e => e.FieldName);
 
             builder.ColumnKeyFromProperty(e => e.Name == "Id");
-            builder.ColumnKeyFromAttribute<Db.KeyAttribute>();
-            builder.ColumnKeyFromAttribute<Db.IdentityAttribute>();
+            builder.ColumnKeyFromAttribute<KeyAttribute>();
+            builder.ColumnKeyFromAttribute<IdentityAttribute>();
 
-            builder.ColumnIdentityFromAttribute<Db.IdentityAttribute>();
+            builder.ColumnIdentityFromAttribute<IdentityAttribute>();
 
-            builder.ForeignKeyFromAttribute<Db.AssociationAttribute>(e => e.OtherKey);
+            builder.ForeignKeyFromAttribute<AssociationAttribute>(e => e.OtherKey);
 
             builder.ColumnVersionFromProperty(e => e.Name == "Version");
-            builder.ColumnVersionFromAttribute<Db.VersionAttribute>();
+            builder.ColumnVersionFromAttribute<VersionAttribute>();
 
             return builder;
         }
@@ -247,6 +254,7 @@ namespace VirtualObjects.Tests
         }
 
         public IDbConnection DbConnection { get; private set; }
+        public bool KeepAlive { get; set; }
 
         public void Close()
         {

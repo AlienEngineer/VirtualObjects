@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
-using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
 
-    [Db.Table("Employees")]
+    [Table("Employees")]
     public class Employee
     {
-        [Db.Identity]
+        [Identity]
         public int EmployeeId { get; set; }
 
         public String LastName { get; set; }
@@ -41,7 +40,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public Byte[] Photo { get; set; }
 
-        [Db.Association("ReportsTo", "EmployeeId")]
+        [Association("ReportsTo", "EmployeeId")]
         public virtual Employee ReportsTo { get; set; }
 
         public String PhotoPath { get; set; }

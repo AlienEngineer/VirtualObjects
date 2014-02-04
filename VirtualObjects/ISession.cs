@@ -54,4 +54,52 @@ namespace VirtualObjects
         /// <returns></returns>
         ITransaction BeginTransaction();
     }
+
+    public static class SessionExtensions
+    {
+
+        public static TResult WithinTransaction<TResult>(this ISession session, Func<TResult> execute)
+        {
+            var transaction = session.BeginTransaction();
+            try
+            {
+                return execute();
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+            finally
+            {
+                transaction.Commit();
+            }
+        }
+
+        public static void WithinTransaction(this ISession session, Action execute)
+        {
+            session.WithinTransaction<Object>(() => { execute(); return null; });
+        }
+
+        public static TResult KeepAlive<TResult>(this ISession session, Func<TResult> execute)
+        {
+            var internalSession = (InternalSession) session;
+            try
+            {
+                internalSession.Context.Connection.KeepAlive = true;
+                return execute();
+            }
+            finally
+            {
+                internalSession.Context.Connection.KeepAlive = false;
+            }
+        }
+
+        public static void KeepAlive(this ISession session, Action execute)
+        {
+            session.KeepAlive<Object>(() => { execute(); return null; });
+        }
+
+    }
+
 }

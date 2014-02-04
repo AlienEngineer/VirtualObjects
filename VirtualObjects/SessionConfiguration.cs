@@ -1,3 +1,4 @@
+using System.IO;
 using VirtualObjects.Config;
 using VirtualObjects.Core.Connection;
 
@@ -11,6 +12,7 @@ namespace VirtualObjects
         }
 
         public IDbConnectionProvider ConnectionProvider { get; set; }
+        public TextWriter Logger { get; set; }
 
         private IOcContainer _container;
 

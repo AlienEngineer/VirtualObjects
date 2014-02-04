@@ -1,4 +1,8 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Diagnostics;
+using System.Security.Principal;
+using NUnit.Framework;
+using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions
 {
@@ -13,37 +17,66 @@ namespace VirtualObjects.Tests.Sessions
     public class SessionTests : TimedTests
     {
 
-        /// <summary>
-        /// 
-        /// Session creation for ioc tests.
-        /// 
-        /// </summary>
+        private ISession CreateSession()
+        {
+            return  new Session(new SessionConfiguration
+            {
+             //   Logger = Console.Out
+            }, "northwind");
+        }
+
         [Test, Repeat(Repeat)]
         public void Session_Should_Be_Created_And_Disposed()
         {
 
-            using (var session = new Session(connectionName: "northwind"))
+            using ( var session = CreateSession() )
             {
 
             }
 
         }
-
 
         [Test, Repeat(Repeat)]
         public void Session_Transaction_Should_Be_Created_And_Disposed()
         {
 
-            using ( var session = new Session(connectionName: "northwind") )
+            using ( var session = CreateSession() )
             {
                 using (var transaction = session.BeginTransaction())
                 {
-                    
-                    
+
+
                 }
             }
 
         }
 
+        [Test, Repeat(Repeat)]
+        public void Session_Crud_Operations()
+        {
+            using ( var session = CreateSession() )
+            {
+                session.WithinTransaction(() =>
+                {
+                    Diagnostic.Timed(() =>
+                    {
+                        var employee = session.Insert(new Employee
+                        {
+                            FirstName = "Sérgio",
+                            LastName = "Ferreira"
+                        });
+
+                        employee = session.GetById(employee);
+
+                        employee.BirthDate = new DateTime(1983, 4, 16);
+
+                        session.Update(employee);
+
+                        session.Delete(employee);
+                    });
+                });
+            }
+            
+        }
     }
 }

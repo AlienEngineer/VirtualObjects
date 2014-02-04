@@ -4,10 +4,10 @@ namespace VirtualObjects.Tests.Models.Northwind
 {
     public class CustomerCustomerDemo
     {
-        [Db.Key("CustomerId")]
+        [Key("CustomerId")]
         public virtual Customers Customer { get; set; }
 
-        [Db.Key("CustomerTypeId")]
+        [Key("CustomerTypeId")]
         public virtual CustomerDemographics Demographics { get; set; }
     }
 }

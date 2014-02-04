@@ -5,46 +5,46 @@ namespace VirtualObjects
 {
     public class InternalSession : ISession
     {
-        private SessionContext _context;
+        internal SessionContext Context { get; private set; }
 
         public InternalSession(SessionContext context)
         {
-            _context = context;
+            Context = context;
         }
 
         public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new()
         {
-            return _context.QueryProvider.CreateQuery<TEntity>(null);
+            return Context.QueryProvider.CreateQuery<TEntity>(null);
         }
 
         public TEntity GetById<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return ExecuteOperation(_context.Map<TEntity>().Operations.GetOperation, entity);
+            return ExecuteOperation(Context.Map<TEntity>().Operations.GetOperation, entity);
         }
 
         public TEntity Insert<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return ExecuteOperation(_context.Map<TEntity>().Operations.InsertOperation, entity);
+            return ExecuteOperation(Context.Map<TEntity>().Operations.InsertOperation, entity);
         }
 
         public TEntity Update<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return ExecuteOperation(_context.Map<TEntity>().Operations.UpdateOperation, entity);
+            return ExecuteOperation(Context.Map<TEntity>().Operations.UpdateOperation, entity);
         }
 
         public bool Delete<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return ExecuteOperation(_context.Map<TEntity>().Operations.DeleteOperation, entity) != null;
+            return ExecuteOperation(Context.Map<TEntity>().Operations.DeleteOperation, entity) != null;
         }
 
         public ITransaction BeginTransaction()
         {
-            return _context.Connection.BeginTranslation();
+            return Context.Connection.BeginTranslation();
         }
 
         private TEntity ExecuteOperation<TEntity>(IOperation operation, TEntity entityModel)
         {
-            return (TEntity)operation.PrepareOperation(entityModel).Execute(_context.Connection);
+            return (TEntity)operation.PrepareOperation(entityModel).Execute(Context.Connection);
         }
 
         #region IDisposable Members
@@ -63,10 +63,10 @@ namespace VirtualObjects
             {
                 if ( disposing )
                 {
-                    _context.Dispose();
+                    Context.Dispose();
                 }
 
-                _context = null;
+                Context = null;
 
                 _disposed = true;
             }

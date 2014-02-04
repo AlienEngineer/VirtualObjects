@@ -5,12 +5,12 @@ namespace VirtualObjects.Tests.Models.Northwind
 {
     public class Territories
     {
-        [Db.Key]
+        [Key]
         public String TerritoryId { get; set; }
 
         public String TerritoryDescription { get; set; }
 
-        [Db.Column("RegionId")]
+        [Column("RegionId")]
         public virtual Region Region { get; set; }
     }
 }

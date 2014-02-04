@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using VirtualObjects.Config;
 
 namespace VirtualObjects.Core.CRUD.Operations
@@ -19,7 +20,7 @@ namespace VirtualObjects.Core.CRUD.Operations
 
         protected override IEnumerable<IEntityColumnInfo> GetParameters(IEntityInfo entityInfo)
         {
-            return entityInfo.Columns;
+            return entityInfo.Columns.Where(e => !e.IsVersionControl);
         }
     }
 }

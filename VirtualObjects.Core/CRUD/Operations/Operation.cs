@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using VirtualObjects.Config;
-
 namespace VirtualObjects.Core.CRUD.Operations
 {
     abstract class Operation : IOperation
@@ -25,18 +22,20 @@ namespace VirtualObjects.Core.CRUD.Operations
             return Execute(connection, _entityModel, _entityInfo, CommandText, _parameters);
         }
 
+
         public IOperation PrepareOperation(object entityModel)
         {
             _entityModel = entityModel;
             _parameters = GetParameters(_entityInfo)
-                .Select(e => new { Key = e.ColumnName, Value = e.GetFieldFinalValue(entityModel), e.Property })
+                .Select(e => new { Key = e.ColumnName, Value = e.GetFieldFinalValue(entityModel), e.Property, Column = e })
                 .ToDictionary(
-                    e => e.Key, 
+                    e => e.Key,
                     e => (IOperationParameter)new OperationParameter
                     {
-                        Type = e.Property.PropertyType, 
+                        Type = e.Property.PropertyType,
                         Value = e.Value,
-                        Name = e.Key
+                        Name = e.Key,
+                        Column = e.Column
                     });
 
             return this;

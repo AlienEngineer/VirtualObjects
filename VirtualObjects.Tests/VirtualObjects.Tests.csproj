@@ -69,7 +69,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Config\Db.cs" />
     <Compile Include="Config\MappingTests.cs" />
     <Compile Include="Connection\ConnectionProviderTests.cs" />
     <Compile Include="Crud\CrudTests.cs" />
@@ -119,9 +118,7 @@
       <Name>VirtualObjects</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Session\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Data\northwnd.ldf">
       <DependentUpon>northwnd.mdf</DependentUpon>

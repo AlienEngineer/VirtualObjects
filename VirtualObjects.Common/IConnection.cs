@@ -12,6 +12,7 @@ namespace VirtualObjects
 
         ITransaction BeginTranslation();
         IDbConnection DbConnection { get; }
+        bool KeepAlive { get; set; }
         void Close();
     }
 }

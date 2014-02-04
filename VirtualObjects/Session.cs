@@ -6,59 +6,51 @@ namespace VirtualObjects
 {
     public class Session : ISession
     {
-        ISession _session;
+
+        internal ISession InternalSession { get; private set; }
 
         public Session()
-            : this(configuration: null, connectionName: null)
-        {
-
-        }
+            : this(configuration: null, connectionName: null) { }
 
         public Session(SessionConfiguration configuration = null, IDbConnectionProvider connectionProvider = null)
-            : this(new NinjectContainer(configuration, connectionProvider))
-        {
-
-        }
+            : this(new NinjectContainer(configuration, connectionProvider)) { }
 
         public Session(SessionConfiguration configuration = null, String connectionName = null)
-            : this(new NinjectContainer(configuration, connectionName))
-        {
-
-        }
+            : this(new NinjectContainer(configuration, connectionName)) { }
 
         public Session(IOcContainer container)
         {
-            _session = container.Get<ISession>();
+            InternalSession = container.Get<ISession>();
         }
 
         public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new()
         {
-            return _session.GetAll<TEntity>();
+            return InternalSession.GetAll<TEntity>();
         }
 
         public TEntity GetById<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return _session.GetById(entity);
+            return InternalSession.GetById(entity);
         }
 
         public TEntity Insert<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return _session.Insert(entity);
+            return InternalSession.Insert(entity);
         }
 
         public TEntity Update<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return _session.Update(entity);
+            return InternalSession.Update(entity);
         }
 
         public bool Delete<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return _session.Delete(entity);
+            return InternalSession.Delete(entity);
         }
 
         public ITransaction BeginTransaction()
         {
-            return _session.BeginTransaction();
+            return InternalSession.BeginTransaction();
         }
 
         #region IDisposable Members
@@ -77,10 +69,10 @@ namespace VirtualObjects
             {
                 if ( disposing )
                 {
-                    _session.Dispose();
+                    InternalSession.Dispose();
                 }
 
-                _session = null;
+                InternalSession = null;
                 _disposed = true;
             }
         }

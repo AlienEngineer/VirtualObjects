@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace VirtualObjects.Core.Connection
 {
     class Connection : IConnection, ITransaction
     {
+        private readonly TextWriter _log;
         private IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
         private bool _endedTransaction;
-
 
         #region IDisposable Members
         private bool _disposed;
@@ -30,12 +33,13 @@ namespace VirtualObjects.Core.Connection
             {
                 if ( disposing )
                 {
-                    _dbConnection.Dispose();
-                    if (_dbTransaction != null)
+                    if ( _dbTransaction != null )
                     {
                         Commit();
                         _dbTransaction.Dispose();
                     }
+                    
+                    _dbConnection.Dispose();
                 }
 
                 _dbConnection = null;
@@ -48,8 +52,9 @@ namespace VirtualObjects.Core.Connection
         #endregion
 
 
-        public Connection(IDbConnectionProvider provider)
+        public Connection(IDbConnectionProvider provider, TextWriter log)
         {
+            _log = log;
             _dbConnection = provider.CreateConnection();
         }
 
@@ -57,6 +62,8 @@ namespace VirtualObjects.Core.Connection
         {
             get { return _dbConnection; }
         }
+
+        public bool KeepAlive { get; set; }
 
         public object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
@@ -95,11 +102,12 @@ namespace VirtualObjects.Core.Connection
             }
 
             _dbConnection.Open();
+            _log.WriteLine(Resources.Connection_Opened);
         }
 
         public void Close()
         {
-            if ( !_endedTransaction || _dbConnection.State == ConnectionState.Closed )
+            if ( !KeepAlive && !_endedTransaction || _dbConnection.State == ConnectionState.Closed )
             {
                 return;
             }
@@ -108,6 +116,7 @@ namespace VirtualObjects.Core.Connection
             _rolledBack = false;
             _dbTransaction = null;
             _endedTransaction = true;
+            _log.WriteLine(Resources.Connection_Closed);
         }
 
         private IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
@@ -125,6 +134,15 @@ namespace VirtualObjects.Core.Connection
                     e.Parameter.ParameterName = e.OperParameter.Key;
                     e.Parameter.Value = e.OperParameter.Value.Value ?? DBNull.Value;
 
+                    if (e.OperParameter.Value.Column.ForeignKey != null)
+                    {
+                        if (e.Parameter.Value == null)
+                        {
+                            
+                        }
+
+                    }
+
                     if ( e.OperParameter.Value.Type == typeof(Byte[]) )
                     {
                         e.Parameter.DbType = DbType.Binary;
@@ -133,8 +151,43 @@ namespace VirtualObjects.Core.Connection
                     cmd.Parameters.Add(e.Parameter);
                 });
 
+            _log.WriteLine(commandText);
+            // PrintCommand(cmd);
+
             return cmd;
         }
+
+
+        [Conditional("DEBUG")]
+        private void PrintCommand(IDbCommand cmd)
+        {
+            Trace.WriteLine("Command executed :\n");
+            Trace.WriteLine("");
+            
+            foreach (SqlParameter parameter in cmd.Parameters)
+            {
+                Trace.Write("Declare @" + parameter.ParameterName + " as " +parameter.SqlDbType);
+                if (parameter.Size > 0)
+                {
+                    Trace.Write("(" + parameter.Size + ")");    
+                }
+
+                Trace.WriteLine("");
+
+                Trace.Write("Set @" + parameter.ParameterName + " = " + parameter.Value + "");
+
+                if (parameter.Value == DBNull.Value)
+                {
+                    Trace.Write("NULL");
+                }
+
+                Trace.WriteLine("");
+            }
+
+            Trace.WriteLine("");
+            Trace.WriteLine(cmd.CommandText);
+        }
+
 
         public void Rollback()
         {
@@ -142,6 +195,9 @@ namespace VirtualObjects.Core.Connection
             {
                 return;
             }
+
+            _rolledBack = true;
+            _endedTransaction = true;
 
             // Makes a safe rollback.
             //
@@ -157,8 +213,6 @@ namespace VirtualObjects.Core.Connection
                 Trace.WriteLine(ex.Message);
             }
 
-            _rolledBack = true;
-            _endedTransaction = true;
         }
 
         public void Commit()
@@ -168,8 +222,8 @@ namespace VirtualObjects.Core.Connection
                 return;
             }
 
-            _dbTransaction.Commit();
             _endedTransaction = true;
+            _dbTransaction.Commit();
         }
 
     }

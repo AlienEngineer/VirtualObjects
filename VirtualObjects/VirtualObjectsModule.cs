@@ -1,7 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using Ninject;
 using Ninject.Modules;
+using Ninject.Syntax;
 using VirtualObjects.Config;
+using VirtualObjects.Core;
 using VirtualObjects.Core.Connection;
 using VirtualObjects.Core.CRUD;
 using VirtualObjects.EntityProvider;
@@ -13,6 +17,9 @@ using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects
 {
+
+    
+
     public class VirtualObjectsModule : NinjectModule
     {
         private readonly SessionConfiguration _configuration;
@@ -27,7 +34,7 @@ namespace VirtualObjects
             //
             // Connection
             //
-            if (_configuration.ConnectionProvider == null)
+            if ( _configuration.ConnectionProvider == null )
             {
                 Bind<IDbConnectionProvider>().To<NamedDbConnectionProvider>().InSingletonScope();
             }
@@ -37,6 +44,15 @@ namespace VirtualObjects
             }
 
             Bind<IConnection>().To<Connection>().InThreadScope();
+
+            if ( _configuration.Logger == null )
+            {
+                Bind<TextWriter>().To<TextWriterStub>().InSingletonScope();
+            }
+            else
+            {
+                Bind<TextWriter>().ToConstant(_configuration.Logger).InSingletonScope();
+            }
 
             Bind<ISession>().To<InternalSession>().InThreadScope();
             Bind<SessionContext>().ToMethod(context => new SessionContext
@@ -105,6 +121,6 @@ namespace VirtualObjects
 
             _configuration.Init(new NinjectContainer(Kernel));
         }
-        
+
     }
 }

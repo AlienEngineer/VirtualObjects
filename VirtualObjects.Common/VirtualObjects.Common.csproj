@@ -72,6 +72,11 @@
     <Compile Include="ITransaction.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
     <Compile Include="ReflectionExtensions.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="StringBuffer.cs" />
     <Compile Include="Exceptions\TranslationException.cs" />
     <Compile Include="Exceptions\UnableToSetOrGetTheFieldValueException.cs" />
@@ -84,6 +89,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Errors.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

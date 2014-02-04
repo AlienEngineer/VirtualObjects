@@ -5,7 +5,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 {
     public class CustomerDemographics
     {
-        [Db.Key]
+        [Key]
         public String CustomerTypeId { get; set; }
 
         public String CustomerDesc { get; set; }

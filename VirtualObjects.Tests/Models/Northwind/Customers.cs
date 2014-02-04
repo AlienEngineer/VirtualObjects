@@ -1,11 +1,10 @@
 ﻿using System;
-using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
     public class Customers
     {
-        [Db.Key]
+        [Key]
         public String CustomerId { get; set; }
 
         public String CompanyName { get; set; }

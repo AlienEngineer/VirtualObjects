@@ -5,7 +5,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 {
     public class Categories
     {
-        [Db.Identity]
+        [Identity]
         public int CategoryId { get; set; }
 
         public String CategoryName { get; set; }
@@ -15,7 +15,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 
     public class CategoriesBadName
     {
-        [Db.Identity]
+        [Identity]
         public int CategoryId { get; set; }
 
         public String CategoryName { get; set; }
