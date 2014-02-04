@@ -84,7 +84,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             using ( var session = CreateSession() )
             {
-                var employees = Diagnostic.Timed(() => session.GetAll<Employee>().Where(e => e.EmployeeId > 0).ToList());
+                var employees = Diagnostic.Timed(() => session.Query<Employee>().Where(e => e.EmployeeId > 0).ToList());
                 employees.Count.Should().Be(9);
             }
         }
