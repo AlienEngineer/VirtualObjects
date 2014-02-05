@@ -206,4 +206,7 @@ There is no connection string configured in [App/Web].Config.</value>
   <data name="Session_EntityNotSupplied" xml:space="preserve">
     <value>The entity was not supplied.</value>
   </data>
+  <data name="Configuration_UnableToBindCollection" xml:space="preserve">
+    <value>Unable to bind the collection to any key field on {EntityName}.</value>
+  </data>
 </root>

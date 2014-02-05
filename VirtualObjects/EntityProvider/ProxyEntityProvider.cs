@@ -20,7 +20,10 @@ namespace VirtualObjects.EntityProvider
         public ProxyEntityProvider(ProxyGenerator proxyGenerator)
         {
             _proxyGenerator = proxyGenerator;
+        }
 
+        internal ProxyEntityProvider() : this(new ProxyGenerator())
+        {
             
         }
 
@@ -40,12 +43,11 @@ namespace VirtualObjects.EntityProvider
 
         public override bool CanCreate(Type type)
         {
-            return !(
-                type.IsDynamic() ||
-                type.IsFrameworkType() ||
-                type.InheritsOrImplements<IEnumerable>() ||
-                !type.Properties().Any(e => e.GetGetMethod().IsVirtual)
-            );
+            if (type.IsDynamic()) return false;
+            if (type.IsFrameworkType()) return false;
+            if (type.InheritsOrImplements<IEnumerable>()) return false;
+            
+            return (type.Properties().Any(e => e.GetGetMethod().IsVirtual));
         }
 
         public override void PrepareProvider(Type outputType, SessionContext sessionContext)
@@ -215,16 +217,13 @@ namespace VirtualObjects.EntityProvider
     class CollectionPropertyInterceptor : FieldInterceptorBase
     {
         private static readonly MethodInfo ProxyGenericIteratorMethod =
-            typeof(CollectionPropertyInterceptor)
-                .GetMethod(
-                    "ProxyGenericIterator",
-                    BindingFlags.NonPublic | BindingFlags.Static);
+            typeof(CollectionPropertyInterceptor).GetMethod("ProxyGenericIterator", BindingFlags.NonPublic | BindingFlags.Static);
 
         private static readonly MethodInfo SessionGenericGetAllMethod =
-            typeof(ISession)
-                .GetMethod(
-                    "GetAll",
-                    BindingFlags.Public | BindingFlags.Instance);
+            typeof(ISession).GetMethod("GetAll", BindingFlags.Public | BindingFlags.Instance);
+
+        private static readonly MethodInfo WhereMethod = 
+            typeof(CollectionPropertyInterceptor).GetMethod("Where");
 
         private readonly ISession _session;
         private readonly IMapper _mapper;
@@ -281,11 +280,12 @@ namespace VirtualObjects.EntityProvider
 
             if ( last == null )
             {
-                throw new VirtualObjectsException("Unable to bind the collection to any key field on {0}.", callerTable.EntityName);
+                throw new VirtualObjectsException(Errors.Configuration_UnableToBindCollection, new { callerTable.EntityName});
             }
 
+            
             var where = Expression.Call(null,
-            typeof(CollectionPropertyInterceptor).GetMethod("Where").MakeGenericMethod(entityType),
+            WhereMethod.MakeGenericMethod(entityType),
                 Expression.Constant(result),
                 Expression.Lambda(last, parameter)
             );

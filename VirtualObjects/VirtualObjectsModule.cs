@@ -75,7 +75,7 @@ namespace VirtualObjects
             // Entities Provider
             //
             Bind<IEntityProvider>().To<EntityProviderComposite>().ExcludeSelf().InThreadScope();
-            // Bind<IEntityProvider>().To<EntityModelProvider>().WhenInjectedInto<EntityProviderComposite>();
+            Bind<IEntityProvider>().To<EntityModelProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<ProxyEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<DynamicTypeProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<CollectionTypeEntityProvider>().WhenInjectedInto<EntityProviderComposite>();

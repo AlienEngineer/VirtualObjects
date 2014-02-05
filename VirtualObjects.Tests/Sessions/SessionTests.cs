@@ -114,7 +114,10 @@ namespace VirtualObjects.Tests.Sessions
                 territories.Should().NotBeNull();
                 territories.Count.Should().Be(2);
 
-                var employee1 = territories.First().Employee;
+                var employeeTerritories = territories.First();
+                employeeTerritories.Territories.Region.Should().NotBeNull();
+
+                var employee1 = employeeTerritories.Employee;
 
                 employee1.FirstName.Should().Be(employee.FirstName);
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using Fasterflect;
 
 namespace VirtualObjects.EntityProvider
@@ -13,7 +14,9 @@ namespace VirtualObjects.EntityProvider
 
         public virtual bool CanCreate(Type type)
         {
-            return !type.IsDynamic() && !type.InheritsOrImplements<IEnumerable>();
+            return !type.IsDynamic() &&
+                !type.InheritsOrImplements<IEnumerable>() &&
+                !type.Properties().Any(e => e.GetGetMethod().IsVirtual);
         }
 
         public IEntityProvider GetProviderForType(Type type)

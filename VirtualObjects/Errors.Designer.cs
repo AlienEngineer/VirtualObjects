@@ -61,6 +61,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to bind the collection to any key field on {EntityName}..
+        /// </summary>
+        public static string Configuration_UnableToBindCollection {
+            get {
+                return ResourceManager.GetString("Configuration_UnableToBindCollection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 
         ///There is no connection string configured in [App/Web].Config..
         /// </summary>

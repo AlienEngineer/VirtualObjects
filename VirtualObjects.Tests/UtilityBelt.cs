@@ -88,12 +88,13 @@ namespace VirtualObjects.Tests
 
         private IQueryProvider MakeQueryProvider()
         {
-            var entityProvider = new EntityProvider.EntityProviderComposite(
+            var entityProvider = new EntityProviderComposite(
                 new List<IEntityProvider>
                 {
-                    new EntityProvider.EntityModelProvider(),
-                    new EntityProvider.DynamicTypeProvider(),
-                    new EntityProvider.CollectionTypeEntityProvider()
+                    new EntityModelProvider(),
+                    new DynamicTypeProvider(),
+                    new CollectionTypeEntityProvider(),
+                    new ProxyEntityProvider()
                 });
 
             var entitiesMapper = new CollectionEntitiesMapper(Mapper,

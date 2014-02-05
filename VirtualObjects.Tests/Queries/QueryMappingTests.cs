@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using VirtualObjects.EntityProvider;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Mapping;
 using VirtualObjects.Tests.Models.Northwind;
@@ -23,12 +24,13 @@ namespace VirtualObjects.Tests.Queries
         public QueryMappingTests()
         {
             _entitiesMapper = new CollectionEntitiesMapper(Mapper,
-                new EntityProvider.EntityProviderComposite(
+                new EntityProviderComposite(
                     new List<IEntityProvider>
                         {
-                            new EntityProvider.EntityModelProvider(),
-                            new EntityProvider.DynamicTypeProvider(),
-                            new EntityProvider.CollectionTypeEntityProvider()
+                            new EntityModelProvider(),
+                            new DynamicTypeProvider(),
+                            new CollectionTypeEntityProvider(),
+                            new ProxyEntityProvider()
                         }
                     ),
                 new List<IEntityMapper>
