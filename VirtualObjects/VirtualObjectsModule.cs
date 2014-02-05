@@ -8,7 +8,7 @@ using Ninject.Syntax;
 using VirtualObjects.Config;
 using VirtualObjects.Core;
 using VirtualObjects.Core.Connection;
-using VirtualObjects.Core.CRUD;
+using VirtualObjects.CRUD;
 using VirtualObjects.EntityProvider;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Execution;

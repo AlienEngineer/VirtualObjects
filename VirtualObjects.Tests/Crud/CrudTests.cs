@@ -1,7 +1,8 @@
 ﻿using System.Data.SqlClient;
 using FluentAssertions;
 using NUnit.Framework;
-using VirtualObjects.Core.CRUD;
+using VirtualObjects.CRUD;
+using VirtualObjects.EntityProvider;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Mapping;
 using VirtualObjects.Tests.Models.Northwind;
@@ -15,7 +16,7 @@ namespace VirtualObjects.Tests.Crud
 
         public CrudTests()
         {
-            var provider = new OperationsProvider(new SqlFormatter(), new OrderedEntityMapper());
+            var provider = new OperationsProvider(new SqlFormatter(), new OrderedEntityMapper(), new EntityModelProvider());
             _operations = provider.CreateOperations(Mapper.Map(typeof(Employee)));
         }
 

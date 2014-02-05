@@ -1,6 +1,4 @@
-﻿using VirtualObjects.Config;
-
-namespace VirtualObjects.Core.CRUD.Operations
+﻿namespace VirtualObjects.CRUD.Operations
 {
     class DeleteOperation: UpdateOperation
     {

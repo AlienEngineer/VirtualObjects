@@ -1,22 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using VirtualObjects.Config;
-using VirtualObjects.Core.CRUD.Operations;
+using VirtualObjects.CRUD.Operations;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Formatters;
 
-namespace VirtualObjects.Core.CRUD
+namespace VirtualObjects.CRUD
 {
     class OperationsProvider : IOperationsProvider
     {
         private readonly IFormatter _formatter;
         private readonly IEntityMapper _mapper;
+        private readonly IEntityProvider _entityProvider;
 
-        public OperationsProvider(IFormatter formatter, IEntityMapper mapper)
+        public OperationsProvider(IFormatter formatter, IEntityMapper mapper, IEntityProvider entityProvider)
         {
             _formatter = formatter;
             _mapper = mapper;
+            _entityProvider = entityProvider;
         }
 
         public IOperations CreateOperations(IEntityInfo entityInfo)
@@ -123,7 +124,7 @@ namespace VirtualObjects.Core.CRUD
             
             CreateWhereClause(text, entityInfo);
 
-            return new GetOperation(text, entityInfo, _mapper);
+            return new GetOperation(text, entityInfo, _mapper, _entityProvider);
         }
 
         private string CreateProjection(IEnumerable<IEntityColumnInfo> columns)

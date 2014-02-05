@@ -7,7 +7,8 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using VirtualObjects.Config;
-using VirtualObjects.Core.CRUD;
+using VirtualObjects.CRUD;
+using VirtualObjects.EntityProvider;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Execution;
 using VirtualObjects.Queries.Formatters;
@@ -196,7 +197,7 @@ namespace VirtualObjects.Tests
 
         private MappingBuilder CreateBuilder()
         {
-            var builder = new MappingBuilder(new OperationsProvider(new SqlFormatter(), new OrderedEntityMapper()));
+            var builder = new MappingBuilder(new OperationsProvider(new SqlFormatter(), new OrderedEntityMapper(), new EntityModelProvider()));
 
             //
             // TableName getters

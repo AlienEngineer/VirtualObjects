@@ -1,4 +1,4 @@
-﻿namespace VirtualObjects.Core.CRUD.Operations
+﻿namespace VirtualObjects.CRUD.Operations
 {
     class Operations : IOperations
     {

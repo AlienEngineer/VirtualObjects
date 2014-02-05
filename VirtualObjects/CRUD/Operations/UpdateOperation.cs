@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using VirtualObjects.Config;
 
-namespace VirtualObjects.Core.CRUD.Operations
+namespace VirtualObjects.CRUD.Operations
 {
     class UpdateOperation : Operation
     {

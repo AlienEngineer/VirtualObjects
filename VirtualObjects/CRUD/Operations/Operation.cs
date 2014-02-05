@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-namespace VirtualObjects.Core.CRUD.Operations
+
+namespace VirtualObjects.CRUD.Operations
 {
     abstract class Operation : IOperation
     {
