@@ -14,19 +14,15 @@ namespace VirtualObjects.CRUD.Operations
         {
             _mapper = mapper;
             _entityProvider = entityProvider;
-            _entityProvider.PrepareProvider(entityInfo.EntityType);
-            
+
             _context = new MapperContext
             {
                 EntityInfo = entityInfo,
-                OutputType = entityInfo.EntityType,
-                EntityProvider = _entityProvider
+                OutputType = entityInfo.EntityType
             };
-
-            _mapper.PrepareMapper(_context);
         }
 
-        protected override object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters)
+        protected override object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters, SessionContext sessionContext)
         {
             var reader = connection.ExecuteReader(commandText, parameters);
 
@@ -37,6 +33,9 @@ namespace VirtualObjects.CRUD.Operations
 
             try
             {
+                _entityProvider.PrepareProvider(entityInfo.EntityType, sessionContext);
+
+                _mapper.PrepareMapper(_context);
                 var proxy = _entityProvider.CreateEntity(entityInfo.EntityType);
 
                 return _mapper.MapEntity(reader, proxy, _context);

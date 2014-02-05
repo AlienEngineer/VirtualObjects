@@ -14,12 +14,12 @@ namespace VirtualObjects.Queries.Execution
         {
         }
 
-        public override object ExecuteQuery(Expression expression, Context context)
+        public override object ExecuteQuery(Expression expression, SessionContext context)
         {
             return base.ExecuteQuery<IEnumerable<object>>(expression, context).First();
         }
 
-        public override TResult ExecuteQuery<TResult>(Expression expression, Context context)
+        public override TResult ExecuteQuery<TResult>(Expression expression, SessionContext context)
         {
             return base.ExecuteQuery<IEnumerable<TResult>>(expression, context).First();
         }

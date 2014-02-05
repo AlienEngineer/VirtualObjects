@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace VirtualObjects.Core.Connection
+namespace VirtualObjects.Connections
 {
     /// <summary>
     /// Connection Provider.

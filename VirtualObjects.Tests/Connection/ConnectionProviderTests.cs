@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using FluentAssertions;
-using VirtualObjects.Core.Connection;
+using VirtualObjects.Connections;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Tests.Connection

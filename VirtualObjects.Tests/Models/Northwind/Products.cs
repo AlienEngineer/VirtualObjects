@@ -1,5 +1,4 @@
 ﻿using System;
-using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
@@ -10,10 +9,10 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public String ProductName { get; set; }
 
-        [Association("SupplierId", "SupplierId")]
+        [Association(FieldName = "SupplierId", OtherKey = "SupplierId")]
         public virtual Suppliers Supplier { get; set; }
 
-        [Association("CategoryId", "CategoryId")]
+        [Association(FieldName = "CategoryId", OtherKey = "CategoryId")]
         public virtual Categories Category { get; set; }
 
         public String QuantityPerUnit { get; set; }

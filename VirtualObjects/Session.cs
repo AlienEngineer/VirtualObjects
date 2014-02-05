@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using VirtualObjects.Core.Connection;
+using VirtualObjects.Connections;
 
 namespace VirtualObjects
 {

@@ -9,9 +9,9 @@ namespace VirtualObjects.Queries
     class QueryProvider : IQueryProvider
     {
         private readonly IQueryExecutor _executor;
-        private readonly Context _context;
+        private readonly SessionContext _context;
 
-        public QueryProvider(IQueryExecutor executor, Context context)
+        public QueryProvider(IQueryExecutor executor, SessionContext context)
         {
             _executor = executor;
             _context = context;

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using VirtualObjects.Exceptions;
 
-namespace VirtualObjects.Core.Connection
+namespace VirtualObjects.Connections
 {
     public class NamedDbConnectionProvider : DbConnectionProvider
     {

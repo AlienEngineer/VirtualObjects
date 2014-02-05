@@ -4,7 +4,7 @@ using System.Linq;
 namespace VirtualObjects.Tests.Models.Northwind
 {
 
-    [Table("Employees")]
+    [Table(TableName = "Employees")]
     public class Employee
     {
         [Identity]
@@ -40,7 +40,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public Byte[] Photo { get; set; }
 
-        [Association("ReportsTo", "EmployeeId")]
+        [Association(FieldName = "ReportsTo", OtherKey = "EmployeeId")]
         public virtual Employee ReportsTo { get; set; }
 
         public String PhotoPath { get; set; }

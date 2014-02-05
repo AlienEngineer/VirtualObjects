@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Linq;
+using Ninject;
 using VirtualObjects.Config;
 
 namespace VirtualObjects
 {
     public class SessionContext : IDisposable
     {
+        [Inject]
         public IQueryProvider QueryProvider { get; set; }
+        [Inject]
         public IMapper Mapper { get; set; }
+        [Inject]
         public IConnection Connection { get; set; }
+
+        public ISession Session { get; set; }
 
         public IEntityInfo Map<TEntity>()
         {

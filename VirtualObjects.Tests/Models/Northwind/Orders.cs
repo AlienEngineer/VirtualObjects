@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
@@ -9,10 +8,10 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Identity]
         public int OrderId { get; set; }
 
-        [Association("CustomerId", "CustomerId")]
+        [Association(FieldName = "CustomerId", OtherKey = "CustomerId")]
         public virtual Customers Customer { get; set; }
 
-        [Association("EmployeeId", "EmployeeId")]
+        [Association(FieldName = "EmployeeId", OtherKey = "EmployeeId")]
         public virtual Employee Employee { get; set; }
 
         public DateTime OrderDate { get; set; }
@@ -21,7 +20,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public DateTime ShippedDate { get; set; }
 
-        [Association("ShipVia", "ShipperId")]
+        [Association(FieldName = "ShipVia", OtherKey = "ShipperId")]
         public virtual Shippers Shipper { get; set; }
 
         public Decimal Freight { get; set; }

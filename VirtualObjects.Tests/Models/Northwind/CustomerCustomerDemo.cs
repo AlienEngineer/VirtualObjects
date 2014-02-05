@@ -1,13 +1,12 @@
-﻿using VirtualObjects.Tests.Config;
-
+﻿
 namespace VirtualObjects.Tests.Models.Northwind
 {
     public class CustomerCustomerDemo
     {
-        [Key("CustomerId")]
+        [Key(FieldName = "CustomerId")]
         public virtual Customers Customer { get; set; }
 
-        [Key("CustomerTypeId")]
+        [Key(FieldName = "CustomerTypeId")]
         public virtual CustomerDemographics Demographics { get; set; }
     }
 }

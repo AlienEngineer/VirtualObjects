@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using VirtualObjects.Queries.Annotations;
+using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
 
 namespace VirtualObjects
 {
@@ -10,6 +12,7 @@ namespace VirtualObjects
         public InternalSession(SessionContext context)
         {
             Context = context;
+            context.Session = this;
         }
 
         public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new()
@@ -19,21 +22,28 @@ namespace VirtualObjects
 
         public TEntity GetById<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return ExecuteOperation(Context.Map<TEntity>().Operations.GetOperation, entity);
+            return entity == null ? null 
+                : ExecuteOperation(Context.Map<TEntity>().Operations.GetOperation, entity);
         }
 
         public TEntity Insert<TEntity>(TEntity entity) where TEntity : class, new()
         {
+            if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
+
             return ExecuteOperation(Context.Map<TEntity>().Operations.InsertOperation, entity);
         }
 
-        public TEntity Update<TEntity>(TEntity entity) where TEntity : class, new()
+        public TEntity Update<TEntity>([NotNull] TEntity entity) where TEntity : class, new()
         {
+            if (entity == null) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
+
             return ExecuteOperation(Context.Map<TEntity>().Operations.UpdateOperation, entity);
         }
 
         public bool Delete<TEntity>(TEntity entity) where TEntity : class, new()
         {
+            if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
+
             return ExecuteOperation(Context.Map<TEntity>().Operations.DeleteOperation, entity) != null;
         }
 
@@ -44,7 +54,7 @@ namespace VirtualObjects
 
         private TEntity ExecuteOperation<TEntity>(IOperation operation, TEntity entityModel)
         {
-            return (TEntity)operation.PrepareOperation(entityModel).Execute(Context.Connection);
+            return (TEntity)operation.PrepareOperation(entityModel).Execute(Context);
         }
 
         #region IDisposable Members

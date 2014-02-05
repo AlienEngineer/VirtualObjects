@@ -77,6 +77,13 @@ namespace VirtualObjects.Tests
             ConnectionManager = this;
 
             QueryProvider = MakeQueryProvider();
+
+            SessionContext = new SessionContext
+            {
+                Connection = this,
+                Mapper = Mapper,
+                QueryProvider =  QueryProvider
+            };
         }
 
         private IQueryProvider MakeQueryProvider()
@@ -107,8 +114,8 @@ namespace VirtualObjects.Tests
                         new CountQueryExecutor(Translator),
                         new QueryExecutor(entitiesMapper, Translator),
                         new SingleQueryExecutor(entitiesMapper, Translator)
-                    }), 
-                    new Context { Connection = ConnectionManager }
+                    }),
+                    new SessionContext { Connection = ConnectionManager }
                );
         }
 
@@ -230,6 +237,7 @@ namespace VirtualObjects.Tests
         public IQueryProvider QueryProvider { get; private set; }
         public IQueryTranslator Translator { get; private set; }
         public IConnection ConnectionManager { get; private set; }
+        public SessionContext SessionContext { get; private set; }
 
         public object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters)
         {

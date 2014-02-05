@@ -16,7 +16,7 @@ namespace VirtualObjects.Queries.Execution
         }
 
 
-        public object ExecuteQuery(Expression expression, Context context)
+        public object ExecuteQuery(Expression expression, SessionContext context)
         {
             var executor = GetQueryExecutor(expression);
 
@@ -48,7 +48,7 @@ namespace VirtualObjects.Queries.Execution
             return callExpression != null ? callExpression.Method : null;
         }
 
-        public TResult ExecuteQuery<TResult>(Expression expression, Context context)
+        public TResult ExecuteQuery<TResult>(Expression expression, SessionContext context)
         {
             var executor = GetQueryExecutor(expression);
 

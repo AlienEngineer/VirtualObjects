@@ -15,7 +15,7 @@ namespace VirtualObjects.Queries.Execution
         /// <param name="expression">The expression.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        object ExecuteQuery(Expression expression, Context context);
+        object ExecuteQuery(Expression expression, SessionContext context);
 
         /// <summary>
         /// Executes the query.
@@ -24,7 +24,7 @@ namespace VirtualObjects.Queries.Execution
         /// <param name="expression">The expression.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        TResult ExecuteQuery<TResult>(Expression expression, Context context);
+        TResult ExecuteQuery<TResult>(Expression expression, SessionContext context);
 
         /// <summary>
         /// Determines whether this instance can execute the specified method.

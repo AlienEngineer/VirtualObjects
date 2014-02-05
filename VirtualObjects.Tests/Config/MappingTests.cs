@@ -22,13 +22,13 @@ namespace VirtualObjects.Tests.Config
 
             public int SomeName { get; set; }
 
-            [Identity("NotSoRandom")]
+            [Identity(FieldName = "NotSoRandom")]
             public int SomeRandomName { get; set; }
 
-            [Association("ExtId", "Id")]
+            [Association(FieldName = "ExtId", OtherKey = "Id")]
             public TestModel1 OtherModel { get; set; }
 
-            [Association("ExtId", "SomeRandomName")]
+            [Association(FieldName = "ExtId", OtherKey = "SomeRandomName")]
             public TestModel OtherModelKey { get; set; }
         }
 

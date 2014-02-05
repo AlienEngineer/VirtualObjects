@@ -1,5 +1,4 @@
 ﻿using System;
-using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
@@ -10,7 +9,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public String TerritoryDescription { get; set; }
 
-        [Column("RegionId")]
+        [Column(FieldName = "RegionId")]
         public virtual Region Region { get; set; }
     }
 }

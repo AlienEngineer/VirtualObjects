@@ -3,7 +3,7 @@ using System.Data;
 using System.Data.Common;
 using VirtualObjects.Exceptions;
 
-namespace VirtualObjects.Core.Connection
+namespace VirtualObjects.Connections
 {
     public class DbConnectionProvider : IDbConnectionProvider
     {

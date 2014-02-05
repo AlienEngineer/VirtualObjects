@@ -36,4 +36,23 @@ namespace VirtualObjects.Exceptions
                     innerException.Message);
         }
     }
+
+    public class ArgumentNullException : VirtualObjectsException
+    {
+        public ArgumentNullException(string message) : base(message)
+        {
+        }
+
+        public ArgumentNullException(string message, object src) : base(message, src)
+        {
+        }
+
+        public ArgumentNullException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        public ArgumentNullException(string message, object src, Exception innerException) : base(message, src, innerException)
+        {
+        }
+    }
 }

@@ -11,32 +11,32 @@ namespace VirtualObjects.CRUD
             _entityOperations = entityOperations;
         }
 
-        public Object Insert(Object entityModel, IConnection connection)
+        public Object Insert(Object entityModel, SessionContext sessionContext)
         {
             return _entityOperations.InsertOperation
                 .PrepareOperation(entityModel)
-                .Execute(connection);
+                .Execute(sessionContext);
         }
 
-        public Object Update(Object entityModel, IConnection connection)
+        public Object Update(Object entityModel, SessionContext sessionContext)
         {
             return _entityOperations.UpdateOperation
                 .PrepareOperation(entityModel)
-                .Execute(connection);
+                .Execute(sessionContext);
         }
 
-        public Object Delete(Object entityModel, IConnection connection)
+        public Object Delete(Object entityModel, SessionContext sessionContext)
         {
             return _entityOperations.DeleteOperation
                 .PrepareOperation(entityModel)
-                .Execute(connection);
+                .Execute(sessionContext);
         }
 
-        public Object Get(Object entityModel, IConnection connection)
+        public Object Get(Object entityModel, SessionContext sessionContext)
         {
             return _entityOperations.GetOperation
                 .PrepareOperation(entityModel)
-                .Execute(connection);
+                .Execute(sessionContext);
         }
 
     }
@@ -48,24 +48,24 @@ namespace VirtualObjects.CRUD
         {
         }
 
-        public T Insert(T entityModel, IConnection connection)
+        public T Insert(T entityModel, SessionContext sessionContext)
         {
-            return (T)base.Insert(entityModel, connection);
+            return (T)base.Insert(entityModel, sessionContext);
         }
 
-        public T Update(T entityModel, IConnection connection)
+        public T Update(T entityModel, SessionContext sessionContext)
         {
-            return (T)base.Update(entityModel, connection);
+            return (T)base.Update(entityModel, sessionContext);
         }
 
-        public T Delete(T entityModel, IConnection connection)
+        public T Delete(T entityModel, SessionContext sessionContext)
         {
-            return (T)base.Delete(entityModel, connection);
+            return (T)base.Delete(entityModel, sessionContext);
         }
 
-        public T Get(T entityModel, IConnection connection)
+        public T Get(T entityModel, SessionContext sessionContext)
         {
-            return (T)base.Get(entityModel, connection);
+            return (T)base.Get(entityModel, sessionContext);
         }
     }
 }

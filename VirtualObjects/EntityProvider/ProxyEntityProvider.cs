@@ -15,18 +15,13 @@ namespace VirtualObjects.EntityProvider
     class ProxyEntityProvider : EntityModelProvider
     {
         private readonly ProxyGenerator _proxyGenerator;
-        private readonly ProxyGenerationOptions _proxyGenerationOptions;
-        public ProxyEntityProvider(ISession session, ProxyGenerator proxyGenerator, IMapper mapper)
+        private ProxyGenerationOptions _proxyGenerationOptions;
+
+        public ProxyEntityProvider(ProxyGenerator proxyGenerator)
         {
             _proxyGenerator = proxyGenerator;
 
-            _proxyGenerationOptions = new ProxyGenerationOptions
-            {
-                Selector = new InterceptorSelector(
-                    new NonCollectionInterceptor(session),
-                    new CollectionPropertyInterceptor(session, mapper)
-                )
-            };
+            
         }
 
         public override object CreateEntity(Type type)
@@ -53,6 +48,16 @@ namespace VirtualObjects.EntityProvider
             );
         }
 
+        public override void PrepareProvider(Type outputType, SessionContext sessionContext)
+        {
+            _proxyGenerationOptions = new ProxyGenerationOptions
+            {
+                Selector = new InterceptorSelector(
+                    new NonCollectionInterceptor(sessionContext.Session),
+                    new CollectionPropertyInterceptor(sessionContext.Session, sessionContext.Mapper)
+                )
+            };
+        }
     }
 
     interface IFieldInterceptor : IInterceptor
@@ -262,12 +267,12 @@ namespace VirtualObjects.EntityProvider
 
 
 // ReSharper disable once UnusedMember.Local
-        private static IEnumerable<T> ProxyGenericIterator<T>(IEnumerable enumerable)
+        private static IEnumerable<T> ProxyGenericIterator<T>(object target, IEnumerable enumerable)
         {
-            return ProxyNonGenericIterator(enumerable).Cast<T>();
+            return ProxyNonGenericIterator(target, enumerable).Cast<T>();
         }
 
-        private static IEnumerable ProxyNonGenericIterator(IEnumerable enumerable)
+        private static IEnumerable ProxyNonGenericIterator(object target, IEnumerable enumerable)
         {
             return enumerable.Cast<object>();
         }

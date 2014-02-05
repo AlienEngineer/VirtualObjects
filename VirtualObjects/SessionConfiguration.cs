@@ -1,6 +1,6 @@
 using System.IO;
 using VirtualObjects.Config;
-using VirtualObjects.Core.Connection;
+using VirtualObjects.Connections;
 
 namespace VirtualObjects
 {
@@ -8,7 +8,10 @@ namespace VirtualObjects
     {
         internal IMappingBuilder MappingBuilder
         {
-            get { return InternalConfigureMappingBuilder(_container.Get<IMappingBuilder>()); }
+            get
+            {
+                return InternalConfigureMappingBuilder(_container.Get<IMappingBuilder>());
+            }
         }
 
         public IDbConnectionProvider ConnectionProvider { get; set; }

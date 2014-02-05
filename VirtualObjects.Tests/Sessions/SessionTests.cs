@@ -99,7 +99,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 reportsTo.Should().NotBeNull();
                 reportsTo.EmployeeId.Should().Be(2);
-                reportsTo.LastName.Should().Be("");
+                reportsTo.LastName.Should().Be("Fuller");
             }
         }
 
@@ -113,6 +113,10 @@ namespace VirtualObjects.Tests.Sessions
 
                 territories.Should().NotBeNull();
                 territories.Count.Should().Be(2);
+
+                var employee1 = territories.First().Employee;
+
+                employee1.FirstName.Should().Be(employee.FirstName);
             }
         }
 

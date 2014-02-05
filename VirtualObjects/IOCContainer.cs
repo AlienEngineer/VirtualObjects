@@ -1,11 +1,13 @@
-﻿using Ninject;
-using VirtualObjects.Core.Connection;
+﻿using System;
+using Ninject;
+using VirtualObjects.Connections;
 
 namespace VirtualObjects
 {
     public interface IOcContainer
     {
 
+        object Get(Type type);
         TResult Get<TResult>();
 
     }
@@ -35,6 +37,11 @@ namespace VirtualObjects
         public NinjectContainer(IKernel kernel)
         {
             _kernel = kernel;
+        }
+
+        public object Get(Type type)
+        {
+            return _kernel.Get(type);
         }
 
         public TResult Get<TResult>()

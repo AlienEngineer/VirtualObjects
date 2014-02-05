@@ -199,4 +199,11 @@ Unable to find a connection string with the name [{ConnectionName}].</value>
   <data name="Execution_UnableToFindSpecificExecutor" xml:space="preserve">
     <value>Unable to find the proper executor for {Name} method.</value>
   </data>
+  <data name="ConnectionProvider_NoConnectionConfigured" xml:space="preserve">
+    <value>
+There is no connection string configured in [App/Web].Config.</value>
+  </data>
+  <data name="Session_EntityNotSupplied" xml:space="preserve">
+    <value>The entity was not supplied.</value>
+  </data>
 </root>

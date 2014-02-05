@@ -1,13 +1,15 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using Castle.DynamicProxy;
 using Fasterflect;
 using Ninject;
 using Ninject.Modules;
 using Ninject.Syntax;
 using VirtualObjects.Config;
+using VirtualObjects.Connections;
 using VirtualObjects.Core;
-using VirtualObjects.Core.Connection;
 using VirtualObjects.CRUD;
 using VirtualObjects.EntityProvider;
 using VirtualObjects.Queries;
@@ -18,8 +20,6 @@ using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects
 {
-
-    
 
     public class VirtualObjectsModule : NinjectModule
     {
@@ -56,19 +56,12 @@ namespace VirtualObjects
             }
 
             Bind<ISession>().To<InternalSession>().InThreadScope();
-            Bind<SessionContext>().ToMethod(context => new SessionContext
-            {
-                Mapper = Kernel.Get<IMapper>(),
-                Connection = Kernel.Get<IConnection>(),
-                QueryProvider = Kernel.Get<IQueryProvider>()
-            });
+            Bind<SessionContext>().ToSelf().InThreadScope();
 
             //
             // Entity info Mapper
             //
-            Bind<IMapper>()
-                .ToMethod(context => _configuration.MappingBuilder.Build())
-                .InThreadScope();
+            Bind<IMapper>().ToMethod(context => _configuration.MappingBuilder.Build()).InThreadScope();
 
             Bind<IMappingBuilder>().To<MappingBuilder>().InSingletonScope();
 
@@ -83,11 +76,12 @@ namespace VirtualObjects
             //
             Bind<IEntityProvider>().To<EntityProviderComposite>().ExcludeSelf().InThreadScope();
             // Bind<IEntityProvider>().To<EntityModelProvider>().WhenInjectedInto<EntityProviderComposite>();
+            Bind<IEntityProvider>().To<ProxyEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<DynamicTypeProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<CollectionTypeEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
 
             Bind<ProxyGenerator>().ToSelf().InSingletonScope();
-            Bind<IEntityProvider>().To<ProxyEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
+            
 
             //
             // Entities Mappers
@@ -107,11 +101,6 @@ namespace VirtualObjects
             Bind<IQueryExecutor>().To<QueryExecutor>().WhenInjectedInto<CompositeExecutor>();
             Bind<IQueryExecutor>().To<SingleQueryExecutor>().WhenInjectedInto<CompositeExecutor>();
 
-            Bind<Context>().ToMethod(context =>
-                new Context
-                {
-                    Connection = context.Kernel.Get<IConnection>()
-                }).InThreadScope();
 
             //
             // Query Provider

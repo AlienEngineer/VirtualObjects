@@ -4,17 +4,17 @@ namespace VirtualObjects.CRUD
 {
     public interface IOperationsExecutor
     {
-        Object Insert(Object entityModel, IConnection connection);
-        Object Update(Object entityModel, IConnection connection);
-        Object Delete(Object entityModel, IConnection connection);
-        Object Get(Object entityModel, IConnection connection);
+        Object Insert(Object entityModel, SessionContext sessionContext);
+        Object Update(Object entityModel, SessionContext sessionContext);
+        Object Delete(Object entityModel, SessionContext sessionContext);
+        Object Get(Object entityModel, SessionContext sessionContext);
     }
 
     public interface IOperationsExecutor<T>
     {
-        T Insert(T entityModel, IConnection connection);
-        T Update(T entityModel, IConnection connection);
-        T Delete(T entityModel, IConnection connection);
-        T Get(T entityModel, IConnection connection);
+        T Insert(T entityModel, SessionContext sessionContext);
+        T Update(T entityModel, SessionContext sessionContext);
+        T Delete(T entityModel, SessionContext sessionContext);
+        T Get(T entityModel, SessionContext sessionContext);
     }
 }

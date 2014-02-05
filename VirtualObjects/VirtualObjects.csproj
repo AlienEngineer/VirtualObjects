@@ -61,12 +61,12 @@
     <Compile Include="Config\IMapper.cs" />
     <Compile Include="Config\Mapper.cs" />
     <Compile Include="Config\MappingBuilder.cs" />
-    <Compile Include="Connection\Connection.cs" />
-    <Compile Include="Connection\DbConnectionProvider.cs" />
-    <Compile Include="Connection\IDbConnectionProvider.cs" />
-    <Compile Include="Connection\InnerTransaction.cs" />
-    <Compile Include="Connection\NamedDbConnectionProvider.cs" />
-    <Compile Include="Context.cs" />
+    <Compile Include="Connections\Connection.cs" />
+    <Compile Include="Connections\DbConnectionProvider.cs" />
+    <Compile Include="Connections\FirstConnectionDbConnectionProvider.cs" />
+    <Compile Include="Connections\IDbConnectionProvider.cs" />
+    <Compile Include="Connections\InnerTransaction.cs" />
+    <Compile Include="Connections\NamedDbConnectionProvider.cs" />
     <Compile Include="CRUD\IOperationsExecutor.cs" />
     <Compile Include="CRUD\OperationParameter.cs" />
     <Compile Include="CRUD\OperationsExecutor.cs" />
@@ -171,7 +171,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Connection\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

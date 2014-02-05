@@ -41,6 +41,7 @@ namespace VirtualObjects
         /// Prepares the provider.
         /// </summary>
         /// <param name="outputType">Type of the output.</param>
-        void PrepareProvider(Type outputType);
+        /// <param name="sessionContext"></param>
+        void PrepareProvider(Type outputType, SessionContext sessionContext);
     }
 }

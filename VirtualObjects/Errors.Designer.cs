@@ -62,6 +62,16 @@ namespace VirtualObjects {
         
         /// <summary>
         ///   Looks up a localized string similar to 
+        ///There is no connection string configured in [App/Web].Config..
+        /// </summary>
+        public static string ConnectionProvider_NoConnectionConfigured {
+            get {
+                return ResourceManager.GetString("ConnectionProvider_NoConnectionConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
         ///Unable to create a connection for {ProviderName}.
         ///ConnectionString: [{ConnectionString}]
         ///Exception: {Message}.
@@ -178,6 +188,15 @@ namespace VirtualObjects {
         public static string Query_SourceNotSet {
             get {
                 return ResourceManager.GetString("Query_SourceNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The entity was not supplied..
+        /// </summary>
+        public static string Session_EntityNotSupplied {
+            get {
+                return ResourceManager.GetString("Session_EntityNotSupplied", resourceCulture);
             }
         }
         

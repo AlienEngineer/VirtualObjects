@@ -23,7 +23,7 @@ namespace VirtualObjects.EntityProvider
 
         public IEntityProvider MainProvider { get; set; }
 
-        public virtual void PrepareProvider(Type outputType)
+        public virtual void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
             // No prepare needed.
         }

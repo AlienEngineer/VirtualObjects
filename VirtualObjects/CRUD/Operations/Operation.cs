@@ -17,12 +17,18 @@ namespace VirtualObjects.CRUD.Operations
         }
 
         public string CommandText { get; private set; }
-
-        public object Execute(IConnection connection)
+        
+        public object Execute(SessionContext sessionContext)
         {
-            return Execute(connection, _entityModel, _entityInfo, CommandText, _parameters);
+            return Execute(
+                sessionContext.Connection, 
+                _entityModel, 
+                _entityInfo, 
+                CommandText, 
+                _parameters, 
+                sessionContext
+            );
         }
-
 
         public IOperation PrepareOperation(object entityModel)
         {
@@ -42,7 +48,7 @@ namespace VirtualObjects.CRUD.Operations
             return this;
         }
 
-        protected abstract object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters);
+        protected abstract object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters, SessionContext sessionContext);
         protected abstract IEnumerable<IEntityColumnInfo> GetParameters(IEntityInfo entityInfo);
     }
 }

@@ -14,7 +14,7 @@ namespace VirtualObjects.EntityProvider
         private Type _type;
         private IEnumerable<object> _arguments;
 
-        public void PrepareProvider(Type outputType)
+        public void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
             _type = outputType;
             

@@ -5,7 +5,7 @@ namespace VirtualObjects
     public interface IOperation
     {
         String CommandText { get; }
-        Object Execute(IConnection connection);
+        object Execute(SessionContext sessionContext);
         IOperation PrepareOperation(object entityModel);
     }
 }

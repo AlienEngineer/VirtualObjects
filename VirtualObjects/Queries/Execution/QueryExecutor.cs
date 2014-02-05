@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using Fasterflect;
 
 namespace VirtualObjects.Queries.Execution
@@ -26,20 +25,20 @@ namespace VirtualObjects.Queries.Execution
         }
 
 
-        public virtual object ExecuteQuery(Expression expression, Context context)
+        public virtual object ExecuteQuery(Expression expression, SessionContext context)
         {
             var queryInfo = _translator.TranslateQuery(expression);
 
             return MapEntities(queryInfo, context);
         }
 
-        private object MapEntities(IQueryInfo queryInfo, Context context)
+        private object MapEntities(IQueryInfo queryInfo, SessionContext context)
         {
             try
             {
                 var reader = context.Connection.ExecuteReader(queryInfo.CommandText, queryInfo.Parameters);
 
-                return _mapper.MapEntities(reader, queryInfo, queryInfo.OutputType);
+                return _mapper.MapEntities(reader, queryInfo, queryInfo.OutputType, context);
             }
             finally
             {
@@ -47,7 +46,7 @@ namespace VirtualObjects.Queries.Execution
             }
         }
 
-        public virtual TResult ExecuteQuery<TResult>(Expression expression, Context context)
+        public virtual TResult ExecuteQuery<TResult>(Expression expression, SessionContext context)
         {
             var queryInfo = _translator.TranslateQuery(expression);
             

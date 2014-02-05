@@ -13,11 +13,11 @@ namespace VirtualObjects.EntityProvider
         private IEntityProvider _tmpProvider ;
         private Type _type;
         
-        public void PrepareProvider(Type outputType)
+        public void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
             _tmpProvider = GetProviderForType(outputType);
             
-            _tmpProvider.PrepareProvider(outputType);
+            _tmpProvider.PrepareProvider(outputType, sessionContext);
             _type = outputType;
         }
 

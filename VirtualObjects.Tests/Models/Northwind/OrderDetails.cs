@@ -1,17 +1,16 @@
 ﻿using System;
-using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
-    [Table("Order Details")]
+    [Table(TableName = "Order Details")]
     public class OrderDetails
     {
-        [Key("OrderId")]
-        [Association("OrderId", "OrderId")]
+        [Key(FieldName = "OrderId")]
+        [Association(OtherKey = "OrderId")]
         public virtual Orders Order { get; set; }
 
-        [Key("ProductId")]
-        [Association("ProductId", "ProductId")]
+        [Key(FieldName = "ProductId")]
+        [Association(OtherKey = "ProductId")]
         public virtual Products Product { get; set; }
 
         public Decimal UnitPrice { get; set; }
@@ -21,7 +20,7 @@ namespace VirtualObjects.Tests.Models.Northwind
         public Single Discount { get; set; }
     }
 
-    [Table("Order Details")]
+    [Table(TableName = "Order Details")]
     public class OrderDetailsSimplified
     {
         public int OrderId { get; set; }

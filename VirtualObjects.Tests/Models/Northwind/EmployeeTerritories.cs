@@ -1,13 +1,14 @@
-﻿using VirtualObjects.Tests.Config;
-
+﻿
 namespace VirtualObjects.Tests.Models.Northwind
 {
     public class EmployeeTerritories
     {
-        [Key("EmployeeId")]
+        [Key(FieldName = "EmployeeId")]
+        [Association(OtherKey = "EmployeeId")]
         public virtual Employee Employee { get; set; }
 
-        [Key("TerritoryID")]
+        [Key(FieldName = "TerritoryID")]
+        [Association(OtherKey = "TerritoryId")]
         public virtual Territories Territories { get; set; }
     }
 }

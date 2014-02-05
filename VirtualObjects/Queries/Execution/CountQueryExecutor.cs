@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Fasterflect;
@@ -15,7 +14,7 @@ namespace VirtualObjects.Queries.Execution
             _translator = translator;
         }
 
-        public object ExecuteQuery(Expression expression, Context context)
+        public object ExecuteQuery(Expression expression, SessionContext context)
         {
             try
             {
@@ -29,7 +28,7 @@ namespace VirtualObjects.Queries.Execution
             }
         }
 
-        public TResult ExecuteQuery<TResult>(Expression query, Context context)
+        public TResult ExecuteQuery<TResult>(Expression query, SessionContext context)
         {
             return (TResult) Convert.ChangeType( ExecuteQuery(query, context), typeof(TResult));
         }

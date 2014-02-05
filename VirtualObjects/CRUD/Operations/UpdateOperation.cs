@@ -10,7 +10,7 @@ namespace VirtualObjects.CRUD.Operations
         {
         }
 
-        protected override object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters)
+        protected override object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters, SessionContext sessionContext)
         {
             connection.ExecuteNonQuery(commandText, parameters);
 
