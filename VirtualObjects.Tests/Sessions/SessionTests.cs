@@ -89,5 +89,32 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
+        [Test, Repeat(Repeat)]
+        public void Session_Entity_Lazy_Load()
+        {
+            using ( var session = CreateSession() )
+            {
+		var employee = session.GetById(new Employee { EmployeeId = 1 });
+		var reportsTo = Diagnostic.Timed(() => employee.ReportsTo);
+
+		reportsTo.Should().NotBeNull();
+		reportsTo.EmployeeId.Should().Be(2);
+		reportsTo.LastName.Should().Be("");
+            }
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Session_Collection_Fields_Lazy_Load()
+        {
+            using ( var session = CreateSession() )
+            {
+		var employee = session.GetById(new Employee { EmployeeId = 1 });
+		var territories = Diagnostic.Timed(() => employee.Territories).ToList();
+
+		territories.Should().NotBeNull();
+		territories.Count.Should().Be(2);
+            }
+        }
+
     }
 }

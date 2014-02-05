@@ -23,7 +23,7 @@ namespace VirtualObjects
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
         TEntity GetById<TEntity>(TEntity entity) where TEntity : class, new();
-
+	
         /// <summary>
         /// Inserts the specified entity.
         /// </summary>
