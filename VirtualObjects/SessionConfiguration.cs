@@ -22,6 +22,12 @@ namespace VirtualObjects
         internal void Init(IOcContainer container)
         {
             _container = container;
+            Initialize();
+        }
+
+        public virtual void Initialize()
+        {
+            
         }
 
         private IMappingBuilder InternalConfigureMappingBuilder(IMappingBuilder builder)
