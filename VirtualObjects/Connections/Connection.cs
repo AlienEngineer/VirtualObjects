@@ -142,6 +142,7 @@ namespace VirtualObjects.Connections
                 });
 
             _log.WriteLine(commandText);
+            // Debug use only.
             // PrintCommand(cmd);
 
             return cmd;

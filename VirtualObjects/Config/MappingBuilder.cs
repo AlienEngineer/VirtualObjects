@@ -56,8 +56,11 @@ namespace VirtualObjects.Config
         {
             EntityNameFromType(type =>
             {
-                var attribute = type.Attribute<TAttribute>();
-                return attribute != null ? nameGetter(attribute) : null;
+                var attributes = type.Attributes<TAttribute>();
+
+                return attributes != null ?
+                    attributes.Select(nameGetter).FirstOrDefault(e => !String.IsNullOrEmpty(e))
+                    : null;
             });
         }
 
@@ -70,8 +73,11 @@ namespace VirtualObjects.Config
         {
             ColumnNameFromProperty(prop =>
             {
-                var attribute = prop.Attribute<TAttribute>();
-                return attribute != null ? nameGetter(attribute) : null;
+                var attributes = prop.Attributes<TAttribute>();
+
+                return attributes != null ?
+                    attributes.Select(nameGetter).FirstOrDefault(e => !String.IsNullOrEmpty(e)) 
+                    : null;
             });
         }
 
@@ -89,8 +95,9 @@ namespace VirtualObjects.Config
 
             ColumnKeyFromProperty(prop =>
             {
-                var attribute = prop.Attribute<TAttribute>();
-                return attribute != null && keyGetter(attribute);
+                var attributes = prop.Attributes<TAttribute>();
+
+                return attributes != null && attributes.Select(keyGetter).Any();
             });
         }
 
@@ -108,8 +115,9 @@ namespace VirtualObjects.Config
 
             ColumnIdentityFromProperty(prop =>
             {
-                var attribute = prop.Attribute<TAttribute>();
-                return attribute != null && keyGetter(attribute);
+                var attributes = prop.Attributes<TAttribute>();
+
+                return attributes != null && attributes.Select(keyGetter).Any();
             });
         }
 
@@ -127,8 +135,9 @@ namespace VirtualObjects.Config
 
             ColumnVersionFromProperty(prop =>
             {
-                var attribute = prop.Attribute<TAttribute>();
-                return attribute != null && keyGetter(attribute);
+                var attributes = prop.Attributes<TAttribute>();
+
+                return attributes != null && attributes.Select(keyGetter).Any();
             });
         }
 

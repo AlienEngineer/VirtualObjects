@@ -101,43 +101,13 @@ namespace VirtualObjects.EntityProvider
     abstract class FieldInterceptorBase : IFieldInterceptor
     {
 
-        /// <summary>
-        /// The semanthics of this type if the following:
-        /// A value is loaded when the counter is bigger than 1. (set once by the mapper, and another by the lazy load)
-        /// </summary>
         internal class PropertyValue
         {
-            private Object _value;
-
-            public Object Value
-            {
-                get
-                {
-                    return _value;
-                }
-                set
-                {
-                    if ( !IsLoaded )
-                    {
-                        ++SettedCount;
-                    }
-                    _value = value;
-                }
-            }
+            public object Value { get; set; }
 
             public int SettedCount { get; set; }
 
-            public Boolean IsLoaded
-            {
-                get
-                {
-                    return SettedCount > 1;
-                }
-                set
-                {
-                    SettedCount = value ? 2 : 1;
-                }
-            }
+            public Boolean IsLoaded { get; set; }
         }
 
         public static int Typecount = 0;
@@ -185,7 +155,7 @@ namespace VirtualObjects.EntityProvider
             {
                 Value = invocation.GetArgumentValue(0),
 
-                IsLoaded = InterceptCollections
+                IsLoaded = false
             };
         }
 
@@ -202,13 +172,14 @@ namespace VirtualObjects.EntityProvider
 
             if ( propValue == null )
             {
-                propValue = _properties[method] = new PropertyValue
+                _properties[method] = new PropertyValue
                 {
-                    IsLoaded = InterceptCollections
+                    IsLoaded = true,
+                    Value = value
                 };
             }
 
-            propValue.Value = invocation.ReturnValue = value;
+            invocation.ReturnValue = value;
         }
 
         /// <summary>
