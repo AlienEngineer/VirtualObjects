@@ -82,16 +82,6 @@
     <Compile Include="QueryInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VirtualObjects.Common\VirtualObjects.Common.csproj">
-      <Project>{c486dfb8-eafc-4a11-9ee2-ee6f6a59bb38}</Project>
-      <Name>VirtualObjects.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VirtualObjects.Config\VirtualObjects.Config.csproj">
-      <Project>{84453362-1924-4f00-bf56-859ad828febb}</Project>
-      <Name>VirtualObjects.Config</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

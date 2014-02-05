@@ -1,6 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using Castle.DynamicProxy;
 using Fasterflect;
 using Ninject;
 using Ninject.Modules;
@@ -81,10 +81,13 @@ namespace VirtualObjects
             //
             // Entities Provider
             //
-            Bind<IEntityProvider>().To<EntityProviderComposite>().ExcludeSelf().InSingletonScope();
-            Bind<IEntityProvider>().To<EntityModelProvider>().WhenInjectedInto<EntityProviderComposite>();
+            Bind<IEntityProvider>().To<EntityProviderComposite>().ExcludeSelf().InThreadScope();
+            // Bind<IEntityProvider>().To<EntityModelProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<DynamicTypeProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<CollectionTypeEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
+
+            Bind<ProxyGenerator>().ToSelf().InSingletonScope();
+            Bind<IEntityProvider>().To<ProxyEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
 
             //
             // Entities Mappers

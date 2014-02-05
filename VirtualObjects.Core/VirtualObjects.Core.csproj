@@ -59,14 +59,6 @@
     <Compile Include="TextWriterStub.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VirtualObjects.Common\VirtualObjects.Common.csproj">
-      <Project>{c486dfb8-eafc-4a11-9ee2-ee6f6a59bb38}</Project>
-      <Name>VirtualObjects.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VirtualObjects.Config\VirtualObjects.Config.csproj">
-      <Project>{84453362-1924-4f00-bf56-859ad828febb}</Project>
-      <Name>VirtualObjects.Config</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VirtualObjects.Queries\VirtualObjects.Queries.csproj">
       <Project>{0a1ec294-d82c-40af-be1e-d2ffcf692eb6}</Project>
       <Name>VirtualObjects.Queries</Name>

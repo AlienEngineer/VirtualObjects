@@ -97,22 +97,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VirtualObjects.Common\VirtualObjects.Common.csproj">
-      <Project>{C486DFB8-EAFC-4A11-9EE2-EE6F6A59BB38}</Project>
-      <Name>VirtualObjects.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VirtualObjects.Config\VirtualObjects.Config.csproj">
-      <Project>{84453362-1924-4f00-bf56-859ad828febb}</Project>
-      <Name>VirtualObjects.Config</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VirtualObjects.Core\VirtualObjects.Core.csproj">
-      <Project>{53ffc3d4-5c34-432e-989b-6363b3ecfa5e}</Project>
-      <Name>VirtualObjects.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VirtualObjects.Queries\VirtualObjects.Queries.csproj">
-      <Project>{0A1EC294-D82C-40AF-BE1E-D2FFCF692EB6}</Project>
-      <Name>VirtualObjects.Queries</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VirtualObjects\VirtualObjects.csproj">
       <Project>{c1dc7907-f05a-476f-98b2-8b25df440061}</Project>
       <Name>VirtualObjects</Name>

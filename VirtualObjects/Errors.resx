@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Internal_MapperNotInitialized" xml:space="preserve">
+    <value>Init method on Mapper not called.</value>
+  </data>
+  <data name="Internal_WrongMethodCall" xml:space="preserve">
+    <value>Wrong method called for {NodeType}.</value>
+  </data>
+  <data name="Mapping_UnableToGetForeignKey" xml:space="preserve">
+    <value>Unable to get the ForeignKey for field {Name} in type {PropertyType.Name}.</value>
+  </data>
+  <data name="Query_EntityInfoNotFound" xml:space="preserve">
+    <value>Unable to find the proper Entity Info for {ElementTypeName}.</value>
+  </data>
+  <data name="Query_SourceNotSet" xml:space="preserve">
+    <value>The source of the query was not set.</value>
+  </data>
+  <data name="SQL_ExpressionTypeNotSupported" xml:space="preserve">
+    <value>{NodeType} in predicate is not yet supported.</value>
+  </data>
+  <data name="SQL_UnableToFormatNode" xml:space="preserve">
+    <value>{NodeType} is not yet supported.</value>
+  </data>
+  <data name="Translation_DateTimeMemberNotSupported" xml:space="preserve">
+    <value>The member {Member.Name} is not yet supported.</value>
+  </data>
+  <data name="Translation_ManyMembersAccess_On_BothSides_NotSupported" xml:space="preserve">
+    <value>Predicates with multiple member access on both sides is not yet supported.</value>
+  </data>
+  <data name="Translation_MethodNotSupported" xml:space="preserve">
+    <value>The method [{Method.Name}] used in a query is not yet supported.</value>
+  </data>
+  <data name="Translation_UnableToExtractLambda" xml:space="preserve">
+    <value>Unable to extract lambda from expression.</value>
+  </data>
+  <data name="Translation_UnableToExtractQueryable" xml:space="preserve">
+    <value>Unable to extract the queryable from expression.</value>
+  </data>
+  <data name="UnableToGetType" xml:space="preserve">
+    <value>Unable to get the type from {NodeType} because it's not yet supported.</value>
+  </data>
+  <data name="Translation_Datetime_Member_NotSupported" xml:space="preserve">
+    <value>The datetime member [{Name}] is not yet supported.</value>
+  </data>
+  <data name="Translation_String_MemberAccess_NotSupported" xml:space="preserve">
+    <value>The string member [{Name}] is not yet supported.</value>
+  </data>
+  <data name="Translation_MethodCall_NotSupported" xml:space="preserve">
+    <value>[{MethodName}] Method translation not yet supported.</value>
+  </data>
+  <data name="Mapping_UnableToGetValue" xml:space="preserve">
+    <value>Its not possible to get the value of field [{FieldName}].</value>
+  </data>
+  <data name="Mapping_UnableToSetValue" xml:space="preserve">
+    <value>Its not possible to set the field [{FieldName}] with the value [{Value}]</value>
+  </data>
+  <data name="Mapping_EntityTypeNotSupported" xml:space="preserve">
+    <value>Provider for type {Name} not yet implemented.</value>
+  </data>
+  <data name="Mapping_OutputTypeNotSupported" xml:space="preserve">
+    <value>Type {OutputType} is not yet supported.</value>
+  </data>
+  <data name="Translation_Method_NoArgs_NotSupported" xml:space="preserve">
+    <value>The method {Name} without arguments is not supported.</value>
+  </data>
+  <data name="Translation_PredicateOnProjection" xml:space="preserve">
+    <value>Its not valid to have a predicate in a projection.</value>
+  </data>
+  <data name="ConnectionProvider_UnableToCreate" xml:space="preserve">
+    <value>
+Unable to create a connection for {ProviderName}.
+ConnectionString: [{ConnectionString}]
+Exception: {Message}</value>
+  </data>
+  <data name="ConnectionProvider_UnableToFindConnectionName" xml:space="preserve">
+    <value>
+Unable to find a connection string with the name [{ConnectionName}].</value>
+  </data>
+  <data name="Execution_UnableToFindExecutor" xml:space="preserve">
+    <value>Unable to find the proper executor for the given query.</value>
+  </data>
+  <data name="Execution_UnableToFindSpecificExecutor" xml:space="preserve">
+    <value>Unable to find the proper executor for {Name} method.</value>
+  </data>
+</root>

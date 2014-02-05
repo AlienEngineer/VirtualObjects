@@ -1,0 +1,362 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using Castle.DynamicProxy;
+using Fasterflect;
+using VirtualObjects.Config;
+using VirtualObjects.Exceptions;
+
+namespace VirtualObjects.EntityProvider
+{
+    class ProxyEntityProvider : EntityModelProvider
+    {
+        private readonly ProxyGenerator _proxyGenerator;
+        private readonly ProxyGenerationOptions _proxyGenerationOptions;
+        public ProxyEntityProvider(ISession session, ProxyGenerator proxyGenerator, IMapper mapper)
+        {
+            _proxyGenerator = proxyGenerator;
+
+            _proxyGenerationOptions = new ProxyGenerationOptions
+            {
+                Selector = new InterceptorSelector(
+                    new NonCollectionInterceptor(session),
+                    new CollectionPropertyInterceptor(session, mapper)
+                )
+            };
+        }
+
+        public override object CreateEntity(Type type)
+        {
+            Debug.Assert(type != null, "type != null");
+
+// ReSharper disable once PossibleNullReferenceException
+            while ( type.GetInterfaces().Contains(typeof(IProxyTargetAccessor)) )
+            {
+                type = type.BaseType;
+            }
+
+            return _proxyGenerator.CreateClassProxy(type, _proxyGenerationOptions);
+        }
+
+
+        public override bool CanCreate(Type type)
+        {
+            return !(
+                type.IsDynamic() ||
+                type.IsFrameworkType() ||
+                type.InheritsOrImplements<IEnumerable>() ||
+                !type.Properties().Any(e => e.GetGetMethod().IsVirtual)
+            );
+        }
+
+    }
+
+    interface IFieldInterceptor : IInterceptor
+    {
+        Boolean InterceptCollections { get; }
+    }
+
+    class InterceptorSelector : IInterceptorSelector
+    {
+        private readonly IFieldInterceptor[] _interceptors;
+
+        public InterceptorSelector(params IFieldInterceptor[] interceptors)
+        {
+            _interceptors = interceptors;
+        }
+
+        public IInterceptor[] SelectInterceptors(Type type, MethodInfo method, IInterceptor[] interceptors)
+        {
+            var isCollection =
+                IsCollectionReturnType(method) ||
+                IsCollectionParameterType(method);
+
+            return _interceptors
+                .Where(e => e.InterceptCollections == isCollection)
+                .Cast<IInterceptor>()
+                .ToArray();
+        }
+
+        private static bool IsCollectionParameterType(MethodInfo method)
+        {
+            return method.Name.StartsWith("set_") &&
+                   method.Parameters().First().ParameterType.GetGenericArguments().Any();
+        }
+
+        private static bool IsCollectionReturnType(MethodInfo method)
+        {
+            return method.Name.StartsWith("get_") && method.ReturnType.IsGenericType;
+        }
+    }
+
+    abstract class FieldInterceptorBase : IFieldInterceptor
+    {
+
+        /// <summary>
+        /// The semanthics of this type if the following:
+        /// A value is loaded when the counter is bigger than 1. (set once by the mapper, and another by the lazy load)
+        /// </summary>
+        internal class PropertyValue
+        {
+            private Object _value;
+
+            public Object Value
+            {
+                get
+                {
+                    return _value;
+                }
+                set
+                {
+                    if ( !IsLoaded )
+                    {
+                        ++SettedCount;
+                    }
+                    _value = value;
+                }
+            }
+
+            public int SettedCount { get; set; }
+
+            public Boolean IsLoaded
+            {
+                get
+                {
+                    return SettedCount > 1;
+                }
+                set
+                {
+                    SettedCount = value ? 2 : 1;
+                }
+            }
+        }
+
+        public static int Typecount = 0;
+        private readonly IDictionary<MethodInfo, PropertyValue> _properties = new Dictionary<MethodInfo, PropertyValue>();
+
+        protected FieldInterceptorBase(Boolean interceptCollections)
+        {
+            InterceptCollections = interceptCollections;
+            ++Typecount;
+        }
+
+        public Boolean InterceptCollections { get; private set; }
+
+        public void Intercept(IInvocation invocation)
+        {
+            invocation.Proceed();
+
+            var method = invocation.Method;
+
+            if ( method.Name.StartsWith("set_") )
+            {
+                HandleSetter(method, invocation);
+            }
+            else
+            {
+                if ( method.Name.StartsWith("get_") )
+                {
+                    HandleGetter(method, invocation);
+                }
+            }
+        }
+
+        private void HandleSetter(MethodInfo method, IInvocation invocation)
+        {
+            var getter = invocation.TargetType.GetMethod("g" + method.Name.Remove(0, 1));
+
+            PropertyValue propValue;
+            if ( _properties.TryGetValue(getter, out propValue) )
+            {
+                propValue.Value = invocation.GetArgumentValue(0);
+                return;
+            }
+
+            _properties[getter] = new PropertyValue
+            {
+                Value = invocation.GetArgumentValue(0),
+
+                IsLoaded = InterceptCollections
+            };
+        }
+
+        private void HandleGetter(MethodInfo method, IInvocation invocation)
+        {
+            PropertyValue propValue;
+            if ( _properties.TryGetValue(method, out propValue) && propValue.IsLoaded )
+            {
+                invocation.ReturnValue = propValue.Value;
+                return;
+            }
+
+            var value = GetFieldValue(method, invocation);
+
+            if ( propValue == null )
+            {
+                propValue = _properties[method] = new PropertyValue
+                {
+                    IsLoaded = InterceptCollections
+                };
+            }
+
+            propValue.Value = invocation.ReturnValue = value;
+        }
+
+        /// <summary>
+        /// Gets the field value.
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <param name="invocation">The invocation.</param>
+        /// <returns></returns>
+        protected abstract object GetFieldValue(MethodInfo method, IInvocation invocation);
+    }
+
+    class NonCollectionInterceptor : FieldInterceptorBase
+    {
+        private readonly ISession _session;
+        private readonly MethodInfo _methodInfo;
+
+        public NonCollectionInterceptor(ISession session)
+            : base(false)
+        {
+            _methodInfo = typeof(ISession).Method("GetById");
+            _session = session;
+        }
+
+        protected override object GetFieldValue(MethodInfo method, IInvocation invocation)
+        {
+            var genericMethod = _methodInfo
+                .MakeGenericMethod(method.ReturnType);
+
+            return genericMethod.Invoke(_session, new[] { invocation.ReturnValue });
+        }
+    }
+
+    class CollectionPropertyInterceptor : FieldInterceptorBase
+    {
+        private static readonly MethodInfo ProxyGenericIteratorMethod =
+            typeof(CollectionPropertyInterceptor)
+                .GetMethod(
+                    "ProxyGenericIterator",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+
+        private static readonly MethodInfo SessionGenericGetAllMethod =
+            typeof(ISession)
+                .GetMethod(
+                    "GetAll",
+                    BindingFlags.Public | BindingFlags.Instance);
+
+        private readonly ISession _session;
+        private readonly IMapper _mapper;
+
+        public CollectionPropertyInterceptor(ISession session, IMapper mapper)
+            : base(true)
+        {
+            _mapper = mapper;
+            _session = session;
+        }
+
+
+// ReSharper disable once UnusedMember.Local
+        private static IEnumerable<T> ProxyGenericIterator<T>(IEnumerable enumerable)
+        {
+            return ProxyNonGenericIterator(enumerable).Cast<T>();
+        }
+
+        private static IEnumerable ProxyNonGenericIterator(IEnumerable enumerable)
+        {
+            return enumerable.Cast<object>();
+        }
+
+        private object BuildWhereClause(IInvocation invocation, Type entityType, IQueryable result, IEntityInfo foreignTable, IEntityInfo callerTable)
+        {
+            var parameter = Expression.Parameter(entityType, "e");
+            BinaryExpression last = null;
+
+            foreach ( var key in callerTable.KeyColumns )
+            {
+                var foreignField = foreignTable.ForeignKeys
+                    .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
+
+                if ( foreignField != null )
+                {
+                    var value = Expression.Constant(
+                        key.GetFieldFinalValue(invocation.InvocationTarget), key.Property.PropertyType);
+
+                    var member = Expression.Property(parameter, foreignField.Property);
+
+                    member = CreateFullMemberAccess(member, foreignField);
+
+                    if ( last == null )
+                    {
+                        last = Expression.Equal(member, value);
+                    }
+                    else
+                    {
+                        var equal = Expression.Equal(member, value);
+                        last = Expression.AndAlso(last, equal);
+                    }
+                }
+            }
+
+            if ( last == null )
+            {
+                throw new VirtualObjectsException("Unable to bind the collection to any key field on {0}.", callerTable.EntityName);
+            }
+
+            var where = Expression.Call(null,
+            typeof(CollectionPropertyInterceptor).GetMethod("Where").MakeGenericMethod(entityType),
+                Expression.Constant(result),
+                Expression.Lambda(last, parameter)
+            );
+
+            result = result.Provider.CreateQuery(where);
+
+            return result;
+        }
+
+        protected override object GetFieldValue(MethodInfo method, IInvocation invocation)
+        {
+            Debug.Assert(method.ReturnParameter != null, "method.ReturnParameter != null");
+
+            var entityType = method.ReturnParameter.ParameterType.GetGenericArguments().First();
+
+            var methodIterator = ProxyGenericIteratorMethod.MakeGenericMethod(entityType);
+
+            var me = SessionGenericGetAllMethod.MakeGenericMethod(entityType);
+
+            var baseQuery = (IQueryable)methodIterator.Invoke(null, new[]
+            {
+                invocation.InvocationTarget,
+                me.Invoke(_session, new Object[] { })
+            });
+
+            // The generic type collection table representation.
+            var foreignTable = _mapper.Map(entityType);
+
+            // The table representation of the caller.
+            var callerTable = _mapper.Map(invocation.Method.ReflectedType);
+            
+            return BuildWhereClause(invocation, entityType, baseQuery, foreignTable, callerTable);
+        }
+
+        public static IQueryable<T> Where<T>(object query, Object lambda)
+        {
+            return null;
+        }
+
+        private MemberExpression CreateFullMemberAccess(MemberExpression member, IEntityColumnInfo foreignField)
+        {
+            if ( foreignField == null || foreignField.ForeignKey == null )
+            {
+                return member;
+            }
+
+            return CreateFullMemberAccess(Expression.Property(member, foreignField.ForeignKey.Property), foreignField.ForeignKey);
+        }
+    }
+}

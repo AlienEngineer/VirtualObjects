@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 
 namespace VirtualObjects
@@ -60,7 +59,6 @@ namespace VirtualObjects
         {
             session.KeepAlive<Object>(() => { execute(); return null; });
         }
-
 
         /// <summary>
         /// Queries the session returning a query of TEntity.

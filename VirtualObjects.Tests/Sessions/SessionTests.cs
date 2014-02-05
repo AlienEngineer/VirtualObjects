@@ -94,12 +94,12 @@ namespace VirtualObjects.Tests.Sessions
         {
             using ( var session = CreateSession() )
             {
-		var employee = session.GetById(new Employee { EmployeeId = 1 });
-		var reportsTo = Diagnostic.Timed(() => employee.ReportsTo);
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
+                var reportsTo = Diagnostic.Timed(() => employee.ReportsTo);
 
-		reportsTo.Should().NotBeNull();
-		reportsTo.EmployeeId.Should().Be(2);
-		reportsTo.LastName.Should().Be("");
+                reportsTo.Should().NotBeNull();
+                reportsTo.EmployeeId.Should().Be(2);
+                reportsTo.LastName.Should().Be("");
             }
         }
 
@@ -108,11 +108,11 @@ namespace VirtualObjects.Tests.Sessions
         {
             using ( var session = CreateSession() )
             {
-		var employee = session.GetById(new Employee { EmployeeId = 1 });
-		var territories = Diagnostic.Timed(() => employee.Territories).ToList();
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
+                var territories = Diagnostic.Timed(() => employee.Territories).ToList();
 
-		territories.Should().NotBeNull();
-		territories.Count.Should().Be(2);
+                territories.Should().NotBeNull();
+                territories.Count.Should().Be(2);
             }
         }
 

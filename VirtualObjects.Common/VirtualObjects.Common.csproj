@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>..\packages\Castle.Core.3.2.2\lib\net40-client\Castle.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Fasterflect">
       <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
     </Reference>
@@ -51,6 +54,7 @@
     <Compile Include="EntityProvider\DynamicTypeProvider.cs" />
     <Compile Include="EntityProvider\EntityModelProvider.cs" />
     <Compile Include="EntityProvider\EntityProviderComposite.cs" />
+    <Compile Include="EntityProvider\ProxyEntityProvider.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Errors.Designer.cs">
       <AutoGen>True</AutoGen>
