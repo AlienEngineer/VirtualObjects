@@ -123,5 +123,17 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
+        [Test, Repeat(Repeat)]
+        public  void Session_Queries_tests()
+        {
+            using(var session = CreateSession())
+            {
+                session.Query<Employee>().ToList();
+                session.Query<Employee>().Where(e => e.EmployeeId == 1).Take(10).Skip(20).ToList();
+                session.Query<Employee>().Where(e => e.LastName.StartsWith("wow")).Skip(1).ToList();
+                session.Query<Employee>().Union(session.Query<Employee>()).Where(e => e.EmployeeId == 10).ToList();
+            }
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using VirtualObjects.Queries.Annotations;
 using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
