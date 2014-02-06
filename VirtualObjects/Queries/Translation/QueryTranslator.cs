@@ -199,7 +199,7 @@ namespace VirtualObjects.Queries.Translation
                 CommandText = Merge(buffer),
                 Parameters = Parameters,
                 PredicatedColumns = buffer.PredicatedColumns,
-                OutputType = OutputType
+                OutputType = OutputType ?? queryable.ElementType
             };
         }
 
