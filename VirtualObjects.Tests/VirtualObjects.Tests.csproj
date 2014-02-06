@@ -90,6 +90,7 @@
     <Compile Include="Queries\QueryAggregateFunctionsTests.cs" />
     <Compile Include="Queries\QueryMappingTests.cs" />
     <Compile Include="Queries\SqlTranslationTests.cs" />
+    <Compile Include="Sessions\EntitiesAsserts.cs" />
     <Compile Include="Sessions\SessionTests.cs" />
     <Compile Include="UtilityBelt.cs" />
   </ItemGroup>

@@ -71,5 +71,40 @@ namespace VirtualObjects
             return session.GetAll<TEntity>();
         }
 
+        public static int Count<TEntity>(this ISession session) where TEntity : class, new()
+        {
+            return session.GetAll<TEntity>().Count();
+        }
+
+        public static Boolean Exists<TEntity>(this ISession session, TEntity entity) where TEntity : class, new()
+        {
+            return session.GetById(entity) != null;
+        }
+
+        public static TResult WithRollback<TResult>(this ISession session, Func<TResult> execute)
+        {
+            var transaction = session.BeginTransaction();
+            try
+            {
+                return execute();
+            }
+            catch ( Exception )
+            {
+                transaction.Rollback();
+                throw;
+            }
+            finally
+            {
+                transaction.Rollback();
+            }
+        }
+
+        public static void WithRollback(this ISession session, Action execute)
+        {
+            session.WithRollback<Object>(() =>
+            {
+                execute(); return null;
+            });
+        }
     }
 }
