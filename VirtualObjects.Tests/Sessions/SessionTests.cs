@@ -30,7 +30,7 @@ namespace VirtualObjects.Tests.Sessions
         public void Session_Should_Be_Created_And_Disposed()
         {
 
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
 
             }
@@ -41,9 +41,9 @@ namespace VirtualObjects.Tests.Sessions
         public void Session_Transaction_Should_Be_Created_And_Disposed()
         {
 
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
-                using ( var transaction = session.BeginTransaction() )
+                using (var transaction = session.BeginTransaction())
                 {
 
 
@@ -55,7 +55,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Crud_Operations()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 session.WithinTransaction(() =>
                 {
@@ -83,7 +83,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Queries()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = Diagnostic.Timed(() => session.Query<Employee>().Where(e => e.EmployeeId > 0).ToList());
                 employees.Count.Should().Be(9);
@@ -93,7 +93,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Entity_Lazy_Load()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employee = session.GetById(new Employee { EmployeeId = 1 });
                 var reportsTo = Diagnostic.Timed(() => employee.ReportsTo);
@@ -107,7 +107,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Collection_Fields_Lazy_Load()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employee = session.GetById(new Employee { EmployeeId = 1 });
                 var territories = Diagnostic.Timed(() => employee.Territories).ToList();
@@ -127,7 +127,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>();
 
@@ -138,12 +138,12 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAllEmployees()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>();
                 var i = 0;
 
-                foreach ( Employee employee in employees )
+                foreach (Employee employee in employees)
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     ++i;
@@ -156,12 +156,12 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAllEmployees1()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>();
                 var i = 0;
 
-                foreach ( Employee employee in employees )
+                foreach (Employee employee in employees)
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     ++i;
@@ -174,14 +174,14 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAllEmployees_Projected()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Select(e => new { e.EmployeeId, e.City, e.Country });
 
                 var i = 0;
 
-                foreach ( var employee in employees )
+                foreach (var employee in employees)
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     Assert.That(employee.City, Is.Not.Null);
@@ -196,14 +196,14 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAllEmployees_Projected1()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Select(e => new { e.EmployeeId, e.City, e.Country });
 
                 var i = 0;
 
-                foreach ( var employee in employees )
+                foreach (var employee in employees)
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     Assert.That(employee.City, Is.Not.Null);
@@ -223,7 +223,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAllEmployees_ReportsTo()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>();
                 var reportsTo = employees.ToList().Select(employee => employee.ReportsTo).ToList();
@@ -238,13 +238,13 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_Employees_From_Orders()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Where(e => session.GetAll<Orders>()
                         .Select(o => o.Employee.EmployeeId)
                         .Contains(e.ReportsTo.EmployeeId));
-                    
+
 
                 Assert.AreEqual(9, employees.Count());
             }
@@ -253,13 +253,13 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_Employees_From_Orders_Simpler()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Where(e => session.GetAll<Orders>()
                         .Select(o => o.Employee)
                         .Contains(e.ReportsTo));
-                
+
                 Assert.AreEqual(9, employees.Count());
             }
         }
@@ -267,7 +267,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_Employees_From_Orders_Count_Twice()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Where(e => session.GetAll<Orders>()
@@ -284,13 +284,13 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_Shippers_From_Orders()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var shippers = session.GetAll<Shippers>()
                     .Where(e => session.GetAll<Orders>()
                         .Select(o => o.Shipper.ShipperId)
                         .Contains(e.ShipperId));
-                
+
                 Assert.AreEqual(3, shippers.Count());
             }
         }
@@ -298,7 +298,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_Orders_Skip_Take()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var orders = session.GetAll<Orders>()
                     .Where(e => e.OrderId > 10)
@@ -311,7 +311,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_Orders_With_Specific_Shippers()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var orders = session.GetAll<Orders>()
                     .Where(e => session.GetAll<Shippers>()
@@ -326,7 +326,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_Orders_With_Specific_Shippers_Simpler()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var orders = session.GetAll<Orders>()
                    .Where(e => session.GetAll<Shippers>()
@@ -340,7 +340,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAllOrders()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Orders>();
 
@@ -351,7 +351,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_WhereCondition_ShouldBeKept_ByResult()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var query1 = session.GetAll<Employee>()
                     .Where(m => m.EmployeeId > 4);
@@ -376,7 +376,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_LikeCondition()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Where(e => e.LastName.Contains("an"));
@@ -388,7 +388,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_LikeCondition_Left()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Where(e => e.LastName.StartsWith("d"));
@@ -400,7 +400,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_OrderedByFirstName()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employee = session
                     .GetAll<Employee>().OrderBy(e => e.FirstName)
@@ -413,7 +413,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Count_Predicated()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 Assert.That(session.GetAll<Products>().Count(e => e.Discontinued), Is.EqualTo(8));
                 Assert.That(session.GetAll<Products>().Count(e => !e.Discontinued), Is.EqualTo(69));
@@ -434,7 +434,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_ToString_Method()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var foo = new
                 {
@@ -458,7 +458,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_Enum_ToString_Method()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>().Where(e => e.FirstName == Testing.Andrew.ToString());
 
@@ -469,7 +469,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_New_Object()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Where(e => e.BirthDate == new DateTime(1948, 12, 8));
@@ -481,7 +481,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetEmployeeList_ReportsToFilter()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees1 = session
                     .GetAll<Employee>().Where(e => e.ReportsTo.FirstName == "Andrew");
@@ -500,7 +500,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetEmployee_ReportsTo_First()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 EntitiesAsserts.Assert_Employee_1(session
                     .GetAll<Employee>()
@@ -511,7 +511,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_OrderedByFirstName_TSql()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employee = session
                     .GetAll<Employee>().OrderBy(e => e.FirstName)
@@ -524,7 +524,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_OrderedByCity_Descending()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employee2 = session
                     .GetAll<Employee>()
@@ -546,7 +546,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_QueryWith_OrCondition()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session
                     .GetAll<Employee>()
@@ -563,7 +563,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_MoreComplexQuery2()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees =
                     session.GetAll<Employee>().Where(e => e.LastName.Contains("r") || e.LastName.Contains("a"));
@@ -575,7 +575,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_MoreComplexQuery()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session
                     .GetAll<Employee>()
@@ -589,7 +589,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_withConditionExpression()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var id = 1;
                 var employees = session
@@ -629,7 +629,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_Between()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Where(m => m.EmployeeId >= 1 && m.EmployeeId <= 5);
@@ -638,10 +638,11 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
+        // TODO: Investigate a way to achieve this. Not being able to get collection variable from constant.
         [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Session_GetAll_In_using_collection()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var collection = session.GetAll<Employee>()
                     .Where(m => m.EmployeeId <= 5);
@@ -656,7 +657,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_In_using_collection_SameNames()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employee = session.GetById(new Employee { EmployeeId = 5 });
 
@@ -673,7 +674,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_In_using_collection_diffNames()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var orders = session.GetAll<Orders>()
                     .Where(o => session.GetAll<Shippers>().Where(s => s.ShipperId == 2).Contains(o.Shipper))
@@ -686,7 +687,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetAll_withConditionExpression_IdConst()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session
                     .GetAll<Employee>().Where(m => m.EmployeeId == 1);
@@ -698,7 +699,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Count()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 Assert.AreEqual(9, session.Count<Employee>());
             }
@@ -707,9 +708,9 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_GetById()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
-                using ( var s = CreateSession() )
+                using (var s = CreateSession())
                 {
                     var employee1 = s.GetById(new Employee { EmployeeId = 1 });
 
@@ -727,11 +728,11 @@ namespace VirtualObjects.Tests.Sessions
         {
             using (var session = CreateSession())
             {
-                Assert.IsTrue(session.Exists(new Employee {EmployeeId = 1}));
-                Assert.IsTrue(session.Exists(new Employee {EmployeeId = 2}));
-                Assert.IsTrue(session.Exists(new Employee {EmployeeId = 3}));
+                Assert.IsTrue(session.Exists(new Employee { EmployeeId = 1 }));
+                Assert.IsTrue(session.Exists(new Employee { EmployeeId = 2 }));
+                Assert.IsTrue(session.Exists(new Employee { EmployeeId = 3 }));
 
-                Assert.IsFalse(session.Exists(new Employee {EmployeeId = 123123}));
+                Assert.IsFalse(session.Exists(new Employee { EmployeeId = 123123 }));
             }
         }
 
@@ -741,7 +742,7 @@ namespace VirtualObjects.Tests.Sessions
             using (var session = CreateSession())
             {
                 var employee = session.GetById(
-                    new Employee {EmployeeId = 1});
+                    new Employee { EmployeeId = 1 });
 
                 EntitiesAsserts.Assert_Employee_2(employee.ReportsTo);
                 EntitiesAsserts.Assert_Employee_1(employee.ReportsTo.ReportsTo);
@@ -756,7 +757,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             using (var session = CreateSession())
             {
-                var employee = session.GetById(new Employee {EmployeeId = 1});
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
 
                 Assert.That(employee.Territories.Count(), Is.EqualTo(2));
             }
@@ -767,7 +768,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             using (var session = CreateSession())
             {
-                var employee = session.GetById(new Employee {EmployeeId = 1});
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
 
                 Assert.That(employee.Territories.Any(), Is.True);
             }
@@ -783,7 +784,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             using (var session = CreateSession())
             {
-                var employee = session.GetById(new Employee {EmployeeId = 1});
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
 
                 Assert.That(employee.Territories.Any(e => e.Territories.TerritoryId == "06897"), Is.True);
             }
@@ -794,7 +795,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             using (var session = CreateSession())
             {
-                var employee = session.GetById(new Employee {EmployeeId = 1});
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
 
                 Assert.That(employee.Territories.Where(e => e.Territories.TerritoryId == "06897").Count(), Is.EqualTo(1));
             }
@@ -806,7 +807,7 @@ namespace VirtualObjects.Tests.Sessions
             using (var session = CreateSession())
             {
                 var employee = session.GetById(
-                    new Employee {EmployeeId = 1});
+                    new Employee { EmployeeId = 1 });
 
                 Assert.That(employee.Territories.Count(e => e.Territories.TerritoryId == "06897"), Is.EqualTo(1));
             }
@@ -818,9 +819,9 @@ namespace VirtualObjects.Tests.Sessions
             using (var session = CreateSession())
             {
                 var employee = session.GetById(
-                    new Employee {EmployeeId = 1});
+                    new Employee { EmployeeId = 1 });
 
-                var territories = new Territories {TerritoryId = "06897"};
+                var territories = new Territories { TerritoryId = "06897" };
 
                 Assert.That(
                     employee.Territories.Count(e => e.Territories == territories),
@@ -834,10 +835,10 @@ namespace VirtualObjects.Tests.Sessions
             using (var session = CreateSession())
             {
                 var employee = session.GetById(
-                    new Employee {EmployeeId = 1});
+                    new Employee { EmployeeId = 1 });
 
                 Assert.That(
-                    employee.Territories.Count(e => e.Territories == new Territories {TerritoryId = "06897"}),
+                    employee.Territories.Count(e => e.Territories == new Territories { TerritoryId = "06897" }),
                     Is.EqualTo(1));
             }
         }
@@ -847,7 +848,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             using (var session = CreateSession())
             {
-                var employee = session.GetById(new Employee {EmployeeId = 1});
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
 
                 employee.Territories = session.GetAll<EmployeeTerritories>();
 
@@ -862,7 +863,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             using (var session = CreateSession())
             {
-                var employee = session.GetById(new Employee {EmployeeId = 1});
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
 
                 var reportsTo = session.GetById(employee.ReportsTo);
 
@@ -908,8 +909,7 @@ namespace VirtualObjects.Tests.Sessions
                     session.Delete(sergio);
 
                     Assert.AreEqual(count, session.GetAll<Employee>().Count());
-                }
-                    );
+                });
             }
         }
 
@@ -944,8 +944,8 @@ namespace VirtualObjects.Tests.Sessions
             using (var session = CreateSession())
             {
                 var orders = from o in session.GetAll<Orders>()
-                    join od in session.GetAll<OrderDetails>() on o equals od.Order
-                    select new {Order = o, OrderDetail = od};
+                             join od in session.GetAll<OrderDetails>() on o equals od.Order
+                             select new { Order = o, OrderDetail = od };
 
                 foreach (var order in orders)
                 {
@@ -966,9 +966,9 @@ namespace VirtualObjects.Tests.Sessions
             using (var session = CreateSession())
             {
                 var orders = from o in session.GetAll<Orders>()
-                    join od in session.GetAll<OrderDetails>() on o equals od.Order
-                    join e in session.GetAll<Employee>() on o.Employee equals e
-                    select new {Order = o, OrderDetail = od, Employee = e};
+                             join od in session.GetAll<OrderDetails>() on o equals od.Order
+                             join e in session.GetAll<Employee>() on o.Employee equals e
+                             select new { Order = o, OrderDetail = od, Employee = e };
 
                 foreach (var order in orders)
                 {
@@ -989,8 +989,8 @@ namespace VirtualObjects.Tests.Sessions
             using (var session = CreateSession())
             {
                 var orders = from o in session.GetAll<Orders>()
-                    join od in session.GetAll<OrderDetails>() on o equals od.Order into god
-                    select new {Order = o, OrderDetails = god};
+                             join od in session.GetAll<OrderDetails>() on o equals od.Order into god
+                             select new { Order = o, OrderDetails = god };
 
                 int i = 0;
 
@@ -1015,8 +1015,8 @@ namespace VirtualObjects.Tests.Sessions
             using (var session = CreateSession())
             {
                 var orders = from o in session.GetAll<Orders>()
-                    join od in session.GetAll<OrderDetails>() on o equals od.Order
-                    select new {o.OrderId, od.Quantity, od.UnitPrice, o.OrderDate};
+                             join od in session.GetAll<OrderDetails>() on o equals od.Order
+                             select new { o.OrderId, od.Quantity, od.UnitPrice, o.OrderDate };
 
                 var i = 0;
 
