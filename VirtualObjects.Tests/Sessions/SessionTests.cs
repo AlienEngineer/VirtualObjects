@@ -709,12 +709,11 @@ namespace VirtualObjects.Tests.Sessions
         {
             using ( var session = CreateSession() )
             {
-                using ( var s = new Session() )
+                using ( var s = CreateSession() )
                 {
                     var employee1 = s.GetById(new Employee { EmployeeId = 1 });
-                    var employee2 = s.GetById(new Employee { EmployeeId = 1 });
 
-                    Assert.That(employee1, Is.SameAs(employee2));
+                    EntitiesAsserts.Assert_Employee_1(employee1);
                 }
 
                 var employee = session.GetById(new Employee { EmployeeId = 1 });
