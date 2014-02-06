@@ -256,6 +256,11 @@ namespace VirtualObjects.Queries.Translation
         {
             var queryable = ExtractQueryable(expression);
 
+            if (queryable == null)
+            {
+                throw new TranslationException("\nUnable to extract the query from expression.");
+            }
+
             return TranslateQuery(new QueryableStub(queryable.ElementType, expression));
         }
 
@@ -1014,7 +1019,15 @@ namespace VirtualObjects.Queries.Translation
                     break;
 
                 case ExpressionType.Call:
-                    CompileCallPredicate((MethodCallExpression)expression, buffer);
+                    var callExpression = (MethodCallExpression)expression;
+
+                    if (callExpression.Object != null)
+                    {
+                        CompileConstant(Expression.Constant(Expression.Lambda(callExpression).Compile().DynamicInvoke()), buffer);
+                        return;
+                    }
+
+                    CompileCallPredicate(callExpression, buffer);
                     break;
 
                 case ExpressionType.Convert:
@@ -1061,8 +1074,16 @@ namespace VirtualObjects.Queries.Translation
             }
 
             var newTranslator = CreateNewTranslator();
+            IQueryInfo result;
 
-            var result = newTranslator.TranslateQuery(expression.Arguments.First());
+            try
+            {
+                result = newTranslator.TranslateQuery(expression.Arguments.First());
+            }
+            catch (TranslationException ex)
+            {
+                throw new TranslationException("\nUnable to compile nested query.", ex);
+            }
 
             CompileMemberAccess(expression.Arguments[1], buffer);
 
@@ -1532,7 +1553,7 @@ namespace VirtualObjects.Queries.Translation
             var constant = ExtractConstant(expression) as ConstantExpression;
             if ( constant != null )
             {
-                return constant.Value as IQueryable;
+                return ParseValue(constant) as IQueryable;
             }
 
             throw new TranslationException(Errors.Translation_UnableToExtractQueryable);

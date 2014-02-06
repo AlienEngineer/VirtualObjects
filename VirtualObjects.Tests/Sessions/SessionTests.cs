@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using VirtualObjects.Exceptions;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions
@@ -21,7 +22,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             return new Session(new SessionConfiguration
             {
-                //   Logger = Console.Out
+                Logger = Console.Out
             }, "northwind");
         }
 
@@ -637,7 +638,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test, Repeat(Repeat)]
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Session_GetAll_In_using_collection()
         {
             using ( var session = CreateSession() )
