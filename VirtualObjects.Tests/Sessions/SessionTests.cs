@@ -22,7 +22,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             return new Session(new SessionConfiguration
             {
-                Logger = Console.Out
+                // Logger = Console.Out
             }, "northwind");
         }
 

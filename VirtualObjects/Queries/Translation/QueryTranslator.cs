@@ -152,18 +152,7 @@ namespace VirtualObjects.Queries.Translation
 
         public IEntityInfo EntityInfo { get; set; }
 
-        public Type OutputType
-        {
-            get { return _outputType; }
-            set
-            {
-                if ( _outputType != null )
-                {
-                    return;
-                }
-                _outputType = value;
-            }
-        }
+        public Type OutputType { get; set; }
 
         /// <summary>
         /// Translates the query.
@@ -1819,7 +1808,6 @@ namespace VirtualObjects.Queries.Translation
         }
 
         private readonly Stack<String> _predicates = new Stack<string>();
-        private Type _outputType;
 
         private void SafePredicate(CompilerBuffer buffer)
         {

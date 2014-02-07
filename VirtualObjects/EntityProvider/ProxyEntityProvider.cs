@@ -22,17 +22,18 @@ namespace VirtualObjects.EntityProvider
             _proxyGenerator = proxyGenerator;
         }
 
-        internal ProxyEntityProvider() : this(new ProxyGenerator())
+        internal ProxyEntityProvider()
+            : this(new ProxyGenerator())
         {
-            
+
         }
 
         public override object CreateEntity(Type type)
         {
             Debug.Assert(type != null, "type != null");
 
-// ReSharper disable once PossibleNullReferenceException
-            while ( type.GetInterfaces().Contains(typeof(IProxyTargetAccessor)) )
+            // ReSharper disable once PossibleNullReferenceException
+            while (type.GetInterfaces().Contains(typeof(IProxyTargetAccessor)))
             {
                 type = type.BaseType;
             }
@@ -46,7 +47,7 @@ namespace VirtualObjects.EntityProvider
             if (type.IsDynamic()) return false;
             if (type.IsFrameworkType()) return false;
             if (type.InheritsOrImplements<IEnumerable>()) return false;
-            
+
             return (type.Properties().Any(e => e.GetGetMethod().IsVirtual));
         }
 
@@ -129,13 +130,13 @@ namespace VirtualObjects.EntityProvider
 
             var method = invocation.Method;
 
-            if ( method.Name.StartsWith("set_") )
+            if (method.Name.StartsWith("set_"))
             {
                 HandleSetter(method, invocation);
             }
             else
             {
-                if ( method.Name.StartsWith("get_") )
+                if (method.Name.StartsWith("get_"))
                 {
                     HandleGetter(method, invocation);
                 }
@@ -147,24 +148,25 @@ namespace VirtualObjects.EntityProvider
             var getter = invocation.TargetType.GetMethod("g" + method.Name.Remove(0, 1));
 
             PropertyValue propValue;
-            if ( _properties.TryGetValue(getter, out propValue) )
+            if (_properties.TryGetValue(getter, out propValue))
             {
                 propValue.Value = invocation.GetArgumentValue(0);
+                propValue.SettedCount++;
                 return;
             }
 
             _properties[getter] = new PropertyValue
             {
                 Value = invocation.GetArgumentValue(0),
-
-                IsLoaded = false
+                SettedCount = 1,
+                IsLoaded = InterceptCollections
             };
         }
 
         private void HandleGetter(MethodInfo method, IInvocation invocation)
         {
             PropertyValue propValue;
-            if ( _properties.TryGetValue(method, out propValue) && propValue.IsLoaded )
+            if (_properties.TryGetValue(method, out propValue) && propValue.IsLoaded)
             {
                 invocation.ReturnValue = propValue.Value;
                 return;
@@ -172,7 +174,7 @@ namespace VirtualObjects.EntityProvider
 
             var value = GetFieldValue(method, invocation);
 
-            if ( propValue == null )
+            if (propValue == null)
             {
                 _properties[method] = new PropertyValue
                 {
@@ -222,7 +224,7 @@ namespace VirtualObjects.EntityProvider
         private static readonly MethodInfo SessionGenericGetAllMethod =
             typeof(ISession).GetMethod("GetAll", BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly MethodInfo WhereMethod = 
+        private static readonly MethodInfo WhereMethod =
             typeof(CollectionPropertyInterceptor).GetMethod("Where");
 
         private readonly ISession _session;
@@ -236,7 +238,7 @@ namespace VirtualObjects.EntityProvider
         }
 
 
-// ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedMember.Local
         private static IEnumerable<T> ProxyGenericIterator<T>(object target, IEnumerable enumerable)
         {
             return ProxyNonGenericIterator(target, enumerable).Cast<T>();
@@ -252,12 +254,12 @@ namespace VirtualObjects.EntityProvider
             var parameter = Expression.Parameter(entityType, "e");
             BinaryExpression last = null;
 
-            foreach ( var key in callerTable.KeyColumns )
+            foreach (var key in callerTable.KeyColumns)
             {
                 var foreignField = foreignTable.ForeignKeys
                     .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
 
-                if ( foreignField != null )
+                if (foreignField != null)
                 {
                     var value = Expression.Constant(
                         key.GetFieldFinalValue(invocation.InvocationTarget), key.Property.PropertyType);
@@ -266,7 +268,7 @@ namespace VirtualObjects.EntityProvider
 
                     member = CreateFullMemberAccess(member, foreignField);
 
-                    if ( last == null )
+                    if (last == null)
                     {
                         last = Expression.Equal(member, value);
                     }
@@ -278,12 +280,12 @@ namespace VirtualObjects.EntityProvider
                 }
             }
 
-            if ( last == null )
+            if (last == null)
             {
-                throw new VirtualObjectsException(Errors.Configuration_UnableToBindCollection, new { callerTable.EntityName});
+                throw new VirtualObjectsException(Errors.Configuration_UnableToBindCollection, new { callerTable.EntityName });
             }
 
-            
+
             var where = Expression.Call(null,
             WhereMethod.MakeGenericMethod(entityType),
                 Expression.Constant(result),
@@ -316,7 +318,7 @@ namespace VirtualObjects.EntityProvider
 
             // The table representation of the caller.
             var callerTable = _mapper.Map(invocation.Method.ReflectedType);
-            
+
             return BuildWhereClause(invocation, entityType, baseQuery, foreignTable, callerTable);
         }
 
@@ -327,7 +329,7 @@ namespace VirtualObjects.EntityProvider
 
         private MemberExpression CreateFullMemberAccess(MemberExpression member, IEntityColumnInfo foreignField)
         {
-            if ( foreignField == null || foreignField.ForeignKey == null )
+            if (foreignField == null || foreignField.ForeignKey == null)
             {
                 return member;
             }
