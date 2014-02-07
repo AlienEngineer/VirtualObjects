@@ -341,8 +341,6 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            
-
             switch ( expression.Method.Name )
             {
                 case "Union":
@@ -1091,7 +1089,12 @@ namespace VirtualObjects.Queries.Translation
 
             try
             {
-                result = newTranslator.TranslateQuery(expression.Arguments.First());
+                Expression nestedExpression = expression.Arguments.First();
+                var queryable = ExtractQueryable(nestedExpression);
+                
+                nestedExpression = JoinExpressions(nestedExpression, queryable.Expression);
+
+                result = newTranslator.TranslateQuery(nestedExpression);
             }
             catch ( TranslationException ex )
             {
@@ -1107,6 +1110,30 @@ namespace VirtualObjects.Queries.Translation
             //
             // To be closed later on.
             buffer.Parenthesis++;
+        }
+
+        private Expression JoinExpressions(Expression nestedExpression, Expression expression)
+        {
+            if (expression == null)
+            {
+                return nestedExpression;
+            }
+
+            var callExpression = nestedExpression as MethodCallExpression;
+
+            if (callExpression == null)
+            {
+                return null;
+            }
+
+            var exp = JoinExpressions(callExpression.Arguments.First(), expression);
+
+            if (exp == null)
+            {
+                return Expression.Call(callExpression.Method, expression, callExpression.Arguments[1]);
+            }
+
+            return exp;
         }
 
         private void CompileNot(Expression expression, CompilerBuffer buffer)

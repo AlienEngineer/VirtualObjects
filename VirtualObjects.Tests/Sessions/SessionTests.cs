@@ -22,7 +22,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             return new Session(new SessionConfiguration
             {
-                // Logger = Console.Out
+                Logger = Console.Out
             }, "northwind");
         }
 
@@ -638,8 +638,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        // TODO: Investigate a way to achieve this. Not being able to get collection variable from constant.
-        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
+        [Test, Repeat(Repeat)]
         public void Session_GetAll_In_using_collection()
         {
             using (var session = CreateSession())
