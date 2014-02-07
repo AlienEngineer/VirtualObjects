@@ -235,7 +235,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test, Repeat(Repeat)]
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Session_GetAll_Employees_From_Orders()
         {
             using (var session = CreateSession())

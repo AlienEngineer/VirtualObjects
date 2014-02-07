@@ -118,6 +118,7 @@ namespace VirtualObjects.Queries.Translation
         private int _parameterCount = -1;
         private QueryTranslator _rootTranslator;
         private readonly IDictionary<ParameterExpression, QueryTranslator> _indexer;
+        private readonly Stack<String> _compileStack = new Stack<String>();
 
         public QueryTranslator(IFormatter formatter, IMapper mapper)
         {
@@ -325,6 +326,8 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
+            _compileStack.Push(expression.Method.Name);
+
             switch ( expression.Method.Name )
             {
                 case "Union":
@@ -390,6 +393,8 @@ namespace VirtualObjects.Queries.Translation
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
+
+            _compileStack.Pop();
         }
 
         private void CompileUnion(Expression expression, CompilerBuffer buffer, bool parametersOnly = false)
@@ -1149,6 +1154,11 @@ namespace VirtualObjects.Queries.Translation
             if ( member == null )
             {
                 throw new UnsupportedException(Errors.Internal_WrongMethodCall, expression);
+            }
+
+            if (_compileStack.Peek() == "Select" && HasManyMemberAccess(expression))
+            {
+                throw new TranslationException("\nMore than one member accessed in a projection.\nExpression: {Expression}", new { Expression = expression.ToString() });
             }
 
             if ( CompileIfConstant(expression, buffer) ) return;
