@@ -1090,6 +1090,7 @@ namespace VirtualObjects.Queries.Translation
             try
             {
                 Expression nestedExpression = expression.Arguments.First();
+                nestedExpression = BuildMissingProjection(nestedExpression, expression.Arguments[1] as MemberExpression);
                 var queryable = ExtractQueryable(nestedExpression);
                 
                 nestedExpression = JoinExpressions(nestedExpression, queryable.Expression);
@@ -1112,6 +1113,35 @@ namespace VirtualObjects.Queries.Translation
             buffer.Parenthesis++;
         }
 
+        private Expression BuildMissingProjection(Expression nestedExpression, MemberExpression arg1)
+        {
+            var callExpression = nestedExpression as MethodCallExpression;
+
+            if (arg1 == null || callExpression == null || callExpression.Method.Name == "Select" )
+            {
+                return null;
+            }
+
+            var foreignKey = EntityInfo[arg1.Member.Name];
+            var entityType = foreignKey.ForeignKey.EntityInfo.EntityType;
+
+            var method = typeof (Queryable)
+                .Methods(Flags.Static | Flags.StaticPublic, "Select")
+                .First(e => e.Parameters().Count == 2)
+                .MakeGenericMethod(entityType, foreignKey.ForeignKey.Property.PropertyType);
+            
+            return Expression.Call(method, nestedExpression,
+                Expression.MakeMemberAccess(Expression.Parameter(entityType),
+                    foreignKey.ForeignKey.Property)
+                );
+        }
+
+        /// <summary>
+        /// Joins the expressions when a query is passed via context capture.
+        /// </summary>
+        /// <param name="nestedExpression">The nested expression.</param>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
         private Expression JoinExpressions(Expression nestedExpression, Expression expression)
         {
             if (expression == null)
