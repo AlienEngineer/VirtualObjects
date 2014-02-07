@@ -1064,7 +1064,7 @@ namespace VirtualObjects.Queries.Translation
         {
             if ( expression.Method.Name != "Contains" )
             {
-                return;
+                throw new TranslationException("", expression.Method);
             }
 
             var newTranslator = CreateNewTranslator();
