@@ -32,6 +32,11 @@ public class Employee
    }
 ```
 
+
+### Why
+To improve myself and create something really easy to use with the best performance possible. This project started in college with ORMFramework and later VODB.
+
+
 ### Performance
 Verified on unit-tests using NUnit on a I7 intel 3.07Ghz 18Gb RAM.
 
