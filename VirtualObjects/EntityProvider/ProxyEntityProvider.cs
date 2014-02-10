@@ -153,6 +153,7 @@ namespace VirtualObjects.EntityProvider
             {
                 propValue.Value = invocation.GetArgumentValue(0);
                 propValue.SettedCount++;
+                propValue.IsLoaded = MappingStatus.InternalLoading;
                 return;
             }
 
