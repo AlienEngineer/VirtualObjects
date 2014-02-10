@@ -19,7 +19,7 @@ namespace VirtualObjects.Connections
         public NamedDbConnectionProvider(string connectionName)
             : base(null, null)
         {
-            _connectionName = connectionName;
+            _connectionName = connectionName ?? Environment.MachineName;
         }
 
         public override IDbConnection CreateConnection()

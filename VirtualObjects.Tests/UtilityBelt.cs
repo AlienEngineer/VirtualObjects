@@ -62,8 +62,6 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
-            
-
             Connection = new SqlConnection(@"
                       Data Source=(LocalDB)\v11.0;
                       AttachDbFilename=|DataDirectory|\northwnd.mdf;
@@ -84,7 +82,11 @@ namespace VirtualObjects.Tests
                 Mapper = Mapper,
                 QueryProvider =  QueryProvider
             };
+
+            Session = new Session(connectionName: "northwind");
         }
+
+        
 
         private IQueryProvider MakeQueryProvider()
         {
@@ -233,6 +235,7 @@ namespace VirtualObjects.Tests
             return builder;
         }
 
+        public Session Session { get; private set; }
         public IDbConnection Connection { get; private set; }
         public IMapper Mapper { get; private set; }
         public IQueryProvider QueryProvider { get; private set; }
