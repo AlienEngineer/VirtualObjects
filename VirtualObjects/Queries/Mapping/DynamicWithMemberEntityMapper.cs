@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Fasterflect;
 
 namespace VirtualObjects.Queries.Mapping
@@ -27,8 +26,9 @@ namespace VirtualObjects.Queries.Mapping
         {
             var setters = new List<MemberSetter>();
             var fieldCount = 0;
+            var fields = context.OutputType.Fields();
 
-            context.OutputType.Fields().ForEach(e =>
+            fields.ForEach(e =>
             {
 
                 if ( e.FieldType.IsFrameworkType() )

@@ -1001,6 +1001,7 @@ namespace VirtualObjects.Tests.Sessions
 
                     Assert.That(order.OrderDetails, Is.Not.Empty);
                     Assert.That(order.OrderDetails.Count(), Is.Not.EqualTo(2155));
+                    Assert.That(order.OrderDetails.First().Order.OrderId, Is.EqualTo(order.Order.OrderId));
                     ++i;
                 }
 

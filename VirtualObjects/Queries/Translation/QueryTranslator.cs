@@ -1119,7 +1119,7 @@ namespace VirtualObjects.Queries.Translation
 
             if (arg1 == null || callExpression == null || callExpression.Method.Name == "Select" )
             {
-                return null;
+                return nestedExpression;
             }
 
             var foreignKey = EntityInfo[arg1.Member.Name];

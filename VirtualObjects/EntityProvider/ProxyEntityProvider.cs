@@ -9,6 +9,7 @@ using Castle.DynamicProxy;
 using Fasterflect;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
+using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.EntityProvider
 {
@@ -159,7 +160,7 @@ namespace VirtualObjects.EntityProvider
             {
                 Value = invocation.GetArgumentValue(0),
                 SettedCount = 1,
-                IsLoaded = InterceptCollections
+                IsLoaded = InterceptCollections || MappingStatus.InternalLoading
             };
         }
 

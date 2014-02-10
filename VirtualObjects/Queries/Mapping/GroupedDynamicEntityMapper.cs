@@ -5,16 +5,15 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using Fasterflect;
-using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Queries.Mapping
 {
     class GroupedDynamicEntityMapper : DynamicWithMemberEntityMapper
     {
-/*
-        private IList<IEntityInfo> entityInfos;
-*/
+        /*
+                private IList<IEntityInfo> entityInfos;
+        */
 
         public override bool CanMapEntity(MapperContext context)
         {
@@ -28,6 +27,8 @@ namespace VirtualObjects.Queries.Mapping
         {
             var columns = mapContext.QueryInfo.PredicatedColumns;
             var fieldInfos = mapContext.OutputType.Fields();
+            
+            mapContext.Buffer = buffer;
 
             //
             // Handle non collection type of field.
@@ -140,7 +141,9 @@ namespace VirtualObjects.Queries.Mapping
             int fieldCount = 0;
 
 
-            context.OutputType.Fields().ForEach(e =>
+            var fields = context.OutputType.Fields();
+
+            fields.ForEach(e =>
             {
                 var collectionField = false;
                 var fieldType = e.FieldType;
@@ -181,7 +184,25 @@ namespace VirtualObjects.Queries.Mapping
 
                     if ( collectionField )
                     {
-                        setters.Add((o, value) => column.SetFieldFinalValue(o, value));
+                        if ( column.ForeignKey != null )
+                        {
+                            var field = fields.FirstOrDefault(f => f.FieldType == column.Property.PropertyType);
+                            if ( field != null )
+                            {
+                                setters.Add((o, value) =>
+                                    MappingStatus.InternalLoad(() => column.SetValue(o, field.Get(context.Buffer)))
+                                );
+                            }
+                            else
+                            {
+                                setters.Add((o, value) => column.SetFieldFinalValue(o, value));
+                            }
+                        }
+                        else
+                        {
+                            setters.Add((o, value) => column.SetFieldFinalValue(o, value));
+                        }
+                        //    setters.Add((o, value) => column.SetFieldFinalValue(o, value));
                     }
                     else
                     {
