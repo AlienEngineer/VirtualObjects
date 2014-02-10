@@ -134,6 +134,7 @@ namespace VirtualObjects.Queries.Translation
         private QueryTranslator _rootTranslator;
         private readonly IDictionary<ParameterExpression, QueryTranslator> _indexer;
         private readonly Stack<String> _compileStack = new Stack<String>();
+        private readonly Stack<IEntityColumnInfo> _memberAccessStack = new Stack<IEntityColumnInfo>();
 
         public QueryTranslator(IFormatter formatter, IMapper mapper)
         {
@@ -1029,9 +1030,15 @@ namespace VirtualObjects.Queries.Translation
                 case ExpressionType.Call:
                     var callExpression = (MethodCallExpression)expression;
 
-                    if ( callExpression.Object != null )
+                    if ( callExpression.Object != null && IsConstant(expression) )
                     {
                         CompileConstant(Expression.Constant(Expression.Lambda(callExpression).Compile().DynamicInvoke()), buffer);
+                        return;
+                    }
+
+                    if ( callExpression.Object != null && IsMemberAccess(callExpression) )
+                    {
+                        CompileMemberCallPredicate(callExpression, buffer);
                         return;
                     }
 
@@ -1067,11 +1074,25 @@ namespace VirtualObjects.Queries.Translation
 
         }
 
+        private void CompileMemberCallPredicate(MethodCallExpression callExpression, CompilerBuffer buffer)
+        {
+            CompilePredicateExpression(callExpression.Object, buffer);
+
+            buffer.Predicates += _formatter.BeginMethodCall(callExpression.Method.Name);
+            
+            CompilePredicateExpression(callExpression.Arguments.First(), buffer);
+
+            buffer.Predicates += _formatter.EndMethodCall(callExpression.Method.Name);
+        }
+
         private void CompileParameter(ParameterExpression expression, CompilerBuffer buffer)
         {
             var entityInfo = _mapper.Map(expression.Type);
 
-            buffer.Predicates += _formatter.FormatFieldWithTable(entityInfo.KeyColumns.First().ColumnName, Indexer[expression]._index);
+            var column = entityInfo.KeyColumns.First();
+            _memberAccessStack.Push(column);
+            
+            buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, Indexer[expression]._index);
         }
 
         private void CompileCallPredicate(MethodCallExpression expression, CompilerBuffer buffer)
@@ -1217,6 +1238,13 @@ namespace VirtualObjects.Queries.Translation
 
             var value = ParseValue(expression);
 
+            if (value != null && !value.GetType().IsFrameworkType())
+            {
+                var member= _memberAccessStack.Peek();
+                member = member.GetLastBind();
+                value = member.GetFieldFinalValue(value);
+            }
+
             var formatted = _formatter.FormatConstant(value, Parameters.Count);
 
             Parameters[formatted] = new QueryParameter
@@ -1271,6 +1299,7 @@ namespace VirtualObjects.Queries.Translation
 
                 var column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
 
+                _memberAccessStack.Push(column);
                 buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, Indexer[parameterExpression]._index);
 
                 buffer.AddPredicatedColumn(column);
@@ -1313,6 +1342,7 @@ namespace VirtualObjects.Queries.Translation
             //
             // Use the binded field on the predicate.
             //
+            _memberAccessStack.Push(foreignKey);
             buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, translator._index);
             buffer.Predicates += " " + _formatter.In + " ";
             buffer.Predicates += _formatter.BeginWrap();
@@ -1325,6 +1355,7 @@ namespace VirtualObjects.Queries.Translation
             // Use the key of the other type to predicate.
             //
             foreignKey = foreignKey.ForeignKey;
+            _memberAccessStack.Push(foreignKey);
             buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, queryCompiler._index);
             buffer.Predicates += " " + _formatter.From + " ";
             buffer.Predicates += _formatter.FormatTableName(foreignKey.EntityInfo.EntityName, queryCompiler._index);
@@ -1511,7 +1542,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 var left = RemoveDynamicFromMemberAccess(binary.Left);
                 var right = RemoveDynamicFromMemberAccess(binary.Right);
-
+                
                 //
                 // In case the constant part is in the left part.
                 // Not very used but still...
@@ -1537,7 +1568,7 @@ namespace VirtualObjects.Queries.Translation
                     return;
                 }
 
-
+                
                 CompilePredicateExpression(left, buffer);
 
                 if ( IsConstant(right) && right.ToString() == "null" )
@@ -1554,10 +1585,8 @@ namespace VirtualObjects.Queries.Translation
                 }
                 else
                 {
-
                     if ( methodCalled != String.Empty )
                     {
-
                         buffer.Predicates += _formatter.BeginMethodCall(methodCalled);
 
                         CompilePredicateExpression(right, buffer);
@@ -1588,6 +1617,7 @@ namespace VirtualObjects.Queries.Translation
                     continue;
                 }
 
+                _memberAccessStack.Push(keyColumn);
                 buffer.Predicates += _formatter.FormatFieldWithTable(keyColumn.ColumnName, _rootTranslator._index);
                 buffer.Predicates += " " + _formatter.FormatNode(ExpressionType.Equal) + " ";
 
@@ -1802,6 +1832,11 @@ namespace VirtualObjects.Queries.Translation
         private static Boolean IsConstant(Expression expression)
         {
             return ExtractConstant(expression) != null;
+        }
+
+        private bool IsMemberAccess(MethodCallExpression expression)
+        {
+            return expression.Object is MemberExpression;
         }
 
         private static Expression ExtractConstant(Expression expression)
