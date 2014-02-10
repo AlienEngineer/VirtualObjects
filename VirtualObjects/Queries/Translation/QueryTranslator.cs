@@ -1210,14 +1210,12 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileConstant(Expression expression, CompilerBuffer buffer)
         {
-            var constant = expression as ConstantExpression;
-
-            var value = ParseValue(constant);
-
-            if ( constant == null )
+            if ( !IsConstant(expression) )
             {
                 throw new UnsupportedException(Errors.Internal_WrongMethodCall, expression);
             }
+
+            var value = ParseValue(expression);
 
             var formatted = _formatter.FormatConstant(value, Parameters.Count);
 
@@ -1442,14 +1440,12 @@ namespace VirtualObjects.Queries.Translation
 
         private bool CompileIfConstant(Expression expression, CompilerBuffer buffer)
         {
-            var constant = ExtractConstant(expression);
-
-            if ( constant == null )
+            if ( !IsConstant(expression) )
             {
                 return false;
             }
 
-            CompileConstant(constant, buffer);
+            CompileConstant(expression, buffer);
             return true;
         }
 
