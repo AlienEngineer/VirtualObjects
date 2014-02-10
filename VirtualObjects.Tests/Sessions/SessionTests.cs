@@ -817,8 +817,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             using (var session = CreateSession())
             {
-                var employee = session.GetById(
-                    new Employee { EmployeeId = 1 });
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
 
                 var territories = new Territories { TerritoryId = "06897" };
 
