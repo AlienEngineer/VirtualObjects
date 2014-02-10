@@ -1853,6 +1853,8 @@ namespace VirtualObjects.Queries.Translation
                     return ExtractConstant(member.Expression);
                 case ExpressionType.Constant:
                     return expression;
+                case ExpressionType.Call:
+                    return ExtractConstant(((MethodCallExpression)expression).Object);
                 default: return null;
             }
         }
