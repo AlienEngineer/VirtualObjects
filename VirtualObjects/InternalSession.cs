@@ -50,7 +50,7 @@ namespace VirtualObjects
 
         public ITransaction BeginTransaction()
         {
-            return Context.Connection.BeginTranslation();
+            return Context.Connection.BeginTransaction();
         }
 
         private TEntity ExecuteOperation<TEntity>(IOperation operation, TEntity entityModel)

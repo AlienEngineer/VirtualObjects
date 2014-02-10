@@ -10,6 +10,7 @@ namespace VirtualObjects.Connections
 {
     class Connection : IConnection, ITransaction
     {
+        private readonly IDbConnectionProvider _provider;
         private readonly TextWriter _log;
         private IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
@@ -53,6 +54,7 @@ namespace VirtualObjects.Connections
 
         public Connection(IDbConnectionProvider provider, TextWriter log)
         {
+            _provider = provider;
             _log = log;
             _dbConnection = provider.CreateConnection();
         }
@@ -79,7 +81,7 @@ namespace VirtualObjects.Connections
             CreateCommand(commandText, parameters).ExecuteNonQuery();
         }
 
-        public ITransaction BeginTranslation()
+        public ITransaction BeginTransaction()
         {
             if ( _dbTransaction != null )
             {
@@ -95,6 +97,11 @@ namespace VirtualObjects.Connections
 
         private void Open()
         {
+            if (_dbConnection == null)
+            {
+                _dbConnection = _provider.CreateConnection();
+            }
+
             if ( _dbConnection.State == ConnectionState.Open )
             {
                 return;
@@ -106,7 +113,7 @@ namespace VirtualObjects.Connections
 
         public void Close()
         {
-            if ( !KeepAlive && !_endedTransaction || _dbConnection.State == ConnectionState.Closed )
+            if ( !KeepAlive && !_endedTransaction || _dbConnection == null || _dbConnection.State == ConnectionState.Closed )
             {
                 return;
             }
@@ -198,6 +205,7 @@ namespace VirtualObjects.Connections
             try
             {
                 _dbTransaction.Rollback();
+                Close();
             }
             catch ( Exception ex )
             {

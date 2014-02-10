@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -29,7 +30,11 @@ namespace VirtualObjects.Queries.Translation
 
             if ( _cachedQueries.TryGetValue(hashCode, out result) )
             {
-                result.Parameters = TranslateParametersOnly(expression, result.Parameters.Count).Parameters;
+                if (result.Parameters.Count > 0)
+                {
+                    result.Parameters = TranslateParametersOnly(expression, result.Parameters.Count).Parameters;
+                }
+
                 return result;
             }
 

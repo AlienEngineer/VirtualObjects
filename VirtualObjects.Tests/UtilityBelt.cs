@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using VirtualObjects.Config;
-using VirtualObjects.CRUD;
-using VirtualObjects.EntityProvider;
 using VirtualObjects.Queries;
-using VirtualObjects.Queries.Execution;
-using VirtualObjects.Queries.Formatters;
-using VirtualObjects.Queries.Mapping;
-using VirtualObjects.Queries.Translation;
-using VirtualObjects.Tests.Config;
 
 namespace VirtualObjects.Tests
 {
@@ -53,7 +44,7 @@ namespace VirtualObjects.Tests
         }
     }
 
-    public abstract class UtilityBelt : TimedTests, IConnection
+    public abstract class UtilityBelt : TimedTests
     {
         protected UtilityBelt()
         {
@@ -62,72 +53,24 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
-            Connection = new SqlConnection(@"
-                      Data Source=(LocalDB)\v11.0;
-                      AttachDbFilename=|DataDirectory|\northwnd.mdf;
-                      Integrated Security=True;
-                      Connect Timeout=30");
+            var ioc = new NinjectContainer(null, "northwind");
 
-            Mapper = CreateBuilder().Build();
+            ConnectionManager = ioc.Get<IConnection>();
+            Mapper = ioc.Get<IMapper>();
+            Translator = ioc.Get<IQueryTranslator>();
+            QueryProvider = ioc.Get<IQueryProvider>();
+            SessionContext = ioc.Get<SessionContext>();
 
-            Translator = new CachingTranslator(new SqlFormatter(), Mapper);
+            Session = new Session(ioc);
 
-            ConnectionManager = this;
-
-            QueryProvider = MakeQueryProvider();
-
-            SessionContext = new SessionContext
-            {
-                Connection = this,
-                Mapper = Mapper,
-                QueryProvider =  QueryProvider
-            };
-
-            Session = new Session(connectionName: "northwind");
+            Connection = ConnectionManager.DbConnection;
         }
 
-        
-
-        private IQueryProvider MakeQueryProvider()
-        {
-            var entityProvider = new EntityProviderComposite(
-                new List<IEntityProvider>
-                {
-                    new EntityModelProvider(),
-                    new DynamicTypeProvider(),
-                    new CollectionTypeEntityProvider(),
-                    new ProxyEntityProvider()
-                });
-
-            var entitiesMapper = new CollectionEntitiesMapper(Mapper,
-                entityProvider,
-                new List<IEntityMapper>
-                {
-                    new OrderedEntityMapper(),
-                    new DynamicTypeEntityMapper(),
-                    new DynamicEntityMapper(),
-                    new DynamicWithMemberEntityMapper(),
-                    new GroupedDynamicEntityMapper()
-                });
-
-            return new QueryProvider(
-                new CompositeExecutor(
-                    new List<IQueryExecutor>
-                    {
-                        new CountQueryExecutor(Translator),
-                        new QueryExecutor(entitiesMapper, Translator),
-                        new SingleQueryExecutor(entitiesMapper, Translator)
-                    }),
-                    new SessionContext { Connection = ConnectionManager }
-               );
-        }
-
-        IDbTransaction _dbTransaction;
+        ITransaction _dbTransaction;
 
         [SetUp]
         public void SetUpConnection()
         {
-            Connection.Open();
         }
 
         [TearDown]
@@ -138,7 +81,7 @@ namespace VirtualObjects.Tests
                 _dbTransaction.Rollback();
                 _dbTransaction = null;
             }
-            Connection.Close();
+            ConnectionManager.Close();
         }
 
         /// <summary>
@@ -148,91 +91,28 @@ namespace VirtualObjects.Tests
         {
             if (_dbTransaction == null)
             {
-                _dbTransaction = Connection.BeginTransaction();    
+                _dbTransaction = ConnectionManager.BeginTransaction();    
             }
         }
 
         public IDataReader ExecuteReader(IQueryInfo query)
         {
-            return CreateCommand(query).ExecuteReader();
+            return ExecuteReader(query.CommandText, query.Parameters);
         }
 
         public Object ExecuteScalar(IQueryInfo query)
         {
-            return CreateCommand(query).ExecuteScalar();
+            return ExecuteScalar(query.CommandText, query.Parameters);
         }
-
-        public IDbCommand CreateCommand(IQueryInfo queryInfo)
-        {
-            return CreateCommand(queryInfo.CommandText, queryInfo.Parameters);
-        }
-
-        private IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
-        {
-            var cmd = Connection.CreateCommand();
-
-            cmd.Transaction = _dbTransaction;
-            cmd.CommandText = commandText;
-
-            Trace.WriteLine("Command: " + cmd.CommandText);
-
-            parameters
-                .Select(e => new { OperParameter = e, Parameter = cmd.CreateParameter() })
-                .ForEach(e =>
-                {
-                    e.Parameter.ParameterName = e.OperParameter.Key;
-                    e.Parameter.Value = e.OperParameter.Value.Value ?? DBNull.Value;
-
-                    if ( e.OperParameter.Value.Type == typeof(Byte[]) )
-                    {
-                        e.Parameter.DbType = DbType.Binary;
-                    }
-
-                    cmd.Parameters.Add(e.Parameter);
-                });
-
-            return cmd;
-        }
-
+        
         public IQueryInfo TranslateQuery(IQueryable query)
         {
             return Translator.TranslateQuery(query);
         }
 
-        public IQueryable<T> Query<T>()
+        public IQueryable<T> Query<T>() where T : class, new()
         {
-// ReSharper disable once AssignNullToNotNullAttribute
-            return QueryProvider.CreateQuery<T>(null);
-        }
-
-        private MappingBuilder CreateBuilder()
-        {
-            var builder = new MappingBuilder(new OperationsProvider(new SqlFormatter(), new OrderedEntityMapper(), new EntityModelProvider()));
-
-            //
-            // TableName getters
-            //
-            builder.EntityNameFromType(e => e.Name);
-            builder.EntityNameFromAttribute<TableAttribute>(e => e.TableName);
-
-            //
-            // ColumnName getters
-            //
-            builder.ColumnNameFromProperty(e => e.Name);
-            builder.ColumnNameFromAttribute<ColumnAttribute>(e => e.FieldName);
-
-            builder.ColumnKeyFromProperty(e => e.Name == "Id");
-            builder.ColumnKeyFromAttribute<KeyAttribute>();
-            builder.ColumnKeyFromAttribute<IdentityAttribute>();
-
-            builder.ColumnIdentityFromAttribute<IdentityAttribute>();
-
-            builder.ForeignKeyFromAttribute<AssociationAttribute>(e => e.OtherKey);
-
-            builder.ColumnVersionFromProperty(e => e.Name == "Version");
-            builder.ColumnVersionFromAttribute<VersionAttribute>();
-
-            return builder;
+            return Session.Query<T>();
         }
 
         public Session Session { get; private set; }
@@ -245,38 +125,18 @@ namespace VirtualObjects.Tests
 
         public object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
-            var cmd = CreateCommand(commandText, parameters);
-            return cmd.ExecuteScalar();
+            return ConnectionManager.ExecuteScalar(commandText, parameters);
         }
 
         public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
-            var cmd = CreateCommand(commandText, parameters);
-            return cmd.ExecuteReader();
+            return ConnectionManager.ExecuteReader(commandText, parameters);
         }
 
         public void ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
-            var cmd = CreateCommand(commandText, parameters);
-            cmd.ExecuteNonQuery();
+            ConnectionManager.ExecuteNonQuery(commandText, parameters);
         }
 
-        public ITransaction BeginTranslation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDbConnection DbConnection { get; private set; }
-        public bool KeepAlive { get; set; }
-
-        public void Close()
-        {
-
-        }
-
-        public void Dispose()
-        {
-            
-        }
     }
 }

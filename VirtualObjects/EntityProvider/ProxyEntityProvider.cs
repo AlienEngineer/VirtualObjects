@@ -17,6 +17,7 @@ namespace VirtualObjects.EntityProvider
     {
         private readonly ProxyGenerator _proxyGenerator;
         private ProxyGenerationOptions _proxyGenerationOptions;
+        private bool _isPrepared;
 
         public ProxyEntityProvider(ProxyGenerator proxyGenerator)
         {
@@ -34,7 +35,7 @@ namespace VirtualObjects.EntityProvider
             Debug.Assert(type != null, "type != null");
 
             // ReSharper disable once PossibleNullReferenceException
-            while (type.GetInterfaces().Contains(typeof(IProxyTargetAccessor)))
+            while ( type.GetInterfaces().Contains(typeof(IProxyTargetAccessor)) )
             {
                 type = type.BaseType;
             }
@@ -45,15 +46,17 @@ namespace VirtualObjects.EntityProvider
 
         public override bool CanCreate(Type type)
         {
-            if (type.IsDynamic()) return false;
-            if (type.IsFrameworkType()) return false;
-            if (type.InheritsOrImplements<IEnumerable>()) return false;
+            if ( type.IsDynamic() ) return false;
+            if ( type.IsFrameworkType() ) return false;
+            if ( type.InheritsOrImplements<IEnumerable>() ) return false;
 
             return (type.Properties().Any(e => e.GetGetMethod().IsVirtual));
         }
 
         public override void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
+            // if ( _isPrepared ) { return; }
+
             _proxyGenerationOptions = new ProxyGenerationOptions
             {
                 Selector = new InterceptorSelector(
@@ -61,6 +64,8 @@ namespace VirtualObjects.EntityProvider
                     new CollectionPropertyInterceptor(sessionContext.Session, sessionContext.Mapper)
                 )
             };
+
+            _isPrepared = true;
         }
     }
 
@@ -131,13 +136,13 @@ namespace VirtualObjects.EntityProvider
 
             var method = invocation.Method;
 
-            if (method.Name.StartsWith("set_"))
+            if ( method.Name.StartsWith("set_") )
             {
                 HandleSetter(method, invocation);
             }
             else
             {
-                if (method.Name.StartsWith("get_"))
+                if ( method.Name.StartsWith("get_") )
                 {
                     HandleGetter(method, invocation);
                 }
@@ -149,7 +154,7 @@ namespace VirtualObjects.EntityProvider
             var getter = invocation.TargetType.GetMethod("g" + method.Name.Remove(0, 1));
 
             PropertyValue propValue;
-            if (_properties.TryGetValue(getter, out propValue))
+            if ( _properties.TryGetValue(getter, out propValue) )
             {
                 propValue.Value = invocation.GetArgumentValue(0);
                 propValue.SettedCount++;
@@ -168,7 +173,7 @@ namespace VirtualObjects.EntityProvider
         private void HandleGetter(MethodInfo method, IInvocation invocation)
         {
             PropertyValue propValue;
-            if (_properties.TryGetValue(method, out propValue) && propValue.IsLoaded)
+            if ( _properties.TryGetValue(method, out propValue) && propValue.IsLoaded )
             {
                 invocation.ReturnValue = propValue.Value;
                 return;
@@ -176,7 +181,7 @@ namespace VirtualObjects.EntityProvider
 
             var value = GetFieldValue(method, invocation);
 
-            if (propValue == null)
+            if ( propValue == null )
             {
                 _properties[method] = new PropertyValue
                 {
@@ -256,12 +261,12 @@ namespace VirtualObjects.EntityProvider
             var parameter = Expression.Parameter(entityType, "e");
             BinaryExpression last = null;
 
-            foreach (var key in callerTable.KeyColumns)
+            foreach ( var key in callerTable.KeyColumns )
             {
                 var foreignField = foreignTable.ForeignKeys
                     .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
 
-                if (foreignField != null)
+                if ( foreignField != null )
                 {
                     var value = Expression.Constant(
                         key.GetFieldFinalValue(invocation.InvocationTarget), key.Property.PropertyType);
@@ -270,7 +275,7 @@ namespace VirtualObjects.EntityProvider
 
                     member = CreateFullMemberAccess(member, foreignField);
 
-                    if (last == null)
+                    if ( last == null )
                     {
                         last = Expression.Equal(member, value);
                     }
@@ -282,7 +287,7 @@ namespace VirtualObjects.EntityProvider
                 }
             }
 
-            if (last == null)
+            if ( last == null )
             {
                 throw new VirtualObjectsException(Errors.Configuration_UnableToBindCollection, new { callerTable.EntityName });
             }
@@ -331,7 +336,7 @@ namespace VirtualObjects.EntityProvider
 
         private MemberExpression CreateFullMemberAccess(MemberExpression member, IEntityColumnInfo foreignField)
         {
-            if (foreignField == null || foreignField.ForeignKey == null)
+            if ( foreignField == null || foreignField.ForeignKey == null )
             {
                 return member;
             }

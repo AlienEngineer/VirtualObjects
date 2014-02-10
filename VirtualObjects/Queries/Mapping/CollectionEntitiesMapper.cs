@@ -30,28 +30,39 @@ namespace VirtualObjects.Queries.Mapping
         public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType, SessionContext sessionContext)
         {
             var result = new List<Object>();
+
+            var entityInfo = _mapper.Map(outputType);
+
             var context = new MapperContext
             {
-                EntityInfo = _mapper.Map(outputType),
+                EntityInfo = entityInfo,
                 OutputType = outputType,
                 EntityProvider = _entityProvider,
                 Mapper = _mapper,
                 QueryInfo = queryInfo
             };
 
-            var entityMapper = _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));
+            if (entityInfo != null && entityInfo.EntityProvider != null)
+            {
+                context.EntityProvider = entityInfo.EntityProvider;
+            }
+
+            var entityMapper = 
+                (entityInfo != null && entityInfo.EntityMapper != null) ?
+                    entityInfo.EntityMapper : 
+                    _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));
 
             if ( entityMapper == null )
             {
                 throw new MappingException(Errors.Mapping_OutputTypeNotSupported, context);
             }
 
-            //
-            // This line enables about 50% more code eficiency.
-            //
             try
             {
 
+                //
+                // This line enables about 50% more code eficiency.
+                //
                 _entityProvider.PrepareProvider(context.OutputType, sessionContext);
                 entityMapper.PrepareMapper(context);
 

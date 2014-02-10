@@ -63,7 +63,7 @@ namespace VirtualObjects
             //
             Bind<IMapper>().ToMethod(context => _configuration.MappingBuilder.Build()).InThreadScope();
 
-            Bind<IMappingBuilder>().To<MappingBuilder>().InSingletonScope();
+            Bind<IMappingBuilder>().To<MappingBuilder>().InThreadScope();
 
             //
             // QueryTranslation
@@ -80,7 +80,7 @@ namespace VirtualObjects
             Bind<IEntityProvider>().To<DynamicTypeProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<CollectionTypeEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
 
-            Bind<ProxyGenerator>().ToSelf().InSingletonScope();
+            Bind<ProxyGenerator>().ToSelf().InThreadScope();
             
 
             //
