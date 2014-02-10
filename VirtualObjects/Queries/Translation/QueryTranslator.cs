@@ -1129,11 +1129,18 @@ namespace VirtualObjects.Queries.Translation
                 .Methods(Flags.Static | Flags.StaticPublic, "Select")
                 .First(e => e.Parameters().Count == 2)
                 .MakeGenericMethod(entityType, foreignKey.ForeignKey.Property.PropertyType);
-            
+
+            var parameter = Expression.Parameter(entityType, "e");
+
             return Expression.Call(method, nestedExpression,
-                Expression.MakeMemberAccess(Expression.Parameter(entityType),
-                    foreignKey.ForeignKey.Property)
-                );
+                        Expression.Lambda(  
+                            Expression.MakeMemberAccess(
+                                parameter,
+                                foreignKey.ForeignKey.Property
+                            ) /* Make Member Access */ , 
+                            parameter
+                        ) /* Make Lambda for member */
+                  );
         }
 
         /// <summary>
@@ -1479,6 +1486,7 @@ namespace VirtualObjects.Queries.Translation
                         CompileCallPredicate(callExpression, buffer);
                     }
                     buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+                    buffer.Parenthesis = 0;
                     return;
                 }
 
@@ -1572,6 +1580,7 @@ namespace VirtualObjects.Queries.Translation
 
             }
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+            buffer.Parenthesis = 0;
         }
 
         private void CompileParameterToObject(Expression right, CompilerBuffer buffer, bool parametersOnly)
@@ -1603,6 +1612,7 @@ namespace VirtualObjects.Queries.Translation
             buffer.Predicates.RemoveLast(_formatter.And.Length + 2);
 
             buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+            buffer.Parenthesis = 0;
         }
 
         private void CompileNodeType(ExpressionType nodeType, CompilerBuffer buffer)

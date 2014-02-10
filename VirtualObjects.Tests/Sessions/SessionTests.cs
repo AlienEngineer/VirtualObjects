@@ -937,7 +937,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test, Repeat(Repeat)]
+        [Test]
         public void Session_GetOrders_Join_OrderDetails()
         {
             using (var session = CreateSession())
@@ -959,7 +959,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test, Repeat(Repeat)]
+        [Test]
         public void Session_GetOrders_2Joins_OrderDetails()
         {
             using (var session = CreateSession())
@@ -982,7 +982,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test, Repeat(Repeat)]
+        [Test]
         public void Session_GetOrders_GroupedJoin_OrderDetails()
         {
             using (var session = CreateSession())

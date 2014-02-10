@@ -42,20 +42,20 @@ namespace VirtualObjects.Queries.Mapping
             var fieldCount = 0;
             var fields = context.OutputType.Fields();
 
-            fields.ForEach(e =>
+            fields.ForEach(field =>
             {
 
-                if ( e.FieldType.IsFrameworkType() )
+                if ( field.FieldType.IsFrameworkType() )
                 {
-                    setters.Add(e.DelegateForSetFieldValue());
+                    setters.Add(field.DelegateForSetFieldValue());
                     fieldCount++;
                     return;
                 }
 
                 var ctx = new MapperContext
                 {
-                    EntityInfo = context.Mapper.Map(e.FieldType),
-                    OutputType = e.FieldType,
+                    EntityInfo = context.Mapper.Map(field.FieldType),
+                    OutputType = field.FieldType,
                     EntityProvider = context.EntityProvider,
                     Mapper = context.Mapper,
                     QueryInfo = context.QueryInfo
@@ -64,12 +64,12 @@ namespace VirtualObjects.Queries.Mapping
                 var predictedColumn = ctx.QueryInfo.PredicatedColumns[fieldCount];
                 var type = predictedColumn.EntityInfo.EntityType;
                 var i = fieldCount;
-                
+
 
                 //
                 // Created setters for each column of the same type.
                 //
-                while ( predictedColumn.EntityInfo.EntityType == type)
+                while ( predictedColumn.EntityInfo.EntityType == type )
                 {
 
                     //
@@ -77,29 +77,9 @@ namespace VirtualObjects.Queries.Mapping
                     //
                     var column = predictedColumn.GetLastBind();
 
-                    if (predictedColumn.ForeignKey != null)
-                    {
-                        var field = fields.FirstOrDefault(f => f.FieldType == predictedColumn.Property.PropertyType);
-                        if ( field != null )
-                        {
-                            var column1 = predictedColumn;
-                            setters.Add((o, value) =>
-                                MappingStatus.InternalLoad(() => column1.SetValue(o, field.Get(context.Buffer)))
-                            );
-                        }
-                        else
-                        {
-                            setters.Add((o, value) => column.SetFieldFinalValue(o, value));
-                        }
-                    }
-                    else
-                    {
+                    setters.Add((o, value) => column.SetFieldFinalValue(field.Get(o), value));
 
-
-                        setters.Add((o, value) => column.SetFieldFinalValue(e.Get(o), value));    
-                    }
-
-                    if (++i == ctx.QueryInfo.PredicatedColumns.Count) break;
+                    if ( ++i == ctx.QueryInfo.PredicatedColumns.Count ) break;
 
                     predictedColumn = ctx.QueryInfo.PredicatedColumns[i];
                 }
