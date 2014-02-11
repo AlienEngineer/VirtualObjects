@@ -54,7 +54,6 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Performance_VO_GetAll_OrderDetails()
         {
-
             Diagnostic.Timed(() =>
             {
                 foreach ( var supplier in Session.GetAll<OrderDetailsSimplified>() )
@@ -63,7 +62,6 @@ namespace VirtualObjects.Tests.Sessions
                 }
 
             });
-
         }
 
         [Test, Repeat(1000)]
@@ -76,13 +74,11 @@ namespace VirtualObjects.Tests.Sessions
                     Assert.That(supplier.SupplierId, Is.GreaterThan(0));
                 }
             });
-
         }
 
         [Test, Repeat(1000)]
         public void Performance_VO_GetAll_Supplier_ManyTimes()
         {
-
             Diagnostic.Timed(() =>
             {
                 foreach ( var supplier in Session.GetAll<Suppliers>() )
@@ -90,7 +86,6 @@ namespace VirtualObjects.Tests.Sessions
                     Assert.That(supplier.SupplierId, Is.GreaterThan(0));
                 }
             });
-
         }
 
     }
