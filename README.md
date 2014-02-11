@@ -44,6 +44,7 @@ The unit tests should be executed one at a time. So the assembly load time is ca
 Tests are repeated 10x via NUnit RepeatAttribute. The timer ignores the very first result, since the first will be way bigger then the remaining executions.
 
 VO Version 1.0.0.46-RC
+
 Dapper Version 1.13
 
 #### Using Northwind Order Details table with 2155 Records.
