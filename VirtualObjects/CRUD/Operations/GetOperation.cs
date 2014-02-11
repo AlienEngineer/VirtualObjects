@@ -28,6 +28,7 @@ namespace VirtualObjects.CRUD.Operations
 
             if (!reader.Read())
             {
+                reader.Close();
                 return null;
             }
 

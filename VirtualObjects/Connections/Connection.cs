@@ -66,19 +66,26 @@ namespace VirtualObjects.Connections
 
         public bool KeepAlive { get; set; }
 
+        private TResult AutoClose<TResult>(Func<TResult> execute)
+        {
+            var value = execute();
+            
+            return value;
+        }
+
         public object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
-            return CreateCommand(commandText, parameters).ExecuteScalar();
+            return AutoClose(() => CreateCommand(commandText, parameters).ExecuteScalar());
         }
 
         public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
-            return CreateCommand(commandText, parameters).ExecuteReader();
+            return AutoClose(() => CreateCommand(commandText, parameters).ExecuteReader());
         }
 
         public int ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
-            return CreateCommand(commandText, parameters).ExecuteNonQuery();
+            return AutoClose(() => CreateCommand(commandText, parameters).ExecuteNonQuery());
         }
 
         public ITransaction BeginTransaction()
