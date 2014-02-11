@@ -86,43 +86,6 @@ namespace $rootnamespace$.VirtualObjects
         #endregion
 
 		
-        #region IRepository Helpers
-
-        public  TResult WithinTransaction<TResult>(Func<TResult> execute)
-        {
-            return Session.WithinTransaction(execute);
-        }
-
-        public  void WithinTransaction( Action execute)
-        {
-            Session.WithinTransaction(execute);
-        }
-
-        /// <summary>
-        /// Keeps the session alive. Doesn't close the connection to the database after each operation is complete.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="execute">The execute.</param>
-        /// <returns></returns>
-        public TResult KeepAlive<TResult>(Func<TResult> execute)
-        {
-            return Session.KeepAlive(execute);
-        }
-
-        /// <summary>
-        /// Keeps the session alive. Doesn't close the database connection after each operation is complete.
-        /// </summary>
-        /// <param name="execute">The execute.</param>
-        public void KeepAlive(Action execute)
-        {
-            Session.KeepAlive(execute);
-        }
-
-        public IQueryable<TEntity> Query<TEntity>() where TEntity : class, new()
-        {
-            return GetAll<TEntity>();
-        }
-        #endregion
     }
 
     class RepositoryTransaction : IRepositoryTransaction, IDisposable

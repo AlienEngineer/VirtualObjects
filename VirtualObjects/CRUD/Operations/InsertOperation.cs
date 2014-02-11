@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace VirtualObjects.CRUD.Operations
 {
-    class InsertOperation : Operation
+    class InsertOperation : UpdateOperation
     {
         public InsertOperation(string commandText, IEntityInfo entityInfo) 
             : base(commandText, entityInfo)
@@ -15,15 +15,13 @@ namespace VirtualObjects.CRUD.Operations
         {
             if (entityInfo.Identity == null)
             {
-                connection.ExecuteNonQuery(commandText, parameters);
+                return base.Execute(connection, entityModel, entityInfo, commandText, parameters, sessionContext);
             }
-            else
-            {
-                var id = connection.ExecuteScalar(commandText, parameters);
-                var idValue = Convert.ChangeType(id, entityInfo.Identity.Property.PropertyType);
+            
+            var id = connection.ExecuteScalar(commandText, parameters);
+            var idValue = Convert.ChangeType(id, entityInfo.Identity.Property.PropertyType);
 
-                entityInfo.Identity.SetFieldFinalValue(entityModel, idValue);
-            }
+            entityInfo.Identity.SetFieldFinalValue(entityModel, idValue);
 
             return entityModel;
         }

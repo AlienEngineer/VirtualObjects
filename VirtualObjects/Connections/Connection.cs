@@ -76,9 +76,9 @@ namespace VirtualObjects.Connections
             return CreateCommand(commandText, parameters).ExecuteReader();
         }
 
-        public void ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters)
+        public int ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
-            CreateCommand(commandText, parameters).ExecuteNonQuery();
+            return CreateCommand(commandText, parameters).ExecuteNonQuery();
         }
 
         public ITransaction BeginTransaction()

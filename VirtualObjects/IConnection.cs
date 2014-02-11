@@ -8,7 +8,7 @@ namespace VirtualObjects
     {
         object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters);
         IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters);
-        void ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters);
+        int ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters);
 
         ITransaction BeginTransaction();
         IDbConnection DbConnection { get; }
