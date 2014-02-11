@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Virtual Objects by AlienEngineer</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/AlienEngineer/VirtualObjects">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/AlienEngineer/VirtualObjects/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/AlienEngineer/VirtualObjects/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Virtual Objects</h1>
+          <p>Virtual Objects</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/AlienEngineer">AlienEngineer</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h3>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h3>
+
+<h4>
+<a name="create-a-model" class="anchor" href="#create-a-model"><span class="octicon octicon-link"></span></a>Create a Model</h4>
+
+<div class="highlight highlight-C#"><pre><span class="k">public</span> <span class="k">class</span> <span class="nc">Employee</span> 
+<span class="p">{</span>
+    <span class="k">public</span> <span class="n">String</span> <span class="n">EmployeeId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">String</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// Other fields ...</span>
+<span class="p">}</span>
+</pre></div>
+
+<h4>
+<a name="config-the-connection" class="anchor" href="#config-the-connection"><span class="octicon octicon-link"></span></a>Config the Connection</h4>
+
+<div class="highlight highlight-XML"><pre>  <span class="nt">&lt;connectionStrings&gt;</span>
+    <span class="nt">&lt;clear/&gt;</span>
+    <span class="nt">&lt;add</span> <span class="na">name=</span><span class="s">"YourMachineName"</span> 
+         <span class="na">providerName=</span><span class="s">"System.Data.SqlClient"</span> 
+         <span class="na">connectionString=</span><span class="s">"</span>
+<span class="s">               Data Source=.\instance;</span>
+<span class="s">               Initial Catalog=db;</span>
+<span class="s">               Integrated Security=true"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/connectionStrings&gt;</span>
+</pre></div>
+
+<h4>
+<a name="use-it" class="anchor" href="#use-it"><span class="octicon octicon-link"></span></a>Use it!</h4>
+
+<div class="highlight highlight-C#"><pre>   <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">session</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Session</span><span class="p">())</span>
+   <span class="p">{</span>
+      <span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">&gt;</span> <span class="n">employees</span> <span class="p">=</span> <span class="n">session</span><span class="p">.</span><span class="n">GetAll</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">BirthDate</span><span class="p">.</span><span class="n">Year</span> <span class="p">&gt;</span> <span class="m">1983</span><span class="p">);</span>
+
+      <span class="n">session</span><span class="p">.</span><span class="n">Insert</span><span class="p">(</span><span class="k">new</span> <span class="n">Employee</span> 
+      <span class="p">{</span>
+         <span class="n">Name</span> <span class="p">=</span> <span class="s">"I'm the new guy!"</span>
+      <span class="p">});</span>
+   <span class="p">}</span>
+</pre></div>
+
+<h3>
+<a name="crud-operations" class="anchor" href="#crud-operations"><span class="octicon octicon-link"></span></a>Crud Operations</h3>
+
+<pre><code>   // Create
+   Employee Sergio = session.Insert(new Employee 
+   {
+      FirstName = "Sérgio",
+      LastName = "Ferreira",
+      BirthDate = new DateTime(1983, 4, 16)
+   });   
+
+   // Read
+   Employee employee = session.GetById(Employee { EmployeeId = 1 });
+
+   // Update
+   session.Update(employee);
+
+   // Delete
+   session.Delete(employee);
+</code></pre>
+
+<h3>
+<a name="data-type-mappings" class="anchor" href="#data-type-mappings"><span class="octicon octicon-link"></span></a>Data Type Mappings</h3>
+
+<p>Checkout the microsoft table at <a href="http://msdn.microsoft.com/en-us/library/cc716729.aspx">ADO.Net</a></p>
+
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+
+<p>If you have any suggestions for this project or something is not working right please contact me at <a href="mailto:Alien.Software.Engineer@gmail.com">Alien.Software.Engineer@gmail.com</a> or <a href="https://github.com/AlienEngineer" class="user-mention">@AlienEngineer</a> (github)</p>
+
+<h3>
+<a name="for-more-info-click-here" class="anchor" href="#for-more-info-click-here"><span class="octicon octicon-link"></span></a>For more info click <a href="http://alienengineer.github.com/VirtualObjects/">here</a>
+</h3>
+
+<h3>
+<a name="get-it-as-a-nuget-package-here" class="anchor" href="#get-it-as-a-nuget-package-here"><span class="octicon octicon-link"></span></a>Get it as a NuGet Package <a href="http://www.nuget.org/packages/VirtualObjects/">here</a>
+</h3>
+
+<pre><code>   PM&gt; Install-Package VirtualObjects -Pre
+</code></pre>
+
+<h3>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h3>
+
+<ul>
+<li>Castle.Core       (≥ 3.2.2)</li>
+<li>fasterflect       (≥ 2.1.3)</li>
+<li>Ninject           (≥ 3.0.1.10)</li>
+</ul>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
