@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Linq;
 using Fasterflect;
 using VirtualObjects.Exceptions;
+using VirtualObjects.Queries;
 
 namespace VirtualObjects.Config
 {
@@ -15,6 +16,8 @@ namespace VirtualObjects.Config
     class Mapper : IMapper
     {
         private readonly IOperationsProvider _operationsProvider;
+        private readonly IEntityProvider _entityProvider;
+        private readonly IEntityMapper _entityMapper;
         public IEnumerable<Func<PropertyInfo, String>> ColumnNameGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnKeyGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnIdentityGetters { get; set; }
@@ -24,9 +27,12 @@ namespace VirtualObjects.Config
 
         private IDictionary<Type, EntityInfo> _cacheEntityInfos;
 
-        public Mapper(IOperationsProvider operationsProvider)
+        public Mapper(IOperationsProvider operationsProvider, IEntityProvider entityProvider, IEntityMapper entityMapper, SessionContext sessionContext)
         {
             _operationsProvider = operationsProvider;
+            _entityProvider = entityProvider;
+            _entityMapper = entityMapper;
+            this._sessionContext = sessionContext;
             _cacheEntityInfos = new Dictionary<Type, EntityInfo>();
         }
 
@@ -90,6 +96,10 @@ namespace VirtualObjects.Config
             entityInfo.ForeignKeys = entityInfo.Columns.Where(e => e.ForeignKey != null).ToList();
 
             entityInfo.Operations = _operationsProvider.CreateOperations(entityInfo);
+
+            entityInfo.EntityProvider = _entityProvider.GetProviderForType(entityType);
+            entityInfo.EntityProvider.PrepareProvider(entityType, _sessionContext);
+            entityInfo.EntityMapper = _entityMapper;
 
             return entityInfo;
         }
@@ -272,6 +282,7 @@ namespace VirtualObjects.Config
 
         #region IDisposable Members
         private bool _disposed;
+        private readonly SessionContext _sessionContext;
 
         public void Dispose()
         {

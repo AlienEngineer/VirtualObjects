@@ -46,8 +46,6 @@ namespace VirtualObjects.Queries
         public object Execute(Expression expression)
         {
             return _executor.ExecuteQuery(expression, _context);
-            //var m = typeof(QueryProvider).GetMethod("InnerExecute").MakeGenericMethod(query.ElementType);
-            //return m.Invoke(this, new[] { expression });
         }
 
         public TResult Execute<TResult>(Expression expression)

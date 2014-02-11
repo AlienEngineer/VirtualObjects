@@ -517,6 +517,7 @@ namespace VirtualObjects.Tests.Queries
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_()
         {
+            
             var employee = Diagnostic.Timed(() => Query<Employee>().ToList());
 
             employee.Should().NotBeNull();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtualObjects.Queries;
 
 namespace VirtualObjects.Config
 {
@@ -34,6 +35,8 @@ namespace VirtualObjects.Config
 
         public IOperations Operations { get; set; }
         public IList<IEntityColumnInfo> ForeignKeys { get; set; }
+        public IEntityProvider EntityProvider { get; set; }
+        public IEntityMapper EntityMapper { get; set; }
 
         public IEntityColumnInfo GetFieldAssociatedWith(string name)
         {

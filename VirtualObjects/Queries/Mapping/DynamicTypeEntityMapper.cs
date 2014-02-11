@@ -10,6 +10,8 @@ namespace VirtualObjects.Queries.Mapping
 
         public virtual object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
         {
+            mapContext.Buffer = buffer;
+
             var i = 0;
             foreach ( var setter in mapContext.OutputTypeSetters )
             {

@@ -10,7 +10,7 @@ namespace VirtualObjects
         IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters);
         void ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters);
 
-        ITransaction BeginTranslation();
+        ITransaction BeginTransaction();
         IDbConnection DbConnection { get; }
         bool KeepAlive { get; set; }
         void Close();

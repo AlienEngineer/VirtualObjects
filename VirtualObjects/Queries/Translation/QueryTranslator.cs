@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Fasterflect;
 using VirtualObjects.Config;
@@ -17,6 +18,8 @@ namespace VirtualObjects.Queries.Translation
 {
     class QueryTranslator : IQueryTranslator
     {
+        #region Internal types
+
         class CompilerBuffer
         {
             private StringBuffer _projection;
@@ -39,7 +42,7 @@ namespace VirtualObjects.Queries.Translation
             public StringBuffer OrderBy { get; set; }
             public StringBuffer GroupBy { get; set; }
             public StringBuffer Union { get; set; }
-            
+
             public IEntityInfo EntityInfo { get; set; }
             public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
 
@@ -63,7 +66,7 @@ namespace VirtualObjects.Queries.Translation
             public int Take { get; set; }
             public int Skip { get; set; }
             public bool Distinct { get; set; }
-            
+
 
             public void ActAsStub()
             {
@@ -110,6 +113,18 @@ namespace VirtualObjects.Queries.Translation
             public IQueryProvider Provider { get; [UsedImplicitly] private set; }
         }
 
+        class QueryParameter : IOperationParameter
+        {
+            public Type Type { get; set; }
+            public object Value { get; set; }
+            public string Name { get; set; }
+            public IEntityColumnInfo Column { get; set; }
+        }
+
+        #endregion
+
+        #region Declaration Zone
+
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
@@ -118,6 +133,8 @@ namespace VirtualObjects.Queries.Translation
         private int _parameterCount = -1;
         private QueryTranslator _rootTranslator;
         private readonly IDictionary<ParameterExpression, QueryTranslator> _indexer;
+        private readonly Stack<String> _compileStack = new Stack<String>();
+        private readonly Stack<IEntityColumnInfo> _memberAccessStack = new Stack<IEntityColumnInfo>();
 
         public QueryTranslator(IFormatter formatter, IMapper mapper)
         {
@@ -152,18 +169,23 @@ namespace VirtualObjects.Queries.Translation
 
         public IEntityInfo EntityInfo { get; set; }
 
+        private Type _outpuType;
+
         public Type OutputType
         {
-            get { return _outputType; }
+            get
+            {
+                return _outpuType;
+            }
             set
             {
-                if ( _outputType != null )
-                {
-                    return;
-                }
-                _outputType = value;
+                _outpuType = value;
             }
         }
+
+        #endregion
+
+        #region IQueryTranslator implementation.
 
         /// <summary>
         /// Translates the query.
@@ -199,7 +221,7 @@ namespace VirtualObjects.Queries.Translation
                 CommandText = Merge(buffer),
                 Parameters = Parameters,
                 PredicatedColumns = buffer.PredicatedColumns,
-                OutputType = OutputType
+                OutputType = OutputType ?? queryable.ElementType
             };
         }
 
@@ -256,8 +278,15 @@ namespace VirtualObjects.Queries.Translation
         {
             var queryable = ExtractQueryable(expression);
 
+            if ( queryable == null )
+            {
+                throw new TranslationException("\nUnable to extract the query from expression.");
+            }
+
             return TranslateQuery(new QueryableStub(queryable.ElementType, expression));
         }
+
+        #endregion
 
         #region Compiling Methods
 
@@ -297,6 +326,8 @@ namespace VirtualObjects.Queries.Translation
             }
 
             CompileExpression(expression.Arguments.FirstOrDefault(), buffer);
+
+            _compileStack.Push(expression.Method.Name);
 
             if ( parametersOnly && expression.Arguments.Count > 1 && (
                 expression.Method.Name == "Where" ||
@@ -396,13 +427,15 @@ namespace VirtualObjects.Queries.Translation
                 default:
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
+
+            _compileStack.Pop();
         }
 
         private void CompileUnion(Expression expression, CompilerBuffer buffer, bool parametersOnly = false)
         {
             var translator = CreateNewTranslator();
 
-            if (parametersOnly)
+            if ( parametersOnly )
             {
                 translator.TranslateParametersOnly(expression, _parameterCount);
                 return;
@@ -418,7 +451,7 @@ namespace VirtualObjects.Queries.Translation
                 .Methods(Flags.Static | Flags.StaticPublic, "First").First(e => e.Parameters().Count == expression.Arguments.Count)
                 .MakeGenericMethod(EntityInfo.EntityType);
 
-            
+
 
             CompileMethodCall(Expression.Call(firstMethod, expression.Arguments), buffer, false);
 
@@ -430,7 +463,7 @@ namespace VirtualObjects.Queries.Translation
 
                 var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
 
-                var args = new []
+                var args = new[]
                 {
                     expression.Arguments.First(),
                     Expression.Lambda(Expression.MakeMemberAccess(parameter, column.Property), parameter)
@@ -484,12 +517,13 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
+
+            throw new TranslationException(Errors.Translation_Method_NoArgs_NotSupported, callExpression.Method);
+
             //
             // Create the proper binary clause to filter the query by min or max.
             // the first key is used by default for this.
             //
-
-            throw new TranslationException(Errors.Translation_Method_NoArgs_NotSupported, callExpression.Method);
 
             //var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
 
@@ -552,18 +586,6 @@ namespace VirtualObjects.Queries.Translation
                     break;
             }
 
-        }
-
-        private static void InitBinaryExpressionCall(CompilerBuffer buffer)
-        {
-            if ( String.IsNullOrEmpty(buffer.Predicates) )
-            {
-                buffer.Predicates += " Where ";
-            }
-            else
-            {
-                buffer.Predicates += " And ";
-            }
         }
 
         private void CompileOrderByDescending(MethodCallExpression expression, CompilerBuffer buffer)
@@ -866,18 +888,6 @@ namespace VirtualObjects.Queries.Translation
             return true;
         }
 
-        private static void ThrowIfContainsAPredicate(MethodCallExpression call)
-        {
-            if ( call.Arguments.Count == 2 )
-            {
-                var tmpLambda = ExtractLambda(call.Arguments[1], false);
-                if ( tmpLambda.ReturnType == typeof(Boolean) )
-                {
-                    throw new TranslationException(Errors.Translation_PredicateOnProjection);
-                }
-            }
-        }
-
         private void CompileTakeSkip(MethodCallExpression expression, CompilerBuffer buffer)
         {
             switch ( expression.Method.Name )
@@ -972,7 +982,11 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            OutputType = buffer.EntityInfo.EntityType;
+            if ( OutputType == null )
+            {
+                OutputType = buffer.EntityInfo.EntityType;
+            }
+
             buffer.From = _formatter.FormatTableName(buffer.EntityInfo.EntityName, _index);
         }
 
@@ -1014,7 +1028,21 @@ namespace VirtualObjects.Queries.Translation
                     break;
 
                 case ExpressionType.Call:
-                    CompileCallPredicate((MethodCallExpression)expression, buffer);
+                    var callExpression = (MethodCallExpression)expression;
+
+                    if ( callExpression.Object != null && IsConstant(expression) )
+                    {
+                        CompileConstant(Expression.Constant(Expression.Lambda(callExpression).Compile().DynamicInvoke()), buffer);
+                        return;
+                    }
+
+                    if ( callExpression.Object != null && IsMemberAccess(callExpression) )
+                    {
+                        CompileMemberCallPredicate(callExpression, buffer);
+                        return;
+                    }
+
+                    CompileCallPredicate(callExpression, buffer);
                     break;
 
                 case ExpressionType.Convert:
@@ -1046,23 +1074,51 @@ namespace VirtualObjects.Queries.Translation
 
         }
 
+        private void CompileMemberCallPredicate(MethodCallExpression callExpression, CompilerBuffer buffer)
+        {
+            CompilePredicateExpression(callExpression.Object, buffer);
+
+            buffer.Predicates += _formatter.BeginMethodCall(callExpression.Method.Name);
+            
+            CompilePredicateExpression(callExpression.Arguments.First(), buffer);
+
+            buffer.Predicates += _formatter.EndMethodCall(callExpression.Method.Name);
+        }
+
         private void CompileParameter(ParameterExpression expression, CompilerBuffer buffer)
         {
             var entityInfo = _mapper.Map(expression.Type);
 
-            buffer.Predicates += _formatter.FormatFieldWithTable(entityInfo.KeyColumns.First().ColumnName, Indexer[expression]._index);
+            var column = entityInfo.KeyColumns.First();
+            _memberAccessStack.Push(column);
+            
+            buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, Indexer[expression]._index);
         }
 
         private void CompileCallPredicate(MethodCallExpression expression, CompilerBuffer buffer)
         {
             if ( expression.Method.Name != "Contains" )
             {
-                return;
+                throw new TranslationException("\nMethod [{Name}] not yet supported on nested query.", expression.Method);
             }
 
             var newTranslator = CreateNewTranslator();
+            IQueryInfo result;
 
-            var result = newTranslator.TranslateQuery(expression.Arguments.First());
+            try
+            {
+                Expression nestedExpression = expression.Arguments.First();
+                nestedExpression = BuildMissingProjection(nestedExpression, expression.Arguments[1] as MemberExpression);
+                var queryable = ExtractQueryable(nestedExpression);
+
+                nestedExpression = JoinExpressions(nestedExpression, queryable.Expression);
+
+                result = newTranslator.TranslateQuery(nestedExpression);
+            }
+            catch ( TranslationException ex )
+            {
+                throw new TranslationException("\nUnable to compile nested query.", ex);
+            }
 
             CompileMemberAccess(expression.Arguments[1], buffer);
 
@@ -1073,6 +1129,66 @@ namespace VirtualObjects.Queries.Translation
             //
             // To be closed later on.
             buffer.Parenthesis++;
+        }
+
+        private Expression BuildMissingProjection(Expression nestedExpression, MemberExpression arg1)
+        {
+            var callExpression = nestedExpression as MethodCallExpression;
+
+            if ( arg1 == null || callExpression == null || callExpression.Method.Name == "Select" )
+            {
+                return nestedExpression;
+            }
+
+            var foreignKey = EntityInfo[arg1.Member.Name];
+            var entityType = foreignKey.ForeignKey.EntityInfo.EntityType;
+
+            var method = typeof(Queryable)
+                .Methods(Flags.Static | Flags.StaticPublic, "Select")
+                .First(e => e.Parameters().Count == 2)
+                .MakeGenericMethod(entityType, foreignKey.ForeignKey.Property.PropertyType);
+
+            var parameter = Expression.Parameter(entityType, "e");
+
+            return Expression.Call(method, nestedExpression,
+                        Expression.Lambda(
+                            Expression.MakeMemberAccess(
+                                parameter,
+                                foreignKey.ForeignKey.Property
+                            ) /* Make Member Access */ ,
+                            parameter
+                        ) /* Make Lambda for member */
+                  );
+        }
+
+        /// <summary>
+        /// Joins the expressions when a query is passed via context capture.
+        /// </summary>
+        /// <param name="nestedExpression">The nested expression.</param>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
+        private Expression JoinExpressions(Expression nestedExpression, Expression expression)
+        {
+            if ( expression == null )
+            {
+                return nestedExpression;
+            }
+
+            var callExpression = nestedExpression as MethodCallExpression;
+
+            if ( callExpression == null )
+            {
+                return null;
+            }
+
+            var exp = JoinExpressions(callExpression.Arguments.First(), expression);
+
+            if ( exp == null )
+            {
+                return Expression.Call(callExpression.Method, expression, callExpression.Arguments[1]);
+            }
+
+            return exp;
         }
 
         private void CompileNot(Expression expression, CompilerBuffer buffer)
@@ -1115,18 +1231,25 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileConstant(Expression expression, CompilerBuffer buffer)
         {
-            var constant = expression as ConstantExpression;
-
-            if ( constant == null )
+            if ( !IsConstant(expression) )
             {
                 throw new UnsupportedException(Errors.Internal_WrongMethodCall, expression);
             }
 
-            var formatted = _formatter.FormatConstant(constant.Value, Parameters.Count);
+            var value = ParseValue(expression);
+
+            if (value != null && !value.GetType().IsFrameworkType())
+            {
+                var member= _memberAccessStack.Peek();
+                member = member.GetLastBind();
+                value = member.GetFieldFinalValue(value);
+            }
+
+            var formatted = _formatter.FormatConstant(value, Parameters.Count);
 
             Parameters[formatted] = new QueryParameter
             {
-                Value = constant.Value
+                Value = value
             };
 
             buffer.Predicates += formatted;
@@ -1139,6 +1262,11 @@ namespace VirtualObjects.Queries.Translation
             if ( member == null )
             {
                 throw new UnsupportedException(Errors.Internal_WrongMethodCall, expression);
+            }
+
+            if ( _compileStack.Peek() == "Select" && HasManyMemberAccess(expression) )
+            {
+                throw new TranslationException("\nMore than one member accessed in a projection.\nExpression: {Expression}", new { Expression = expression.ToString() });
             }
 
             if ( CompileIfConstant(expression, buffer) ) return;
@@ -1171,6 +1299,7 @@ namespace VirtualObjects.Queries.Translation
 
                 var column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
 
+                _memberAccessStack.Push(column);
                 buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, Indexer[parameterExpression]._index);
 
                 buffer.AddPredicatedColumn(column);
@@ -1213,6 +1342,7 @@ namespace VirtualObjects.Queries.Translation
             //
             // Use the binded field on the predicate.
             //
+            _memberAccessStack.Push(foreignKey);
             buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, translator._index);
             buffer.Predicates += " " + _formatter.In + " ";
             buffer.Predicates += _formatter.BeginWrap();
@@ -1225,6 +1355,7 @@ namespace VirtualObjects.Queries.Translation
             // Use the key of the other type to predicate.
             //
             foreignKey = foreignKey.ForeignKey;
+            _memberAccessStack.Push(foreignKey);
             buffer.Predicates += _formatter.FormatFieldWithTable(foreignKey.ColumnName, queryCompiler._index);
             buffer.Predicates += " " + _formatter.From + " ";
             buffer.Predicates += _formatter.FormatTableName(foreignKey.EntityInfo.EntityName, queryCompiler._index);
@@ -1340,14 +1471,12 @@ namespace VirtualObjects.Queries.Translation
 
         private bool CompileIfConstant(Expression expression, CompilerBuffer buffer)
         {
-            var constant = ExtractConstant(expression);
-
-            if ( constant == null )
+            if ( !IsConstant(expression) )
             {
                 return false;
             }
 
-            CompileConstant(constant, buffer);
+            CompileConstant(expression, buffer);
             return true;
         }
 
@@ -1380,7 +1509,8 @@ namespace VirtualObjects.Queries.Translation
                     {
                         CompileCallPredicate(callExpression, buffer);
                     }
-                    buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+
+                    FlushParenthesis(buffer);
                     return;
                 }
 
@@ -1412,7 +1542,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 var left = RemoveDynamicFromMemberAccess(binary.Left);
                 var right = RemoveDynamicFromMemberAccess(binary.Right);
-
+                
                 //
                 // In case the constant part is in the left part.
                 // Not very used but still...
@@ -1428,7 +1558,7 @@ namespace VirtualObjects.Queries.Translation
                     left = binary.Right;
                     right = binary.Left;
                 }
-                else if ( HasManyMemberAccess(left) && HasManyMemberAccess(right) )
+                else if ( HasManyMemberAccess(left) && !IsConstant(right) && HasManyMemberAccess(right) )
                 {
                     throw new TranslationException(Errors.Translation_ManyMembersAccess_On_BothSides_NotSupported);
                 }
@@ -1438,7 +1568,7 @@ namespace VirtualObjects.Queries.Translation
                     return;
                 }
 
-
+                
                 CompilePredicateExpression(left, buffer);
 
                 if ( IsConstant(right) && right.ToString() == "null" )
@@ -1455,10 +1585,8 @@ namespace VirtualObjects.Queries.Translation
                 }
                 else
                 {
-
                     if ( methodCalled != String.Empty )
                     {
-
                         buffer.Predicates += _formatter.BeginMethodCall(methodCalled);
 
                         CompilePredicateExpression(right, buffer);
@@ -1473,7 +1601,7 @@ namespace VirtualObjects.Queries.Translation
                 }
 
             }
-            buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+            FlushParenthesis(buffer);
         }
 
         private void CompileParameterToObject(Expression right, CompilerBuffer buffer, bool parametersOnly)
@@ -1489,6 +1617,7 @@ namespace VirtualObjects.Queries.Translation
                     continue;
                 }
 
+                _memberAccessStack.Push(keyColumn);
                 buffer.Predicates += _formatter.FormatFieldWithTable(keyColumn.ColumnName, _rootTranslator._index);
                 buffer.Predicates += " " + _formatter.FormatNode(ExpressionType.Equal) + " ";
 
@@ -1504,7 +1633,7 @@ namespace VirtualObjects.Queries.Translation
 
             buffer.Predicates.RemoveLast(_formatter.And.Length + 2);
 
-            buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+            FlushParenthesis(buffer);
         }
 
         private void CompileNodeType(ExpressionType nodeType, CompilerBuffer buffer)
@@ -1515,6 +1644,36 @@ namespace VirtualObjects.Queries.Translation
         #endregion
 
         #region Auxiliary Methods
+
+        private static void InitBinaryExpressionCall(CompilerBuffer buffer)
+        {
+            if ( String.IsNullOrEmpty(buffer.Predicates) )
+            {
+                buffer.Predicates += " Where ";
+            }
+            else
+            {
+                buffer.Predicates += " And ";
+            }
+        }
+
+        private static void ThrowIfContainsAPredicate(MethodCallExpression call)
+        {
+            if ( call.Arguments.Count == 2 )
+            {
+                var tmpLambda = ExtractLambda(call.Arguments[1], false);
+                if ( tmpLambda.ReturnType == typeof(Boolean) )
+                {
+                    throw new TranslationException(Errors.Translation_PredicateOnProjection);
+                }
+            }
+        }
+
+        private void FlushParenthesis(CompilerBuffer buffer)
+        {
+            buffer.Predicates += _formatter.EndWrap(buffer.Parenthesis + 1);
+            buffer.Parenthesis = 0;
+        }
 
         private IQueryable ExtractQueryable(Expression expression)
         {
@@ -1532,7 +1691,7 @@ namespace VirtualObjects.Queries.Translation
             var constant = ExtractConstant(expression) as ConstantExpression;
             if ( constant != null )
             {
-                return constant.Value as IQueryable;
+                return ParseValue(constant) as IQueryable;
             }
 
             throw new TranslationException(Errors.Translation_UnableToExtractQueryable);
@@ -1540,6 +1699,11 @@ namespace VirtualObjects.Queries.Translation
 
         private Expression RemoveDynamicFromMemberAccess(Expression tmpExp)
         {
+            if ( IsConstant(tmpExp) )
+            {
+                return tmpExp;
+            }
+
             while ( tmpExp is MemberExpression && ExtractAccessor(tmpExp).Type.IsDynamic() )
             {
                 tmpExp = RemoveDynamicType(tmpExp as MemberExpression);
@@ -1550,12 +1714,19 @@ namespace VirtualObjects.Queries.Translation
 
         private Expression RemoveDynamicType(MemberExpression member)
         {
+            if ( IsConstant(member) )
+            {
+                return member;
+            }
+
             if ( member.Expression is ParameterExpression )
             {
                 return Expression.Parameter(member.Type, member.Member.Name);
             }
 
-            var expMember = RemoveDynamicType(member.Expression as MemberExpression);
+            var nextMember = member.Expression as MemberExpression;
+
+            var expMember = RemoveDynamicType(nextMember);
 
             return Expression.MakeMemberAccess(expMember, member.Member);
         }
@@ -1663,6 +1834,11 @@ namespace VirtualObjects.Queries.Translation
             return ExtractConstant(expression) != null;
         }
 
+        private bool IsMemberAccess(MethodCallExpression expression)
+        {
+            return expression.Object is MemberExpression;
+        }
+
         private static Expression ExtractConstant(Expression expression)
         {
             if ( expression == null )
@@ -1677,6 +1853,8 @@ namespace VirtualObjects.Queries.Translation
                     return ExtractConstant(member.Expression);
                 case ExpressionType.Constant:
                     return expression;
+                case ExpressionType.Call:
+                    return ExtractConstant(((MethodCallExpression)expression).Object);
                 default: return null;
             }
         }
@@ -1686,6 +1864,14 @@ namespace VirtualObjects.Queries.Translation
             var constantExpression = arg as ConstantExpression;
             if ( constantExpression != null )
             {
+                if ( Attribute.IsDefined(constantExpression.Type, typeof(CompilerGeneratedAttribute)) )
+                {
+                    // TODO: this is a little bit weird code. Do I really have to check the fields of this type?!
+                    return constantExpression.Type.Fields()
+                        .First(e => !e.Name.Contains("<>"))
+                        .Get(constantExpression.Value);
+                }
+
                 return constantExpression.Value;
             }
 
@@ -1798,7 +1984,6 @@ namespace VirtualObjects.Queries.Translation
         }
 
         private readonly Stack<String> _predicates = new Stack<string>();
-        private Type _outputType;
 
         private void SafePredicate(CompilerBuffer buffer)
         {
@@ -1821,11 +2006,4 @@ namespace VirtualObjects.Queries.Translation
         #endregion
     }
 
-    class QueryParameter : IOperationParameter
-    {
-        public Type Type { get; set; }
-        public object Value { get; set; }
-        public string Name { get; set; }
-        public IEntityColumnInfo Column { get; set; }
-    }
 }

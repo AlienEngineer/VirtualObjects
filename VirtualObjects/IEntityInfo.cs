@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using VirtualObjects.Queries;
 
 namespace VirtualObjects
 {
@@ -24,5 +25,7 @@ namespace VirtualObjects
 
         IOperations Operations { get; }
         IList<IEntityColumnInfo> ForeignKeys { get; }
+        IEntityProvider EntityProvider { get; }
+        IEntityMapper EntityMapper { get; }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using Fasterflect;
 using System.Linq;
+using VirtualObjects.Queries;
 
 namespace VirtualObjects.Config
 {
@@ -36,10 +37,16 @@ namespace VirtualObjects.Config
         private readonly ICollection<Func<Type, String>> _entityNameGetters;
 
         private readonly Func<Attribute, Boolean> _defaultBooleanGetter;
+        private readonly IEntityProvider _entityProvider;
+        private readonly IEntityMapper _entityMapper;
+        private readonly SessionContext _sessionContext;
 
-        public MappingBuilder(IOperationsProvider operationsProvider)
+        public MappingBuilder(IOperationsProvider operationsProvider, IEntityProvider entityProvider, IEntityMapper entityMapper, SessionContext sessionContext)
         {
             _operationsProvider = operationsProvider;
+            _entityProvider = entityProvider;
+            _entityMapper = entityMapper;
+            _sessionContext = sessionContext;
             _columnNameGetters = new Collection<Func<PropertyInfo, String>>();
             _columnKeyGetters = new Collection<Func<PropertyInfo, Boolean>>();
             _columnIdentityGetters = new Collection<Func<PropertyInfo, Boolean>>();
@@ -164,7 +171,7 @@ namespace VirtualObjects.Config
         
         public IMapper Build()
         {
-            return new Mapper(_operationsProvider)
+            return new Mapper(_operationsProvider, _entityProvider, _entityMapper, _sessionContext)
             {
                 ColumnNameGetters = _columnNameGetters.Reverse(),
                 EntityNameGetters = _entityNameGetters.Reverse(),

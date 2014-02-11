@@ -12,13 +12,16 @@ namespace VirtualObjects.EntityProvider
         public IEntityProvider MainProvider { get; set; }
         private IEntityProvider _tmpProvider ;
         private Type _type;
+        private SessionContext _sessionContext;
         
         public void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
+            _sessionContext = sessionContext;
             _tmpProvider = GetProviderForType(outputType);
             
             _tmpProvider.PrepareProvider(outputType, sessionContext);
             _type = outputType;
+            
         }
 
         public EntityProviderComposite(IEnumerable<IEntityProvider> entityProviders)
@@ -52,7 +55,11 @@ namespace VirtualObjects.EntityProvider
 
         public object CreateEntity(Type type)
         {
-            return GetProviderForType(type).CreateEntity(type);
+            var provider = GetProviderForType(type);
+            
+            provider.PrepareProvider(type, _sessionContext);
+            
+            return provider.CreateEntity(type);
         }
     }
 }

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Reflection;
 using Fasterflect;
 
 namespace VirtualObjects.Queries.Mapping
 {
-    /// <summary>
-    /// TODO: This type of mapping can be quite slow. A way to improve this is cache the entities as they are mapped, and reuse them.
-    /// </summary>
+
     class DynamicWithMemberEntityMapper : DynamicTypeEntityMapper
     {
+
 
         public override bool CanMapEntity(MapperContext context)
         {
@@ -23,25 +22,40 @@ namespace VirtualObjects.Queries.Mapping
                 properties.Any(e => e.FieldType.IsFrameworkType());
         }
 
+        //public override object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
+        //{
+        //    mapContext.Buffer = buffer;
+
+        //    var i = 0;
+        //    foreach ( var setter in mapContext.OutputTypeSetters )
+        //    {
+        //        setter(buffer, reader.GetValue(i++));
+        //    }
+
+        //    return buffer;
+        //}
+
+
         public override void PrepareMapper(MapperContext context)
         {
             var setters = new List<MemberSetter>();
             var fieldCount = 0;
+            var fields = context.OutputType.Fields();
 
-            context.OutputType.Fields().ForEach(e =>
+            fields.ForEach(field =>
             {
 
-                if ( e.FieldType.IsFrameworkType() )
+                if ( field.FieldType.IsFrameworkType() )
                 {
-                    setters.Add(e.DelegateForSetFieldValue());
+                    setters.Add(field.DelegateForSetFieldValue());
                     fieldCount++;
                     return;
                 }
 
                 var ctx = new MapperContext
                 {
-                    EntityInfo = context.Mapper.Map(e.FieldType),
-                    OutputType = e.FieldType,
+                    EntityInfo = context.Mapper.Map(field.FieldType),
+                    OutputType = field.FieldType,
                     EntityProvider = context.EntityProvider,
                     Mapper = context.Mapper,
                     QueryInfo = context.QueryInfo
@@ -50,21 +64,22 @@ namespace VirtualObjects.Queries.Mapping
                 var predictedColumn = ctx.QueryInfo.PredicatedColumns[fieldCount];
                 var type = predictedColumn.EntityInfo.EntityType;
                 var i = fieldCount;
-                
+
 
                 //
                 // Created setters for each column of the same type.
                 //
-                while ( predictedColumn.EntityInfo.EntityType == type)
+                while ( predictedColumn.EntityInfo.EntityType == type )
                 {
+
                     //
                     // Use the last bind because the value that comes from the database is not a complex type.
                     //
                     var column = predictedColumn.GetLastBind();
 
-                    setters.Add((o, value) => column.SetFieldFinalValue(e.Get(o), value));
+                    setters.Add((o, value) => column.SetFieldFinalValue(field.Get(o), value));
 
-                    if (++i == ctx.QueryInfo.PredicatedColumns.Count) break;
+                    if ( ++i == ctx.QueryInfo.PredicatedColumns.Count ) break;
 
                     predictedColumn = ctx.QueryInfo.PredicatedColumns[i];
                 }

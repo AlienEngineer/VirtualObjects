@@ -9,6 +9,7 @@ using Castle.DynamicProxy;
 using Fasterflect;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
+using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.EntityProvider
 {
@@ -16,22 +17,24 @@ namespace VirtualObjects.EntityProvider
     {
         private readonly ProxyGenerator _proxyGenerator;
         private ProxyGenerationOptions _proxyGenerationOptions;
+        private bool _isPrepared;
 
         public ProxyEntityProvider(ProxyGenerator proxyGenerator)
         {
             _proxyGenerator = proxyGenerator;
         }
 
-        internal ProxyEntityProvider() : this(new ProxyGenerator())
+        internal ProxyEntityProvider()
+            : this(new ProxyGenerator())
         {
-            
+
         }
 
         public override object CreateEntity(Type type)
         {
             Debug.Assert(type != null, "type != null");
 
-// ReSharper disable once PossibleNullReferenceException
+            // ReSharper disable once PossibleNullReferenceException
             while ( type.GetInterfaces().Contains(typeof(IProxyTargetAccessor)) )
             {
                 type = type.BaseType;
@@ -43,15 +46,17 @@ namespace VirtualObjects.EntityProvider
 
         public override bool CanCreate(Type type)
         {
-            if (type.IsDynamic()) return false;
-            if (type.IsFrameworkType()) return false;
-            if (type.InheritsOrImplements<IEnumerable>()) return false;
-            
+            if ( type.IsDynamic() ) return false;
+            if ( type.IsFrameworkType() ) return false;
+            if ( type.InheritsOrImplements<IEnumerable>() ) return false;
+
             return (type.Properties().Any(e => e.GetGetMethod().IsVirtual));
         }
 
         public override void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
+            // if ( _isPrepared ) { return; }
+
             _proxyGenerationOptions = new ProxyGenerationOptions
             {
                 Selector = new InterceptorSelector(
@@ -59,6 +64,8 @@ namespace VirtualObjects.EntityProvider
                     new CollectionPropertyInterceptor(sessionContext.Session, sessionContext.Mapper)
                 )
             };
+
+            _isPrepared = true;
         }
     }
 
@@ -150,14 +157,16 @@ namespace VirtualObjects.EntityProvider
             if ( _properties.TryGetValue(getter, out propValue) )
             {
                 propValue.Value = invocation.GetArgumentValue(0);
+                propValue.SettedCount++;
+                propValue.IsLoaded = MappingStatus.InternalLoading;
                 return;
             }
 
             _properties[getter] = new PropertyValue
             {
                 Value = invocation.GetArgumentValue(0),
-
-                IsLoaded = false
+                SettedCount = 1,
+                IsLoaded = InterceptCollections || MappingStatus.InternalLoading
             };
         }
 
@@ -222,7 +231,7 @@ namespace VirtualObjects.EntityProvider
         private static readonly MethodInfo SessionGenericGetAllMethod =
             typeof(ISession).GetMethod("GetAll", BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly MethodInfo WhereMethod = 
+        private static readonly MethodInfo WhereMethod =
             typeof(CollectionPropertyInterceptor).GetMethod("Where");
 
         private readonly ISession _session;
@@ -236,7 +245,7 @@ namespace VirtualObjects.EntityProvider
         }
 
 
-// ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedMember.Local
         private static IEnumerable<T> ProxyGenericIterator<T>(object target, IEnumerable enumerable)
         {
             return ProxyNonGenericIterator(target, enumerable).Cast<T>();
@@ -280,10 +289,10 @@ namespace VirtualObjects.EntityProvider
 
             if ( last == null )
             {
-                throw new VirtualObjectsException(Errors.Configuration_UnableToBindCollection, new { callerTable.EntityName});
+                throw new VirtualObjectsException(Errors.Configuration_UnableToBindCollection, new { callerTable.EntityName });
             }
 
-            
+
             var where = Expression.Call(null,
             WhereMethod.MakeGenericMethod(entityType),
                 Expression.Constant(result),
@@ -316,7 +325,7 @@ namespace VirtualObjects.EntityProvider
 
             // The table representation of the caller.
             var callerTable = _mapper.Map(invocation.Method.ReflectedType);
-            
+
             return BuildWhereClause(invocation, entityType, baseQuery, foreignTable, callerTable);
         }
 
