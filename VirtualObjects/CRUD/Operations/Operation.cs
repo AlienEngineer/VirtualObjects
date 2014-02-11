@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.CRUD.Operations
 {
@@ -33,12 +34,14 @@ namespace VirtualObjects.CRUD.Operations
         public IOperation PrepareOperation(object entityModel)
         {
             _entityModel = entityModel;
-            _parameters = GetParameters(_entityInfo)
+            try
+            {
+                _parameters = GetParameters(_entityInfo)
                 .Select(e => new
                 {
-                    Key = e.ColumnName, 
-                    Value = e.GetFieldFinalValue(entityModel), 
-                    e.Property, 
+                    Key = e.ColumnName,
+                    Value = e.GetFieldFinalValue(entityModel),
+                    e.Property,
                     Column = e
                 })
                 .ToDictionary(
@@ -50,6 +53,12 @@ namespace VirtualObjects.CRUD.Operations
                         Name = e.Key,
                         Column = e.Column
                     });
+            }
+            catch (Exception ex)
+            {
+                throw new VirtualObjectsException("Unable to create parameters for {EntityName}.", _entityInfo, ex);
+            }
+            
 
             return this;
         }
