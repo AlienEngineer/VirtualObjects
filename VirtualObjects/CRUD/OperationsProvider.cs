@@ -62,34 +62,34 @@ namespace VirtualObjects.CRUD
             var columns = entityInfo.Columns.Where(e => !e.IsIdentity && !e.IsVersionControl).ToList();
 
             StringBuffer text = _formatter.Insert;
-            
+
             text += " ";
             text += _formatter.FormatTableName(entityInfo.EntityName);
             text += " ";
-            
+
             text += _formatter.BeginWrap();
-            
+
             text += CreateProjection(columns);
             text += _formatter.EndWrap();
-            
+
             text += " ";
             text += _formatter.Values;
             text += " ";
-            
+
             text += _formatter.BeginWrap();
-            
+
             text += string.Join(_formatter.FieldSeparator,
                                 columns.Select(e => "@" + e.ColumnName.Replace(' ', '_')));
 
             text += _formatter.EndWrap();
 
-            if (entityInfo.Identity != null)
+            if ( entityInfo.Identity != null )
             {
                 text += " ";
                 text += _formatter.Identity;
             }
 
-            
+
             return new InsertOperation(text, entityInfo);
         }
 
@@ -118,10 +118,10 @@ namespace VirtualObjects.CRUD
             text += _formatter.From;
             text += " ";
             text += _formatter.FormatTableName(entityInfo.EntityName);
-            text += " "; 
+            text += " ";
             text += _formatter.Where;
             text += " ";
-            
+
             CreateWhereClause(text, entityInfo);
 
             return new GetOperation(text, entityInfo, _mapper, _entityProvider);
@@ -134,13 +134,15 @@ namespace VirtualObjects.CRUD
 
         private void CreateWhereClause(StringBuffer text, IEntityInfo entityInfo)
         {
-            foreach (var keyColumn in entityInfo.KeyColumns)
+            foreach ( var keyColumn in entityInfo.KeyColumns )
             {
                 AppendEquality(text, keyColumn);
-                text += _formatter.FieldSeparator;
+                text += " ";
+                text += _formatter.And;
+                text += " ";
             }
 
-            text.RemoveLast(_formatter.FieldSeparator);
+            text.RemoveLast(_formatter.And.Length + 2);
         }
 
         private void AppendEquality(StringBuffer text, IEntityColumnInfo keyColumn)

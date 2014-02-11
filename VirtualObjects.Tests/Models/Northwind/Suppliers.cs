@@ -1,4 +1,6 @@
 ﻿using System;
+using VirtualObjects.Config;
+using VirtualObjects.Mappings;
 
 
 namespace VirtualObjects.Tests.Models.Northwind

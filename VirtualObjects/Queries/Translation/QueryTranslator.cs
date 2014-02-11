@@ -1553,7 +1553,7 @@ namespace VirtualObjects.Queries.Translation
                     left = binary.Right;
                     right = binary.Left;
                 }
-                else if ( !HasManyMemberAccess(left) && HasManyMemberAccess(right) )
+                else if ( !HasManyMemberAccess(left) && !IsConstant(right) && HasManyMemberAccess(right) )
                 {
                     left = binary.Right;
                     right = binary.Left;

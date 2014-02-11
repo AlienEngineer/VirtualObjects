@@ -1,10 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
 using Castle.DynamicProxy;
 using Fasterflect;
-using Ninject;
 using Ninject.Modules;
 using Ninject.Syntax;
 using VirtualObjects.Config;

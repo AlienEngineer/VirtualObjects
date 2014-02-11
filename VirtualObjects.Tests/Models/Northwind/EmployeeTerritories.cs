@@ -1,4 +1,7 @@
 ﻿
+using VirtualObjects.Config;
+using VirtualObjects.Mappings;
+
 namespace VirtualObjects.Tests.Models.Northwind
 {
     public class EmployeeTerritories

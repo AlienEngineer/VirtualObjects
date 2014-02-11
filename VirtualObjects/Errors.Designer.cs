@@ -156,7 +156,7 @@ namespace VirtualObjects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to get the ForeignKey for field {Name} in type {PropertyType.Name}..
+        ///   Looks up a localized string similar to Unable to get the ForeignKey for field {Name} in type {DeclaringType.Name}..
         /// </summary>
         public static string Mapping_UnableToGetForeignKey {
             get {

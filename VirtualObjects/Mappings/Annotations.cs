@@ -1,6 +1,6 @@
 using System;
 
-namespace VirtualObjects
+namespace VirtualObjects.Mappings
 {
 
     public class ColumnAttribute : Attribute

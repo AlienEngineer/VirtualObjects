@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using VirtualObjects.Mappings;
 
 
 namespace VirtualObjects.Tests.Config

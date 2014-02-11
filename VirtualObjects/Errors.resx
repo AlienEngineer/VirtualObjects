@@ -124,7 +124,7 @@
     <value>Wrong method called for {NodeType}.</value>
   </data>
   <data name="Mapping_UnableToGetForeignKey" xml:space="preserve">
-    <value>Unable to get the ForeignKey for field {Name} in type {PropertyType.Name}.</value>
+    <value>Unable to get the ForeignKey for field {Name} in type {DeclaringType.Name}.</value>
   </data>
   <data name="Query_EntityInfoNotFound" xml:space="preserve">
     <value>Unable to find the proper Entity Info for {ElementTypeName}.</value>

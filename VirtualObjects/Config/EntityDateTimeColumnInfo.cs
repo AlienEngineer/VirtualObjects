@@ -18,7 +18,7 @@ namespace VirtualObjects.Config
         {
             var value = (DateTime)base.GetFieldFinalValue(entity);
 
-            if (value.Year < 1753 || value.Year > 1999)
+            if (value.Year < 1753)
             {
                 return null;
             }

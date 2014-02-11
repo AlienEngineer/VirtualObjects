@@ -1,6 +1,7 @@
 using System.IO;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
+using VirtualObjects.Mappings;
 
 namespace VirtualObjects
 {

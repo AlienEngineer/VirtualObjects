@@ -34,7 +34,13 @@ namespace VirtualObjects.CRUD.Operations
         {
             _entityModel = entityModel;
             _parameters = GetParameters(_entityInfo)
-                .Select(e => new { Key = e.ColumnName, Value = e.GetFieldFinalValue(entityModel), e.Property, Column = e })
+                .Select(e => new
+                {
+                    Key = e.ColumnName, 
+                    Value = e.GetFieldFinalValue(entityModel), 
+                    e.Property, 
+                    Column = e
+                })
                 .ToDictionary(
                     e => e.Key,
                     e => (IOperationParameter)new OperationParameter

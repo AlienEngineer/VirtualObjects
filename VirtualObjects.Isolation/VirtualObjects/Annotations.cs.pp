@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace $rootnamespace$.VirtualObjects
+namespace $rootnamespace$
 {
     public class ColumnAttribute : Attribute
     {

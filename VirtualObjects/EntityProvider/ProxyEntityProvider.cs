@@ -17,7 +17,6 @@ namespace VirtualObjects.EntityProvider
     {
         private readonly ProxyGenerator _proxyGenerator;
         private ProxyGenerationOptions _proxyGenerationOptions;
-        private bool _isPrepared;
 
         public ProxyEntityProvider(ProxyGenerator proxyGenerator)
         {
@@ -64,8 +63,6 @@ namespace VirtualObjects.EntityProvider
                     new CollectionPropertyInterceptor(sessionContext.Session, sessionContext.Mapper)
                 )
             };
-
-            _isPrepared = true;
         }
     }
 
