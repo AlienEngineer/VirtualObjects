@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Queries.Formatters
@@ -44,7 +43,7 @@ namespace VirtualObjects.Queries.Formatters
             Identity = "Select @@IDENTITY";
         }
 
-        private static string Wrap(string name)
+        protected static string Wrap(string name)
         {
             return string.Format("[{0}]", name);
         }
@@ -91,14 +90,14 @@ namespace VirtualObjects.Queries.Formatters
             return string.Format("{0}.{1}", GetTableAlias(index), Wrap(name));
         }
 
-        public String FormatTableName(String name, int index)
+        public virtual String FormatTableName(String name, int index)
         {
             return string.Format("{0} {1}", Wrap(name), GetTableAlias(index));
         }
 
         public string FormatNode(ExpressionType nodeType)
         {
-            switch (nodeType)
+            switch ( nodeType )
             {
                 case ExpressionType.Add: return " + ";
                 case ExpressionType.Subtract: return " - ";
@@ -113,7 +112,7 @@ namespace VirtualObjects.Queries.Formatters
                 case ExpressionType.LessThan: return " < ";
                 case ExpressionType.LessThanOrEqual: return " <= ";
                 default:
-                    throw new UnsupportedException(Errors.SQL_UnableToFormatNode, new {NodeType = nodeType});
+                    throw new UnsupportedException(Errors.SQL_UnableToFormatNode, new { NodeType = nodeType });
 
             }
         }
@@ -233,16 +232,16 @@ namespace VirtualObjects.Queries.Formatters
 
         public string BeginMethodCall(string methodCalled)
         {
-            switch (methodCalled)
+            switch ( methodCalled )
             {
-                case "StartsWith" :
+                case "StartsWith":
                     return " like ";
                 case "EndsWith":
                 case "Contains":
                     return " like '%' + ";
             }
 
-            throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled});
+            throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });
         }
 
         public string EndMethodCall(string methodCalled)
@@ -250,11 +249,11 @@ namespace VirtualObjects.Queries.Formatters
             switch ( methodCalled )
             {
                 case "StartsWith":
-                case "Contains": 
+                case "Contains":
                     return " + '%'";
-                case "EndsWith": 
+                case "EndsWith":
                     return String.Empty;
-                
+
             }
 
             throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });
@@ -262,7 +261,7 @@ namespace VirtualObjects.Queries.Formatters
 
         public string FormatConstant(object parseValue)
         {
-            if (parseValue is Double)
+            if ( parseValue is Double )
             {
                 return String.Format(CultureInfo.InvariantCulture, "{0: 0.0#}", parseValue);
             }
@@ -270,7 +269,7 @@ namespace VirtualObjects.Queries.Formatters
             return parseValue.ToString();
         }
 
-        public string FormatTableName(string entityName)
+        public virtual string FormatTableName(string entityName)
         {
             return Wrap(entityName);
         }

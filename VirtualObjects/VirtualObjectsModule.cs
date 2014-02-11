@@ -65,7 +65,14 @@ namespace VirtualObjects
             //
             // QueryTranslation
             //
-            Bind<IFormatter>().To<SqlFormatter>().InSingletonScope();
+            if (_configuration.Formatter == null)
+            {
+                Bind<IFormatter>().To<SqlFormatter>().InSingletonScope();
+            }
+            else
+            {
+                Bind<IFormatter>().ToConstant(_configuration.Formatter).InSingletonScope();
+            }
             Bind<IQueryTranslator>().To<CachingTranslator>().InThreadScope();
 
             //

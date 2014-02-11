@@ -102,6 +102,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not possible to create a connection string for {FileName} filename. (*.xls, *.xlsx).
+        /// </summary>
+        public static string Excel_UnableToCreateConnectionString {
+            get {
+                return ResourceManager.GetString("Excel_UnableToCreateConnectionString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find the proper executor for the given query..
         /// </summary>
         public static string Execution_UnableToFindExecutor {

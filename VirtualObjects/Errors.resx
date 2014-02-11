@@ -209,4 +209,7 @@ There is no connection string configured in [App/Web].Config.</value>
   <data name="Configuration_UnableToBindCollection" xml:space="preserve">
     <value>Unable to bind the collection to any key field on {EntityName}.</value>
   </data>
+  <data name="Excel_UnableToCreateConnectionString" xml:space="preserve">
+    <value>Not possible to create a connection string for {FileName} filename. (*.xls, *.xlsx)</value>
+  </data>
 </root>

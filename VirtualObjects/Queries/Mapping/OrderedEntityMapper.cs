@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Queries.Mapping
 {
@@ -13,7 +15,15 @@ namespace VirtualObjects.Queries.Mapping
             var i = 0;
             foreach ( var column in mapContext.EntityInfo.Columns )
             {
-                column.SetFieldFinalValue(buffer, reader.GetValue(i++));
+                var value = reader.GetValue(i++);
+                try
+                {
+                    column.SetFieldFinalValue(buffer, value);
+                }
+                catch ( ConfigException ex)
+                {
+                    TrySet(buffer, column, value, ex);
+                }
             }
 
             return buffer;
@@ -27,6 +37,26 @@ namespace VirtualObjects.Queries.Mapping
         public virtual void PrepareMapper(MapperContext context)
         {
             // no prepare needed.
+        }
+
+        static void TrySet(object entity, IEntityColumnInfo field, object value, Exception ex)
+        {
+            try
+            {
+                if ( field.Property.PropertyType == typeof(Guid) )
+                {
+                    if ( value != null )
+                        field.SetFieldFinalValue(entity, Guid.Parse(value.ToString()));
+                }
+                else
+                {
+                    field.SetFieldFinalValue(entity, Convert.ChangeType(value, field.Property.PropertyType));
+                }
+            }
+            catch ( Exception )
+            {
+                throw ex;
+            }
         }
     }
 }

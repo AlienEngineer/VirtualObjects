@@ -126,6 +126,7 @@
     <Compile Include="Queries\Execution\IQueryExecutor.cs" />
     <Compile Include="Queries\Execution\QueryExecutor.cs" />
     <Compile Include="Queries\Execution\SingleQueryExecutor.cs" />
+    <Compile Include="Queries\Formatters\ExcelFormatter.cs" />
     <Compile Include="Queries\Formatters\IFormatter.cs" />
     <Compile Include="Queries\Formatters\SqlFormatter.cs" />
     <Compile Include="Queries\IConverter.cs" />

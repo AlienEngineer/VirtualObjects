@@ -2,6 +2,7 @@ using System.IO;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
 using VirtualObjects.Mappings;
+using VirtualObjects.Queries.Formatters;
 
 namespace VirtualObjects
 {
@@ -17,6 +18,7 @@ namespace VirtualObjects
 
         public IDbConnectionProvider ConnectionProvider { get; set; }
         public TextWriter Logger { get; set; }
+        public IFormatter Formatter { get; set; }
 
         private IOcContainer _container;
 
