@@ -10,11 +10,13 @@ namespace VirtualObjects.Queries
     {
         private readonly IQueryExecutor _executor;
         private readonly SessionContext _context;
+        private readonly IQueryTranslator _translator;
 
-        public QueryProvider(IQueryExecutor executor, SessionContext context)
+        public QueryProvider(IQueryExecutor executor, SessionContext context, IQueryTranslator translator)
         {
             _executor = executor;
             _context = context;
+            _translator = translator;
         }
 
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
@@ -65,6 +67,11 @@ namespace VirtualObjects.Queries
                 }
                 return ((ConstantExpression) expression).Value as IQueryable;
             }
+        }
+
+        public string Translate(Query query)
+        {
+            return _translator.TranslateQuery(query).CommandText;
         }
     }
 }

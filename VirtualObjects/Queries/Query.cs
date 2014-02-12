@@ -24,6 +24,17 @@ namespace VirtualObjects.Queries
         public Expression Expression { get; private set; }
         public Type ElementType { get; private set; }
         public IQueryProvider Provider { get; private set; }
+
+        public override string ToString()
+        {
+            var provider = Provider as QueryProvider;
+            if (provider != null)
+            {
+                return provider.Translate(this);
+            }
+
+            return base.ToString();
+        }
     }
 
     class Query<TElement> : Query, IOrderedQueryable<TElement>

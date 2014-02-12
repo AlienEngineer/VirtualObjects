@@ -29,6 +29,8 @@ namespace VirtualObjects
 
         public override void Load()
         {
+            _configuration.Init(new NinjectContainer(Kernel));
+
             //
             // Connection
             //
@@ -116,7 +118,7 @@ namespace VirtualObjects
             //
             Bind<IOperationsProvider>().To<OperationsProvider>();
 
-            _configuration.Init(new NinjectContainer(Kernel));
+            
         }
 
     }

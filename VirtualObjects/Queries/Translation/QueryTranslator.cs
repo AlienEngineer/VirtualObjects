@@ -919,7 +919,7 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            if ( buffer.Take > 0 && buffer.Skip == 0 )
+            if ( buffer.Take > 0 && buffer.Skip <= 0 )
             {
                 buffer.Projection += _formatter.FormatTakeN(buffer.Take);
                 buffer.Projection += " ";
