@@ -133,7 +133,6 @@ namespace VirtualObjects.Queries.Translation
         private int _parameterCount = -1;
         private QueryTranslator _rootTranslator;
         private readonly IDictionary<ParameterExpression, QueryTranslator> _indexer;
-        private ICollection<IEntityColumnInfo> _membersOrder = new Collection<IEntityColumnInfo>();
         private readonly Stack<String> _compileStack = new Stack<String>();
         private readonly Stack<IEntityColumnInfo> _memberAccessStack = new Stack<IEntityColumnInfo>();
 
@@ -616,11 +615,6 @@ namespace VirtualObjects.Queries.Translation
 
             stringBuffer += CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
 
-            if (_memberAccessStack.Count > 0)
-            {
-                _membersOrder.Add(_memberAccessStack.Peek());
-            }
-
             return stringBuffer;
         }
 
@@ -944,16 +938,22 @@ namespace VirtualObjects.Queries.Translation
                 {
                     buffer.From += _formatter.Select + " ";
 
-
-                    //
-                    // Default order by clause.
-                    //
-                    if (_membersOrder.Count == 0)
+                    if (!String.IsNullOrEmpty(buffer.OrderBy))
                     {
-                        _membersOrder = buffer.EntityInfo.KeyColumns;
+                        buffer.From += _formatter.FormatRowNumber(
+                            buffer.OrderBy.Replace(_formatter.GetTableAlias(_index), _formatter.GetTableAlias(100 + _index)), 
+                            _index);
+                        buffer.OrderBy = null;
                     }
-
-                    buffer.From += _formatter.FormatRowNumber(_membersOrder, _index);
+                    else
+                    {
+                        //
+                        // Default order by clause.
+                        //
+                        buffer.From += _formatter.FormatRowNumber(buffer.EntityInfo.KeyColumns, _index);    
+                    }
+                    
+                    
                     buffer.From += " " + _formatter.From + " ";
                     buffer.From += _formatter.FormatTableName(buffer.EntityInfo.EntityName, 100 + _index);
 
@@ -970,7 +970,7 @@ namespace VirtualObjects.Queries.Translation
                 //
                 // Append the conditions to the predicates.
                 //
-                if ( buffer.Predicates == null )
+                if ( String.IsNullOrEmpty(buffer.Predicates) )
                 {
                     buffer.Predicates += " " + _formatter.Where + " ";
                 }

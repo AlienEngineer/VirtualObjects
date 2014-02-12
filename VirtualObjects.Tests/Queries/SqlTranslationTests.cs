@@ -164,6 +164,18 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Ordered_Query_Skip_Take_N()
+        {
+            var query = Query<Employee>()
+                .Take(1).Skip(1).OrderBy(e => e.LastName);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[LastName]) as [Internal_Row_Index], * From [Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1 And [T0].[Internal_Row_Index] <= 2)")
+            );
+        }
+
         /// <summary>
         /// 
         /// Sql translation for a simple nested query

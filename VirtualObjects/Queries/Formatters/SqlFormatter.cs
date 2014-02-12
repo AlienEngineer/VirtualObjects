@@ -136,9 +136,14 @@ namespace VirtualObjects.Queries.Formatters
         {
             var columns = keyColumns as IList<IEntityColumnInfo> ?? keyColumns.ToList();
 
+            return FormatRowNumber(" Order By " + FormatFields(columns, 100 + index), index);
+        }
+
+        public string FormatRowNumber(String orderBy, int index)
+        {
             return new StringBuilder()
-                .Append("ROW_NUMBER() OVER ( Order By ")
-                .Append(FormatFields(columns, 100 + index))
+                .Append("ROW_NUMBER() OVER (")
+                .Append(orderBy)
                 .Append(") as [Internal_Row_Index], *")
                 .ToString();
         }
