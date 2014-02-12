@@ -133,6 +133,7 @@ namespace VirtualObjects.Queries.Translation
         private int _parameterCount = -1;
         private QueryTranslator _rootTranslator;
         private readonly IDictionary<ParameterExpression, QueryTranslator> _indexer;
+        private ICollection<IEntityColumnInfo> _membersOrder = new Collection<IEntityColumnInfo>();
         private readonly Stack<String> _compileStack = new Stack<String>();
         private readonly Stack<IEntityColumnInfo> _memberAccessStack = new Stack<IEntityColumnInfo>();
 
@@ -614,6 +615,12 @@ namespace VirtualObjects.Queries.Translation
             Indexer[lambda.Parameters.First()] = this;
 
             stringBuffer += CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
+
+            if (_memberAccessStack.Count > 0)
+            {
+                _membersOrder.Add(_memberAccessStack.Peek());
+            }
+
             return stringBuffer;
         }
 
@@ -936,7 +943,17 @@ namespace VirtualObjects.Queries.Translation
                 buffer.From += _formatter.BeginWrap();
                 {
                     buffer.From += _formatter.Select + " ";
-                    buffer.From += _formatter.FormatRowNumber(buffer.EntityInfo.KeyColumns, _index);
+
+
+                    //
+                    // Default order by clause.
+                    //
+                    if (_membersOrder.Count == 0)
+                    {
+                        _membersOrder = buffer.EntityInfo.KeyColumns;
+                    }
+
+                    buffer.From += _formatter.FormatRowNumber(_membersOrder, _index);
                     buffer.From += " " + _formatter.From + " ";
                     buffer.From += _formatter.FormatTableName(buffer.EntityInfo.EntityName, 100 + _index);
 
@@ -1079,7 +1096,7 @@ namespace VirtualObjects.Queries.Translation
             CompilePredicateExpression(callExpression.Object, buffer);
 
             buffer.Predicates += _formatter.BeginMethodCall(callExpression.Method.Name);
-            
+
             CompilePredicateExpression(callExpression.Arguments.First(), buffer);
 
             buffer.Predicates += _formatter.EndMethodCall(callExpression.Method.Name);
@@ -1091,7 +1108,7 @@ namespace VirtualObjects.Queries.Translation
 
             var column = entityInfo.KeyColumns.First();
             _memberAccessStack.Push(column);
-            
+
             buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, Indexer[expression]._index);
         }
 
@@ -1238,7 +1255,7 @@ namespace VirtualObjects.Queries.Translation
 
             var value = ParseValue(expression);
 
-            if (value != null && !value.GetType().IsFrameworkType())
+            if ( value != null && !value.GetType().IsFrameworkType() )
             {
                 var member= _memberAccessStack.Peek();
                 member = member.GetLastBind();
@@ -1542,7 +1559,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 var left = RemoveDynamicFromMemberAccess(binary.Left);
                 var right = RemoveDynamicFromMemberAccess(binary.Right);
-                
+
                 //
                 // In case the constant part is in the left part.
                 // Not very used but still...
@@ -1568,7 +1585,7 @@ namespace VirtualObjects.Queries.Translation
                     return;
                 }
 
-                
+
                 CompilePredicateExpression(left, buffer);
 
                 if ( IsConstant(right) && right.ToString() == "null" )
