@@ -23,7 +23,7 @@ namespace VirtualObjects.Queries.Translation
         public class CompilerBuffer
         {
             private StringBuffer _projection;
-            
+
             public StringBuffer OldProjection { get; set; }
 
             public StringBuffer Projection
@@ -519,10 +519,10 @@ namespace VirtualObjects.Queries.Translation
             //
             if ( callExpression.Arguments.Count > 1 )
             {
+                
                 CompileMethod(callExpression.Arguments[1], method, buffer);
                 return;
             }
-
 
             throw new TranslationException(Errors.Translation_Method_NoArgs_NotSupported, callExpression.Method);
 
@@ -558,6 +558,7 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileMethod(Expression expression, String functionName, CompilerBuffer buffer)
         {
+            buffer.WasAggregated = true;
             var lambda = ExtractLambda(expression, false);
             Indexer[lambda.Parameters.First()] = this;
 
@@ -1311,7 +1312,11 @@ namespace VirtualObjects.Queries.Translation
             //
             while ( ExtractAccessor(member).Type.IsDynamic() )
             {
-                member = (MemberExpression)RemoveDynamicType(member);
+                var parsedMember = RemoveDynamicType(member) as MemberExpression;
+
+                member = parsedMember ?? member;
+
+                if ( parsedMember == null ) break;
             }
 
             if ( memberInfo == null )
@@ -1999,7 +2004,11 @@ namespace VirtualObjects.Queries.Translation
         {
             if ( buffer.Union != null && buffer.WasAggregated )
             {
-                var projection = buffer.Projection;
+                var tableAlias = _formatter.GetTableAlias(_depth + 1);
+                //
+                // I might need to store the index on the buffer.
+                //
+                var projection = buffer.Projection.Replace(_formatter.GetTableAlias(_index), tableAlias);
 
                 buffer.Projection = buffer.OldProjection;
                 if ( String.IsNullOrEmpty(buffer.Projection) )
@@ -2012,10 +2021,10 @@ namespace VirtualObjects.Queries.Translation
                     .Append(" " + _formatter.From + " ").Append(_formatter.BeginWrap())
                     .Append(MergeAll(buffer))
                     .Append(_formatter.EndWrap())
-                    .Append(_formatter.GetTableAlias(_rootTranslator._depth + 1))
+                    .Append(tableAlias)
                     .ToString();
             }
-            
+
             return MergeAll(buffer);
         }
 

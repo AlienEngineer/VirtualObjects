@@ -501,7 +501,7 @@ namespace VirtualObjects.Tests.Queries
 
 
         [Test, Repeat(Repeat)]
-        public void Aggregate_Query_Union_Any()
+        public void Aggregate_Query_Union_Count()
         {
             var count = Diagnostic.Timed(() =>
                 Query<Employee>().Union(
@@ -512,13 +512,54 @@ namespace VirtualObjects.Tests.Queries
 
 
         [Test, Repeat(Repeat)]
-        public void Aggregate_Query_Union_Projected_Any()
+        public void Aggregate_Query_Union_Projected_Count()
         {
             var count = Diagnostic.Timed(() =>
                 Query<Employee>().Select(e => new { e.EmployeeId, e.City }).Union(
                 Query<Employee>().Select(e => new { e.EmployeeId, e.City })).Count());
 
             count.Should().Be(18);
+        }
+
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Union_Projected_Min()
+        {
+            var min = Diagnostic.Timed(() =>
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City }).Union(
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City })).Min(e => e.EmployeeId));
+
+            min.Should().Be(1);
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Union_Projected_Max()
+        {
+            var max = Diagnostic.Timed(() =>
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City }).Union(
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City })).Max(e => e.EmployeeId));
+
+            max.Should().Be(9);
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Union_Projected_Sum()
+        {
+            var max = Diagnostic.Timed(() =>
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City }).Union(
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City })).Sum(e => e.EmployeeId));
+
+            max.Should().Be(90);
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Union_Projected_Average()
+        {
+            var max = Diagnostic.Timed(() =>
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City }).Union(
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City })).Average(e => e.EmployeeId));
+
+            max.Should().Be(5);
         }
 
         [Test, Repeat(Repeat)]
