@@ -69,6 +69,7 @@ namespace VirtualObjects.Queries.Translation
             public int Take { get; set; }
             public int Skip { get; set; }
             public bool Distinct { get; set; }
+            public bool WasAggregated { get; set; }
 
 
             public void ActAsStub()
@@ -579,6 +580,8 @@ namespace VirtualObjects.Queries.Translation
                 InitBinaryExpressionCall(buffer);
                 CompileBinaryExpression(callExpression.Arguments[1], buffer);
             }
+
+            buffer.WasAggregated = true;
 
             switch ( callExpression.Method.Name )
             {
@@ -1994,11 +1997,15 @@ namespace VirtualObjects.Queries.Translation
 
         private string Merge(CompilerBuffer buffer)
         {
-            if ( buffer.Union != null )
+            if ( buffer.Union != null && buffer.WasAggregated )
             {
                 var projection = buffer.Projection;
 
                 buffer.Projection = buffer.OldProjection;
+                if ( String.IsNullOrEmpty(buffer.Projection) )
+                {
+                    CompileDefaultProjection(buffer);
+                }
 
                 return new StringBuilder()
                     .Append(_formatter.Select + " ").Append(projection)
@@ -2008,10 +2015,8 @@ namespace VirtualObjects.Queries.Translation
                     .Append(_formatter.GetTableAlias(_rootTranslator._depth + 1))
                     .ToString();
             }
-            else
-            {
-                return MergeAll(buffer);
-            }
+            
+            return MergeAll(buffer);
         }
 
         private string MergeAll(CompilerBuffer buffer)

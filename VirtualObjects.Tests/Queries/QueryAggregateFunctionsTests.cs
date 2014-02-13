@@ -504,8 +504,19 @@ namespace VirtualObjects.Tests.Queries
         public void Aggregate_Query_Union_Any()
         {
             var count = Diagnostic.Timed(() =>
-                Query<Employee>().Select(e => new { e.EmployeeId, e.LastName }).Union(
-                Query<Employee>().Select(e => new { e.EmployeeId, e.LastName })).Count());
+                Query<Employee>().Union(
+                Query<Employee>()).Count());
+
+            count.Should().Be(18);
+        }
+
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Union_Projected_Any()
+        {
+            var count = Diagnostic.Timed(() =>
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City }).Union(
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City })).Count());
 
             count.Should().Be(18);
         }
