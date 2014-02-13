@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using VirtualObjects.Config;
+using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects.Queries
 {
@@ -19,6 +19,8 @@ namespace VirtualObjects.Queries
         public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
         
         public Type OutputType { get; set; }
+        
+        internal QueryTranslator.CompilerBuffer Buffer { get; set; }
 
         #endregion
     }

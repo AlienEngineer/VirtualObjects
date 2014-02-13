@@ -20,7 +20,7 @@ namespace VirtualObjects.Queries.Translation
     {
         #region Internal types
 
-        class CompilerBuffer
+        public class CompilerBuffer
         {
             private StringBuffer _projection;
 
@@ -41,7 +41,7 @@ namespace VirtualObjects.Queries.Translation
             public StringBuffer Predicates { get; set; }
             public StringBuffer OrderBy { get; set; }
             public StringBuffer GroupBy { get; set; }
-            public StringBuffer Union { get; set; }
+            public CompilerBuffer Union { get; set; }
 
             public IEntityInfo EntityInfo { get; set; }
             public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
@@ -75,7 +75,6 @@ namespace VirtualObjects.Queries.Translation
                 OrderBy = new StubBuffer();
                 Projection = new StubBuffer();
                 GroupBy = new StubBuffer();
-                Union = new StubBuffer();
             }
 
         }
@@ -221,7 +220,8 @@ namespace VirtualObjects.Queries.Translation
                 CommandText = Merge(buffer),
                 Parameters = Parameters,
                 PredicatedColumns = buffer.PredicatedColumns,
-                OutputType = OutputType ?? queryable.ElementType
+                OutputType = OutputType ?? queryable.ElementType,
+                Buffer = buffer
             };
         }
 
@@ -441,8 +441,8 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            buffer.Union += " " + _formatter.Union + " ";
-            buffer.Union += translator.TranslateQuery(expression).CommandText;
+            // buffer.Union += " " + _formatter.Union + " ";
+            buffer.Union = ((QueryInfo)translator.TranslateQuery(expression)).Buffer;
         }
 
         private void CompileLastMethodCall(MethodCallExpression expression, CompilerBuffer buffer)
@@ -695,7 +695,7 @@ namespace VirtualObjects.Queries.Translation
 #else
                 OutputType = lambda.ReturnType;
 #endif
-                
+
                 buffer.Projection = CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
             }
             else
@@ -945,10 +945,10 @@ namespace VirtualObjects.Queries.Translation
                 {
                     buffer.From += _formatter.Select + " ";
 
-                    if (!String.IsNullOrEmpty(buffer.OrderBy))
+                    if ( !String.IsNullOrEmpty(buffer.OrderBy) )
                     {
                         buffer.From += _formatter.FormatRowNumber(
-                            buffer.OrderBy.Replace(_formatter.GetTableAlias(_index), _formatter.GetTableAlias(100 + _index)), 
+                            buffer.OrderBy.Replace(_formatter.GetTableAlias(_index), _formatter.GetTableAlias(100 + _index)),
                             _index);
                         buffer.OrderBy = null;
                     }
@@ -957,10 +957,10 @@ namespace VirtualObjects.Queries.Translation
                         //
                         // Default order by clause.
                         //
-                        buffer.From += _formatter.FormatRowNumber(buffer.EntityInfo.KeyColumns, _index);    
+                        buffer.From += _formatter.FormatRowNumber(buffer.EntityInfo.KeyColumns, _index);
                     }
-                    
-                    
+
+
                     buffer.From += " " + _formatter.From + " ";
                     buffer.From += _formatter.FormatTableName(buffer.EntityInfo.EntityName, 100 + _index);
 
@@ -1806,8 +1806,8 @@ namespace VirtualObjects.Queries.Translation
             }
 
             var methodCall = expression as MethodCallExpression;
-            
-            if (methodCall != null)
+
+            if ( methodCall != null )
             {
                 expression = methodCall.Object;
             }
@@ -1819,7 +1819,7 @@ namespace VirtualObjects.Queries.Translation
                 member = member.Expression as MemberExpression;
             }
 
-            if ( member != null && IsStringMember(member, member.Expression as MemberExpression))
+            if ( member != null && IsStringMember(member, member.Expression as MemberExpression) )
             {
                 return HasManyMemberAccess(member.Expression);
             }
@@ -1991,14 +1991,46 @@ namespace VirtualObjects.Queries.Translation
 
         private string Merge(CompilerBuffer buffer)
         {
+            if ( buffer.Union != null )
+            {
+                var projection = buffer.Projection;
+
+                buffer.Projection = buffer.Union.Projection.ToString();
+                buffer.Projection = buffer.Projection.Replace(_formatter.GetTableAlias(_index+1), _formatter.GetTableAlias(_index ));
+
+                return new StringBuilder()
+                    .Append(_formatter.Select + " ").Append(projection)
+                    .Append(" " + _formatter.From + " ").Append(_formatter.BeginWrap())
+                    .Append(MergeAll(buffer))
+                    .Append(_formatter.EndWrap())
+                    .Append(_formatter.GetTableAlias(_rootTranslator._depth + 1))
+                    .ToString();
+            }
+            else
+            {
+                return MergeAll(buffer);
+            }
+        }
+
+        private string MergeAll(CompilerBuffer buffer)
+        {
             return new StringBuilder()
                 .Append(_formatter.Select + " ").Append(buffer.Projection)
                 .Append(" " + _formatter.From + " ").Append(buffer.From)
                 .Append(buffer.Predicates)
                 .Append(buffer.GroupBy)
                 .Append(buffer.OrderBy)
-                .Append(buffer.Union)
+                .Append(MergeUnion(buffer.Union, buffer.Projection))
                 .ToString();
+        }
+
+        private string MergeUnion(CompilerBuffer union, StringBuffer projection)
+        {
+            if ( union == null )
+            {
+                return null;
+            }
+            return " " + _formatter.Union + " " + Merge(union);
         }
 
         private StringBuffer CompileAndGetBuffer(Action action, CompilerBuffer buffer)

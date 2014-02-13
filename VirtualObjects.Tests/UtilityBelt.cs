@@ -53,7 +53,10 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
-            var ioc = new NinjectContainer(null, "northwind");
+            var ioc = new NinjectContainer(new SessionConfiguration
+            {
+                Logger = Console.Out
+            }, "northwind");
 
             ConnectionManager = ioc.Get<IConnection>();
             Mapper = ioc.Get<IMapper>();
