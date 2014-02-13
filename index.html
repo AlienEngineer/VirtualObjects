@@ -44,6 +44,7 @@
 <ul>
 <li><a href="#getting-started">Getting Started</a></li>
 <li><a href="#crud-operations">Crud Operations</a></li>
+<li><a href="#data-type-mappings">Data Type Mappings</a></li>
 <li><a href="#support-or-contact">Support or Contact</a></li>
 </ul><hr><h3>
 <a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h3>
@@ -59,7 +60,7 @@
 <span class="p">}</span>
 </pre></div>
 
-<hr><h4>
+<h4>
 <a name="config-the-connection" class="anchor" href="#config-the-connection"><span class="octicon octicon-link"></span></a>Config the Connection</h4>
 
 <div class="highlight highlight-XML"><pre>  <span class="nt">&lt;connectionStrings&gt;</span>
@@ -73,7 +74,7 @@
   <span class="nt">&lt;/connectionStrings&gt;</span>
 </pre></div>
 
-<hr><h4>
+<h4>
 <a name="use-it" class="anchor" href="#use-it"><span class="octicon octicon-link"></span></a>Use it!</h4>
 
 <div class="highlight highlight-C#"><pre>   <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">session</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Session</span><span class="p">())</span>
@@ -88,26 +89,26 @@
    <span class="p">}</span>
 </pre></div>
 
-<hr><h3>
+<h3>
 <a name="crud-operations" class="anchor" href="#crud-operations"><span class="octicon octicon-link"></span></a>Crud Operations</h3>
 
-<pre><code>   // Create
-   Employee Sergio = session.Insert(new Employee 
-   {
-      FirstName = "Sérgio",
-      LastName = "Ferreira",
-      BirthDate = new DateTime(1983, 4, 16)
-   });   
+<div class="highlight highlight-C#"><pre>   <span class="c1">// Create</span>
+   <span class="n">Employee</span> <span class="n">Sergio</span> <span class="p">=</span> <span class="n">session</span><span class="p">.</span><span class="n">Insert</span><span class="p">(</span><span class="k">new</span> <span class="n">Employee</span> 
+   <span class="p">{</span>
+      <span class="n">FirstName</span> <span class="p">=</span> <span class="s">"Sérgio"</span><span class="p">,</span>
+      <span class="n">LastName</span> <span class="p">=</span> <span class="s">"Ferreira"</span><span class="p">,</span>
+      <span class="n">BirthDate</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">1983</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">16</span><span class="p">)</span>
+   <span class="p">});</span>   
 
-   // Read
-   Employee employee = session.GetById(Employee { EmployeeId = 1 });
+   <span class="c1">// Read</span>
+   <span class="n">Employee</span> <span class="n">employee</span> <span class="p">=</span> <span class="n">session</span><span class="p">.</span><span class="n">GetById</span><span class="p">(</span><span class="n">Employee</span> <span class="p">{</span> <span class="n">EmployeeId</span> <span class="p">=</span> <span class="m">1</span> <span class="p">});</span>
 
-   // Update
-   session.Update(employee);
+   <span class="c1">// Update</span>
+   <span class="n">session</span><span class="p">.</span><span class="n">Update</span><span class="p">(</span><span class="n">employee</span><span class="p">);</span>
 
-   // Delete
-   session.Delete(employee);
-</code></pre>
+   <span class="c1">// Delete</span>
+   <span class="n">session</span><span class="p">.</span><span class="n">Delete</span><span class="p">(</span><span class="n">employee</span><span class="p">);</span>
+</pre></div>
 
 <hr><h3>
 <a name="data-type-mappings" class="anchor" href="#data-type-mappings"><span class="octicon octicon-link"></span></a>Data Type Mappings</h3>
