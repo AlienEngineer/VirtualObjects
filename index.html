@@ -44,6 +44,7 @@
 <ul>
 <li><a href="#getting-started">Getting Started</a></li>
 <li><a href="#crud-operations">Crud Operations</a></li>
+<li><a href="#linq-support">Linq Support</a></li>
 <li><a href="#data-type-mappings">Data Type Mappings</a></li>
 <li><a href="#support-or-contact">Support or Contact</a></li>
 </ul><hr><h3>
@@ -111,6 +112,76 @@
 </pre></div>
 
 <hr><h3>
+<a name="linq-support" class="anchor" href="#linq-support"><span class="octicon octicon-link"></span></a>Linq Support</h3>
+
+<div class="highlight highlight-C#"><pre>    <span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span> <span class="p">=</span> <span class="n">Session</span><span class="p">.</span><span class="n">GetAll</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;();</span>
+    <span class="c1">// Or</span>
+    <span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span> <span class="p">=</span> <span class="n">Session</span><span class="p">.</span><span class="n">Query</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;();</span>
+</pre></div>
+
+<h4>
+<a name="iqueryable-methods-supported" class="anchor" href="#iqueryable-methods-supported"><span class="octicon octicon-link"></span></a>IQueryable Methods Supported</h4>
+
+<ul>
+<li>Where</li>
+<li>First, FirstOrDefault, Single, SingleOrDefault, Last, LastOrDefault</li>
+<li>Count, LongCount</li>
+<li>Distinct</li>
+<li>GroupBy</li>
+<li>Sum, Min, Max, Average</li>
+<li>Any</li>
+<li>Contains</li>
+<li>Join and GroupJoin</li>
+<li>Union</li>
+<li>Select</li>
+<li>OrderBy, OrderByDescending and ThenBy</li>
+<li>Take and Skip</li>
+</ul><h4>
+<a name="supported-projections" class="anchor" href="#supported-projections"><span class="octicon octicon-link"></span></a>Supported Projections</h4>
+
+<div class="highlight highlight-C#"><pre>    <span class="c1">// On group joins (full entities and collection load)</span>
+    <span class="k">from</span> <span class="n">o</span> <span class="k">in</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Orders</span><span class="p">&gt;()</span>
+    <span class="k">join</span> <span class="n">od</span> <span class="k">in</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">OrderDetails</span><span class="p">&gt;()</span> <span class="n">on</span> <span class="n">o</span> <span class="k">equals</span> <span class="n">od</span><span class="p">.</span><span class="n">Order</span> <span class="k">into</span> <span class="n">ods</span>
+    <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">Order</span> <span class="p">=</span> <span class="n">o</span><span class="p">,</span> <span class="n">Details</span> <span class="p">=</span> <span class="n">ods</span> <span class="p">}</span>
+
+    <span class="c1">// On Joins (full entities load)</span>
+    <span class="k">from</span> <span class="n">o</span> <span class="k">in</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Orders</span><span class="p">&gt;()</span>
+    <span class="k">join</span> <span class="n">od</span> <span class="k">in</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">OrderDetails</span><span class="p">&gt;()</span> <span class="n">on</span> <span class="n">o</span> <span class="k">equals</span> <span class="n">od</span><span class="p">.</span><span class="n">Order</span>
+    <span class="k">join</span> <span class="n">e</span> <span class="k">in</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">&gt;()</span> <span class="n">on</span> <span class="n">o</span><span class="p">.</span><span class="n">Employee</span> <span class="k">equals</span> <span class="n">e</span>
+    <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">Order</span> <span class="p">=</span> <span class="n">o</span><span class="p">,</span> <span class="n">Detail</span> <span class="p">=</span> <span class="n">od</span><span class="p">,</span> <span class="n">Employee</span> <span class="p">=</span> <span class="n">e</span> <span class="p">}</span>
+
+    <span class="c1">// Specific members projection</span>
+    <span class="k">from</span> <span class="n">o</span> <span class="k">in</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Orders</span><span class="p">&gt;()</span>
+    <span class="k">join</span> <span class="n">od</span> <span class="k">in</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">OrderDetails</span><span class="p">&gt;()</span> <span class="n">on</span> <span class="n">o</span><span class="p">.</span><span class="n">Freight</span> <span class="k">equals</span> <span class="n">od</span><span class="p">.</span><span class="n">UnitPrice</span>
+    <span class="k">select</span> <span class="k">new</span> <span class="p">{</span> <span class="n">o</span><span class="p">.</span><span class="n">OrderId</span><span class="p">,</span> <span class="n">od</span><span class="p">.</span><span class="n">UnitPrice</span><span class="p">,</span> <span class="n">o</span><span class="p">.</span><span class="n">ShipCity</span> <span class="p">}</span>
+
+    <span class="n">Query</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">&gt;().</span><span class="n">Select</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="p">{</span> <span class="n">e</span><span class="p">.</span><span class="n">EmployeeId</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">LastName</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">FirstName</span> <span class="p">})</span>
+
+    <span class="c1">// Agregated Projection</span>
+    <span class="n">Query</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">&gt;().</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">City</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="k">new</span>
+    <span class="p">{</span>
+        <span class="n">City</span> <span class="p">=</span> <span class="n">e</span><span class="p">.</span><span class="n">Key</span><span class="p">,</span> 
+        <span class="n">Min</span> <span class="p">=</span> <span class="n">e</span><span class="p">.</span><span class="n">Min</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span> <span class="n">o</span><span class="p">.</span><span class="n">EmployeeId</span><span class="p">),</span>
+        <span class="n">Max</span> <span class="p">=</span> <span class="n">e</span><span class="p">.</span><span class="n">Max</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span> <span class="n">o</span><span class="p">.</span><span class="n">EmployeeId</span><span class="p">),</span>
+        <span class="n">Sum</span> <span class="p">=</span> <span class="n">e</span><span class="p">.</span><span class="n">Sum</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span> <span class="n">o</span><span class="p">.</span><span class="n">EmployeeId</span><span class="p">),</span>
+        <span class="n">Count</span> <span class="p">=</span> <span class="n">e</span><span class="p">.</span><span class="n">Count</span><span class="p">(),</span>
+        <span class="n">Average</span> <span class="p">=</span> <span class="n">e</span><span class="p">.</span><span class="n">Average</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span> <span class="n">o</span><span class="p">.</span><span class="n">EmployeeId</span><span class="p">)</span>
+    <span class="p">})</span>
+
+    <span class="c1">// Calculated Projection</span>
+    <span class="n">Query</span><span class="p">&lt;</span><span class="n">Employee</span><span class="p">&gt;().</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">City</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="k">new</span>
+    <span class="p">{</span>
+        <span class="n">Average</span> <span class="p">=</span> <span class="n">e</span><span class="p">.</span><span class="n">Sum</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span> <span class="n">o</span><span class="p">.</span><span class="n">EmployeeId</span><span class="p">)</span> <span class="p">/</span> <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">Count</span><span class="p">()*</span><span class="m">1.0</span><span class="p">)</span> <span class="p">*</span> <span class="m">100.0</span>
+    <span class="p">})</span>
+
+</pre></div>
+
+<h4>
+<a name="supported-predicates" class="anchor" href="#supported-predicates"><span class="octicon octicon-link"></span></a>Supported Predicates</h4>
+
+<h3>
 <a name="data-type-mappings" class="anchor" href="#data-type-mappings"><span class="octicon octicon-link"></span></a>Data Type Mappings</h3>
 
 <p>Checkout the microsoft table at <a href="http://msdn.microsoft.com/en-us/library/cc716729.aspx">ADO.Net</a></p>
