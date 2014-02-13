@@ -499,6 +499,17 @@ namespace VirtualObjects.Tests.Queries
             employee.Count().Should().Be(18);
         }
 
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Multiple_Union()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>().Select(e => new { e.EmployeeId }).Union(
+                Query<Employee>().Select(e => new { e.EmployeeId })).Union(
+                Query<Employee>().Select(e => new { e.EmployeeId })).ToList());
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(18);
+        }
 
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_Union_Count()
@@ -519,6 +530,26 @@ namespace VirtualObjects.Tests.Queries
                 Query<Employee>().Select(e => new { e.EmployeeId, e.City })).Count());
 
             count.Should().Be(18);
+        }
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Union_Any()
+        {
+            var any = Diagnostic.Timed(() =>
+                Query<Employee>().Union(
+                Query<Employee>()).Any());
+
+            any.Should().BeTrue();
+        }
+
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Union_Projected_Any()
+        {
+            var any = Diagnostic.Timed(() =>
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City }).Union(
+                Query<Employee>().Select(e => new { e.EmployeeId, e.City })).Any());
+
+            any.Should().BeTrue();
         }
 
 
