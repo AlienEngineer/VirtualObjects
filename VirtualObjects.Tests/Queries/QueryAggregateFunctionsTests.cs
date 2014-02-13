@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using FluentAssertions;
-using NUnit.Framework;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Tests.Models.Northwind;
 
@@ -515,13 +511,16 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(Repeat)]
-        public void Aggregate_Query_()
+        public void Aggregate_Query_YearOfField_Projection()
         {
             
-            var employee = Diagnostic.Timed(() => Query<Employee>().ToList());
+            var employee = Diagnostic.Timed(() => Query<Employee>()
+                .Select(e => new { e.BirthDate.Year })
+                .ToList());
 
             employee.Should().NotBeNull();
             employee.Count().Should().Be(9);
         }
+
     }
 }
