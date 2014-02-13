@@ -150,10 +150,18 @@ namespace VirtualObjects.Queries.Formatters
 
         public string FormatFields(IEnumerable<IEntityColumnInfo> columns, int index)
         {
+#if NET35
+            return String.Join(
+                FieldSeparator,
+                columns.Select(e => FormatFieldWithTable(e.ColumnName, index)).ToArray()
+            );
+#else
             return String.Join(
                 FieldSeparator,
                 columns.Select(e => FormatFieldWithTable(e.ColumnName, index))
             );
+#endif
+
         }
 
         public string GetRowNumberField(int index)

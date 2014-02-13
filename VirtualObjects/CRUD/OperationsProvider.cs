@@ -77,9 +77,14 @@ namespace VirtualObjects.CRUD
             text += " ";
 
             text += _formatter.BeginWrap();
-
+#if NET35
+            text += string.Join(_formatter.FieldSeparator,
+                                columns.Select(e => "@" + e.ColumnName.Replace(' ', '_')).ToArray());
+#else
             text += string.Join(_formatter.FieldSeparator,
                                 columns.Select(e => "@" + e.ColumnName.Replace(' ', '_')));
+#endif
+
 
             text += _formatter.EndWrap();
 
@@ -129,7 +134,12 @@ namespace VirtualObjects.CRUD
 
         private string CreateProjection(IEnumerable<IEntityColumnInfo> columns)
         {
+#if NET35
+            return string.Join(_formatter.FieldSeparator, columns.Select(e => _formatter.FormatField(e.ColumnName)).ToArray());
+#else
             return string.Join(_formatter.FieldSeparator, columns.Select(e => _formatter.FormatField(e.ColumnName)));
+#endif
+            
         }
 
         private void CreateWhereClause(StringBuffer text, IEntityInfo entityInfo)

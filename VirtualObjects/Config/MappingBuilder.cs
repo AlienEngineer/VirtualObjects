@@ -97,7 +97,11 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
+#if NET35
+                keyGetter = (Func<TAttribute, Boolean>)((TAttribute attribute) => attribute != null);
+#else
                 keyGetter = _defaultBooleanGetter;
+#endif
             }
 
             ColumnKeyFromProperty(prop =>
@@ -117,7 +121,11 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
+#if NET35
+                keyGetter = (Func<TAttribute, Boolean>)((TAttribute attribute) => attribute != null);
+#else
                 keyGetter = _defaultBooleanGetter;
+#endif
             }
 
             ColumnIdentityFromProperty(prop =>
@@ -137,7 +145,11 @@ namespace VirtualObjects.Config
         {
             if (keyGetter == null)
             {
+#if NET35
+                keyGetter = (Func<TAttribute, Boolean>)((TAttribute attribute) => attribute != null);
+#else
                 keyGetter = _defaultBooleanGetter;
+#endif
             }
 
             ColumnVersionFromProperty(prop =>

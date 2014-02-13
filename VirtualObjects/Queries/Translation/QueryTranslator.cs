@@ -451,9 +451,11 @@ namespace VirtualObjects.Queries.Translation
                 .Methods(Flags.Static | Flags.StaticPublic, "First").First(e => e.Parameters().Count == expression.Arguments.Count)
                 .MakeGenericMethod(EntityInfo.EntityType);
 
-
-
+#if NET35
+            CompileMethodCall(Expression.Call(firstMethod, expression.Arguments.ToArray()), buffer, false);
+#else
             CompileMethodCall(Expression.Call(firstMethod, expression.Arguments), buffer, false);
+#endif
 
             foreach ( var column in EntityInfo.KeyColumns )
             {
@@ -688,7 +690,12 @@ namespace VirtualObjects.Queries.Translation
 
             if ( lambda.Body is MemberExpression )
             {
+#if NET35
+                OutputType = lambda.Body.Type;
+#else
                 OutputType = lambda.ReturnType;
+#endif
+                
                 buffer.Projection = CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
             }
             else
@@ -1717,7 +1724,12 @@ namespace VirtualObjects.Queries.Translation
             if ( call.Arguments.Count == 2 )
             {
                 var tmpLambda = ExtractLambda(call.Arguments[1], false);
-                if ( tmpLambda.ReturnType == typeof(Boolean) )
+#if NET35
+                var outputType = tmpLambda.Body.Type;
+#else
+                var outputType = tmpLambda.ReturnType;
+#endif
+                if ( outputType == typeof(Boolean) )
                 {
                     throw new TranslationException(Errors.Translation_PredicateOnProjection);
                 }
@@ -1867,8 +1879,12 @@ namespace VirtualObjects.Queries.Translation
             Expression body = unary != null ?
                 Expression.NotEqual(unary.Operand, Expression.Constant(true)) : // This is a NOT
                 Expression.Equal(lambda.Body, Expression.Constant(true));       // This is a Member Access
-
+#if NET35
+            return Expression.Lambda(body, parameters.ToArray());
+#else
             return Expression.Lambda(body, parameters);
+#endif
+
         }
 
         /*

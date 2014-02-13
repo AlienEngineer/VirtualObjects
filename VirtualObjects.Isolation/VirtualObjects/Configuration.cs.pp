@@ -14,17 +14,17 @@ namespace $rootnamespace$.VirtualObjects
             // Use this to configure multiple data connection on app.config
             // It will use the machine name to select the proper connection string.
             //
-            ConnectionProvider = new NamedDbConnectionProvider();
+            ConnectionProvider = ConnectionProvider ?? new NamedDbConnectionProvider();
             
             //
             // Use this if you want to use the first connection string configured on app.config
             //
-            // ConnectionProvider = new FirstConnectionDbConnectionProvider();
+            // ConnectionProvider = ConnectionProvider ?? new FirstConnectionDbConnectionProvider();
             
             //
             // Use this if you want to use a specific non configurable connection string.
             //
-            // ConnectionProvider = new DbConnectionProvider("System.Data.SqlClient", @"
+            // ConnectionProvider = ConnectionProvider ?? new DbConnectionProvider("System.Data.SqlClient", @"
             //          Data Source=(LocalDB)\v11.0;
             //          AttachDbFilename=|DataDirectory|\database.mdf;
             //          Integrated Security=True;

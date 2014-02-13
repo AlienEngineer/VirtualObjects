@@ -45,8 +45,13 @@ namespace VirtualObjects.Queries.Mapping
             {
                 if ( field.Property.PropertyType == typeof(Guid) )
                 {
+#if NET35
+                    if ( value != null )
+                        field.SetFieldFinalValue(entity, new Guid(value.ToString()));
+#else
                     if ( value != null )
                         field.SetFieldFinalValue(entity, Guid.Parse(value.ToString()));
+#endif
                 }
                 else
                 {

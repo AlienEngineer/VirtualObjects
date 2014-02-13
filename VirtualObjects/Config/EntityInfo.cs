@@ -61,10 +61,15 @@ namespace VirtualObjects.Config
             {
                 return EntityName + " => no columns";
             }
-            
+#if NET35
+            return EntityName + " = {\n" +
+                   String.Join(",\n", Columns.Select(e => e.ColumnName).ToArray()) +
+                   "} ";
+#else
             return EntityName + " = {\n" +
                    String.Join(",\n", Columns.Select(e => e.ColumnName)) +
                    "} ";
+#endif
         }
     }
 }
