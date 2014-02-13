@@ -23,12 +23,15 @@ namespace VirtualObjects.Queries.Translation
         public class CompilerBuffer
         {
             private StringBuffer _projection;
+            
+            public StringBuffer OldProjection { get; set; }
 
             public StringBuffer Projection
             {
                 get { return _projection; }
                 set
                 {
+                    OldProjection = _projection;
                     _projection = value;
                     if ( value == null )
                     {
@@ -1995,8 +1998,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 var projection = buffer.Projection;
 
-                buffer.Projection = buffer.Union.Projection.ToString();
-                buffer.Projection = buffer.Projection.Replace(_formatter.GetTableAlias(_index+1), _formatter.GetTableAlias(_index ));
+                buffer.Projection = buffer.OldProjection;
 
                 return new StringBuilder()
                     .Append(_formatter.Select + " ").Append(projection)
