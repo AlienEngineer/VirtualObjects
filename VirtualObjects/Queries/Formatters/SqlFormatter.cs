@@ -205,6 +205,11 @@ namespace VirtualObjects.Queries.Formatters
             return FormatFunctionCall("Day", columnName, index);
         }
 
+        public String FormatDateOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Cast", columnName + " as Date", index);
+        }
+
         public string FormatDayOfYearOf(string columnName, int index)
         {
             return FormatFunctionCall("Datepart", "'dy'", columnName, index);
@@ -218,6 +223,11 @@ namespace VirtualObjects.Queries.Formatters
         public string FormatSecondOf(string columnName, int index)
         {
             return FormatFunctionCall("Datepart", "'s'", columnName, index);
+        }
+
+        public string FormatMillisecondOf(string columnName, int index)
+        {
+            return FormatFunctionCall("Datepart", "'ms'", columnName, index);
         }
 
         public string FormatHourOf(string columnName, int index)
@@ -244,6 +254,25 @@ namespace VirtualObjects.Queries.Formatters
                 case "EndsWith":
                 case "Contains":
                     return " like '%' + ";
+                case "Year":
+                case "Month":
+                case "Day":
+                    return methodCalled + BeginWrap();
+                case "Date":
+                    return "cast" + BeginWrap();
+                case "Hour":
+                    return "Datepart('h', ";
+                case "Minute":
+                    return "Datepart('m', ";
+                case "Second":
+                    return "Datepart('s', ";
+                case "Millisecond":
+                    return "Datepart('ms', ";
+                case "DayOfWeek":
+                    return "Datepart('dw', ";
+                case "DayOfYear":
+                    return "Datepart('dy', ";
+                
             }
 
             throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });
@@ -258,7 +287,18 @@ namespace VirtualObjects.Queries.Formatters
                     return " + '%'";
                 case "EndsWith":
                     return String.Empty;
-
+                case "Date":
+                    return " as Date" + EndWrap();
+                case "Year":
+                case "Day":
+                case "Hour":
+                case "Minute":
+                case "Month":
+                case "Second":
+                case "DayOfWeek":
+                case "DayOfYear":
+                case "Millisecond":
+                    return EndWrap();
             }
 
             throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });

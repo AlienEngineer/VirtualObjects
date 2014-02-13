@@ -1431,11 +1431,17 @@ namespace VirtualObjects.Queries.Translation
                     case "Second":
                         buffer.Predicates += _formatter.FormatSecondOf(foreignKey.ColumnName, translator._index);
                         break;
+                    case "Millisecond":
+                        buffer.Predicates += _formatter.FormatMillisecondOf(foreignKey.ColumnName, translator._index);
+                        break;
                     case "DayOfWeek":
                         buffer.Predicates += _formatter.FormatDayOfWeekOf(foreignKey.ColumnName, translator._index);
                         break;
                     case "DayOfYear":
                         buffer.Predicates += _formatter.FormatDayOfYearOf(foreignKey.ColumnName, translator._index);
+                        break;
+                    case "Date":
+                        buffer.Predicates += _formatter.FormatDateOf(foreignKey.ColumnName, translator._index);
                         break;
                     default:
                         throw new TranslationException(Errors.Translation_Datetime_Member_NotSupported, expression.Member);
@@ -1476,6 +1482,22 @@ namespace VirtualObjects.Queries.Translation
                         case "Now":
                             buffer.Predicates += _formatter.FormatGetDate();
                             break;
+                        case "Year":
+                        case "Day":
+                        case "Hour":
+                        case "Minute":
+                        case "Second":
+                        case "Millisecond":
+                        case "Month":
+                        case "DayOfWeek":
+                        case "DayOfYear":
+                        case "Date":
+
+                            buffer.Predicates += _formatter.BeginMethodCall(member.Member.Name);
+                            buffer.Predicates += _formatter.FormatGetDate();
+                            buffer.Predicates += _formatter.EndMethodCall(member.Member.Name);
+
+                            break;
                         default: throw new TranslationException(Errors.Translation_DateTimeMemberNotSupported, member);
                     }
 
@@ -1515,6 +1537,9 @@ namespace VirtualObjects.Queries.Translation
 
                 var callExpression = lambda.Body as MethodCallExpression;
 
+                //
+                // Predicate is call to another function. Like a nested query with contains.
+                //
                 if ( callExpression != null && !(callExpression.Object is MemberExpression) )
                 {
                     if ( parametersOnly )
@@ -1531,6 +1556,10 @@ namespace VirtualObjects.Queries.Translation
                     return;
                 }
 
+                //
+                // extract the method call.
+                // remaks the binary expression.
+                //
                 if ( callExpression != null )
                 {
                     //
@@ -1570,12 +1599,15 @@ namespace VirtualObjects.Queries.Translation
                     left = binary.Right;
                     right = binary.Left;
                 }
-                else if ( !HasManyMemberAccess(left) && !IsConstant(right) && HasManyMemberAccess(right) )
+                else if ( !HasManyMemberAccess(left) && HasManyMemberAccess(right) )
                 {
+                    //
+                    // To keep some code consistency switch the side that has many members to the right side.
+                    //
                     left = binary.Right;
                     right = binary.Left;
                 }
-                else if ( HasManyMemberAccess(left) && !IsConstant(right) && HasManyMemberAccess(right) )
+                else if ( HasManyMemberAccess(left) && HasManyMemberAccess(right) )
                 {
                     throw new TranslationException(Errors.Translation_ManyMembersAccess_On_BothSides_NotSupported);
                 }
@@ -1590,6 +1622,9 @@ namespace VirtualObjects.Queries.Translation
 
                 if ( IsConstant(right) && right.ToString() == "null" )
                 {
+                    //
+                    // Compilation for a null equals.
+                    //
                     switch ( binary.NodeType )
                     {
                         case ExpressionType.Equal:
@@ -1604,6 +1639,9 @@ namespace VirtualObjects.Queries.Translation
                 {
                     if ( methodCalled != String.Empty )
                     {
+                        //
+                        // Compiles method calls.
+                        //
                         buffer.Predicates += _formatter.BeginMethodCall(methodCalled);
 
                         CompilePredicateExpression(right, buffer);
@@ -1750,9 +1788,26 @@ namespace VirtualObjects.Queries.Translation
 
         private static Boolean HasManyMemberAccess(Expression expression)
         {
+            if ( IsConstant(expression) )
+            {
+                return false;
+            }
+
+            var methodCall = expression as MethodCallExpression;
+            
+            if (methodCall != null)
+            {
+                expression = methodCall.Object;
+            }
+
             var member = expression as MemberExpression;
 
-            if ( member != null && IsStringMember(member, member.Expression as MemberExpression) )
+            if ( member != null && member.Member.ReflectedType == typeof(DateTime) )
+            {
+                member = member.Expression as MemberExpression;
+            }
+
+            if ( member != null && IsStringMember(member, member.Expression as MemberExpression))
             {
                 return HasManyMemberAccess(member.Expression);
             }

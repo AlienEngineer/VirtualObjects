@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using VirtualObjects.Config;
@@ -338,11 +337,130 @@ namespace VirtualObjects.Tests.Queries
                 Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[BirthDate] = @p0)")
             );
 
-            query = Query<Employee>().Where(e => e.BirthDate == DateTime.Now);
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_CurrentDate()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate == DateTime.Now);
 
             Assert.That(
                 Translate(query),
                 Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[BirthDate] = GetDate())")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberYearCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.Year == DateTime.Now.Year);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Year([T0].[BirthDate]) = Year(GetDate()))")
+            );
+        }
+
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberMonthCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.Month == DateTime.Now.Month);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Month([T0].[BirthDate]) = Month(GetDate()))")
+            );
+        }
+
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberDayCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.Day == DateTime.Now.Day);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Day([T0].[BirthDate]) = Day(GetDate()))")
+            );
+        }
+
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberHourCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.Hour == DateTime.Now.Hour);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Datepart('h', [T0].[BirthDate]) = Datepart('h', GetDate()))")
+            );
+        }
+
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberMinuteCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.Minute == DateTime.Now.Minute);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Datepart('m', [T0].[BirthDate]) = Datepart('m', GetDate()))")
+            );
+        }
+
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberSecondCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.Second == DateTime.Now.Second);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Datepart('s', [T0].[BirthDate]) = Datepart('s', GetDate()))")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberMillisecondCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.Millisecond == DateTime.Now.Millisecond);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Datepart('ms', [T0].[BirthDate]) = Datepart('ms', GetDate()))")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberDateCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.Date == DateTime.Now.Date);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Cast([T0].[BirthDate as Date]) = cast(GetDate() as Date))")
+            );
+        }
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberDayOfYearCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.DayOfYear == DateTime.Now.DayOfYear);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Datepart('dy', [T0].[BirthDate]) = Datepart('dy', GetDate()))")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Dated_Predicate_With_MemberDayOfWeekCompare()
+        {
+            var query = Query<Employee>().Where(e => e.BirthDate.DayOfWeek == DateTime.Now.DayOfWeek);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (Datepart('dw', [T0].[BirthDate]) = Datepart('dw', GetDate()))")
             );
         }
 

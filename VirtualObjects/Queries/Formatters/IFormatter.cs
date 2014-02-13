@@ -65,15 +65,19 @@ namespace VirtualObjects.Queries.Formatters
         String FormatDayOfYearOf(string columnName, int index);
         String FormatDayOfWeekOf(string columnName, int index);
         String FormatSecondOf(string columnName, int index);
+        String FormatMillisecondOf(string columnName, int index);
         String FormatHourOf(string columnName, int index);
         String FormatMonthOf(string columnName, int index);
         String FormatYearOf(string columnName, int index);
         String FormatMinuteOf(string columnName, int index);
+        String FormatDateOf(string columnName, int index);
         String FormatLengthWith(string columnName, int index);
         String BeginMethodCall(string methodCalled);
         String EndMethodCall(string methodCalled);
         String FormatConstant(object parseValue);
         String FormatTableName(string entityName);
         string FormatRowNumber(String orderBy, int index);
+
+        
     }
 }
