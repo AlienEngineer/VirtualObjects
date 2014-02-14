@@ -445,7 +445,19 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
+            buffer = GetLastUnionBuffer(buffer);
+
             buffer.Union = ((QueryInfo)translator.TranslateQuery(expression)).Buffer;
+        }
+
+        private CompilerBuffer GetLastUnionBuffer(CompilerBuffer buffer)
+        {
+            if (buffer.Union == null)
+            {
+                return buffer;
+            }
+
+            return GetLastUnionBuffer(buffer.Union);
         }
 
         private void CompileLastMethodCall(MethodCallExpression expression, CompilerBuffer buffer)
