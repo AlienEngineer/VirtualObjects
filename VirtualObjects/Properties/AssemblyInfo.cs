@@ -10,8 +10,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("VirtualObjects")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright © AlienEngineer 2014")]
+[assembly: AssemblyTrademark("AlienEngineer")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -32,6 +32,13 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
+
 [assembly: AssemblyVersion("1.0.0.46")]
 [assembly: AssemblyFileVersion("1.0.0.46")]
 [assembly: InternalsVisibleTo("VirtualObjects.Tests")]
+
+//In brief, these correspond to: 
+//  * Major: Breaking changes. 
+//  * Minor: New features, but backwards compatible. 
+//  * Patch: Backwards compatible bug fixes only.
+[assembly: AssemblyInformationalVersion("1.0.0-beta")]

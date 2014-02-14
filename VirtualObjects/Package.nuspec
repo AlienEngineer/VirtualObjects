@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>VirtualObjects</id>
+    <version>1.0.0</version>
+    <authors>Sérgio aka AlienEnginner</authors>
+    <owners />
+    <licenseUrl>https://raw2.github.com/AlienEngineer/VirtualObjects/master/LICENSE</licenseUrl>
+    <projectUrl>http://alienengineer.github.io/VirtualObjects/</projectUrl>
+    <iconUrl>https://raw2.github.com/AlienEngineer/VirtualObjects/master/ico/1391724652_40096.ico</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Package description</description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <copyright>Copyright (c) 2014 AlienEngineer</copyright>
+    <tags>Tag1 Tag2</tags>
+    <dependencies>
+      <dependency id="SampleDependency" version="1.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\net40\VirtualObjects.dll" target="lib\net35\VirtualObjects.dll" />
+    <file src="bin\Release\net40\VirtualObjects.pdb" target="lib\net35\VirtualObjects.pdb" />
+    <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net35\VirtualObjects.xml" />
+    <file src="bin\Release\net40\VirtualObjects.dll" target="lib\net40\VirtualObjects.dll" />
+    <file src="bin\Release\net40\VirtualObjects.pdb" target="lib\net40\VirtualObjects.pdb" />
+    <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net40\VirtualObjects.xml" />
+    <file src="bin\Release\net45\VirtualObjects.dll" target="lib\net45\VirtualObjects.dll" />
+    <file src="bin\Release\net45\VirtualObjects.pdb" target="lib\net45\VirtualObjects.pdb" />
+    <file src="bin\Release\net45\VirtualObjects.xml" target="lib\net45\VirtualObjects.xml" />
+  </files>
+</package>
