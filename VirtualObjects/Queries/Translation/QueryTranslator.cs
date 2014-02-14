@@ -445,7 +445,6 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            // buffer.Union += " " + _formatter.Union + " ";
             buffer.Union = ((QueryInfo)translator.TranslateQuery(expression)).Buffer;
         }
 

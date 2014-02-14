@@ -508,7 +508,7 @@ namespace VirtualObjects.Tests.Queries
                 Query<Employee>().Select(e => new { e.EmployeeId })).ToList());
 
             employee.Should().NotBeNull();
-            employee.Count().Should().Be(18);
+            employee.Count().Should().Be(9*3);
         }
 
         [Test, Repeat(Repeat)]
