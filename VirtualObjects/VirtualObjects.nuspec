@@ -13,9 +13,6 @@
     <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
     <copyright>Copyright (c) 2014 AlienEngineer</copyright>
     <tags>Tag1 Tag2</tags>
-    <dependencies>
-      <dependency id="SampleDependency" version="1.0" />
-    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\net40\VirtualObjects.dll" target="lib\net35\VirtualObjects.dll" />
