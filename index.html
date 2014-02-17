@@ -43,6 +43,7 @@
 
 <ul>
 <li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#pocos-classes">POCO Classes</a></li>
 <li><a href="#crud-operations">Crud Operations</a></li>
 <li><a href="#linq-support">Linq Support</a></li>
 <li><a href="#data-type-mappings">Data Type Mappings</a></li>
@@ -90,7 +91,62 @@
    <span class="p">}</span>
 </pre></div>
 
-<h3>
+<hr><h3>
+<a name="poco-classes-plain-old-clr-object" class="anchor" href="#poco-classes-plain-old-clr-object"><span class="octicon octicon-link"></span></a>POCO classes (Plain Old CLR Object)</h3>
+
+<p>There's no need to derive our model types from any specific type. The only requirement is that they must be property based instead of field.</p>
+
+<div class="highlight highlight-C#"><pre><span class="k">public</span> <span class="kt">int</span> <span class="n">EmployeeId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="k">public</span> <span class="n">String</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="k">public</span> <span class="n">String</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="c1">//...</span>
+</pre></div>
+
+<p>In case we want lazy load of a foreign reference the property should be marked as Virtual (to enable interception).</p>
+
+<div class="highlight highlight-C#"><pre><span class="k">public</span> <span class="k">virtual</span> <span class="n">Employee</span> <span class="n">ReportsTo</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</pre></div>
+
+<p>To map with the data source fields attributes can be used to add metadata to our poco classes. This is not a requirement.</p>
+
+<p>This is fully configurable. To configure the way pocos are mapped, you must derive the type SessionConfiguration and override the method ConfigureMappingBuilder(IMappingBuilder builder). The final stage is to give the custom configuration to the Session. See above.</p>
+
+<div class="highlight highlight-C#"><pre><span class="k">class</span> <span class="nc">Configuration</span> <span class="p">:</span> <span class="n">SessionConfiguration</span>
+<span class="p">{</span>    
+    <span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">ConfigureMappingBuilder</span><span class="p">(</span><span class="n">IMappingBuilder</span> <span class="n">builder</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">//</span>
+        <span class="c1">// TableName getters</span>
+        <span class="c1">//</span>
+        <span class="n">builder</span><span class="p">.</span><span class="n">EntityNameFromType</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+        <span class="n">builder</span><span class="p">.</span><span class="n">EntityNameFromAttribute</span><span class="p">&lt;</span><span class="n">TableAttribute</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">TableName</span><span class="p">);</span>
+
+        <span class="c1">//</span>
+        <span class="c1">// ColumnName getters</span>
+        <span class="c1">//</span>
+        <span class="n">builder</span><span class="p">.</span><span class="n">ColumnNameFromProperty</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+        <span class="n">builder</span><span class="p">.</span><span class="n">ColumnNameFromAttribute</span><span class="p">&lt;</span><span class="n">ColumnAttribute</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">FieldName</span><span class="p">);</span>
+
+        <span class="c1">// (e.g.) A key is a property that ends with 'Id'</span>
+        <span class="c1">// builder.ColumnKeyFromProperty(e =&gt; e.Name.EndsWith("Id"));</span>
+        <span class="c1">//</span>
+        <span class="n">builder</span><span class="p">.</span><span class="n">ColumnKeyFromAttribute</span><span class="p">&lt;</span><span class="n">KeyAttribute</span><span class="p">&gt;();</span>
+        <span class="n">builder</span><span class="p">.</span><span class="n">ColumnKeyFromAttribute</span><span class="p">&lt;</span><span class="n">IdentityAttribute</span><span class="p">&gt;();</span>
+
+        <span class="n">builder</span><span class="p">.</span><span class="n">ColumnIdentityFromAttribute</span><span class="p">&lt;</span><span class="n">IdentityAttribute</span><span class="p">&gt;();</span>
+
+        <span class="n">builder</span><span class="p">.</span><span class="n">ForeignKeyFromAttribute</span><span class="p">&lt;</span><span class="n">AssociationAttribute</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">OtherKey</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<div class="highlight highlight-C#"><pre><span class="n">using</span><span class="p">(</span><span class="kt">var</span> <span class="n">session</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Session</span><span class="p">(</span><span class="k">new</span> <span class="n">Configuration</span><span class="p">())</span>
+<span class="p">{</span>
+   <span class="c1">// Use the session with your custom configuration.</span>
+<span class="p">}</span>
+</pre></div>
+
+<hr><h3>
 <a name="crud-operations" class="anchor" href="#crud-operations"><span class="octicon octicon-link"></span></a>Crud Operations</h3>
 
 <div class="highlight highlight-C#"><pre>   <span class="c1">// Create</span>
