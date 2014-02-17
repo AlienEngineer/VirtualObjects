@@ -94,7 +94,8 @@
 <hr><h3>
 <a name="poco-classes-plain-old-clr-object" class="anchor" href="#poco-classes-plain-old-clr-object"><span class="octicon octicon-link"></span></a>POCO classes (Plain Old CLR Object)</h3>
 
-<p>There's no need to derive our model types from any specific type. The only requirement is that they must be property based instead of field.</p>
+<p>There's no need to derive our model types from any specific type. But they can...
+Our POCO classes should be defined with properties with R/W (get/set). </p>
 
 <div class="highlight highlight-C#"><pre><span class="k">public</span> <span class="kt">int</span> <span class="n">EmployeeId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 <span class="k">public</span> <span class="n">String</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
@@ -102,7 +103,7 @@
 <span class="c1">//...</span>
 </pre></div>
 
-<p>In case we want lazy load of a foreign reference the property should be marked as Virtual (to enable interception).</p>
+<p>In case we want lazy load of a foreign reference the property should be marked as Virtual (to enable interception). This is not a requirement, use it if you would like the ORM to load your references for you.</p>
 
 <div class="highlight highlight-C#"><pre><span class="k">public</span> <span class="k">virtual</span> <span class="n">Employee</span> <span class="n">ReportsTo</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 </pre></div>
@@ -110,6 +111,8 @@
 <p>To map with the data source fields attributes can be used to add metadata to our poco classes. This is not a requirement.</p>
 
 <p>This is fully configurable. To configure the way pocos are mapped, you must derive the type SessionConfiguration and override the method ConfigureMappingBuilder(IMappingBuilder builder). The final stage is to give the custom configuration to the Session. See above.</p>
+
+<p>This configuration can be made so our pocos will be totally compatible with EntityFramework ou other ORM frameworks/libraries. </p>
 
 <div class="highlight highlight-C#"><pre><span class="k">class</span> <span class="nc">Configuration</span> <span class="p">:</span> <span class="n">SessionConfiguration</span>
 <span class="p">{</span>    
