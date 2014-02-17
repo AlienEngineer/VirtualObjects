@@ -33,7 +33,7 @@ namespace $rootnamespace$.VirtualObjects
 #if DEBUG
             // Use this text writer to print out the commands that are generated and executed.
             // usefull for debug purposes only.
-            Logger = Console.Out;
+            Logger = Logger ?? Console.Out;
 #endif
         }
 

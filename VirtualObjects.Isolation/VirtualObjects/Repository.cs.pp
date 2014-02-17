@@ -8,8 +8,7 @@ namespace $rootnamespace$.VirtualObjects
     {
         internal ISession Session;
 
-        public Repository()
-            : this(new Session(new Configuration(), connectionName: null))
+        public Repository() : this(new Session(new Configuration()))
         {
 
         }
@@ -20,8 +19,12 @@ namespace $rootnamespace$.VirtualObjects
         }
 
         public Repository(String connectionName)
-            : this(new Session(new Configuration(), connectionName))
+            : this(new Session(new Configuration
+            {
+                ConnectionProvider = new NamedDbConnectionProvider(connectionName)
+            }))
         {
+
         }
         
         #region IRepository Members

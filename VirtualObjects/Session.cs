@@ -42,6 +42,13 @@ namespace VirtualObjects
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        public Session(SessionConfiguration configuration)
+            : this(new NinjectContainer(configuration)) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Session"/> class.
+        /// </summary>
         /// <param name="container">The container.</param>
         public Session(IOcContainer container)
         {

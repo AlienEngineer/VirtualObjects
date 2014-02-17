@@ -52,6 +52,11 @@ namespace VirtualObjects
             _kernel = kernel;
         }
 
+        public NinjectContainer(SessionConfiguration configuration)
+        {
+            _kernel = new StandardKernel(new VirtualObjectsModule(configuration));
+        }
+
         public object Get(Type type)
         {
             return _kernel.Get(type);
