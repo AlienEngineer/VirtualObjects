@@ -29,12 +29,10 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Should_Be_Created_And_Disposed()
         {
-
-            using (var session = CreateSession())
+            using (CreateSession())
             {
 
             }
-
         }
 
         [Test, Repeat(Repeat)]
@@ -43,7 +41,7 @@ namespace VirtualObjects.Tests.Sessions
 
             using (var session = CreateSession())
             {
-                using (var transaction = session.BeginTransaction())
+                using (session.BeginTransaction())
                 {
 
 
@@ -57,25 +55,22 @@ namespace VirtualObjects.Tests.Sessions
         {
             using (var session = CreateSession())
             {
-                session.WithinTransaction(() =>
+                session.WithinTransaction(() => Diagnostic.Timed(() =>
                 {
-                    Diagnostic.Timed(() =>
+                    var employee = session.Insert(new Employee
                     {
-                        var employee = session.Insert(new Employee
-                        {
-                            FirstName = "Sérgio",
-                            LastName = "Ferreira"
-                        });
-
-                        employee = session.GetById(employee);
-
-                        employee.BirthDate = new DateTime(1983, 4, 16);
-
-                        session.Update(employee);
-
-                        session.Delete(employee);
+                        FirstName = "Sérgio",
+                        LastName = "Ferreira"
                     });
-                });
+
+                    employee = session.GetById(employee);
+
+                    employee.BirthDate = new DateTime(1983, 4, 16);
+
+                    session.Update(employee);
+
+                    session.Delete(employee);
+                }));
             }
 
         }
