@@ -43,7 +43,7 @@ Verified on unit-tests using NUnit on a I7 intel 3.07Ghz 18Gb RAM.
 The unit tests should be executed one at a time. So the assembly load time is calculated correctly for each test.
 Tests are repeated 10x via NUnit RepeatAttribute. The timer ignores the very first result, since the first will be way bigger then the remaining executions.
 
-VO Version 1.0.0.46-RC
+VO Version 1.0.1-Beta
 
 Dapper Version 1.13
 
