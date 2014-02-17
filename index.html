@@ -180,6 +180,10 @@ Our POCO classes should be defined with properties with R/W (get/set). </p>
 
 <p>All queries can be verified under "VirtualObjects.Tests.Queries" namespace.</p>
 
+<p>Just to be clear, all Linq queries are translated into the proper SQL parameterized commands. The framework will only load what needed to be loaded from the data source.</p>
+
+<p>To see what SQL is being generated just give the session a configuration instance that set the Logger to Console.Out for debug purposes. In release versions your app should never have the logger setted. This could result in pour performance.</p>
+
 <h4>
 <a name="iqueryable-methods-supported" class="anchor" href="#iqueryable-methods-supported"><span class="octicon octicon-link"></span></a>IQueryable Methods Supported</h4>
 
