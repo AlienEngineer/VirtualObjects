@@ -9,50 +9,103 @@ using VirtualObjects.Queries.Formatters;
 namespace VirtualObjects
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class Session : ISession
     {
 
         internal ISession InternalSession { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Session"/> class.
+        /// </summary>
         public Session()
             : this(configuration: null, connectionName: null) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Session"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="connectionProvider">The connection provider.</param>
         public Session(SessionConfiguration configuration = null, IDbConnectionProvider connectionProvider = null)
             : this(new NinjectContainer(configuration, connectionProvider)) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Session"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="connectionName">Name of the connection.</param>
         public Session(SessionConfiguration configuration = null, String connectionName = null)
             : this(new NinjectContainer(configuration, connectionName)) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Session"/> class.
+        /// </summary>
+        /// <param name="container">The container.</param>
         public Session(IOcContainer container)
         {
             InternalSession = container.Get<ISession>();
         }
 
+        /// <summary>
+        /// Gets all entities of TEntity type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <returns></returns>
         public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new()
         {
             return InternalSession.GetAll<TEntity>();
         }
 
+        /// <summary>
+        /// Gets the entity by its ID.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entity">The entity.</param>
+        /// <returns></returns>
         public TEntity GetById<TEntity>(TEntity entity) where TEntity : class, new()
         {
             return InternalSession.GetById(entity);
         }
 
+        /// <summary>
+        /// Inserts the specified entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entity">The entity.</param>
+        /// <returns></returns>
         public TEntity Insert<TEntity>(TEntity entity) where TEntity : class, new()
         {
             return InternalSession.Insert(entity);
         }
 
+        /// <summary>
+        /// Updates the specified entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entity">The entity.</param>
+        /// <returns></returns>
         public TEntity Update<TEntity>(TEntity entity) where TEntity : class, new()
         {
             return InternalSession.Update(entity);
         }
 
+        /// <summary>
+        /// Deletes the specified entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="entity">The entity.</param>
+        /// <returns></returns>
         public bool Delete<TEntity>(TEntity entity) where TEntity : class, new()
         {
             return InternalSession.Delete(entity);
         }
 
+        /// <summary>
+        /// Begins the transaction.
+        /// </summary>
+        /// <returns></returns>
         public ITransaction BeginTransaction()
         {
             return InternalSession.BeginTransaction();
@@ -61,6 +114,9 @@ namespace VirtualObjects
         #region IDisposable Members
         private bool _disposed;
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -68,6 +124,10 @@ namespace VirtualObjects
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if ( !_disposed )
@@ -94,9 +154,18 @@ namespace VirtualObjects
     /// </summary>
     public class ExcelSession : Session
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public enum Extension
         {
+            /// <summary>
+            /// The XLS
+            /// </summary>
             Xls,
+            /// <summary>
+            /// The XLSX
+            /// </summary>
             Xlsx,
         }
 

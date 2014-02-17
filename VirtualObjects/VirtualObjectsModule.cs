@@ -18,15 +18,27 @@ using VirtualObjects.Queries.Translation;
 namespace VirtualObjects
 {
 
+    /// <summary>
+    /// 
+    /// This is the configuration of a NinjectModule.
+    /// 
+    /// </summary>
     public class VirtualObjectsModule : NinjectModule
     {
         private readonly SessionConfiguration _configuration;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VirtualObjectsModule"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public VirtualObjectsModule(SessionConfiguration configuration)
         {
             _configuration = configuration ?? new SessionConfiguration();
         }
 
+        /// <summary>
+        /// Loads the module into the kernel.
+        /// </summary>
         public override void Load()
         {
             _configuration.Init(new NinjectContainer(Kernel));

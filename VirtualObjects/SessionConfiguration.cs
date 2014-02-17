@@ -6,6 +6,11 @@ using VirtualObjects.Queries.Formatters;
 
 namespace VirtualObjects
 {
+    /// <summary>
+    /// 
+    /// Configuration Settings for a session.
+    /// 
+    /// </summary>
     public class SessionConfiguration
     {
         internal IMappingBuilder MappingBuilder
@@ -16,8 +21,28 @@ namespace VirtualObjects
             }
         }
 
+        /// <summary>
+        /// Gets or sets the connection provider.
+        /// </summary>
+        /// <value>
+        /// The connection provider.
+        /// </value>
         public IDbConnectionProvider ConnectionProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        /// <value>
+        /// The logger.
+        /// </value>
         public TextWriter Logger { get; set; }
+
+        /// <summary>
+        /// Gets or sets the formatter.
+        /// </summary>
+        /// <value>
+        /// The formatter.
+        /// </value>
         public IFormatter Formatter { get; set; }
 
         private IOcContainer _container;
@@ -28,6 +53,9 @@ namespace VirtualObjects
             Initialize();
         }
 
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
         public virtual void Initialize()
         {
             

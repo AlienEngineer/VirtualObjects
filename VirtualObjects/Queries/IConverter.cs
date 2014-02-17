@@ -7,6 +7,11 @@ namespace VirtualObjects.Queries
     /// </summary>
     public interface IConverter
     {
+        /// <summary>
+        /// Converts to query.
+        /// </summary>
+        /// <param name="queryable">The queryable.</param>
+        /// <returns></returns>
         IQueryInfo ConvertToQuery(IQueryable queryable);
     }
 }

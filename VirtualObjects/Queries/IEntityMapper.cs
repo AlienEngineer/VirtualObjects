@@ -35,19 +35,86 @@ namespace VirtualObjects.Queries
         void PrepareMapper(MapperContext context);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class MapperContext
     {
+        /// <summary>
+        /// Gets or sets the type of the output.
+        /// </summary>
+        /// <value>
+        /// The type of the output.
+        /// </value>
         public Type OutputType { get; set; }
+        /// <summary>
+        /// Gets or sets the entity information.
+        /// </summary>
+        /// <value>
+        /// The entity information.
+        /// </value>
         public IEntityInfo EntityInfo { get; set; }
+        /// <summary>
+        /// Gets or sets the entity provider.
+        /// </summary>
+        /// <value>
+        /// The entity provider.
+        /// </value>
         public IEntityProvider EntityProvider { get; set; }
+        /// <summary>
+        /// Gets or sets the output type setters.
+        /// </summary>
+        /// <value>
+        /// The output type setters.
+        /// </value>
         public IList<MemberSetter> OutputTypeSetters { get; set; }
+        /// <summary>
+        /// Gets or sets the mapper.
+        /// </summary>
+        /// <value>
+        /// The mapper.
+        /// </value>
         public IMapper Mapper { get; set; }
+        /// <summary>
+        /// Gets or sets the contexts.
+        /// </summary>
+        /// <value>
+        /// The contexts.
+        /// </value>
         public List<MapperContext> Contexts { get; set; }
+        /// <summary>
+        /// Gets or sets the property getters.
+        /// </summary>
+        /// <value>
+        /// The property getters.
+        /// </value>
         public List<MemberGetter> PropertyGetters { get; set; }
+        /// <summary>
+        /// Gets or sets the query information.
+        /// </summary>
+        /// <value>
+        /// The query information.
+        /// </value>
         public IQueryInfo QueryInfo { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether [read].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [read]; otherwise, <c>false</c>.
+        /// </value>
         public bool Read { get; set; }
+        /// <summary>
+        /// Gets or sets the buffer.
+        /// </summary>
+        /// <value>
+        /// The buffer.
+        /// </value>
         public object Buffer { get; set; }
 
+        /// <summary>
+        /// Creates the entity.
+        /// </summary>
+        /// <returns></returns>
         public object CreateEntity()
         {
             return EntityProvider.CreateEntity(OutputType);

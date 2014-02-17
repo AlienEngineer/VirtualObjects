@@ -5,24 +5,117 @@ using VirtualObjects.Config;
 
 namespace VirtualObjects.Queries.Formatters
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IFormatter
     {
+        /// <summary>
+        /// Formats the field with table.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
         String FormatFieldWithTable(String name, int index);
 
+        /// <summary>
+        /// Formats the name of the table.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
         String FormatTableName(String name, int index);
 
+        /// <summary>
+        /// Gets the field separator.
+        /// </summary>
+        /// <value>
+        /// The field separator.
+        /// </value>
         String FieldSeparator { get; }
+        /// <summary>
+        /// Gets the select.
+        /// </summary>
+        /// <value>
+        /// The select.
+        /// </value>
         String Select { get; }
+        /// <summary>
+        /// Gets from.
+        /// </summary>
+        /// <value>
+        /// From.
+        /// </value>
         String From { get; }
+        /// <summary>
+        /// Gets the where.
+        /// </summary>
+        /// <value>
+        /// The where.
+        /// </value>
         String Where { get; }
+        /// <summary>
+        /// Gets the and.
+        /// </summary>
+        /// <value>
+        /// The and.
+        /// </value>
         String And { get; }
+        /// <summary>
+        /// Gets the in.
+        /// </summary>
+        /// <value>
+        /// The in.
+        /// </value>
         String In { get; }
+        /// <summary>
+        /// Gets the inner join.
+        /// </summary>
+        /// <value>
+        /// The inner join.
+        /// </value>
         String InnerJoin { get; }
+        /// <summary>
+        /// Gets the on.
+        /// </summary>
+        /// <value>
+        /// The on.
+        /// </value>
         String On { get; }
+        /// <summary>
+        /// Gets the is null.
+        /// </summary>
+        /// <value>
+        /// The is null.
+        /// </value>
         String IsNull { get; }
+        /// <summary>
+        /// Gets the is not null.
+        /// </summary>
+        /// <value>
+        /// The is not null.
+        /// </value>
         String IsNotNull { get; }
+        /// <summary>
+        /// Gets the order by.
+        /// </summary>
+        /// <value>
+        /// The order by.
+        /// </value>
         String OrderBy { get; }
+        /// <summary>
+        /// Gets the descending.
+        /// </summary>
+        /// <value>
+        /// The descending.
+        /// </value>
         String Descending{ get; }
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <value>
+        /// The count.
+        /// </value>
         String Count { get; }
         String Sum { get; }
         String Avg { get; }

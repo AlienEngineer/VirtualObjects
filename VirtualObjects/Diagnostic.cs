@@ -69,6 +69,7 @@ namespace VirtualObjects
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="func">The function.</param>
         /// <param name="mask">For the mask use [{0} for millis, {1} for TimeSpan, {2} for Ticks]. Or null to hide.</param>
+        /// <param name="name">The name.</param>
         /// <returns></returns>
         public static TResult Timed<TResult>(Func<TResult> func, String mask = null, String name = "DEFAULT")
         {
