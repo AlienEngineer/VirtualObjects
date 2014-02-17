@@ -4,6 +4,9 @@ using System.Diagnostics;
 
 namespace VirtualObjects
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class Diagnostic
     {
 
@@ -54,6 +57,12 @@ namespace VirtualObjects
         }
 
 
+        /// <summary>
+        /// Timeds the specified function.
+        /// </summary>
+        /// <param name="func">The function.</param>
+        /// <param name="mask">The mask.</param>
+        /// <param name="name">The name.</param>
         public static void Timed(Action func, String mask = null, String name = "DEFAULT")
         {
             Timed<Object>(() =>

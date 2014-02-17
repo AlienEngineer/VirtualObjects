@@ -4,10 +4,23 @@ using VirtualObjects.Connections;
 
 namespace VirtualObjects
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IOcContainer
     {
 
+        /// <summary>
+        /// Gets an instance of the specified type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         object Get(Type type);
+        /// <summary>
+        /// Gets an instance of TResult type.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <returns></returns>
         TResult Get<TResult>();
 
     }

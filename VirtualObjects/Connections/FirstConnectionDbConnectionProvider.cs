@@ -3,8 +3,14 @@ using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Connections
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class FirstConnectionDbConnectionProvider : NamedDbConnectionProvider
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FirstConnectionDbConnectionProvider"/> class.
+        /// </summary>
         public FirstConnectionDbConnectionProvider()
             : base(GetFirstConnectionString())
         {
