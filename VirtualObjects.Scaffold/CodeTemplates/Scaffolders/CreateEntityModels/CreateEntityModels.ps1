@@ -1,6 +1,6 @@
 [T4Scaffolding.Scaffolder(Description = "Enter a description of CreateEntityModels here")][CmdletBinding()]
 param(       
-	[parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)][String]$TableName, 
+	[parameter(ValueFromPipelineByPropertyName = $true)][String]$TableName, 
     [string]$Project,
 	[string]$CodeLanguage,
 	[string[]]$TemplateFolders,
@@ -9,6 +9,8 @@ param(
 
 $outputPath = "Models\" + $TableName  # The filename extension will be added based on the template's <#@ Output Extension="..." #> directive
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
+
+$assemblyPath = (Get-Project).Properties.Item("LocalPath").Value + (Get-Project).ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value
 
 Add-ProjectItemViaTemplate $outputPath -Template CreateEntityModelsTemplate `
 	-Model @{ Namespace = $namespace; TableName = $TableName; } `
