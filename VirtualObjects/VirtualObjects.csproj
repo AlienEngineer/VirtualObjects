@@ -262,11 +262,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="StoredProcedureUpdateSample.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>StoredProcedureUpdateSample.cs</LastGenOutput>
-    </None>
-    <None Include="TemplateFileManagerV2.1.ttinclude" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Errors.resx">

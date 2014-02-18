@@ -1,11 +1,16 @@
-<#@ template   debug="true" hostSpecific="true" #>
+<#@ template debug="true" hostSpecific="true" inherits="DynamicTransform" #>
 <#@ output extension=".cs" #>
 <#@ assembly name="Microsoft.SqlServer.ConnectionInfo"#>
 <#@ assembly name="Microsoft.SqlServer.Smo" #>
 <#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Linq" #>
 <#@ import namespace="Microsoft.SqlServer.Management.Smo" #>
 <#@ assembly name="Microsoft.SqlServer.Management.Sdk.Sfc" #>
-<#@ include file="TemplateFileManagerV2.1.ttinclude" #>
+using System;
+using VirtualObjects.Mappings;
+
+namespace <#= Model.Namespace #> 
+{
 <#
 	string serverName = @".\development";
     string databaseName = @"northwind";
@@ -13,30 +18,26 @@
     Database database = new Database(server, databaseName);
     database.Refresh();	
 
-	var manager = TemplateFileManager.Create(this);
 
 	foreach(Table table in database.Tables)
 	{	
-
-		manager.StartNewFile(table.Name.Replace(" ", "") + ".cs");
-		
-		this.WriteLine("using System;");
-		this.WriteLine("using VirtualObjects.Mappings;");
-
+		if (table.Name != Model.TableName) {
+			continue;
+        }
+				
 		if (table.Name.Contains(" ")) {
 			this.Write("[Table(TableName=\"" + table.Name + "\")]");
 			this.WriteLine("");
 }		
 #>
-
-public class <#= table.Name.Replace(" ", "") #>
-{
+	public class <#= table.Name.Replace(" ", "") #>
+	{
 <# 
 		
 		int count = 0;
 		
 		
-		this.PushIndent("	");
+		this.PushIndent("		");
 		foreach(Column column in table.Columns)
 		{
 			
@@ -90,10 +91,9 @@ public class <#= table.Name.Replace(" ", "") #>
 		this.PopIndent();
 		this.WriteLine("    ");
 #>
-}
-		
+	}
+}		
 <# 
 		
 	}
-	manager.Process();
 #>
