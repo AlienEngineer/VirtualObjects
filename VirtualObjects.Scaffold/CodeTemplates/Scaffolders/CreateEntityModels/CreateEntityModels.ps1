@@ -1,10 +1,12 @@
 [T4Scaffolding.Scaffolder(Description = "Enter a description of CreateEntityModels here")][CmdletBinding()]
 param(       
-	[parameter(Mandatory=$true, ValueFromPipelineByPropertyName = $true)][String]$ConnectionName, 
+	[parameter(Mandatory=$true, ValueFromPipelineByPropertyName = $true)][String]$ServerName, 
+	[parameter(Mandatory=$true, ValueFromPipelineByPropertyName = $true)][String]$DatabaseName, 
     [string]$Project,
 	[string]$CodeLanguage,
 	[string[]]$TemplateFolders,
-	[switch]$Force = $false
+	[switch]$Force = $false,
+	[switch]$Repository = $false
 )
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
@@ -19,14 +21,45 @@ $smo = [Reflection.Assembly]::Load([io.file]::ReadAllBytes($assemblyPath + "Micr
 # VirtualObjects.Scaffold.dll
 $virtualObjectsScaffold = [Reflection.Assembly]::Load([io.file]::ReadAllBytes($assemblyPath + "VirtualObjects.Scaffold.dll"))
 
-[VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables() | foreach { 
+
+if($Repository) {
+	$outputPath = "Repositories\IRepository";
+
+	Add-ProjectItemViaTemplate $outputPath -Template IRepositoryTemplate `
+		-Model @{ Namespace = $namespace; } `
+		-SuccessMessage "Added IRepositoryTemplate output at {0}" `
+		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+	
+	$outputPath = "Repositories\Repository";
+
+	Add-ProjectItemViaTemplate $outputPath -Template RepositoryTemplate `
+		-Model @{ Namespace = $namespace; } `
+		-SuccessMessage "Added RepositoryTemplate output at {0}" `
+		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+
+}
+
+$outputPath = "Annotations\Annotations";
+
+Add-ProjectItemViaTemplate $outputPath -Template AnnotationsTemplate `
+	-Model @{ Namespace = $namespace; } `
+	-SuccessMessage "Added AnnotationTemplate output at {0}" `
+	-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+
+
+[VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName) | foreach { 
 	$outputPath = "Models\" + $_.Name
 
 	Add-ProjectItemViaTemplate $outputPath -Template CreateEntityModelsTemplate `
-		-Model @{ Namespace = $namespace; TableName = $_.Name; } `
+		-Model @{ 
+			Namespace = $namespace; 
+			ServerName = $ServerName; 
+			DatabaseName = $DatabaseName; 
+			TableId = $_.Id; 
+			TableName = $_.Name; 
+		} `
 		-SuccessMessage "Added CreateEntityModels output at {0}" `
 		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-
 }
 
 

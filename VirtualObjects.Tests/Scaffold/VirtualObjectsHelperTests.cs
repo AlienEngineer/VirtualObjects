@@ -15,7 +15,7 @@ namespace VirtualObjects.Tests.Scaffold
         [Test]
         public void Helper_Can_Produce_TablesInformation()
         {
-            var tables = VirtualObjectsHelper.GetTables();
+            var tables = VirtualObjectsHelper.GetTables(@"northwind", @".\development");
             tables.Should().NotBeNull();
             tables.Should().NotBeEmpty();
         }
