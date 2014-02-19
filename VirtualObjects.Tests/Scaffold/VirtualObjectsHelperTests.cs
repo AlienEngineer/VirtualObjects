@@ -25,7 +25,7 @@ namespace VirtualObjects.Tests.Scaffold
             {
                 foreach ( Column column in table.Columns )
                 {
-                    column.Name.Should().NotBeBlank();
+                    column.Name.Should().NotBeEmpty();
                     if ( column.IsForeignKey )
                     {
                         foreach ( ForeignKey foreignKeys in table.ForeignKeys )

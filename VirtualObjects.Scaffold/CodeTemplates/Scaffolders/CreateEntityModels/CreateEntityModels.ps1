@@ -1,4 +1,4 @@
-[T4Scaffolding.Scaffolder(Description = "Enter a description of CreateEntityModels here")][CmdletBinding()]
+[T4Scaffolding.Scaffolder(Description = "Creation of entity models, and a repository layer.")][CmdletBinding()]
 param(       
 	[parameter(Mandatory=$true, ValueFromPipelineByPropertyName = $true)][String]$ServerName, 
 	[parameter(Mandatory=$true, ValueFromPipelineByPropertyName = $true)][String]$DatabaseName, 
