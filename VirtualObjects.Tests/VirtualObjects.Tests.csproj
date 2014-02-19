@@ -50,6 +50,26 @@
       <HintPath>..\packages\FluentAssertions.2.2.0.0\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Smo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.Smo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.SmoExtended, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.SmoExtended.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.SqlEnum.dll</HintPath>
+    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1312.1622\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -101,6 +121,7 @@
     <Compile Include="Queries\QueryAggregateFunctionsTests.cs" />
     <Compile Include="Queries\QueryMappingTests.cs" />
     <Compile Include="Queries\SqlTranslationTests.cs" />
+    <Compile Include="Scaffold\VirtualObjectsHelperTests.cs" />
     <Compile Include="Sessions\PerformanceCheck.cs" />
     <Compile Include="Sessions\TransactionTests.cs" />
     <Compile Include="Sessions\EntitiesAsserts.cs" />
@@ -124,6 +145,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\VirtualObjects.Scaffold\VirtualObjects.Scaffold.csproj">
+      <Project>{1c5d2805-573a-47a0-9eab-a647ddf54628}</Project>
+      <Name>VirtualObjects.Scaffold</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VirtualObjects\VirtualObjects.csproj">
       <Project>{c1dc7907-f05a-476f-98b2-8b25df440061}</Project>
       <Name>VirtualObjects</Name>
