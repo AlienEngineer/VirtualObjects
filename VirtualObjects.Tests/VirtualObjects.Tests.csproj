@@ -145,10 +145,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VirtualObjects.Scaffold\VirtualObjects.Scaffold.csproj">
-      <Project>{1c5d2805-573a-47a0-9eab-a647ddf54628}</Project>
-      <Name>VirtualObjects.Scaffold</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VirtualObjects\VirtualObjects.csproj">
       <Project>{c1dc7907-f05a-476f-98b2-8b25df440061}</Project>
       <Name>VirtualObjects</Name>

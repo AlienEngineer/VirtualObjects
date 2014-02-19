@@ -94,6 +94,26 @@
     <DocumentationFile>bin\Release\net35\VirtualObjects.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Smo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.Smo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.SmoExtended, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.SmoExtended.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.SqlEnum.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -258,9 +278,21 @@
     <Compile Include="SessionExtensions.cs" />
     <Compile Include="StringBuffer.cs" />
     <Compile Include="TextWriterStub.cs" />
+    <Compile Include="VirtualObjectsHelper.cs" />
     <Compile Include="VirtualObjectsModule.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CodeTemplates\Scaffolders\CreateEntityModels\AnnotationsTemplate.cs.t4">
+      <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
+    </None>
+    <None Include="CodeTemplates\Scaffolders\CreateEntityModels\CreateEntityModels.ps1" />
+    <None Include="CodeTemplates\Scaffolders\CreateEntityModels\CreateEntityModelsTemplate.cs.t4" />
+    <None Include="CodeTemplates\Scaffolders\CreateEntityModels\IRepositoryTemplate.cs.t4">
+      <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
+    </None>
+    <None Include="CodeTemplates\Scaffolders\CreateEntityModels\RepositoryTemplate.cs.t4">
+      <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

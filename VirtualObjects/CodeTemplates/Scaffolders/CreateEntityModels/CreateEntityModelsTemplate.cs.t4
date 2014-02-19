@@ -1,0 +1,150 @@
+<#@ template debug="true" hostSpecific="true" inherits="DynamicTransform" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="Microsoft.SqlServer.ConnectionInfo"#>
+<#@ assembly name="Microsoft.SqlServer.Smo" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Linq" #>
+<#@ import namespace="Microsoft.SqlServer.Management.Smo" #>
+<#@ assembly name="Microsoft.SqlServer.Management.Sdk.Sfc" #>
+using System;
+using <#= Model.Namespace #>.Annotations;
+
+namespace <#= Model.Namespace #> 
+{
+<#
+
+    Server server = new Server(Model.ServerName);       
+    Database database = new Database(server, Model.DatabaseName);
+    database.Refresh();	
+
+
+	//foreach(Table table in database.Tables)
+	Table table = database.Tables.ItemById(Model.TableId);
+	{	
+				
+		if (table.Name.Contains(" ")) {
+			this.Write("[Table(TableName=\"" + table.Name + "\")]");
+			this.WriteLine("");
+		}		
+#>
+	public class <#= table.Name.Replace(" ", "") #>
+	{
+<# 
+		var isKey = false;
+		this.PushIndent("		");
+
+		foreach(Column column in table.Columns)
+		{
+
+			if (column.Identity) {
+				//
+				// In case is an Identity field
+				//
+				if (column.Name.Contains(" ")) 
+					this.Write("[Identity(FieldName=\"" + column.Name + "\")]");
+				else 
+					this.Write("[Identity]");
+
+				this.WriteLine("");
+				isKey = true;
+			}
+			else if (column.InPrimaryKey) {
+				//
+				// In case is a key field
+				//
+				if (column.Name.Contains(" ")) 
+					this.Write("[Key(FieldName=\"" + column.Name + "\")]");
+				else 
+					this.Write("[Key]");
+
+				this.WriteLine("");
+				isKey = true;
+            }
+			else if (column.Name.Contains(" ")) {
+				//
+				// In case is a simple field with spaces in the name.
+				//
+				this.Write("[Column(FieldName=\"" + column.Name + "\")]");
+				this.WriteLine("");
+			}
+
+			
+
+			if ( column.IsForeignKey )
+			{
+                foreach ( ForeignKey foreignKeys in table.ForeignKeys )
+                {
+					foreach ( ForeignKeyColumn foreignColumn in foreignKeys.Columns )
+                    {
+						if ( foreignColumn.Parent.Parent.Name == table.Name && foreignColumn.Name == column.Name )
+                        {
+							if (!isKey) {
+								this.WriteLine("");
+                            }
+							this.Write("[Association(FieldName=\"" + column.Name + "\", OtherKey = \"" + foreignColumn.ReferencedColumn + "\")]");
+							this.WriteLine("");
+
+							this.Write("public " );	
+							this.Write("virtual " );	
+							this.Write(foreignColumn.Parent.ReferencedTable.Replace(" ", ""));
+							this.Write(" " );	
+							this.Write(column.Name.Replace(" ", ""));
+                        }
+                    }
+                }
+            }
+			else 
+			{
+				this.Write("public " );
+				switch (column.DataType.ToString()) 
+				{
+				
+					case "bit":
+						this.Write("Boolean");
+						break;
+
+					case "smallint":
+						this.Write("int");
+						break;
+
+					case "real":
+					case "money":
+						this.Write("Double");
+						break;
+
+					case "datetime":
+						this.Write("DateTime");
+						break;
+					
+					case "nchar":
+					case "ntext":
+					case "nvarchar":
+						this.Write("String");
+						break;
+
+					case "timestamp":
+					case "image":
+						this.Write("Byte[]");
+						break;
+				
+					default: 
+						this.Write(column.DataType.ToString());
+						break;
+				}
+
+				this.Write(" ");
+				this.Write(column.Name.Replace(" ", ""));
+            }
+			
+			this.Write(" { get; set; }");
+			this.WriteLine("");
+		}
+		this.PopIndent();
+		this.WriteLine("    ");
+#>
+	}
+}		
+<# 
+		
+	}
+#>
