@@ -30,6 +30,7 @@ namespace VirtualObjects.Scaffold
         {
             foreach ( Column column in table.Columns )
             {
+                
                 yield return new MetaColumn
                 {
                     Name = column.Name,

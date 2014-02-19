@@ -6,8 +6,11 @@ param(
 	[string]$CodeLanguage,
 	[string[]]$TemplateFolders,
 	[switch]$Force = $false,
-	[switch]$Repository = $false
+	[switch]$Repository = $false,
+	[string]$TableName = "-"
 )
+
+
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 
@@ -23,6 +26,10 @@ $virtualObjectsScaffold = [Reflection.Assembly]::Load([io.file]::ReadAllBytes($a
 
 
 if($Repository) {
+
+	Write-Verbose " -> Creation Repository Layer started."
+	Write-Verbose "==============================================================="
+	
 	$outputPath = "Repositories\IRepository";
 
 	Add-ProjectItemViaTemplate $outputPath -Template IRepositoryTemplate `
@@ -36,7 +43,9 @@ if($Repository) {
 		-Model @{ Namespace = $namespace; } `
 		-SuccessMessage "Added RepositoryTemplate output at {0}" `
 		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-
+	
+	Write-Verbose " -> Repository Layer creation ended."
+	Write-Verbose "==============================================================="
 }
 
 $outputPath = "Annotations\Annotations";
@@ -48,18 +57,21 @@ Add-ProjectItemViaTemplate $outputPath -Template AnnotationsTemplate `
 
 
 [VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName) | foreach { 
-	$outputPath = "Models\" + $_.Name
+	if ($TableName -eq "-" -or $TableName -eq $_.Name) {
+		$outputPath = "Models\" + $_.Name
 
-	Add-ProjectItemViaTemplate $outputPath -Template CreateEntityModelsTemplate `
-		-Model @{ 
-			Namespace = $namespace; 
-			ServerName = $ServerName; 
-			DatabaseName = $DatabaseName; 
-			TableId = $_.Id; 
-			TableName = $_.Name; 
-		} `
-		-SuccessMessage "Added CreateEntityModels output at {0}" `
-		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+		Add-ProjectItemViaTemplate $outputPath -Template CreateEntityModelsTemplate `
+			-Model @{ 
+				Namespace = $namespace; 
+				ServerName = $ServerName; 
+				DatabaseName = $DatabaseName; 
+				TableId = $_.Id; 
+				TableName = $_.Name; 
+			} `
+			-SuccessMessage "Added CreateEntityModels output at {0}" `
+			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+
+	}
 }
 
 

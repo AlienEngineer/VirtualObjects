@@ -30,55 +30,113 @@ namespace <#= Model.Namespace #>
 	public class <#= table.Name.Replace(" ", "") #>
 	{
 <# 
-		
+		var isKey = false;
 		this.PushIndent("		");
+
 		foreach(Column column in table.Columns)
 		{
-			
-			if (column.InPrimaryKey) {
-				this.Write("[Key]");
+
+			if (column.Identity) {
+				//
+				// In case is an Identity field
+				//
+				if (column.Name.Contains(" ")) 
+					this.Write("[Identity(FieldName=\"" + column.Name + "\")]");
+				else 
+					this.Write("[Identity]");
+
 				this.WriteLine("");
-            }
-			this.Write("public " );
+				isKey = true;
+			}
+			else if (column.InPrimaryKey) {
+				//
+				// In case is a key field
+				//
+				if (column.Name.Contains(" ")) 
+					this.Write("[Key(FieldName=\"" + column.Name + "\")]");
+				else 
+					this.Write("[Key]");
 
-			switch (column.DataType.ToString()) 
+				this.WriteLine("");
+				isKey = true;
+            }
+			else if (column.Name.Contains(" ")) {
+				//
+				// In case is a simple field with spaces in the name.
+				//
+				this.Write("[Column(FieldName=\"" + column.Name + "\")]");
+				this.WriteLine("");
+			}
+
+			
+
+			if ( column.IsForeignKey )
 			{
-				
-				case "bit":
-					this.Write("Boolean");
-					break;
+                foreach ( ForeignKey foreignKeys in table.ForeignKeys )
+                {
+					foreach ( ForeignKeyColumn foreignColumn in foreignKeys.Columns )
+                    {
+						if ( foreignColumn.Parent.Parent.Name == table.Name && foreignColumn.Name == column.Name )
+                        {
+							if (!isKey) {
+								this.WriteLine("");
+                            }
+							this.Write("[Association(FieldName=\"" + column.Name + "\", OtherKey = \"" + foreignColumn.ReferencedColumn + "\")]");
+							this.WriteLine("");
 
-				case "smallint":
-					this.Write("int");
-					break;
-
-				case "real":
-				case "money":
-					this.Write("Double");
-					break;
-
-				case "datetime":
-					this.Write("DateTime");
-					break;
-					
-				case "nchar":
-				case "ntext":
-				case "nvarchar":
-					this.Write("String");
-					break;
-
-				case "timestamp":
-				case "image":
-					this.Write("Byte[]");
-					break;
-				
-				default: 
-					this.Write(column.DataType.ToString());
-					break;
+							this.Write("public " );	
+							this.Write("virtual " );	
+							this.Write(foreignColumn.Parent.ReferencedTable.Replace(" ", ""));
+							this.Write(" " );	
+							this.Write(column.Name.Replace(" ", ""));
+                        }
+                    }
+                }
             }
+			else 
+			{
+				this.Write("public " );
+				switch (column.DataType.ToString()) 
+				{
+				
+					case "bit":
+						this.Write("Boolean");
+						break;
 
-			this.Write(" ");
-			this.Write(column.Name +" { get; set; }");
+					case "smallint":
+						this.Write("int");
+						break;
+
+					case "real":
+					case "money":
+						this.Write("Double");
+						break;
+
+					case "datetime":
+						this.Write("DateTime");
+						break;
+					
+					case "nchar":
+					case "ntext":
+					case "nvarchar":
+						this.Write("String");
+						break;
+
+					case "timestamp":
+					case "image":
+						this.Write("Byte[]");
+						break;
+				
+					default: 
+						this.Write(column.DataType.ToString());
+						break;
+				}
+
+				this.Write(" ");
+				this.Write(column.Name.Replace(" ", ""));
+            }
+			
+			this.Write(" { get; set; }");
 			this.WriteLine("");
 		}
 		this.PopIndent();
