@@ -1,10 +1,21 @@
 ### Getting Started (Scaffolding)
 
+What this [ScreenCast] (http://screencast.com/t/cOggCpYCqu)
+
 This first version of the Scaffold only supports SqlServer.
 
 ```
+
 // Creates all models based on the given data source.
 Scaffold CreateEntityModels <SqlServer> <Database>
+
+// Scaffold Switchs to change behavior
+
+    -Repository                 (Creates a Repository layer of abstraction)
+    -TableName <TableName>      (Create the entity model of a single table)
+    -NoLazyLoad                 (Doesn't create virtual members)
+    -ForceAnnotations           (Every field gets an annotation, use it to rename fields at will)
+    -UsingCustomAnnotations     (Doesn't create the Annotations.cs)
 ```
 
 
