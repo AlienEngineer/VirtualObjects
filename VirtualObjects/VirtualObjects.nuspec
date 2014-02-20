@@ -19,6 +19,7 @@
     <tags>ORM VirtualObjects DataBase Repository VODB ObjectRelationalMapping</tags>
   </metadata>
   <files>
+    <!-- Binaries -->
     <!--<file src="bin\Release\net40\VirtualObjects.dll" target="lib\net35\VirtualObjects.dll" />
     <file src="bin\Release\net40\VirtualObjects.pdb" target="lib\net35\VirtualObjects.pdb" />
     <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net35\VirtualObjects.xml" />-->
@@ -26,6 +27,8 @@
     <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net40\VirtualObjects.xml" />
     <file src="bin\Release\net45\VirtualObjects.dll" target="lib\net45\VirtualObjects.dll" />
     <file src="bin\Release\net45\VirtualObjects.xml" target="lib\net45\VirtualObjects.xml" />
+    
+    <!-- Tools -->
     <file 
       src="CodeTemplates\Scaffolders\CreateEntityModels\AnnotationsTemplate.cs.t4" 
       target="tools\CodeTemplates\Scaffolders\CreateEntityModels\AnnotationsTemplate.cs.t4" />
@@ -41,5 +44,10 @@
     <file
       src="CodeTemplates\Scaffolders\CreateEntityModels\RepositoryTemplate.cs.t4"
       target="tools\CodeTemplates\Scaffolders\CreateEntityModels\RepositoryTemplate.cs.t4" />
+
+    <!-- Content -->
+    <file src="content\app.config.transform" target="content\app.config.transform" />
+    <file src="content\web.config.transform" target="content\web.config.transform" />
+    
   </files>
 </package>
