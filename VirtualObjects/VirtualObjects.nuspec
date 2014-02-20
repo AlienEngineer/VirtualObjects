@@ -11,6 +11,9 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Easy and Fast ORM Framework</description>
     <releaseNotes>
+      Version 1.0.2-Beta:
+      * Added Scaffolder CreateEntityModels.
+      
       Version 1.0.1-Beta:
       * Multiple bug fixs.
       * Improved support for Linq with Unions and Dates.
@@ -44,6 +47,9 @@
     <file
       src="CodeTemplates\Scaffolders\CreateEntityModels\RepositoryTemplate.cs.t4"
       target="tools\CodeTemplates\Scaffolders\CreateEntityModels\RepositoryTemplate.cs.t4" />
+    <file
+      src="CodeTemplates\Scaffolders\CreateEntityModels\RepositoryExtensionsTemplate.cs.t4"
+      target="tools\CodeTemplates\Scaffolders\CreateEntityModels\RepositoryExtensionsTemplate.cs.t4" />
 
     <!-- Content -->
     <file src="content\app.config.transform" target="content\app.config.transform" />
