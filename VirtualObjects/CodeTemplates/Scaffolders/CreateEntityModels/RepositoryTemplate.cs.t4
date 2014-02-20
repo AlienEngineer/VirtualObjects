@@ -5,9 +5,20 @@ using System.Linq;
 using VirtualObjects;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
-using <#= Model.Namespace #>.<#= Model.AnnotationsFolder #>;
+using <#= Model.Namespace #>.<#= Model.AnnotationsFolder.Replace("\\",".") #>;
 
-namespace <#= Model.Namespace #>.Repositores 
+<#
+
+	if (!String.IsNullOrEmpty(Model.RepositoryFolder))
+    {
+		this.Write("namespace " + Model.Namespace + "." + Model.RepositoryFolder.Replace("\\","."));
+    }
+	else 
+	{
+		this.Write("namespace " + Model.Namespace);
+    }
+	this.WriteLine("");
+#>
 {
     class Repository : IRepository, IDisposable
     {

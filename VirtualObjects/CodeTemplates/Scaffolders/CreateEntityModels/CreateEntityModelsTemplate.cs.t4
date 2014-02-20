@@ -7,16 +7,19 @@
 <#@ import namespace="Microsoft.SqlServer.Management.Smo" #>
 <#@ assembly name="Microsoft.SqlServer.Management.Sdk.Sfc" #>
 using System;
-using <#= Model.Namespace #>.<#= Model.AnnotationsFolder #>;
-namespace <#= Model.Namespace #> 
+using <#= Model.Namespace #>.<#= Model.AnnotationsFolder.Replace("\\",".") #>;
+
 <#
 
-	if (!String.IsNullOrEmpty(ModelFolder))
+	if (!String.IsNullOrEmpty(Model.ModelFolder))
     {
-		this.Write(".");
-		this.Write(Model.ModelFolder);
+		this.Write("namespace " + Model.Namespace + "." + Model.ModelFolder.Replace("\\","."));
     }
- 
+	else 
+	{
+		this.Write("namespace " + Model.Namespace);
+    }
+	this.WriteLine("");
 #>
 {
 <#

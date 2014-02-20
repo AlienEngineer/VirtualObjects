@@ -3,10 +3,7 @@
 using System;
 using System.Linq;
 using VirtualObjects;
-using VirtualObjects.Config;
-using VirtualObjects.Connections;
-using <#= Model.Namespace #>.<#= Model.AnnotationsFolder #>;
-using <#= Model.Namespace #>.<#= Model.RepositoryFolder #>;
+using <#= Model.Namespace #>.<#= Model.RepositoryFolder.Replace("\\",".") #>;
 
 namespace <#= Model.Namespace #> 
 {

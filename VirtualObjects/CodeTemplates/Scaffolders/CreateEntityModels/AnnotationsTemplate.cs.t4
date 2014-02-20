@@ -2,7 +2,18 @@
 <#@ output extension=".cs" #>
 using System;
 
-namespace <#= Model.Namespace #>.<#= Model.AnnotationsFolder #> 
+<#
+
+	if (!String.IsNullOrEmpty(Model.AnnotationsFolder))
+    {
+		this.Write("namespace " + Model.Namespace + "." + Model.AnnotationsFolder.Replace("\\","."));
+    }
+	else 
+	{
+		this.Write("namespace " + Model.Namespace);
+    }
+	this.WriteLine("");
+#>
 {
     public class ColumnAttribute : Attribute
     {

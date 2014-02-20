@@ -8,14 +8,22 @@ param(
 	[switch]$Force = $false,
 	[switch]$Repository = $false,
 	[switch]$NoLazyLoad = $false,
-	[switch]$ForceAnnotations = $false,
+	[switch]$WithAnnotations = $false,
 	[switch]$DontConfig = $false,
 	[switch]$UsingCustomAnnotations = $false,
 	[string]$TableName = "-",
 	[string]$ModelFolder = "Models",
 	[string]$RepositoryFolder = "Repositories",
-	[string]$AnnotationsFolder = "Annotations"
+	[string]$AnnotationsFolder = "Annotations",
+	[String]$ToFolder = "-"
 )
+
+if (-not ($ToFolder -eq "-"))
+{
+	$ModelFolder =  "$ToFolder\$ModelFolder"
+	$RepositoryFolder =  "$ToFolder\$RepositoryFolder"
+	$AnnotationsFolder =  "$ToFolder\$AnnotationsFolder"
+}
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 
@@ -59,7 +67,7 @@ if($Repository) {
 		-SuccessMessage "Added RepositoryTemplate output at {0}" `
 		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
 
-	$outputPath = "RepositoryExtensions";
+	$outputPath = "$RepositoryFolder\RepositoryExtensions";
 
 	Add-ProjectItemViaTemplate $outputPath -Template RepositoryExtensionsTemplate `
 		-Model @{ 
@@ -104,8 +112,8 @@ if($Repository) {
 				AnnotationsFolder = $AnnotationsFolder; 
 				RepositoryFolder = $RepositoryFolder;
 				ModelFolder = $ModelFolder;
-				ForceAnnotations = $ForceAnnotations;
-				NoLazyLoad = $NoLazyLoad;
+				ForceAnnotations = [Boolean]$WithAnnotations;
+				NoLazyLoad = [Boolean]$NoLazyLoad;
 			} `
 			-SuccessMessage "Added CreateEntityModels output at {0}" `
 			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
@@ -122,14 +130,22 @@ if (-not $DontConfig)
 		$appConfigFile = [IO.Path]::Combine((Get-Project).Properties.Item("LocalPath").Value, 'Web.config')
 	}
 
-	$appConfig = New-Object XML
-	$appConfig.Load($appConfigFile)
+	if([System.IO.File]::Exists($appConfigFile)) {
+		$appConfig = New-Object XML
+		$appConfig.Load($appConfigFile)
 
-	foreach($connectionString in $appConfig.configuration.connectionStrings.add)
-	{
-		$connectionString.providerName ="System.Data.SqlClient"
-		$connectionString.connectionString = "Data Source=$ServerName;Initial Catalog=$DatabaseName;Integrated Security=True"
+		foreach($connectionString in $appConfig.configuration.connectionStrings.add)
+		{
+			$connectionString.providerName ="System.Data.SqlClient"
+			$connectionString.connectionString = "Data Source=$ServerName;Initial Catalog=$DatabaseName;Integrated Security=True"
+		}
+
+		$appConfig.Save($appConfigFile)	
 	}
-
-	$appConfig.Save($appConfigFile)
+	else 
+	{
+		Write-Host ""
+		Write-Host "Unable to find any configuration file to change."
+		Write-Host ""
+	}
 }
