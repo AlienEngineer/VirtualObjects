@@ -8,8 +8,16 @@
 <#@ assembly name="Microsoft.SqlServer.Management.Sdk.Sfc" #>
 using System;
 using <#= Model.Namespace #>.<#= Model.AnnotationsFolder #>;
-
 namespace <#= Model.Namespace #> 
+<#
+
+	if (!String.IsNullOrEmpty(ModelFolder))
+    {
+		this.Write(".");
+		this.Write(Model.ModelFolder);
+    }
+ 
+#>
 {
 <#
 
@@ -22,7 +30,7 @@ namespace <#= Model.Namespace #>
 	Table table = database.Tables.ItemById(Model.TableId);
 	{	
 				
-		if (table.Name.Contains(" ")) {
+		if (Model.ForceAnnotations || table.Name.Contains(" ")) {
 			this.Write("[Table(TableName=\"" + table.Name + "\")]");
 			this.WriteLine("");
 		}		
@@ -40,7 +48,7 @@ namespace <#= Model.Namespace #>
 				//
 				// In case is an Identity field
 				//
-				if (column.Name.Contains(" ")) 
+				if (Model.ForceAnnotations || column.Name.Contains(" ")) 
 					this.Write("[Identity(FieldName=\"" + column.Name + "\")]");
 				else 
 					this.Write("[Identity]");
@@ -52,7 +60,7 @@ namespace <#= Model.Namespace #>
 				//
 				// In case is a key field
 				//
-				if (column.Name.Contains(" ")) 
+				if (Model.ForceAnnotations || column.Name.Contains(" ")) 
 					this.Write("[Key(FieldName=\"" + column.Name + "\")]");
 				else 
 					this.Write("[Key]");
@@ -60,7 +68,7 @@ namespace <#= Model.Namespace #>
 				this.WriteLine("");
 				isKey = true;
             }
-			else if (column.Name.Contains(" ")) {
+			else if (Model.ForceAnnotations || column.Name.Contains(" ")) {
 				//
 				// In case is a simple field with spaces in the name.
 				//
@@ -70,7 +78,7 @@ namespace <#= Model.Namespace #>
 
 			
 
-			if ( column.IsForeignKey )
+			if ( column.IsForeignKey && !Model.NoLazyLoad )
 			{
                 foreach ( ForeignKey foreignKeys in table.ForeignKeys )
                 {

@@ -104,6 +104,8 @@ if($Repository) {
 				AnnotationsFolder = $AnnotationsFolder; 
 				RepositoryFolder = $RepositoryFolder;
 				ModelFolder = $ModelFolder;
+				ForceAnnotations = $ForceAnnotations;
+				NoLazyLoad = $NoLazyLoad;
 			} `
 			-SuccessMessage "Added CreateEntityModels output at {0}" `
 			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
