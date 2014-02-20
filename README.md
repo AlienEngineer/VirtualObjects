@@ -1,4 +1,16 @@
-### Getting Started
+### Getting Started (Scaffolding)
+
+This first version of the Scaffold only supports SqlServer.
+
+```
+// Creates all models based on the given data source.
+Scaffold CreateEntityModels <SqlServer> <Database>
+```
+
+
+****
+
+### Getting Started (Manualy)
 
 #### Create a Model
 ```C#
