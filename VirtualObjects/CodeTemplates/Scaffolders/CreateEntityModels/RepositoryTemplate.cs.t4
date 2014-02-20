@@ -5,7 +5,7 @@ using System.Linq;
 using VirtualObjects;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
-using <#= Model.Namespace #>.Annotations;
+using <#= Model.Namespace #>.<#= Model.AnnotationsFolder #>;
 
 namespace <#= Model.Namespace #>.Repositores 
 {

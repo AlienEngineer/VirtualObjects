@@ -7,7 +7,7 @@
 <#@ import namespace="Microsoft.SqlServer.Management.Smo" #>
 <#@ assembly name="Microsoft.SqlServer.Management.Sdk.Sfc" #>
 using System;
-using <#= Model.Namespace #>.Annotations;
+using <#= Model.Namespace #>.<#= Model.AnnotationsFolder #>;
 
 namespace <#= Model.Namespace #> 
 {

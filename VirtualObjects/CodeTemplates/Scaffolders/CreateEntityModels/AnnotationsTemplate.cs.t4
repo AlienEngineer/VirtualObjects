@@ -2,7 +2,7 @@
 <#@ output extension=".cs" #>
 using System;
 
-namespace <#= Model.Namespace #>.Annotations 
+namespace <#= Model.Namespace #>.<#= Model.AnnotationsFolder #> 
 {
     public class ColumnAttribute : Attribute
     {

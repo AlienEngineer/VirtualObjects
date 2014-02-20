@@ -38,29 +38,56 @@ if($Repository) {
 	$outputPath = "$RepositoryFolder\IRepository";
 
 	Add-ProjectItemViaTemplate $outputPath -Template IRepositoryTemplate `
-		-Model @{ Namespace = $namespace; } `
+		-Model @{ 
+			Namespace = $namespace; 
+			AnnotationsFolder = $AnnotationsFolder; 
+			RepositoryFolder = $RepositoryFolder;
+			ModelFolder = $ModelFolder;
+		} `
 		-SuccessMessage "Added IRepositoryTemplate output at {0}" `
 		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
 	
 	$outputPath = "$RepositoryFolder\Repository";
 
 	Add-ProjectItemViaTemplate $outputPath -Template RepositoryTemplate `
-		-Model @{ Namespace = $namespace; } `
+		-Model @{ 
+			Namespace = $namespace; 
+			AnnotationsFolder = $AnnotationsFolder; 
+			RepositoryFolder = $RepositoryFolder;
+			ModelFolder = $ModelFolder;
+		} `
 		-SuccessMessage "Added RepositoryTemplate output at {0}" `
+		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+
+	$outputPath = "RepositoryExtensions";
+
+	Add-ProjectItemViaTemplate $outputPath -Template RepositoryExtensionsTemplate `
+		-Model @{ 
+			Namespace = $namespace; 
+			AnnotationsFolder = $AnnotationsFolder; 
+			RepositoryFolder = $RepositoryFolder;
+			ModelFolder = $ModelFolder;
+		} `
+		-SuccessMessage "Added RepositoryExtensionsTemplate output at {0}" `
 		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
 	
 	Write-Verbose " -> Repository Layer creation ended."
 	Write-Verbose "==============================================================="
-}
 
-if (-not $UsingCustomAnnotations)
-{
-	$outputPath = "$AnnotationsFolder\Annotations";
+	if (-not $UsingCustomAnnotations)
+	{
+		$outputPath = "$AnnotationsFolder\Annotations";
 
-	Add-ProjectItemViaTemplate $outputPath -Template AnnotationsTemplate `
-		-Model @{ Namespace = $namespace; } `
-		-SuccessMessage "Added AnnotationTemplate output at {0}" `
-		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+		Add-ProjectItemViaTemplate $outputPath -Template AnnotationsTemplate `
+			-Model @{ 
+				Namespace = $namespace; 
+				AnnotationsFolder = $AnnotationsFolder; 
+				RepositoryFolder = $RepositoryFolder;
+				ModelFolder = $ModelFolder;
+			} `
+			-SuccessMessage "Added AnnotationTemplate output at {0}" `
+			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+	}
 }
 
 [VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName) | foreach { 
@@ -74,6 +101,9 @@ if (-not $UsingCustomAnnotations)
 				DatabaseName = $DatabaseName; 
 				TableId = $_.Id; 
 				TableName = $_.Name; 
+				AnnotationsFolder = $AnnotationsFolder; 
+				RepositoryFolder = $RepositoryFolder;
+				ModelFolder = $ModelFolder;
 			} `
 			-SuccessMessage "Added CreateEntityModels output at {0}" `
 			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force

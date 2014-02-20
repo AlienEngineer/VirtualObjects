@@ -285,6 +285,9 @@
     <None Include="CodeTemplates\Scaffolders\CreateEntityModels\AnnotationsTemplate.cs.t4">
       <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
     </None>
+    <None Include="CodeTemplates\Scaffolders\CreateEntityModels\RepositoryExtensionsTemplate.cs.t4">
+      <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
+    </None>
     <None Include="CodeTemplates\Scaffolders\CreateEntityModels\CreateEntityModels.ps1" />
     <None Include="CodeTemplates\Scaffolders\CreateEntityModels\CreateEntityModelsTemplate.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\CreateEntityModels\IRepositoryTemplate.cs.t4">
