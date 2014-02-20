@@ -14,7 +14,7 @@ Scaffold CreateEntityModels <SqlServer> <Database>
     -Repository						(Creates a Repository layer of abstraction)
     -TableName <TableName>			(Create the entity model of a single table)
     -NoLazyLoad						(Doesn't create virtual members)
-    -ForceAnnotations				(Every field gets an annotation, use it to rename fields at will)
+    -ForceAnnotations				(Every field gets an annotation)
     -UsingCustomAnnotations			(Doesn't create the Annotations.cs)
 	-DontConfig						(Doesn't change the .Config connection string)
 	-ModelFolder <FolderName>		(By default: Models)
