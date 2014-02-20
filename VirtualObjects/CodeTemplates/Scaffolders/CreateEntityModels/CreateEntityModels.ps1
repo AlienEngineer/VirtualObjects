@@ -7,10 +7,15 @@ param(
 	[string[]]$TemplateFolders,
 	[switch]$Force = $false,
 	[switch]$Repository = $false,
-	[string]$TableName = "-"
+	[switch]$NoLazyLoad = $false,
+	[switch]$ForceAnnotations = $false,
+	[switch]$DontConfig = $false,
+	[switch]$UsingCustomAnnotations = $false,
+	[string]$TableName = "-",
+	[string]$ModelFolder = "Models",
+	[string]$RepositoryFolder = "Repositories",
+	[string]$AnnotationsFolder = "Annotations"
 )
-
-
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 
@@ -30,14 +35,14 @@ if($Repository) {
 	Write-Verbose " -> Creation Repository Layer started."
 	Write-Verbose "==============================================================="
 	
-	$outputPath = "Repositories\IRepository";
+	$outputPath = "$RepositoryFolder\IRepository";
 
 	Add-ProjectItemViaTemplate $outputPath -Template IRepositoryTemplate `
 		-Model @{ Namespace = $namespace; } `
 		-SuccessMessage "Added IRepositoryTemplate output at {0}" `
 		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
 	
-	$outputPath = "Repositories\Repository";
+	$outputPath = "$RepositoryFolder\Repository";
 
 	Add-ProjectItemViaTemplate $outputPath -Template RepositoryTemplate `
 		-Model @{ Namespace = $namespace; } `
@@ -48,17 +53,19 @@ if($Repository) {
 	Write-Verbose "==============================================================="
 }
 
-$outputPath = "Annotations\Annotations";
+if (-not $UsingCustomAnnotations)
+{
+	$outputPath = "$AnnotationsFolder\Annotations";
 
-Add-ProjectItemViaTemplate $outputPath -Template AnnotationsTemplate `
-	-Model @{ Namespace = $namespace; } `
-	-SuccessMessage "Added AnnotationTemplate output at {0}" `
-	-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-
+	Add-ProjectItemViaTemplate $outputPath -Template AnnotationsTemplate `
+		-Model @{ Namespace = $namespace; } `
+		-SuccessMessage "Added AnnotationTemplate output at {0}" `
+		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+}
 
 [VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName) | foreach { 
 	if ($TableName -eq "-" -or $TableName -eq $_.Name) {
-		$outputPath = "Models\" + $_.Name
+		$outputPath = "$ModelFolder\" + $_.Name
 
 		Add-ProjectItemViaTemplate $outputPath -Template CreateEntityModelsTemplate `
 			-Model @{ 
@@ -74,20 +81,23 @@ Add-ProjectItemViaTemplate $outputPath -Template AnnotationsTemplate `
 	}
 }
 
-# get the full path and file name of the App.config file in the same directory as this script
-$appConfigFile = [IO.Path]::Combine((Get-Project).Properties.Item("LocalPath").Value, 'App.config')
-
-if(![System.IO.File]::Exists($appConfigFile)) {
-	$appConfigFile = [IO.Path]::Combine((Get-Project).Properties.Item("LocalPath").Value, 'Web.config')
-}
-
-$appConfig = New-Object XML
-$appConfig.Load($appConfigFile)
-
-foreach($connectionString in $appConfig.configuration.connectionStrings.add)
+if (-not $DontConfig)
 {
-    $connectionString.providerName ="System.Data.SqlClient"
-    $connectionString.connectionString = "Data Source=$ServerName;Initial Catalog=$DatabaseName;Integrated Security=True"
-}
+	# get the full path and file name of the App.config file in the same directory as this script
+	$appConfigFile = [IO.Path]::Combine((Get-Project).Properties.Item("LocalPath").Value, 'App.config')
 
-$appConfig.Save($appConfigFile)
+	if(![System.IO.File]::Exists($appConfigFile)) {
+		$appConfigFile = [IO.Path]::Combine((Get-Project).Properties.Item("LocalPath").Value, 'Web.config')
+	}
+
+	$appConfig = New-Object XML
+	$appConfig.Load($appConfigFile)
+
+	foreach($connectionString in $appConfig.configuration.connectionStrings.add)
+	{
+		$connectionString.providerName ="System.Data.SqlClient"
+		$connectionString.connectionString = "Data Source=$ServerName;Initial Catalog=$DatabaseName;Integrated Security=True"
+	}
+
+	$appConfig.Save($appConfigFile)
+}
