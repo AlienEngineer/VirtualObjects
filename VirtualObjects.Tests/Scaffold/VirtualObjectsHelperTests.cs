@@ -18,7 +18,7 @@ namespace VirtualObjects.Tests.Scaffold
         [Table(TableName = "sys.tables")]
         public class Table
         {
-            [Key(FieldName="Object_Id")]
+            [Key(FieldName = "Object_Id")]
             public int Id { get; set; }
 
             public String Name { get; set; }
@@ -35,7 +35,7 @@ namespace VirtualObjects.Tests.Scaffold
             [Association(FieldName = "object_id", OtherKey = "Id")]
             public virtual Table Table { get; set; }
 
-            [Key(FieldName="column_Id")]
+            [Key(FieldName = "column_Id")]
             public int Id { get; set; }
 
             public String Name { get; set; }
@@ -73,7 +73,7 @@ namespace VirtualObjects.Tests.Scaffold
             [Association(FieldName = "object_id", OtherKey = "Id")]
             public virtual Table Table { get; set; }
 
-            [Column(FieldName="is_primary_key")]
+            [Column(FieldName = "is_primary_key")]
             public Boolean IsPrimaryKey { get; set; }
         }
 
@@ -81,31 +81,43 @@ namespace VirtualObjects.Tests.Scaffold
         public void Helper_Can_Produce_TablesInformation()
         {
             using ( var session = new Session(
-                configuration: new SessionConfiguration { 
-                //    Logger = Console.Out 
-                }, 
+                configuration: new SessionConfiguration
+                {
+                    //    Logger = Console.Out 
+                },
                 connectionProvider: new Connections.DbConnectionProvider("System.Data.SqlClient", "Data Source=.\\Development;Initial Catalog=AimirimTeste;Integrated Security=True")) )
             {
-            
-                foreach ( var table in session.Query<Table>().Where(e => e.Type =="U"))
+
+                foreach ( var table in session.Query<Table>().Where(e => e.Type == "U") )
                 {
 
-                    Console.WriteLine("TableName: {0}/{1}", table.Name, table.Id);
+                    Console.WriteLine("TableName: {0}", table.Name);
 
                     foreach ( var column in table.Columns )
                     {
-                        Console.WriteLine("     ColumnName: {0}", column.Name);
+                        var buff = new StringBuffer();
 
-                        var indexInfo = session.Query<IndexColumn>().FirstOrDefault(e => e.Column == column && e.Table == table);
+                        buff += "     ColumnName: {0, -20}";
 
-                        if ( indexInfo != null )
+                        if ( column.IsIdentity )
                         {
-                            Console.WriteLine("     IsPrimaryKey: {0}", indexInfo.Index.IsPrimaryKey);     
+                            buff += " IsIdentity ";
                         }
+                        else
+                        {
+                            var indexInfo = session.Query<IndexColumn>().FirstOrDefault(e => e.Column == column && e.Table == table);
+
+                            if ( indexInfo != null && indexInfo.Index.IsPrimaryKey )
+                            {
+                                buff += " IsKey ";
+                            }
+                        }
+
+                        Console.WriteLine(buff, column.Name);
                     }
                 }
 
-            } 
+            }
         }
 
         private static Boolean IsPrimaryKey(DataTable table)
