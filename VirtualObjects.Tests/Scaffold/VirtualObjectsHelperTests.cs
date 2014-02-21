@@ -56,7 +56,7 @@ namespace VirtualObjects.Tests.Scaffold
                 foreach ( var table in session.Query<Table>().Where(e => e.Type =="U"))
                 {
 
-                    Console.WriteLine("TableName: {0}", table.Name);
+                    Console.WriteLine("TableName: {0}/{1}", table.Name, table.Id);
 
                     foreach ( var column in table.Columns )
                     {

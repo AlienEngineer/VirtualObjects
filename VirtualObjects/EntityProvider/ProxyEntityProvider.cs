@@ -17,7 +17,8 @@ namespace VirtualObjects.EntityProvider
     {
         private readonly ProxyGenerator _proxyGenerator;
         private ProxyGenerationOptions _proxyGenerationOptions;
-
+        private SessionContext sessionContext;
+        
         public ProxyEntityProvider(ProxyGenerator proxyGenerator)
         {
             _proxyGenerator = proxyGenerator;
@@ -32,6 +33,14 @@ namespace VirtualObjects.EntityProvider
         public override object CreateEntity(Type type)
         {
             Debug.Assert(type != null, "type != null");
+
+            _proxyGenerationOptions = new ProxyGenerationOptions
+            {
+                Selector = new InterceptorSelector(
+                    new NonCollectionInterceptor(sessionContext.Session),
+                    new CollectionPropertyInterceptor(sessionContext.Session, sessionContext.Mapper)
+                )
+            };
 
             // ReSharper disable once PossibleNullReferenceException
             while ( type.GetInterfaces().Contains(typeof(IProxyTargetAccessor)) )
@@ -54,15 +63,8 @@ namespace VirtualObjects.EntityProvider
 
         public override void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
+            this.sessionContext = sessionContext;
             // if ( _isPrepared ) { return; }
-
-            _proxyGenerationOptions = new ProxyGenerationOptions
-            {
-                Selector = new InterceptorSelector(
-                    new NonCollectionInterceptor(sessionContext.Session),
-                    new CollectionPropertyInterceptor(sessionContext.Session, sessionContext.Mapper)
-                )
-            };
         }
     }
 
