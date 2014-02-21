@@ -10,7 +10,6 @@ param(
 	[switch]$NoLazyLoad = $false,
 	[switch]$WithAnnotations = $false,
 	[switch]$DontConfig = $false,
-	[switch]$UsingCustomAnnotations = $false,
 	[switch]$DefaultAttributes = $false,
 	[string]$TableName = "-",
 	[string]$ModelFolder = "Models",
