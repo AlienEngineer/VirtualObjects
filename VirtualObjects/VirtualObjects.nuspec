@@ -12,8 +12,9 @@
     <description>Easy and Fast ORM Framework</description>
     <releaseNotes>
       Version 1.0.2-Beta:
-      * Added Scaffolder CreateEntityModels.
-      
+      * Added Scaffolder Models.
+      * Added Scaffolder Repository.
+
       Version 1.0.1-Beta:
       * Multiple bug fixs.
       * Improved support for Linq with Unions and Dates.
@@ -26,30 +27,42 @@
     <!--<file src="bin\Release\net40\VirtualObjects.dll" target="lib\net35\VirtualObjects.dll" />
     <file src="bin\Release\net40\VirtualObjects.pdb" target="lib\net35\VirtualObjects.pdb" />
     <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net35\VirtualObjects.xml" />-->
+
+    <file src="bin\Release\net40\Microsoft.SqlServer.Smo.dll" target="lib\net40\Microsoft.SqlServer.Smo.dll" />
+    <file src="bin\Release\net40\Microsoft.SqlServer.ConnectionInfo.dll" target="lib\net40\Microsoft.SqlServer.ConnectionInfo.dll" />
+    <file src="bin\Release\net40\Microsoft.SqlServer.Management.Sdk.Sfc.dll" target="lib\net40\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
+    <file src="bin\Release\net40\Microsoft.SqlServer.SmoExtended.dll" target="lib\net40\Microsoft.SqlServer.SmoExtended.dll" />
+    <file src="bin\Release\net40\Microsoft.SqlServer.SqlEnum.dll" target="lib\net40\Microsoft.SqlServer.SqlEnum.dll" />
     <file src="bin\Release\net40\VirtualObjects.dll" target="lib\net40\VirtualObjects.dll" />
     <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net40\VirtualObjects.xml" />
+
+    <file src="bin\Release\net45\Microsoft.SqlServer.Smo.dll" target="lib\net45\Microsoft.SqlServer.Smo.dll" />
+    <file src="bin\Release\net45\Microsoft.SqlServer.ConnectionInfo.dll" target="lib\net45\Microsoft.SqlServer.ConnectionInfo.dll" />
+    <file src="bin\Release\net45\Microsoft.SqlServer.Management.Sdk.Sfc.dll" target="lib\net45\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
+    <file src="bin\Release\net45\Microsoft.SqlServer.SmoExtended.dll" target="lib\net45\Microsoft.SqlServer.SmoExtended.dll" />
+    <file src="bin\Release\net45\Microsoft.SqlServer.SqlEnum.dll" target="lib\net45\Microsoft.SqlServer.SqlEnum.dll" />
     <file src="bin\Release\net45\VirtualObjects.dll" target="lib\net45\VirtualObjects.dll" />
     <file src="bin\Release\net45\VirtualObjects.xml" target="lib\net45\VirtualObjects.xml" />
     
     <!-- Tools -->
     <file 
-      src="CodeTemplates\Scaffolders\CreateEntityModels\AnnotationsTemplate.cs.t4" 
-      target="tools\CodeTemplates\Scaffolders\CreateEntityModels\AnnotationsTemplate.cs.t4" />
+      src="CodeTemplates\Scaffolders\Models\AnnotationsTemplate.cs.t4" 
+      target="tools\CodeTemplates\Scaffolders\Models\AnnotationsTemplate.cs.t4" />
     <file
-      src="CodeTemplates\Scaffolders\CreateEntityModels\CreateEntityModels.ps1"
-      target="tools\CodeTemplates\Scaffolders\CreateEntityModels\CreateEntityModels.ps1" />
+      src="CodeTemplates\Scaffolders\Models\Models.ps1"
+      target="tools\CodeTemplates\Scaffolders\Models\Models.ps1" />
     <file
-      src="CodeTemplates\Scaffolders\CreateEntityModels\CreateEntityModelsTemplate.cs.t4"
-      target="tools\CodeTemplates\Scaffolders\CreateEntityModels\CreateEntityModelsTemplate.cs.t4" />
+      src="CodeTemplates\Scaffolders\Models\ModelsTemplate.cs.t4"
+      target="tools\CodeTemplates\Scaffolders\Models\ModelsTemplate.cs.t4" />
     <file
-      src="CodeTemplates\Scaffolders\CreateEntityModels\IRepositoryTemplate.cs.t4"
-      target="tools\CodeTemplates\Scaffolders\CreateEntityModels\IRepositoryTemplate.cs.t4" />
+      src="CodeTemplates\Scaffolders\Models\IRepositoryTemplate.cs.t4"
+      target="tools\CodeTemplates\Scaffolders\Models\IRepositoryTemplate.cs.t4" />
     <file
-      src="CodeTemplates\Scaffolders\CreateEntityModels\RepositoryTemplate.cs.t4"
-      target="tools\CodeTemplates\Scaffolders\CreateEntityModels\RepositoryTemplate.cs.t4" />
+      src="CodeTemplates\Scaffolders\Models\RepositoryTemplate.cs.t4"
+      target="tools\CodeTemplates\Scaffolders\Models\RepositoryTemplate.cs.t4" />
     <file
-      src="CodeTemplates\Scaffolders\CreateEntityModels\RepositoryExtensionsTemplate.cs.t4"
-      target="tools\CodeTemplates\Scaffolders\CreateEntityModels\RepositoryExtensionsTemplate.cs.t4" />
+      src="CodeTemplates\Scaffolders\Models\RepositoryExtensionsTemplate.cs.t4"
+      target="tools\CodeTemplates\Scaffolders\Models\RepositoryExtensionsTemplate.cs.t4" />
 
     <!-- Content -->
     <file src="content\app.config.transform" target="content\app.config.transform" />

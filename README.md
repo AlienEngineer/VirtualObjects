@@ -7,7 +7,7 @@ This first version of the Scaffold only supports SqlServer.
 ```
 
 // Creates all models based on the given data source.
-Scaffold CreateEntityModels <SqlServer> <Database>
+Scaffold Models <SqlServer> <Database>
 
 // Scaffold Switchs to change behavior
 
@@ -33,6 +33,25 @@ Scaffold CreateEntityModels <SqlServer> <Database>
 	* The proper configuration to use the custom attributes.
 	* RepositoryExtensions.cs with some helpfull extensions for the new IRepository interface.
 * Since we are giving it the server and the database it will change the App.Config or Web.Config connectionStrings
+
+```
+
+// Creates the RepositoryLayer
+
+Scaffold Repository
+
+```
+
+#### What will be created and changed.
+
+* The scaffolder will create a Repository layer with the proper custom configuration for the entity models. And also add:
+    * Annotations\Annotations.cs with all the custom attributes needed to map the entities.
+    * Repositories\IRepository.cs interface.
+	* Repositories\Repository.cs class that implements IRepository.
+	* The proper configuration to use the custom attributes.
+	* RepositoryExtensions.cs with some helpfull extensions for the new IRepository interface.
+
+
 
 ****
 

@@ -27,7 +27,22 @@ if (-not ($ToFolder -eq "-"))
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 
-$assemblyPath = (Get-Project).Properties.Item("LocalPath").Value + (Get-Project).ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value
+# Getting the package path for the proper version of VirtualObjects.
+$targetFramework = [string](Get-Project $Project).Properties.Item("TargetFrameworkMoniker").Value
+
+$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + "..\packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
+
+if ($targetFramework.EndsWith("v4.0"))
+{
+	$packagesPath = $packagesPath + "net40\"
+}
+else
+{
+	$packagesPath = $packagesPath + "net45\"
+}
+
+#$assemblyPath = (Get-Project).Properties.Item("LocalPath").Value + (Get-Project).ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value
+$assemblyPath = $packagesPath
 
 # =============== LOADING DEPENDENCIES =========================
 
@@ -102,7 +117,7 @@ if($Repository) {
 	if ($TableName -eq "-" -or $TableName -eq $_.Name) {
 		$outputPath = "$ModelFolder\" + $_.Name
 
-		Add-ProjectItemViaTemplate $outputPath -Template CreateEntityModelsTemplate `
+		Add-ProjectItemViaTemplate $outputPath -Template ModelsTemplate `
 			-Model @{ 
 				Namespace = $namespace; 
 				ServerName = $ServerName; 
@@ -115,7 +130,7 @@ if($Repository) {
 				ForceAnnotations = [Boolean]$WithAnnotations;
 				NoLazyLoad = [Boolean]$NoLazyLoad;
 			} `
-			-SuccessMessage "Added CreateEntityModels output at {0}" `
+			-SuccessMessage "Added Models output at {0}" `
 			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
 
 	}
