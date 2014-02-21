@@ -11,6 +11,7 @@ param(
 	[switch]$WithAnnotations = $false,
 	[switch]$DontConfig = $false,
 	[switch]$UsingCustomAnnotations = $false,
+	[switch]$DefaultAttributes = $false,
 	[string]$TableName = "-",
 	[string]$ModelFolder = "Models",
 	[string]$RepositoryFolder = "Repositories",
@@ -55,61 +56,18 @@ $virtualObjects = [Reflection.Assembly]::Load([io.file]::ReadAllBytes($assemblyP
 
 if($Repository) {
 
-	Write-Verbose " -> Creation Repository Layer started."
-	Write-Verbose "==============================================================="
-	
-	$outputPath = "$RepositoryFolder\IRepository";
-
-	Add-ProjectItemViaTemplate $outputPath -Template IRepositoryTemplate `
-		-Model @{ 
-			Namespace = $namespace; 
-			AnnotationsFolder = $AnnotationsFolder; 
-			RepositoryFolder = $RepositoryFolder;
-			ModelFolder = $ModelFolder;
-		} `
-		-SuccessMessage "Added IRepositoryTemplate output at {0}" `
-		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-	
-	$outputPath = "$RepositoryFolder\Repository";
-
-	Add-ProjectItemViaTemplate $outputPath -Template RepositoryTemplate `
-		-Model @{ 
-			Namespace = $namespace; 
-			AnnotationsFolder = $AnnotationsFolder; 
-			RepositoryFolder = $RepositoryFolder;
-			ModelFolder = $ModelFolder;
-		} `
-		-SuccessMessage "Added RepositoryTemplate output at {0}" `
-		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-
-	$outputPath = "$RepositoryFolder\RepositoryExtensions";
-
-	Add-ProjectItemViaTemplate $outputPath -Template RepositoryExtensionsTemplate `
-		-Model @{ 
-			Namespace = $namespace; 
-			AnnotationsFolder = $AnnotationsFolder; 
-			RepositoryFolder = $RepositoryFolder;
-			ModelFolder = $ModelFolder;
-		} `
-		-SuccessMessage "Added RepositoryExtensionsTemplate output at {0}" `
-		-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-	
-	Write-Verbose " -> Repository Layer creation ended."
-	Write-Verbose "==============================================================="
-
-	if (-not $UsingCustomAnnotations)
+	if ($Force)
 	{
-		$outputPath = "$AnnotationsFolder\Annotations";
-
-		Add-ProjectItemViaTemplate $outputPath -Template AnnotationsTemplate `
-			-Model @{ 
-				Namespace = $namespace; 
-				AnnotationsFolder = $AnnotationsFolder; 
-				RepositoryFolder = $RepositoryFolder;
-				ModelFolder = $ModelFolder;
-			} `
-			-SuccessMessage "Added AnnotationTemplate output at {0}" `
-			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+		Invoke-Scaffolder Repository -Force `
+			-Project $Project `
+			-CodeLanguage $CodeLanguage `
+			-ModelFolder $ModelFolder `
+			-RepositoryFolder $RepositoryFolder `
+			-AnnotationsFolder $AnnotationsFolder
+	}
+	else 
+	{
+		Invoke-Scaffolder Repository -Project $Project -CodeLanguage $CodeLanguage -ModelFolder $ModelFolder -RepositoryFolder $RepositoryFolder -AnnotationsFolder $AnnotationsFolder
 	}
 }
 
@@ -129,6 +87,7 @@ if($Repository) {
 				ModelFolder = $ModelFolder;
 				ForceAnnotations = [Boolean]$WithAnnotations;
 				NoLazyLoad = [Boolean]$NoLazyLoad;
+				DefaultAttributes = [Boolean]($DefaultAttributes -and (-not $Repository)) ;
 			} `
 			-SuccessMessage "Added Models output at {0}" `
 			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force

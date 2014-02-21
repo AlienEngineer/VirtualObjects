@@ -7,9 +7,18 @@
 <#@ import namespace="Microsoft.SqlServer.Management.Smo" #>
 <#@ assembly name="Microsoft.SqlServer.Management.Sdk.Sfc" #>
 using System;
-using <#= Model.Namespace #>.<#= Model.AnnotationsFolder.Replace("\\",".") #>;
-
 <#
+
+	if (Model.DefaultAttributes) 
+	{
+		this.WriteLine("using VirtualObjects.Mappings;");
+    }
+	else 
+	{
+		this.WriteLine("using " + Model.Namespace + "." + Model.AnnotationsFolder.Replace("\\",".") + ";");
+    }
+
+	this.WriteLine("");
 
 	if (!String.IsNullOrEmpty(Model.ModelFolder))
     {

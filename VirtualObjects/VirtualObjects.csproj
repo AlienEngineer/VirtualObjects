@@ -297,11 +297,11 @@
     <Compile Include="VirtualObjectsModule.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CodeTemplates\Scaffolders\Models\AnnotationsTemplate.cs.t4">
+    <None Include="CodeTemplates\Scaffolders\Repository\AnnotationsTemplate.cs.t4">
       <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CodeTemplates\Scaffolders\Models\RepositoryExtensionsTemplate.cs.t4">
+    <None Include="CodeTemplates\Scaffolders\Repository\RepositoryExtensionsTemplate.cs.t4">
       <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -311,14 +311,15 @@
     <None Include="CodeTemplates\Scaffolders\Models\ModelsTemplate.cs.t4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CodeTemplates\Scaffolders\Models\IRepositoryTemplate.cs.t4">
+    <None Include="CodeTemplates\Scaffolders\Repository\IRepositoryTemplate.cs.t4">
       <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CodeTemplates\Scaffolders\Models\RepositoryTemplate.cs.t4">
+    <None Include="CodeTemplates\Scaffolders\Repository\RepositoryTemplate.cs.t4">
       <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="CodeTemplates\Scaffolders\Repository\Repository.ps1" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -335,9 +336,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="net45\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
       <Visible>False</Visible>
