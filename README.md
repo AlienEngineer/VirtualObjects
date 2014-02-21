@@ -38,6 +38,12 @@ Scaffold Models <SqlServer> <Database>
 // Creates the RepositoryLayer
 Scaffold Repository
 
+// Scaffold Switchs to change behavior
+	-ModelFolder <FolderName>		(By default: Models)
+	-RepositoryFolder <FolderName>	(By default: Repositories)
+	-AnnotationsFolder <FolderName>	(By default: Annotations)
+	-ToFolder <FolderName>			(By default: Scaffolds into a folder)
+
 ```
 
 #### What will be created and changed.
