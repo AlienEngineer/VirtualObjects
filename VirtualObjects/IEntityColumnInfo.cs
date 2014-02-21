@@ -93,7 +93,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="value">The value.</param>
-        void SetValue(Object entity, Object value);
+        Object SetValue(Object entity, Object value);
 
         /// <summary>
         /// Gets the value.
@@ -114,7 +114,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="value">The value.</param>
-        void SetFieldFinalValue(object entity, object value);
+        Object SetFieldFinalValue(object entity, object value);
 
         /// <summary>
         /// Gets the last bind.

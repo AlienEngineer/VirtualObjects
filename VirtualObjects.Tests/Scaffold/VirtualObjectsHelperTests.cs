@@ -36,20 +36,54 @@ namespace VirtualObjects.Tests.Scaffold
             public virtual Table Table { get; set; }
 
             [Key(FieldName="column_Id")]
-            public long Id { get; set; }
+            public int Id { get; set; }
 
-            [Key]
             public String Name { get; set; }
+
+            [Column(FieldName = "is_identity")]
+            public Boolean IsIdentity { get; set; }
 
             [Column(FieldName = "system_type_id")]
             public int Type { get; set; }
+
+        }
+
+        [Table(TableName = "sys.Index_Columns")]
+        public class IndexColumn
+        {
+            [Key]
+            [Association(FieldName = "object_id", OtherKey = "Id")]
+            public virtual Table Table { get; set; }
+
+            [Key]
+            [Association(FieldName = "column_id", OtherKey = "Id")]
+            public virtual Column Column { get; set; }
+
+            [Association(FieldName = "index_Id", OtherKey = "Id")]
+            public virtual Index Index { get; set; }
+        }
+
+        [Table(TableName = "sys.Indexes")]
+        public class Index
+        {
+            [Key(FieldName = "index_Id")]
+            public int Id { get; set; }
+
+            [Key]
+            [Association(FieldName = "object_id", OtherKey = "Id")]
+            public virtual Table Table { get; set; }
+
+            [Column(FieldName="is_primary_key")]
+            public Boolean IsPrimaryKey { get; set; }
         }
 
         [Test]
         public void Helper_Can_Produce_TablesInformation()
         {
             using ( var session = new Session(
-                configuration: new SessionConfiguration { Logger = Console.Out }, 
+                configuration: new SessionConfiguration { 
+                //    Logger = Console.Out 
+                }, 
                 connectionProvider: new Connections.DbConnectionProvider("System.Data.SqlClient", "Data Source=.\\Development;Initial Catalog=AimirimTeste;Integrated Security=True")) )
             {
             
@@ -61,6 +95,13 @@ namespace VirtualObjects.Tests.Scaffold
                     foreach ( var column in table.Columns )
                     {
                         Console.WriteLine("     ColumnName: {0}", column.Name);
+
+                        var indexInfo = session.Query<IndexColumn>().FirstOrDefault(e => e.Column == column && e.Table == table);
+
+                        if ( indexInfo != null )
+                        {
+                            Console.WriteLine("     IsPrimaryKey: {0}", indexInfo.Index.IsPrimaryKey);     
+                        }
                     }
                 }
 

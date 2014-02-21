@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Queries.Mapping
@@ -18,7 +19,13 @@ namespace VirtualObjects.Queries.Mapping
                 var value = reader.GetValue(i++);
                 try
                 {
-                    column.SetFieldFinalValue(buffer, value);
+                    var foreignKey = column.SetFieldFinalValue(buffer, value);
+
+                    if ( foreignKey != null && column.ForeignKey.EntityInfo.KeyColumns.Count > 1 )
+                    {
+                        MapForeignKeys(reader, column, foreignKey);
+                    }
+
                 }
                 catch ( ConfigException ex)
                 {
@@ -29,6 +36,34 @@ namespace VirtualObjects.Queries.Mapping
             return buffer;
         }
 
+        private static void MapForeignKeys(IDataReader reader, VirtualObjects.IEntityColumnInfo column, object buffer)
+        {
+            foreach ( var keyColumn in column.ForeignKey.EntityInfo.KeyColumns.Where(e => e.ColumnName != column.ColumnName) )
+            {
+                object value;
+                try
+                {
+                    value = reader[keyColumn.ColumnName];
+                }
+                catch ( Exception ex1 )
+                {
+                    throw new ConfigException("The column [{ColumnName}] of type [{EntityName}] is marked as key but was not found on [{TargetName}].",
+                        new
+                        {
+                            keyColumn.ColumnName,
+                            keyColumn.EntityInfo.EntityName,
+                            TargetName = column.EntityInfo.EntityName,
+                        }, ex1);
+                }
+
+                var foreignKey = keyColumn.SetFieldFinalValue(buffer, value);
+
+                if ( foreignKey != null && keyColumn.ForeignKey.EntityInfo.KeyColumns.Count > 1 )
+                {
+                    MapForeignKeys(reader, column, foreignKey);
+                }
+            }
+        }
         public virtual bool CanMapEntity(MapperContext context)
         {
             return context.EntityInfo != null && context.OutputType == context.EntityInfo.EntityType;

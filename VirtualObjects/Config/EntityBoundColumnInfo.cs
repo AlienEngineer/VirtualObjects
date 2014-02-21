@@ -12,20 +12,23 @@ namespace VirtualObjects.Config
         }
 
 
-        public override void SetFieldFinalValue(object entity, object value)
+        public override object SetFieldFinalValue(object entity, object value)
         {
             if ( ForeignKey != null )
             {
                 if ( value == DBNull.Value )
                 {
-                    return;
+                    return null;
                 }
 
                 var instance = ForeignKey.EntityInfo.EntityType.CreateInstance();
                 SetValue(entity, instance);
 
                 ForeignKey.SetFieldFinalValue(instance, value);
+
+                return instance;
             }
+            return null;
         }
 
         public override string BindOrName
