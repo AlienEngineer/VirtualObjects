@@ -10,7 +10,6 @@ This first version of the Scaffold only supports SqlServer.
 Scaffold Models <SqlServer> <Database>
 
 // Scaffold Switchs to change behavior
-
     -Repository						(Creates a Repository layer of abstraction)
     -TableName <TableName>			(Create the entity model of a single table)
     -NoLazyLoad						(Doesn't create virtual members)
@@ -37,7 +36,6 @@ Scaffold Models <SqlServer> <Database>
 ```
 
 // Creates the RepositoryLayer
-
 Scaffold Repository
 
 ```
