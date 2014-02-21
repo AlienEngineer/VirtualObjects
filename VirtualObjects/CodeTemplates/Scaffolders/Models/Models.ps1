@@ -18,8 +18,6 @@ param(
 	[String]$ToFolder = "-"
 )
 
-$NoLazyLoad = $true
-
 if (-not ($ToFolder -eq "-"))
 {
 	$ModelFolder =  "$ToFolder\$ModelFolder"
