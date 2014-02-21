@@ -9,53 +9,62 @@ namespace VirtualObjects.Tests.Scaffold
     using System.Data;
     using System.Data.SqlClient;
     using System.Data.Common;
+    using VirtualObjects.Mappings;
 
     [TestFixture, Category("VirtualObjectsHelper")]
     public class VirtualObjectsHelperTests : UtilityBelt
     {
 
+        [Table(TableName = "sys.tables")]
+        public class Table
+        {
+            [Key(FieldName="Object_Id")]
+            public int Id { get; set; }
+
+            public String Name { get; set; }
+
+            public String Type { get; set; }
+
+            public virtual IQueryable<Column> Columns { get; set; }
+        }
+
+        [Table(TableName = "sys.columns")]
+        public class Column
+        {
+            [Key]
+            [Association(FieldName = "object_id", OtherKey = "Id")]
+            public virtual Table Table { get; set; }
+
+            [Key(FieldName="column_Id")]
+            public long Id { get; set; }
+
+            [Key]
+            public String Name { get; set; }
+
+            [Column(FieldName = "system_type_id")]
+            public int Type { get; set; }
+        }
+
         [Test]
         public void Helper_Can_Produce_TablesInformation()
         {
-
-            var connection = Connection as DbConnection;
-
-            connection.Open();
-
-            var table = connection.GetSchema(SqlClientMetaDataCollectionNames.Tables, new String[] { null, null, null, "BASE TABLE" });
-
-
-            // Display the contents of the table.
-            foreach ( System.Data.DataRow row in table.Rows )
+            using ( var session = new Session(
+                configuration: new SessionConfiguration { Logger = Console.Out }, 
+                connectionProvider: new Connections.DbConnectionProvider("System.Data.SqlClient", "Data Source=.\\Development;Initial Catalog=AimirimTeste;Integrated Security=True")) )
             {
-                Console.WriteLine("{0}", row["Table_Name"]);
-
-                var cmd = connection.CreateCommand();
-                cmd.CommandText = String.Format("Select * From [{0}]", row["Table_Name"]);
-                var reader = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
-
-                var columnsInfo = reader.GetSchemaTable();
-                
-                foreach ( DataRow columnInfo in columnsInfo.Rows )
+            
+                foreach ( var table in session.Query<Table>().Where(e => e.Type =="U"))
                 {
-                    Console.WriteLine(" Name: {0}", columnInfo["ColumnName"]);
-                    Console.WriteLine(" IsIdentity: {0}", columnInfo["IsIdentity"]);
-                    Console.WriteLine(" IsKey: {0}", columnInfo["IsKey"]);
-                    Console.WriteLine(" DataTypeName: {0}", columnInfo["DataTypeName"]);
-                }
-                
-                reader.Close();
 
-                foreach ( DataRelation relation in columnsInfo.ChildRelations )
-                {
-                    var fk = relation.ChildKeyConstraint;
+                    Console.WriteLine("TableName: {0}", table.Name);
 
-                    Console.WriteLine(" RelatedTable {0}; RelatedColums {1}", fk.RelatedTable, fk.RelatedColumns);
+                    foreach ( var column in table.Columns )
+                    {
+                        Console.WriteLine("     ColumnName: {0}", column.Name);
+                    }
                 }
 
-                Console.WriteLine("============================");
-            }
-
+            } 
         }
 
         private static Boolean IsPrimaryKey(DataTable table)

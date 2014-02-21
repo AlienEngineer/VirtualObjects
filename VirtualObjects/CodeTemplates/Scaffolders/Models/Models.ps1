@@ -30,7 +30,16 @@ $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 # Getting the package path for the proper version of VirtualObjects.
 $targetFramework = [string](Get-Project $Project).Properties.Item("TargetFrameworkMoniker").Value
 
-$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + "..\packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
+$backupfolder = "..\";
+
+$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
+
+
+while (-not [IO.Directory]::Exists($packagesPath)) 
+{
+	$backupfolder = $backupfolder + "..\";
+	$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
+}
 
 if ($targetFramework.EndsWith("v4.0"))
 {

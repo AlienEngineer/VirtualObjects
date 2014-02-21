@@ -5,8 +5,17 @@ using System.Linq;
 
 namespace VirtualObjects.Scaffold
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class VirtualObjectsHelper
     {
+        /// <summary>
+        /// Gets the tables.
+        /// </summary>
+        /// <param name="databaseName">Name of the database.</param>
+        /// <param name="serverName">Name of the server.</param>
+        /// <returns></returns>
         public static IEnumerable<Table> GetTables(string databaseName, string serverName)
         {
             Server server = new Server(serverName);
