@@ -38,12 +38,16 @@ namespace VirtualObjects.Queries.Mapping
 
         private static void MapForeignKeys(IDataReader reader, VirtualObjects.IEntityColumnInfo column, object buffer)
         {
+            var mainKeys = column.EntityInfo.ForeignKeys;
+
             foreach ( var keyColumn in column.ForeignKey.EntityInfo.KeyColumns.Where(e => e.ColumnName != column.ColumnName) )
             {
                 object value;
                 try
                 {
-                    value = reader[keyColumn.ColumnName];
+                    var key = mainKeys.First(e => e.BindOrName.Equals(keyColumn.ColumnName, StringComparison.InvariantCultureIgnoreCase));
+
+                    value = reader[key.ColumnName];
                 }
                 catch ( Exception ex1 )
                 {

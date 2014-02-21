@@ -63,6 +63,24 @@ namespace VirtualObjects.Tests.Scaffold
             public virtual Index Index { get; set; }
         }
 
+        [Table(TableName="sys.foreign_key_columns")]
+        public class ForeingKey
+        {
+            [Key]
+            [Association(FieldName = "parent_object_id", OtherKey = "Id")]
+            public virtual Table Table { get; set; }
+
+            [Key]
+            [Association(FieldName = "parent_column_id", OtherKey = "Id")]
+            public virtual Column Column { get; set; }
+
+            [Association(FieldName = "Referenced_column_id", OtherKey = "Id")]
+            public virtual Column ReferencedColumn { get; set; }
+
+            [Association(FieldName = "Referenced_object_id", OtherKey = "Id")]
+            public virtual Table ReferencedTable { get; set; }
+        }
+
         [Table(TableName = "sys.Indexes")]
         public class Index
         {
@@ -111,6 +129,15 @@ namespace VirtualObjects.Tests.Scaffold
                             {
                                 buff += " IsKey ";
                             }
+                        }
+
+                        foreach (var foreignKey in session.Query<ForeingKey>().Where(e => e.Column == column && e.Table == table))
+                        {
+                            buff += " ";
+                            buff += foreignKey.ReferencedTable.Name;
+                            buff +=".";
+                            buff += foreignKey.ReferencedColumn.Name;
+                            buff += ";";
                         }
 
                         Console.WriteLine(buff, column.Name);

@@ -123,6 +123,10 @@ using System;
 						this.Write("Boolean");
 						break;
 
+					case "bigint":
+						this.Write("long");
+						break;
+
 					case "smallint":
 						this.Write("int");
 						break;
@@ -139,6 +143,7 @@ using System;
 					case "nchar":
 					case "ntext":
 					case "nvarchar":
+					case "varchar":
 						this.Write("String");
 						break;
 
