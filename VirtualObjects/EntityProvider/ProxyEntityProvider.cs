@@ -18,7 +18,7 @@ namespace VirtualObjects.EntityProvider
         private readonly ProxyGenerator _proxyGenerator;
         private ProxyGenerationOptions _proxyGenerationOptions;
         private SessionContext sessionContext;
-        
+
         public ProxyEntityProvider(ProxyGenerator proxyGenerator)
         {
             _proxyGenerator = proxyGenerator;
@@ -37,7 +37,7 @@ namespace VirtualObjects.EntityProvider
             _proxyGenerationOptions = new ProxyGenerationOptions
             {
                 Selector = new InterceptorSelector(
-                    new NonCollectionInterceptor(sessionContext.Session),
+                    new NonCollectionInterceptor(sessionContext.Session, sessionContext.Mapper),
                     new CollectionPropertyInterceptor(sessionContext.Session, sessionContext.Mapper)
                 )
             };
@@ -133,6 +133,14 @@ namespace VirtualObjects.EntityProvider
         {
             invocation.Proceed();
 
+            //
+            // Stops the interception
+            //
+            if ( MappingStatus.NoLazyLoad )
+            {
+                return;
+            }
+
             var method = invocation.Method;
 
             if ( method.Name.StartsWith("set_") )
@@ -205,10 +213,12 @@ namespace VirtualObjects.EntityProvider
     {
         private readonly ISession _session;
         private readonly MethodInfo _methodInfo;
+        private readonly IMapper _mapper;
 
-        public NonCollectionInterceptor(ISession session)
+        public NonCollectionInterceptor(ISession session, IMapper mapper)
             : base(false)
         {
+            _mapper = mapper;
             _methodInfo = typeof(ISession).Method("GetById");
             _session = session;
         }
@@ -218,8 +228,41 @@ namespace VirtualObjects.EntityProvider
             var genericMethod = _methodInfo
                 .MakeGenericMethod(method.ReturnType);
 
-            return genericMethod.Invoke(_session, new[] { invocation.ReturnValue });
+            var proxyEntityInfo = _mapper.Map(method.DeclaringType);
+            var returnTypeEntityInfo = _mapper.Map(method.ReturnType);
+
+            var propertyName = method.Name.Remove(0, "get_".Length);
+
+            object returnEntity = invocation.ReturnValue;
+
+            foreach ( var keyColumn in returnTypeEntityInfo.KeyColumns )
+            {
+                var matchProxyColumn = proxyEntityInfo.Columns.FirstOrDefault(e => e.BindOrName == keyColumn.BindOrName);
+
+                if ( matchProxyColumn == null )
+                {
+                    throw new ConfigException("The column [{ColumnName}] of type [{EntityName}] is marked as key but was not found on [{TargetName}].",
+                        new
+                        {
+                            keyColumn.ColumnName,
+                            keyColumn.EntityInfo.EntityName,
+                            TargetName = proxyEntityInfo.EntityName,
+                        });
+                }
+
+                MappingStatus.WithNoLazyLoad(() =>
+                {
+                    object value = matchProxyColumn.GetFieldFinalValue(invocation.Proxy);
+
+                    keyColumn.SetFieldFinalValue(returnEntity, value);
+                });
+            }
+
+            // invocation.Proxy
+
+            return genericMethod.Invoke(_session, new[] { returnEntity });
         }
+
     }
 
     class CollectionPropertyInterceptor : FieldInterceptorBase

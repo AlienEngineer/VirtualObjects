@@ -21,10 +21,10 @@ namespace VirtualObjects.Queries.Mapping
                 {
                     var foreignKey = column.SetFieldFinalValue(buffer, value);
 
-                    if ( foreignKey != null && column.ForeignKey.EntityInfo.KeyColumns.Count > 1 )
-                    {
-                        MapForeignKeys(reader, column, foreignKey);
-                    }
+                    //if ( foreignKey != null && column.ForeignKey.EntityInfo.KeyColumns.Count > 1 )
+                    //{
+                    //    MapForeignKeys(reader, column, foreignKey);
+                    //}
 
                 }
                 catch ( ConfigException ex)
@@ -68,6 +68,7 @@ namespace VirtualObjects.Queries.Mapping
                 }
             }
         }
+        
         public virtual bool CanMapEntity(MapperContext context)
         {
             return context.EntityInfo != null && context.OutputType == context.EntityInfo.EntityType;
