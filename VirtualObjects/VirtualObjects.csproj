@@ -297,6 +297,8 @@
     <Compile Include="VirtualObjectsModule.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
+    <None Include="CodeTemplates\Scaffolders\Config\Config.ps1" />
     <None Include="CodeTemplates\Scaffolders\Repository\AnnotationsTemplate.cs.t4">
       <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

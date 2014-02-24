@@ -105,29 +105,8 @@ if($Repository) {
 
 if (-not $DontConfig)
 {
-	# get the full path and file name of the App.config file in the same directory as this script
-	$appConfigFile = [IO.Path]::Combine((Get-Project).Properties.Item("LocalPath").Value, 'App.config')
-
-	if(![System.IO.File]::Exists($appConfigFile)) {
-		$appConfigFile = [IO.Path]::Combine((Get-Project).Properties.Item("LocalPath").Value, 'Web.config')
-	}
-
-	if([System.IO.File]::Exists($appConfigFile)) {
-		$appConfig = New-Object XML
-		$appConfig.Load($appConfigFile)
-
-		foreach($connectionString in $appConfig.configuration.connectionStrings.add)
-		{
-			$connectionString.providerName ="System.Data.SqlClient"
-			$connectionString.connectionString = "Data Source=$ServerName;Initial Catalog=$DatabaseName;Integrated Security=True"
-		}
-
-		$appConfig.Save($appConfigFile)	
-	}
-	else 
-	{
-		Write-Host ""
-		Write-Host "Unable to find any configuration file to change."
-		Write-Host ""
-	}
+	Invoke-Scaffolder Config $ServerName $DatabaseName `
+			-Force `
+			-Project $Project `
+			-CodeLanguage $CodeLanguage 
 }
