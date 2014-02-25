@@ -86,7 +86,7 @@ namespace VirtualObjects
         {
             return InternalSession.Insert(entity);
         }
-
+        
         /// <summary>
         /// Updates the specified entity.
         /// </summary>

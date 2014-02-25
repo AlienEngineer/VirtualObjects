@@ -83,26 +83,6 @@
     <DocumentationFile>bin\Release\net40\VirtualObjects.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Smo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.Smo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.SmoExtended, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.SmoExtended.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Unofficial.Microsoft.SQLServer.SMO.11.0.3000.0\lib\Microsoft.SqlServer.SqlEnum.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -248,25 +228,25 @@
     <Compile Include="SessionContext.cs" />
     <Compile Include="SessionExtensions.cs" />
     <Compile Include="StringBuffer.cs" />
+    <Compile Include="tests\Models\Employee.cs" />
     <Compile Include="TextWriterStub.cs" />
     <Compile Include="VirtualObjectsHelper.cs" />
     <Compile Include="VirtualObjectsModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="CodeTemplates\Scaffolders\Config\Config.ps1" />
+    <None Include="CodeTemplates\Scaffolders\Config\Config.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="CodeTemplates\Scaffolders\Models\EntityTemplate.cs.t4" />
+    <None Include="CodeTemplates\Scaffolders\Models\Models.ps1" />
+    <None Include="CodeTemplates\Scaffolders\Models\ModelsTemplate.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\Repository\AnnotationsTemplate.cs.t4">
       <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="CodeTemplates\Scaffolders\Repository\RepositoryExtensionsTemplate.cs.t4">
       <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CodeTemplates\Scaffolders\Models\Models.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CodeTemplates\Scaffolders\Models\ModelsTemplate.cs.t4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="CodeTemplates\Scaffolders\Repository\IRepositoryTemplate.cs.t4">

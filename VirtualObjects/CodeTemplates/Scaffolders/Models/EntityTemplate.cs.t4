@@ -28,26 +28,21 @@ using System;
 	this.WriteLine("");
 #>
 {
+	#pragma warning disable 1591
 <#
-
-    //Server server = new Server(Model.ServerName);       
-    //Database database = new Database(server, Model.DatabaseName);
-    //database.Refresh();	
-
-
-	//foreach(Table table in database.Tables)
-	//Table table = database.Tables.ItemById(Model.TableId);
-	var table = Model.Table;
-	{	
+{	
 				
-		if (Model.ForceAnnotations || table.Name.Contains(" ")) {
-			this.Write("[Table(TableName=\"" + table.Name + "\")]");
-			this.WriteLine("");
-		}		
+	if (Model.ForceAnnotations || Model.Table.Name.Contains(" ") || Model.Table.Name != Model.Table.NameSingularized) {
+		this.Write("	[Table(TableName=\"" + Model.Table.Name + "\")]");
+		this.WriteLine("");
+	}		
+}
 #>
-	public class <#= table.Name.Replace(" ", "") #>
+	public class <#= Model.Table.NameSingularized.Replace(" ", "") #>
 	{
+	
 <# 
+		var table = Model.Table;
 		var isKey = false;
 		this.PushIndent("		");
 
@@ -89,26 +84,26 @@ using System;
 
 			if ( column.IsForeignKey && !Model.NoLazyLoad )
 			{
-					foreach ( var foreignColumn in column.ForeignKeys )
-                    {
-						if (!isKey) {
-							this.WriteLine("");
-						}
-						
-						this.Write("[Association(FieldName=\"" + column.Name + "\", OtherKey = \"" + foreignColumn.ReferencedColumn.Name + "\")]");
+				foreach ( var foreignColumn in column.ForeignKeys )
+                {
+					if (!isKey) {
 						this.WriteLine("");
+					}
+						
+					this.Write("[Association(FieldName=\"" + column.Name + "\", OtherKey = \"" + foreignColumn.ReferencedColumnName + "\")]");
+					this.WriteLine("");
 
-						this.Write("public " );	
-						this.Write("virtual " );	
-						this.Write(foreignColumn.ReferencedTable.Name.Replace(" ", ""));
-						this.Write(" " );	
-						this.Write(column.Name.Replace(" ", ""));
-                    }
+					this.Write("public " );	
+					this.Write("virtual " );	
+					this.Write(foreignColumn.ReferencedTableName.Replace(" ", ""));
+					this.Write(" " );	
+					this.Write(column.Name.Replace(" ", ""));
+				}
             }
 			else 
 			{
 				this.Write("public " );
-				switch (/*column.DataType*/"bit") 
+				switch (column.DataType) 
 				{
 				
 					case "bit":
@@ -159,9 +154,7 @@ using System;
 		this.PopIndent();
 		this.WriteLine("    ");
 #>
-	}
-}		
-<# 
-		
-	}
-#>
+
+	}	
+	#pragma warning restore 1591
+}

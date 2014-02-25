@@ -1,21 +1,21 @@
 [T4Scaffolding.Scaffolder(Description = "Creation of entity models, and a repository layer.")][CmdletBinding()]
 param(       
-	[parameter(Mandatory=$true, ValueFromPipelineByPropertyName = $true)][String]$ServerName, 
-	[parameter(Mandatory=$true, ValueFromPipelineByPropertyName = $true)][String]$DatabaseName, 
-    [string]$Project,
-	[string]$CodeLanguage,
-	[string[]]$TemplateFolders,
-	[switch]$Force = $false,
-	[switch]$Repository = $false,
-	[switch]$NoLazyLoad = $false,
-	[switch]$WithAnnotations = $false,
-	[switch]$DontConfig = $false,
-	[switch]$DefaultAttributes = $false,
-	[string]$TableName = "-",
-	[string]$ModelFolder = "Models",
-	[string]$RepositoryFolder = "Repositories",
-	[string]$AnnotationsFolder = "Annotations",
-	[String]$ToFolder = "-"
+	[parameter(Mandatory=$true, ValueFromPipelineByPropertyName = $true)][System.String]$ServerName, 
+	[parameter(Mandatory=$true, ValueFromPipelineByPropertyName = $true)][System.String]$DatabaseName, 
+    [System.String]$Project,
+	[System.String]$CodeLanguage,
+	[System.String[]]$TemplateFolders,
+	[System.Management.Automation.SwitchParameter]$Force = $false,
+	[System.Management.Automation.SwitchParameter]$Repository = $false,
+	[System.Management.Automation.SwitchParameter]$NoLazyLoad = $false,
+	[System.Management.Automation.SwitchParameter]$WithAnnotations = $false,
+	[System.Management.Automation.SwitchParameter]$DontConfig = $false,
+	[System.Management.Automation.SwitchParameter]$DefaultAttributes = $false,
+	[System.String]$TableName = "-",
+	[System.String]$ModelFolder = "Models",
+	[System.String]$RepositoryFolder = "Repositories",
+	[System.String]$AnnotationsFolder = "Annotations",
+	[System.String]$ToFolder = "-"
 )
 
 if (-not ($ToFolder -eq "-"))
@@ -28,14 +28,14 @@ if (-not ($ToFolder -eq "-"))
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 
 # Getting the package path for the proper version of VirtualObjects.
-$targetFramework = [string](Get-Project $Project).Properties.Item("TargetFrameworkMoniker").Value
+$targetFramework = [System.String](Get-Project $Project).Properties.Item("TargetFrameworkMoniker").Value
 
 $backupfolder = "..\";
 
 $packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
 
 
-while (-not [IO.Directory]::Exists($packagesPath)) 
+while (-not [System.IO.Directory]::Exists($packagesPath)) 
 {
 	$backupfolder = $backupfolder + "..\";
 	$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
@@ -55,11 +55,12 @@ $assemblyPath = $packagesPath
 
 # =============== LOADING DEPENDENCIES =========================
 
-# Microsoft.SqlServer.Smo.dll
-$smo = [Reflection.Assembly]::Load([io.file]::ReadAllBytes($assemblyPath + "Microsoft.SqlServer.Smo.dll"))
+$ninject = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Ninject.dll"))
+$castleCore = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Castle.Core.dll"))
+$fasterflact = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Fasterflect.dll"))
 
 # VirtualObjects.Scaffold.dll
-$virtualObjects = [Reflection.Assembly]::Load([io.file]::ReadAllBytes($assemblyPath + "VirtualObjects.dll"))
+$virtualObjects = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "VirtualObjects.dll"))
 
 
 if($Repository) {
@@ -79,27 +80,68 @@ if($Repository) {
 	}
 }
 
-[VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName) | foreach { 
-	if ($TableName -eq "-" -or $TableName -eq $_.Name) {
-		$outputPath = "$ModelFolder\" + $_.Name
+[VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName) | ForEach-Object { 
+	$table = $_
 
-		Add-ProjectItemViaTemplate $outputPath -Template ModelsTemplate `
+	if ($TableName -eq "-" -or $TableName -eq $table.Name) {
+		$outputPath = "$ModelFolder\" + (Get-SingularizedWord $table.Name)
+		
+		$tableDynamic = @{
+			Name = $table.Name;
+			NameSingularized = (Get-SingularizedWord $table.Name);
+		}
+
+		Write-Host ("Name			: " + $tableDynamic.Name)
+		Write-Host ("Singularized	: " + $tableDynamic.NameSingularized)
+		Write-Host ("Columns.Count	: " + $table.Columns.Count)
+		
+		$tableDynamic.Columns = @()
+
+		$table.Columns | foreach {
+			$column = $_
+			
+			$columnDynamic = @{
+				Name = $column.Name;
+				NameSingularized = $column.Name;
+				Identity = $column.Identity;
+				InPrimaryKey = $column.InPrimaryKey;
+				IsForeignKey = $column.IsForeignKey;
+				DataType = $column.Type;
+			}
+
+			$columnDynamic.ForeignKeys = @()
+
+			$column.ForeignKeys | foreach {
+				$foreignKey = $_
+
+				$columnDynamic.ForeignKeys += @{
+					ReferencedTableName = (Get-SingularizedWord $foreignKey.ReferencedTable.Name);
+					ReferencedColumnName = $foreignKey.ReferencedColumn.Name;
+				}
+			}
+			
+			$tableDynamic.Columns += $columnDynamic
+			Write-Host ("	DataType			: " + $columnDynamic.DataType)
+		}
+
+		$TableName = $table.Name
+
+		Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `
 			-Model @{ 
 				Namespace = $namespace; 
 				ServerName = $ServerName; 
 				DatabaseName = $DatabaseName; 
-				TableId = $_.Id; 
-				TableName = $_.Name; 
+				Table = $tableDynamic 
+				Path = $assemblyPath;
 				AnnotationsFolder = $AnnotationsFolder; 
 				RepositoryFolder = $RepositoryFolder;
 				ModelFolder = $ModelFolder;
-				ForceAnnotations = [Boolean]$WithAnnotations;
-				NoLazyLoad = [Boolean]$NoLazyLoad;
-				DefaultAttributes = [Boolean]($DefaultAttributes -and (-not $Repository)) ;
+				ForceAnnotations = [System.Boolean]$WithAnnotations;
+				NoLazyLoad = [System.Boolean]$NoLazyLoad;
+				DefaultAttributes = [System.Boolean]($DefaultAttributes -and (-not $Repository)) ;
 			} `
 			-SuccessMessage "Added Models output at {0}" `
 			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-
 	}
 }
 
@@ -109,4 +151,6 @@ if (-not $DontConfig)
 			-Force `
 			-Project $Project `
 			-CodeLanguage $CodeLanguage 
+
+
 }
