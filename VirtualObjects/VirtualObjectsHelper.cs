@@ -144,7 +144,7 @@ namespace VirtualObjects.Scaffold
         {
             switch ( type )
             {
-
+                case 56: return "int";
                 default:
                     return "nvarchar";
             }

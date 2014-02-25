@@ -27,7 +27,7 @@ namespace VirtualObjects.Tests.Scaffold
                     var buff = new StringBuffer();
 
                     buff += "     ColumnName: {0, -20}";
-                    buff += "     DataType:   {0, -20}";
+                    buff += "     DataType:   {1, -20}";
 
                     if ( column.Identity )
                     {

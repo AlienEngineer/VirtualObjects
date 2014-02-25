@@ -103,7 +103,7 @@ using System;
 			else 
 			{
 				this.Write("public " );
-				switch (column.DataType) 
+				switch ((string)column.DataType) 
 				{
 				
 					case "bit":

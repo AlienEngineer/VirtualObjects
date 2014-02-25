@@ -106,7 +106,7 @@ if($Repository) {
 				Identity = $column.Identity;
 				InPrimaryKey = $column.InPrimaryKey;
 				IsForeignKey = $column.IsForeignKey;
-				DataType = $column.Type;
+				DataType = $column.DataType;
 			}
 
 			$columnDynamic.ForeignKeys = @()

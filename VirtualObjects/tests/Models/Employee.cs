@@ -2,8 +2,9 @@
 using System;
 using VirtualObjects.Mappings;
 
-namespace VirtualObjects.tests.Models
+namespace VirtualObjects.Tests.Models
 {
+	#pragma warning disable 1591
 	[Table(TableName="Employees")]
 	public class Employee
 	{
@@ -32,4 +33,5 @@ namespace VirtualObjects.tests.Models
     
 
 	}	
+	#pragma warning restore 1591
 }
