@@ -253,8 +253,6 @@ namespace VirtualObjects.Config
                     {
                         var columnLink = currentEntity[link];
                         
-                        
-
                         yield return columnLink;
                     }
                 }
