@@ -23,6 +23,7 @@ namespace VirtualObjects.Config
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnIdentityGetters { get; set; }
         public IEnumerable<Func<Type, String>> EntityNameGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKey { get; set; }
+        public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKeyLinks { get; set; }
         public IEnumerable<Func<PropertyInfo, bool>> ColumnVersionField { get; set; }
 
         private IDictionary<Type, EntityInfo> _cacheEntityInfos;
@@ -32,7 +33,7 @@ namespace VirtualObjects.Config
             _operationsProvider = operationsProvider;
             _entityProvider = entityProvider;
             _entityMapper = entityMapper;
-            this._sessionContext = sessionContext;
+            _sessionContext = sessionContext;
             _cacheEntityInfos = new Dictionary<Type, EntityInfo>();
         }
 
@@ -64,7 +65,6 @@ namespace VirtualObjects.Config
             foreach ( var column in entityInfo.Columns )
             {
                 column.ForeignKey = GetForeignKey(column.Property);
-
             }
 
             entityInfo.Columns = WrapColumns(entityInfo.Columns).ToList();
@@ -95,8 +95,12 @@ namespace VirtualObjects.Config
 
             entityInfo.ForeignKeys = entityInfo.Columns.Where(e => e.ForeignKey != null).ToList();
 
-            entityInfo.Operations = _operationsProvider.CreateOperations(entityInfo);
+            foreach ( var column in entityInfo.Columns )
+            {
+                column.ForeignKeyLinks = GetForeignKeyLinks(column, column.ForeignKey, entityInfo).ToList();
+            }
 
+            entityInfo.Operations = _operationsProvider.CreateOperations(entityInfo);
             entityInfo.EntityProvider = _entityProvider.GetProviderForType(entityType);
             entityInfo.EntityProvider.PrepareProvider(entityType, _sessionContext);
             entityInfo.EntityMapper = _entityMapper;
@@ -104,22 +108,27 @@ namespace VirtualObjects.Config
             return entityInfo;
         }
 
-        private IEnumerable<IEntityColumnInfo> WrapColumns(IEnumerable<IEntityColumnInfo> columns)
+        private static IEnumerable<IEntityColumnInfo> WrapColumns(IEnumerable<IEntityColumnInfo> columns)
         {
             foreach ( var column in columns )
             {
-                if ( column.ForeignKey != null )
-                {
-                    yield return WrapWithBoundColumn(column);
-                }
-                else if ( column.Property.PropertyType == typeof(DateTime) )
-                {
-                    yield return WrapWithDatetimeColumn(column);
-                }
-                else
-                {
-                    yield return column;
-                }
+                yield return WrapColumn(column);
+            }
+        }
+
+        private static IEntityColumnInfo WrapColumn(IEntityColumnInfo column)
+        {
+            if ( column.ForeignKey != null )
+            {
+                return WrapWithBoundColumn(column);
+            }
+            else if ( column.Property.PropertyType == typeof(DateTime) )
+            {
+                return WrapWithDatetimeColumn(column);
+            }
+            else
+            {
+                return column;
             }
         }
 
@@ -147,6 +156,7 @@ namespace VirtualObjects.Config
                 ColumnName = column.ColumnName,
                 EntityInfo = column.EntityInfo,
                 ForeignKey = column.ForeignKey,
+                ForeignKeyLinks = column.ForeignKeyLinks,
                 IsIdentity = column.IsIdentity,
                 IsKey = column.IsKey,
                 ValueGetter = column.ValueGetter,
@@ -219,6 +229,38 @@ namespace VirtualObjects.Config
 
             return foreignKey;
         }
+
+        private IEnumerable<IEntityColumnInfo> GetForeignKeyLinks(IEntityColumnInfo column, IEntityColumnInfo foreignKey, IEntityInfo currentEntity) 
+        {
+            if ( column.ForeignKey != null )
+            {
+                var entity = Map(column.Property.PropertyType);
+  
+                var links = ColumnForeignKeyLinks
+                    .Select(keyGetter => keyGetter(column.Property))
+                    .FirstOrDefault();
+
+                if ( String.IsNullOrEmpty(links) )
+                {
+                    foreach ( var item in foreignKey.EntityInfo.KeyColumns )
+                    {
+                        yield return item;
+                    } 
+                }
+                else
+                {
+                    foreach ( var link in links.Split(';') )
+                    {
+                        var columnLink = currentEntity[link];
+                        
+                        
+
+                        yield return columnLink;
+                    }
+                }
+            }
+        }
+
 
         private bool GetIsIdentity(PropertyInfo propertyInfo)
         {

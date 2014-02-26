@@ -89,6 +89,19 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
         void ForeignKeyFromProperty(Func<PropertyInfo, String> foreignKeyGetter);
+
+        /// <summary>
+        /// Appends a parser to find the association based on the property.
+        /// </summary>
+        /// <param name="foreignKeyGetter">The foreign key getter.</param>
+        void ForeignKeyLinksFromProperty(Func<PropertyInfo, String> foreignKeyGetter);
+
+        /// <summary>
+        /// Appends a parser to find the association based on the property attribute.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="foreignKeyGetter">The foreign key getter.</param>
+        void ForeignKeyLinksFromAttribute<TAttribute>(Func<TAttribute, String> foreignKeyGetter) where TAttribute : Attribute;
         
         /// <summary>
         /// Appends a parser to find the association based on the property attribute.
@@ -106,6 +119,7 @@ namespace VirtualObjects.Config
         private readonly IOperationsProvider _operationsProvider;
         private readonly ICollection<Func<PropertyInfo, String>> _columnNameGetters;
         private readonly ICollection<Func<PropertyInfo, String>> _columnForeignKeyGetters;
+        private readonly ICollection<Func<PropertyInfo, String>> _columnForeignKeyLinksGetters;
         private readonly ICollection<Func<PropertyInfo, Boolean>> _columnKeyGetters;
         private readonly ICollection<Func<PropertyInfo, Boolean>> _columnIdentityGetters;
         private readonly ICollection<Func<PropertyInfo, Boolean>> _columnVersionGetters;
@@ -115,6 +129,7 @@ namespace VirtualObjects.Config
         private readonly IEntityProvider _entityProvider;
         private readonly IEntityMapper _entityMapper;
         private readonly SessionContext _sessionContext;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MappingBuilder"/> class.
@@ -134,7 +149,8 @@ namespace VirtualObjects.Config
             _columnIdentityGetters = new Collection<Func<PropertyInfo, Boolean>>();
             _columnVersionGetters = new Collection<Func<PropertyInfo, Boolean>>();
             _entityNameGetters = new Collection<Func<Type, String>>();
-            _columnForeignKeyGetters = new Collection<Func<PropertyInfo, string>>();
+            _columnForeignKeyGetters = new Collection<Func<PropertyInfo, String>>();
+            _columnForeignKeyLinksGetters = new Collection<Func<PropertyInfo, String>>();
 
             _defaultBooleanGetter = attribute => attribute != null;
         }
@@ -315,6 +331,30 @@ namespace VirtualObjects.Config
             });
         }
 
+        
+        /// <summary>
+        /// Appends a parser to find the association based on the property.
+        /// </summary>
+        /// <param name="foreignKeyGetter">The foreign key getter.</param>
+        public void ForeignKeyLinksFromProperty(Func<PropertyInfo, String> foreignKeyGetter)
+        {
+            _columnForeignKeyLinksGetters.Add(foreignKeyGetter);
+        }
+
+        /// <summary>
+        /// Appends a parser to find the association based on the property attribute.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="foreignKeyGetter">The foreign key getter.</param>
+        public void ForeignKeyLinksFromAttribute<TAttribute>(Func<TAttribute, String> foreignKeyGetter) where TAttribute : Attribute
+        {
+            ForeignKeyLinksFromProperty(prop =>
+            {
+                var attribute = prop.Attribute<TAttribute>();
+                return attribute != null ? foreignKeyGetter(attribute) : null;
+            });
+        }
+        
         #endregion
 
         /// <summary>
@@ -330,6 +370,7 @@ namespace VirtualObjects.Config
                 ColumnIdentityGetters = _columnIdentityGetters.Reverse(),
                 ColumnKeyGetters = _columnKeyGetters.Reverse(),
                 ColumnForeignKey = _columnForeignKeyGetters.Reverse(),
+                ColumnForeignKeyLinks = _columnForeignKeyLinksGetters.Reverse(),
                 ColumnVersionField = _columnVersionGetters.Reverse()
             };
         }

@@ -17,12 +17,12 @@ namespace VirtualObjects.Tests.Scaffold
         public void Helper_Can_Produce_TablesInformation()
         {
 
-            foreach ( var table in VirtualObjectsHelper.GetTables("Northwind", ".\\Development") )
+            foreach ( var table in VirtualObjectsHelper.GetTables("Northwind", ".\\Development").Where(e => e.Name == "Products") )
             {
 
                 Console.WriteLine("TableName: {0}", table.Name);
 
-                foreach ( var column in table.Columns )
+                foreach ( var column in table.Columns.Where(e => e.IsForeignKey) )
                 {
                     var buff = new StringBuffer();
 
@@ -44,6 +44,10 @@ namespace VirtualObjects.Tests.Scaffold
                         buff += foreignKey.ReferencedTable.Name;
                         buff += ".";
                         buff += foreignKey.ReferencedColumn.Name;
+                        buff += " = ";
+                        buff += foreignKey.Table.Name;
+                        buff += ".";
+                        buff += foreignKey.Column.Name;
                         buff += ";";
                     }
 

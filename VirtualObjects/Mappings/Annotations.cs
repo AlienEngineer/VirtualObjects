@@ -54,6 +54,15 @@ namespace VirtualObjects.Mappings
     public class AssociationAttribute : ColumnAttribute
     {
         /// <summary>
+        /// Gets or sets the other keys.
+        /// Use ; to separate fields.
+        /// </summary>
+        /// <value>
+        /// The other keys.
+        /// </value>
+        public string OtherKeys { get; set; }
+
+        /// <summary>
         /// Gets or sets the other key.
         /// </summary>
         /// <value>

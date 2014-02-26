@@ -228,7 +228,6 @@
     <Compile Include="SessionContext.cs" />
     <Compile Include="SessionExtensions.cs" />
     <Compile Include="StringBuffer.cs" />
-    <Compile Include="tests\Models\Employee.cs" />
     <Compile Include="TextWriterStub.cs" />
     <Compile Include="VirtualObjectsHelper.cs" />
     <Compile Include="VirtualObjectsModule.cs" />

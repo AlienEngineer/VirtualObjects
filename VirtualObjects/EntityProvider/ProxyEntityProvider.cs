@@ -237,9 +237,11 @@ namespace VirtualObjects.EntityProvider
 
             var foreignKey = proxyEntityInfo.ForeignKeys.Where(e => e.Property.Name == propertyName).First();
 
-            foreach ( var keyColumn in returnTypeEntityInfo.KeyColumns.Where(e => e.ColumnName != foreignKey.BindOrName) )
+            foreach ( var keyColumn in foreignKey.ForeignKeyLinks.Where(e => e.ColumnName != foreignKey.BindOrName) )
             {
-                var matchProxyColumn = proxyEntityInfo.Columns.FirstOrDefault(e => e.BindOrName == keyColumn.BindOrName);
+                var matchProxyColumn = proxyEntityInfo.Columns.FirstOrDefault(e => e.ColumnName == keyColumn.ColumnName);
+
+                matchProxyColumn = matchProxyColumn ?? proxyEntityInfo.Columns.FirstOrDefault(e => e.BindOrName == keyColumn.BindOrName);
 
                 if ( matchProxyColumn == null )
                 {
@@ -255,6 +257,13 @@ namespace VirtualObjects.EntityProvider
                 MappingStatus.WithNoLazyLoad(() =>
                 {
                     object value = matchProxyColumn.GetFieldFinalValue(invocation.Proxy);
+
+                    if ( keyColumn.ForeignKey != null )
+                    {
+                        var columnLink = returnTypeEntityInfo.KeyColumns.FirstOrDefault(e => e.ColumnName.Equals(keyColumn.ForeignKey.ColumnName, StringComparison.InvariantCultureIgnoreCase));
+                        columnLink.SetFieldFinalValue(returnEntity, value);
+                        return;
+                    }
 
                     keyColumn.SetFieldFinalValue(returnEntity, value);
                 });

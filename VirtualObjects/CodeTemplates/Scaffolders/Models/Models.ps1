@@ -117,14 +117,14 @@ if($Repository) {
 				$columnDynamic.ForeignKeys += @{
 					ReferencedTableName = (Get-SingularizedWord $foreignKey.ReferencedTable.Name);
 					ReferencedColumnName = $foreignKey.ReferencedColumn.Name;
+					TableName = (Get-SingularizedWord $foreignKey.Table.Name);
+					ColumnName = $foreignKey.Column.Name;
 				}
 			}
 			
 			$tableDynamic.Columns += $columnDynamic
 			Write-Host ("	DataType			: " + $columnDynamic.DataType)
 		}
-
-		$TableName = $table.Name
 
 		Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `
 			-Model @{ 

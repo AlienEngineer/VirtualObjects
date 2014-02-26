@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace VirtualObjects
@@ -15,6 +16,14 @@ namespace VirtualObjects
         /// The name of the column.
         /// </value>
         String ColumnName { get; }
+
+        /// <summary>
+        /// Gets or sets the foreign key links.
+        /// </summary>
+        /// <value>
+        /// The foreign key links.
+        /// </value>
+        IList<IEntityColumnInfo> ForeignKeyLinks { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether [is key].

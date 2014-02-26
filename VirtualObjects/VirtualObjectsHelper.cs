@@ -32,12 +32,12 @@ namespace VirtualObjects.Scaffold
             [Key]
             [Association(FieldName = "object_id", OtherKey = "Id")]
             public virtual Table Table { get; set; }
-
+                          
             [Key(FieldName = "column_Id")]
             public int Id { get; set; }
 
             public String Name { get; set; }
-
+                      
             [Column(FieldName = "is_identity")]
             public Boolean IsIdentity { get; set; }
 
@@ -72,7 +72,7 @@ namespace VirtualObjects.Scaffold
             [Association(FieldName = "parent_column_id", OtherKey = "Id")]
             public virtual Column Column { get; set; }
 
-            [Association(FieldName = "Referenced_column_id", OtherKey = "Id")]
+            [Association(FieldName = "Referenced_column_id", OtherKey = "Id", OtherKeys = "ReferencedTable")]
             public virtual Column ReferencedColumn { get; set; }
 
             [Association(FieldName = "Referenced_object_id", OtherKey = "Id")]
@@ -187,7 +187,7 @@ namespace VirtualObjects.Scaffold
 
         private static bool IsForeignKey(Table table, Column column, Session session)
         {
-            return session.Query<VirtualObjectsHelper.ForeingKey>().Where(e => e.Column == column && e.Table == table).Any();
+            return session.Query<ForeingKey>().Where(e => e.Column == column && e.Table == table).Any();
         }
 
         private static ICollection<MetaForeignKey> GetForeignKeys(Table table, Column column, Session session, MetaTable metaTable, MetaField metaColumn)
@@ -197,13 +197,22 @@ namespace VirtualObjects.Scaffold
 
         private static IEnumerable<MetaForeignKey> GetForeignKeysLazy(Table table, Column column, Session session, MetaTable metaTable, MetaField metaColumn)
         {
-            foreach ( var foreignKey in session.Query<VirtualObjectsHelper.ForeingKey>().Where(e => e.Column == column && e.Table == table) )
+            foreach ( var foreignKey in session.Query<ForeingKey>().Where(e => e.Column == column && e.Table == table) )
             {
+
+
+                string foreignKeyReferencedColumnName = foreignKey.ReferencedColumn.Name;
+
+                if ( foreignKey.ReferencedTable.Name != foreignKey.ReferencedColumn.Table.Name )
+                {
+                    throw new Exception(String.Format("{0} table doesn't exist in {1}", foreignKey.ReferencedColumn.Name, foreignKey.ReferencedTable.Name));
+                }
+
                 yield return new MetaForeignKey
                 {
-                    Column = metaColumn,
-                    Table = metaTable,
-                    ReferencedColumn = new MetaField { Name = foreignKey.ReferencedColumn.Name },
+                    Column = new MetaField { Name = foreignKey.Column.Name },
+                    Table = new MetaTable { Name = foreignKey.Table.Name },
+                    ReferencedColumn = new MetaField { Name = foreignKeyReferencedColumnName },
                     ReferencedTable = new MetaTable { Name = foreignKey.ReferencedTable.Name }
                 };
             }

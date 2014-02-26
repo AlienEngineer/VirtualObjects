@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using Fasterflect;
+using System.Collections.Generic;
 
 namespace VirtualObjects.Config
 {
@@ -14,6 +15,8 @@ namespace VirtualObjects.Config
         public bool IsKey { get; set; }
 
         public bool IsIdentity { get; set; }
+
+        
 
         public PropertyInfo Property
         {
@@ -31,6 +34,8 @@ namespace VirtualObjects.Config
         public IEntityInfo EntityInfo { get; set; }
 
         public IEntityColumnInfo ForeignKey { get; set; }
+
+        public IList<IEntityColumnInfo> ForeignKeyLinks { get; set; }
 
         public Func<Object, Object> ValueGetter { get; set; }
 

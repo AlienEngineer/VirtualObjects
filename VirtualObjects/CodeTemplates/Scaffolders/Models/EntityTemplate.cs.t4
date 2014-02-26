@@ -102,58 +102,87 @@ using System;
             }
 			else 
 			{
+				//
+				// Datatype mapping based on:  http://msdn.microsoft.com/en-us/library/cc716729.aspx
+				//
 				this.Write("public " );
 				switch ((int)column.DataType) 
 				{
-					/*
-					case "bit":
+					case 36: // uniqueidentifier
+						this.Write("Guid");
+						break;
+
+					case 104: // bit
 						this.Write("Boolean");
 						break;
 
-					case "bigint":
-						this.Write("long");
-						break;
-
-					case "smallint":
-						this.Write("int");
-						break;
-
-					case "real":
-					case "money":
+					case 62:  // float
 						this.Write("Double");
 						break;
 
-					case "datetime":
+					case 106: // decimal
+					case 108: // numeric
+					case 122: // smallmoney
+					case 60:  // money
+						this.Write("Decimal");
+						break;
+
+					case 59:  // real
+						this.Write("Single");
+						break;
+
+					case 189: // timestamp
+					case 173: // binary
+					case 34:  // image
+					case 165: // varbinary
+						this.Write("Byte[]");
+						break;
+
+					case 98:  // sql_variant
+						this.Write("Object *");
+						break;
+
+					case 241:  // xml
+						this.Write("XML");
+						break;
+
+					case 41:  // time
+						this.Write("TimeSpan");
+						break;
+
+					case 40:  // date					
+					case 42:  // datetime2					
+					case 58:  // smalldatetime
+					case 61:  // datetime
 						this.Write("DateTime");
+						break;
+
+					case 43:  // datetimeoffset
+						this.Write("DateTimeOffset");
+						break;
+
+					case 48:  // tinyint
+						this.Write("Byte");
+						break;
+
+					case 52:  // smallint
+						this.Write("Int16");
 						break;
 					
-					case "nchar":
-					case "ntext":
-					case "nvarchar":
-					case "varchar":
-						this.Write("String");
+					case 127:  // bigint
+						this.Write("Int64");
 						break;
-
-					case "timestamp":
-					case "image":
-						this.Write("Byte[]");
+					
+					case 56:  // int
+						this.Write("Int32");
 						break;
-					*/
-					case 189:
-					case 34:
-						this.Write("Byte[]");
-						break;
-
-					case 61:
-						this.Write("DateTime");
-						break;
-
-					case 56: 
-						this.Write("int");
-						break;
-
-					case 231:
-					case 99:
+					
+					case 175: // char
+					case 231: // nvarchar
+					case 35:  // text
+					case 99:  // ntext
+					case 167: // varchar
+					case 239: // nchar
 						this.Write("String");
 						break;
 
