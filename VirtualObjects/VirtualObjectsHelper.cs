@@ -107,7 +107,7 @@ namespace VirtualObjects.Scaffold
             public bool InPrimaryKey { get; set; }
             public bool IsForeignKey { get; set; }
             public String Name { get; set; }
-            public String DataType { get; set; }
+            public int DataType { get; set; }
 
             public MetaTable Table { get; set; }
             public ICollection<MetaForeignKey> ForeignKeys { get; set; }
@@ -139,17 +139,6 @@ namespace VirtualObjects.Scaffold
         }
 
 
-
-        private static string DecodeType(int type)
-        {
-            switch ( type )
-            {
-                case 56: return "int";
-                default:
-                    return "nvarchar";
-            }
-        }
-
         private static IEnumerable<MetaTable> GetTablesLazy(string databaseName, string serverName)
         {
             using ( var session = new Session(
@@ -174,7 +163,7 @@ namespace VirtualObjects.Scaffold
                             Identity = column.IsIdentity,
                             InPrimaryKey = IsPrimaryKey(table, column, session),
                             IsForeignKey = IsForeignKey(table, column, session),
-                            DataType = DecodeType(column.Type),
+                            DataType = column.Type,
                             Table = metaTable
                         };
 

@@ -235,7 +235,9 @@ namespace VirtualObjects.EntityProvider
 
             object returnEntity = invocation.ReturnValue;
 
-            foreach ( var keyColumn in returnTypeEntityInfo.KeyColumns )
+            var foreignKey = proxyEntityInfo.ForeignKeys.Where(e => e.Property.Name == propertyName).First();
+
+            foreach ( var keyColumn in returnTypeEntityInfo.KeyColumns.Where(e => e.ColumnName != foreignKey.BindOrName) )
             {
                 var matchProxyColumn = proxyEntityInfo.Columns.FirstOrDefault(e => e.BindOrName == keyColumn.BindOrName);
 

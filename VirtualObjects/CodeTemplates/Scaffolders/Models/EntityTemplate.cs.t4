@@ -103,9 +103,9 @@ using System;
 			else 
 			{
 				this.Write("public " );
-				switch ((string)column.DataType) 
+				switch ((int)column.DataType) 
 				{
-				
+					/*
 					case "bit":
 						this.Write("Boolean");
 						break;
@@ -138,7 +138,25 @@ using System;
 					case "image":
 						this.Write("Byte[]");
 						break;
-				
+					*/
+					case 189:
+					case 34:
+						this.Write("Byte[]");
+						break;
+
+					case 61:
+						this.Write("DateTime");
+						break;
+
+					case 56: 
+						this.Write("int");
+						break;
+
+					case 231:
+					case 99:
+						this.Write("String");
+						break;
+
 					default: 
 						this.Write(column.DataType.ToString());
 						break;
