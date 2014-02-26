@@ -1,9 +1,11 @@
-﻿using System;
+﻿<#@ template debug="true" hostSpecific="true"  #>
+<#@ output extension=".cs" #>
+using System;
 using System.Linq;
-using Aimirim.Core.VirtualObjects;
 using VirtualObjects;
+using <#= Model.Namespace #>.<#= Model.RepositoryFolder.Replace("\\",".") #>;
 
-namespace $rootnamespace$
+namespace <#= Model.Namespace #> 
 {
     public static class RepositoryExtensions
     {

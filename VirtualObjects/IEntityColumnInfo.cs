@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace VirtualObjects
@@ -15,6 +16,14 @@ namespace VirtualObjects
         /// The name of the column.
         /// </value>
         String ColumnName { get; }
+
+        /// <summary>
+        /// Gets or sets the foreign key links.
+        /// </summary>
+        /// <value>
+        /// The foreign key links.
+        /// </value>
+        IList<IEntityColumnInfo> ForeignKeyLinks { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether [is key].
@@ -93,7 +102,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="value">The value.</param>
-        void SetValue(Object entity, Object value);
+        Object SetValue(Object entity, Object value);
 
         /// <summary>
         /// Gets the value.
@@ -114,7 +123,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="value">The value.</param>
-        void SetFieldFinalValue(object entity, object value);
+        Object SetFieldFinalValue(object entity, object value);
 
         /// <summary>
         /// Gets the last bind.

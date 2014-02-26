@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using Fasterflect;
+using System.Collections.Generic;
 
 namespace VirtualObjects.Config
 {
@@ -14,6 +15,8 @@ namespace VirtualObjects.Config
         public bool IsKey { get; set; }
 
         public bool IsIdentity { get; set; }
+
+        
 
         public PropertyInfo Property
         {
@@ -32,11 +35,13 @@ namespace VirtualObjects.Config
 
         public IEntityColumnInfo ForeignKey { get; set; }
 
+        public IList<IEntityColumnInfo> ForeignKeyLinks { get; set; }
+
         public Func<Object, Object> ValueGetter { get; set; }
 
         public Action<Object, Object> ValueSetter { get; set; }
 
-        public void SetValue(Object entity, Object value)
+        public Object SetValue(Object entity, Object value)
         {
             if ( value == DBNull.Value )
             {
@@ -49,6 +54,7 @@ namespace VirtualObjects.Config
             }
 
             ValueSetter(entity, value);
+            return null;
         }
 
         public object GetValue(Object entity)
@@ -61,9 +67,9 @@ namespace VirtualObjects.Config
             return GetValue(entity);
         }
 
-        public virtual void SetFieldFinalValue(object entity, object value)
+        public virtual Object SetFieldFinalValue(object entity, object value)
         {
-            SetValue(entity, value);
+            return SetValue(entity, value);
         }
 
         public virtual string BindOrName { get { return ColumnName; } }

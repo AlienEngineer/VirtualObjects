@@ -1,7 +1,9 @@
+﻿<#@ template debug="true" hostSpecific="true"  #>
+<#@ output extension=".cs" #>
 using System;
 using System.Linq;
 
-namespace $rootnamespace$
+namespace <#= Model.Namespace #> 
 {
     public interface IRepository
     {
@@ -49,5 +51,18 @@ namespace $rootnamespace$
         /// </summary>
         /// <returns></returns>
         IRepositoryTransaction BeginTransaction();
+    }
+
+	public interface IRepositoryTransaction
+    {
+        /// <summary>
+        /// Rollback any changes made during this transaction.
+        /// </summary>
+        void Rollback();
+
+        /// <summary>
+        /// Commit any changes made during this transaction.
+        /// </summary>
+        void Commit();
     }
 }

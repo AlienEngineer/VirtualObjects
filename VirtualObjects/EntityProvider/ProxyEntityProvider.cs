@@ -17,6 +17,7 @@ namespace VirtualObjects.EntityProvider
     {
         private readonly ProxyGenerator _proxyGenerator;
         private ProxyGenerationOptions _proxyGenerationOptions;
+        private SessionContext sessionContext;
 
         public ProxyEntityProvider(ProxyGenerator proxyGenerator)
         {
@@ -32,6 +33,14 @@ namespace VirtualObjects.EntityProvider
         public override object CreateEntity(Type type)
         {
             Debug.Assert(type != null, "type != null");
+
+            _proxyGenerationOptions = new ProxyGenerationOptions
+            {
+                Selector = new InterceptorSelector(
+                    new NonCollectionInterceptor(sessionContext.Session, sessionContext.Mapper),
+                    new CollectionPropertyInterceptor(sessionContext.Session, sessionContext.Mapper)
+                )
+            };
 
             // ReSharper disable once PossibleNullReferenceException
             while ( type.GetInterfaces().Contains(typeof(IProxyTargetAccessor)) )
@@ -54,15 +63,8 @@ namespace VirtualObjects.EntityProvider
 
         public override void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
+            this.sessionContext = sessionContext;
             // if ( _isPrepared ) { return; }
-
-            _proxyGenerationOptions = new ProxyGenerationOptions
-            {
-                Selector = new InterceptorSelector(
-                    new NonCollectionInterceptor(sessionContext.Session),
-                    new CollectionPropertyInterceptor(sessionContext.Session, sessionContext.Mapper)
-                )
-            };
         }
     }
 
@@ -130,6 +132,14 @@ namespace VirtualObjects.EntityProvider
         public void Intercept(IInvocation invocation)
         {
             invocation.Proceed();
+
+            //
+            // Stops the interception
+            //
+            if ( MappingStatus.NoLazyLoad )
+            {
+                return;
+            }
 
             var method = invocation.Method;
 
@@ -203,10 +213,12 @@ namespace VirtualObjects.EntityProvider
     {
         private readonly ISession _session;
         private readonly MethodInfo _methodInfo;
+        private readonly IMapper _mapper;
 
-        public NonCollectionInterceptor(ISession session)
+        public NonCollectionInterceptor(ISession session, IMapper mapper)
             : base(false)
         {
+            _mapper = mapper;
             _methodInfo = typeof(ISession).Method("GetById");
             _session = session;
         }
@@ -216,8 +228,52 @@ namespace VirtualObjects.EntityProvider
             var genericMethod = _methodInfo
                 .MakeGenericMethod(method.ReturnType);
 
-            return genericMethod.Invoke(_session, new[] { invocation.ReturnValue });
+            var proxyEntityInfo = _mapper.Map(method.DeclaringType);
+            var returnTypeEntityInfo = _mapper.Map(method.ReturnType);
+
+            var propertyName = method.Name.Remove(0, "get_".Length);
+
+            object returnEntity = invocation.ReturnValue;
+
+            var foreignKey = proxyEntityInfo.ForeignKeys.Where(e => e.Property.Name == propertyName).First();
+
+            foreach ( var keyColumn in foreignKey.ForeignKeyLinks.Where(e => e.ColumnName != foreignKey.BindOrName) )
+            {
+                var matchProxyColumn = proxyEntityInfo.Columns.FirstOrDefault(e => e.ColumnName == keyColumn.ColumnName);
+
+                matchProxyColumn = matchProxyColumn ?? proxyEntityInfo.Columns.FirstOrDefault(e => e.BindOrName == keyColumn.BindOrName);
+
+                if ( matchProxyColumn == null )
+                {
+                    throw new ConfigException("The column [{ColumnName}] of type [{EntityName}] is marked as key but was not found on [{TargetName}].",
+                        new
+                        {
+                            keyColumn.ColumnName,
+                            keyColumn.EntityInfo.EntityName,
+                            TargetName = proxyEntityInfo.EntityName,
+                        });
+                }
+
+                MappingStatus.WithNoLazyLoad(() =>
+                {
+                    object value = matchProxyColumn.GetFieldFinalValue(invocation.Proxy);
+
+                    if ( keyColumn.ForeignKey != null )
+                    {
+                        var columnLink = returnTypeEntityInfo.KeyColumns.FirstOrDefault(e => e.ColumnName.Equals(keyColumn.ForeignKey.ColumnName, StringComparison.InvariantCultureIgnoreCase));
+                        columnLink.SetFieldFinalValue(returnEntity, value);
+                        return;
+                    }
+
+                    keyColumn.SetFieldFinalValue(returnEntity, value);
+                });
+            }
+
+            // invocation.Proxy
+
+            return genericMethod.Invoke(_session, new[] { returnEntity });
         }
+
     }
 
     class CollectionPropertyInterceptor : FieldInterceptorBase

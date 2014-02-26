@@ -1,8 +1,20 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
 using System;
 
-namespace VirtualObjects.Mappings
-{
+<#
 
+	if (!String.IsNullOrEmpty(Model.AnnotationsFolder))
+    {
+		this.Write("namespace " + Model.Namespace + "." + Model.AnnotationsFolder.Replace("\\","."));
+    }
+	else 
+	{
+		this.Write("namespace " + Model.Namespace);
+    }
+	this.WriteLine("");
+#>
+{
     /// <summary>
     /// Use this attribute to bind this property to a data source field.
     /// </summary>

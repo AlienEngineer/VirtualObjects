@@ -45,7 +45,16 @@ namespace VirtualObjects.Queries.Formatters
 
         protected static string Wrap(string name)
         {
-            return string.Format("[{0}]", name);
+            var result = new StringBuffer();
+
+            foreach ( var item in name.Split('.') )
+            {
+                result += string.Format("[{0}]", item);
+                result += ".";
+            }
+
+            result.RemoveLast(".");
+            return result;
         }
 
         public String FieldSeparator

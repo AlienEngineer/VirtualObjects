@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using VirtualObjects.Connections;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Tests.Models.Northwind;
 

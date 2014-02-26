@@ -1,4 +1,27 @@
-### Getting Started
+### Getting Started (Scaffolding)
+
+```ps
+
+# Creates the entity models based on data source and create a repository Layer.
+Scaffold Models .\Development Northwind -Repository
+
+or...
+
+# Creates the entity models based on data source.
+Scaffold Models .\Development Northwind
+
+# Create a repository Layer.
+Scaffold Repository
+
+# Create a business Layer. (e.g. Scaffold Business Task)
+Scaffold Business <ModelType>
+
+
+```
+
+****
+
+### Getting Started (Manualy)
 
 #### Create a Model
 ```C#
