@@ -13,8 +13,11 @@
     <releaseNotes>
       Version 1.0.2-Beta:
       * Fixed: ForeignKeys were not fully mapped.
+      * Feature: Enable fields to be ignored.
       * Added Scaffolder Models.
       * Added Scaffolder Repository.
+      * Added Scaffolder Business.
+      * Added Scaffolder Config.
 
       Version 1.0.1-Beta:
       * Multiple bug fixs.
@@ -29,31 +32,45 @@
     <file src="bin\Release\net40\VirtualObjects.pdb" target="lib\net35\VirtualObjects.pdb" />
     <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net35\VirtualObjects.xml" />-->
 
-    <file src="bin\Release\net40\Microsoft.SqlServer.Smo.dll" target="lib\net40\Microsoft.SqlServer.Smo.dll" />
-    <file src="bin\Release\net40\Microsoft.SqlServer.ConnectionInfo.dll" target="lib\net40\Microsoft.SqlServer.ConnectionInfo.dll" />
-    <file src="bin\Release\net40\Microsoft.SqlServer.Management.Sdk.Sfc.dll" target="lib\net40\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
-    <file src="bin\Release\net40\Microsoft.SqlServer.SmoExtended.dll" target="lib\net40\Microsoft.SqlServer.SmoExtended.dll" />
-    <file src="bin\Release\net40\Microsoft.SqlServer.SqlEnum.dll" target="lib\net40\Microsoft.SqlServer.SqlEnum.dll" />
+    <file src="bin\Release\net40\Ninject.dll" target="lib\net40\Ninject.dll" />
+    <file src="bin\Release\net40\Castle.Core.dll" target="lib\net40\Castle.Core.dll" />
+    <file src="bin\Release\net40\Fasterflect.dll" target="lib\net40\Fasterflect.dll" />
+    
     <file src="bin\Release\net40\VirtualObjects.dll" target="lib\net40\VirtualObjects.dll" />
     <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net40\VirtualObjects.xml" />
 
-    <file src="bin\Release\net45\Microsoft.SqlServer.Smo.dll" target="lib\net45\Microsoft.SqlServer.Smo.dll" />
-    <file src="bin\Release\net45\Microsoft.SqlServer.ConnectionInfo.dll" target="lib\net45\Microsoft.SqlServer.ConnectionInfo.dll" />
-    <file src="bin\Release\net45\Microsoft.SqlServer.Management.Sdk.Sfc.dll" target="lib\net45\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
-    <file src="bin\Release\net45\Microsoft.SqlServer.SmoExtended.dll" target="lib\net45\Microsoft.SqlServer.SmoExtended.dll" />
-    <file src="bin\Release\net45\Microsoft.SqlServer.SqlEnum.dll" target="lib\net45\Microsoft.SqlServer.SqlEnum.dll" />
+    <file src="bin\Release\net45\Ninject.dll" target="lib\net45\Ninject.dll" />
+    <file src="bin\Release\net45\Castle.Core.dll" target="lib\net45\Castle.Core.dll" />
+    <file src="bin\Release\net45\Fasterflect.dll" target="lib\net45\Fasterflect.dll" />
+    
     <file src="bin\Release\net45\VirtualObjects.dll" target="lib\net45\VirtualObjects.dll" />
     <file src="bin\Release\net45\VirtualObjects.xml" target="lib\net45\VirtualObjects.xml" />
     
     <!-- Tools -->
 
+    <!-- Scaffold for Config -->
+    <file
+      src="CodeTemplates\Scaffolders\Config\Config.ps1"
+      target="tools\CodeTemplates\Scaffolders\Config\Config.ps1" />
+
+    <!-- Scaffold for Business -->
+    <file
+      src="CodeTemplates\Scaffolders\Business\Business.ps1"
+      target="tools\CodeTemplates\Scaffolders\Business\Business.ps1" />
+    <file
+      src="CodeTemplates\Scaffolders\Business\EntityBusinessTemplate.cs.t4"
+      target="tools\CodeTemplates\Scaffolders\Business\EntityBusinessTemplate.cs.t4" />
+    <file
+      src="CodeTemplates\Scaffolders\Business\EntityBusinessInterfaceTemplate.cs.t4"
+      target="tools\CodeTemplates\Scaffolders\Business\EntityBusinessInterfaceTemplate.cs.t4" />
+    
     <!-- Scaffold for Models -->
     <file
       src="CodeTemplates\Scaffolders\Models\Models.ps1"
       target="tools\CodeTemplates\Scaffolders\Models\Models.ps1" />
     <file
-      src="CodeTemplates\Scaffolders\Models\ModelsTemplate.cs.t4"
-      target="tools\CodeTemplates\Scaffolders\Models\ModelsTemplate.cs.t4" />
+      src="CodeTemplates\Scaffolders\Models\EntityTemplate.cs.t4"
+      target="tools\CodeTemplates\Scaffolders\Models\EntityTemplate.cs.t4" />
 
     <!-- Scaffold for Repository -->
     <file
