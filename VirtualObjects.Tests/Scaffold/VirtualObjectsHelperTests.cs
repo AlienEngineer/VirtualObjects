@@ -17,7 +17,7 @@ namespace VirtualObjects.Tests.Scaffold
         public void Helper_Can_Produce_TablesInformation()
         {
 
-            foreach ( var table in VirtualObjectsHelper.GetTables("Northwind", ".\\Development").Where(e => e.Name == "Products") )
+            foreach ( var table in VirtualObjectsHelper.GetTables("AimirimTeste", ".\\Development") )
             {
 
                 Console.WriteLine("TableName: {0}", table.Name);

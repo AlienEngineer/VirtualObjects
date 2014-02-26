@@ -82,7 +82,7 @@ using System;
 			}
 
 
-			if ( column.IsForeignKey && !Model.NoLazyLoad )
+			if ( column.IsForeignKey && !Model.NoLazyLoad && column.ForeignKeys.Count == 1 )
 			{
 				foreach ( var foreignColumn in column.ForeignKeys )
                 {

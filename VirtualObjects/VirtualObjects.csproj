@@ -239,7 +239,6 @@
     </None>
     <None Include="CodeTemplates\Scaffolders\Models\EntityTemplate.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\Models\Models.ps1" />
-    <None Include="CodeTemplates\Scaffolders\Models\ModelsTemplate.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\Repository\AnnotationsTemplate.cs.t4">
       <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
