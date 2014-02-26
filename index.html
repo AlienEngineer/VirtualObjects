@@ -42,6 +42,7 @@
 <a name="menu" class="anchor" href="#menu"><span class="octicon octicon-link"></span></a>Menu</h3>
 
 <ul>
+<li><a href="#getting-started-scaffolding">Getting Started</a></li>
 <li><a href="#getting-started">Getting Started</a></li>
 <li><a href="#poco-classes-plain-old-clr-object">POCO Classes</a></li>
 <li><a href="#crud-operations">Crud Operations</a></li>
@@ -49,6 +50,106 @@
 <li><a href="#data-type-mappings">Data Type Mappings</a></li>
 <li><a href="#support-or-contact">Support or Contact</a></li>
 </ul><hr><h3>
+<a name="getting-started-scaffolding" class="anchor" href="#getting-started-scaffolding"><span class="octicon octicon-link"></span></a>Getting Started (Scaffolding)</h3>
+
+<p>This first version of the Scaffold only supports SqlServer.</p>
+
+<pre><code>
+// Creates all models based on the given data source.
+Scaffold Models &lt;SqlServer&gt; &lt;Database&gt;
+
+// Scaffold Switchs to change behavior
+    -Repository                     (Creates a Repository layer of abstraction)
+    -TableName &lt;TableName&gt;          (Create the entity model of a single table)
+    -NoLazyLoad                     (Doesn't create virtual members)
+    -ForceAnnotations               (Every field gets an annotation)
+    -DefaultAttributes              (Use the default VirtualObjects.Mapping namespace)
+    -DontConfig                     (Doesn't change the .Config connection string)
+    -ModelFolder &lt;FolderName&gt;       (By default: Models)
+    -RepositoryFolder &lt;FolderName&gt;  (By default: Repositories)
+    -AnnotationsFolder &lt;FolderName&gt; (By default: Annotations)
+    -ToFolder &lt;FolderName&gt;          (By default: Scaffolds into a folder)
+</code></pre>
+
+<h4>
+<a name="what-will-be-created-and-changed" class="anchor" href="#what-will-be-created-and-changed"><span class="octicon octicon-link"></span></a>What will be created and changed.</h4>
+
+<ul>
+<li>The scaffolder will create the entity models based on the database provided. </li>
+<li>If the -Repository is present a Repository layer is created. With the proper custom configuration for the entity models. And also add:
+
+<ul>
+<li>Annotations\Annotations.cs with all the custom attributes needed to map the entities.</li>
+<li>Repositories\IRepository.cs interface.</li>
+<li>Repositories\Repository.cs class that implements IRepository.</li>
+<li>The proper configuration to use the custom attributes.</li>
+<li>RepositoryExtensions.cs with some helpfull extensions for the new IRepository interface.</li>
+</ul>
+</li>
+<li>Since we are giving it the server and the database it will change the App.Config or Web.Config connectionStrings</li>
+</ul><pre><code>
+// Creates the RepositoryLayer
+Scaffold Repository
+
+// Scaffold Switchs to change behavior
+    -ModelFolder &lt;FolderName&gt;       (By default: Models)
+    -RepositoryFolder &lt;FolderName&gt;  (By default: Repositories)
+    -AnnotationsFolder &lt;FolderName&gt; (By default: Annotations)
+    -ToFolder &lt;FolderName&gt;          (By default: Scaffolds into a folder)
+
+</code></pre>
+
+<h4>
+<a name="what-will-be-created-and-changed-1" class="anchor" href="#what-will-be-created-and-changed-1"><span class="octicon octicon-link"></span></a>What will be created and changed.</h4>
+
+<ul>
+<li>The scaffolder will create a Repository layer with the proper custom configuration for the entity models. And also add:
+
+<ul>
+<li>Annotations\Annotations.cs with all the custom attributes needed to map the entities.</li>
+<li>Repositories\IRepository.cs interface.</li>
+<li>Repositories\Repository.cs class that implements IRepository.</li>
+<li>The proper configuration to use the custom attributes.</li>
+<li>RepositoryExtensions.cs with some helpfull extensions for the new IRepository interface.</li>
+</ul>
+</li>
+</ul><pre><code>
+// Sets the configuration string
+Scaffold Config &lt;ServerName&gt; &lt;DataBase&gt;
+    -ProviderName       (Use a different Provider)
+    -ConfigName         (Change the configuration of the given name)
+</code></pre>
+
+<h4>
+<a name="what-will-be-created-and-changed-2" class="anchor" href="#what-will-be-created-and-changed-2"><span class="octicon octicon-link"></span></a>What will be created and changed.</h4>
+
+<ul>
+<li>The scaffolder will change the App.Config or Web.Config connectionStrings.</li>
+</ul><pre><code>
+// Creates the BusinessLayer
+Scaffold Business &lt;ModelType&gt;
+    -ModelFolder &lt;FolderName&gt;       (By default: Models)
+    -BusinessFolder &lt;FolderName&gt;    (By default: Business)
+    -ToFolder &lt;FolderName&gt;          (By default: Scaffolds into a folder)
+    -NoDelete                       (Business doesnt support delete operations)
+    -NoInsert                       (Business doesnt support insert operations)
+    -NoUpdate                       (Business doesnt support update operations)
+    -ReadOnly                       (Business for read operations only)
+
+</code></pre>
+
+<h4>
+<a name="what-will-be-created-and-changed-3" class="anchor" href="#what-will-be-created-and-changed-3"><span class="octicon octicon-link"></span></a>What will be created and changed.</h4>
+
+<ul>
+<li>The scaffolder will create:
+
+<ul>
+<li>A Interface for the ModelType Business Layer</li>
+<li>An Interface implementation.</li>
+</ul>
+</li>
+</ul><h3>
 <a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h3>
 
 <h4>
@@ -255,10 +356,6 @@ Our POCO classes should be defined with properties with R/W (get/set). </p>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
 
 <p>If you have any suggestions for this project or something is not working right please contact me at <a href="mailto:Alien.Software.Engineer@gmail.com">Alien.Software.Engineer@gmail.com</a> or <a href="https://github.com/AlienEngineer" class="user-mention">@AlienEngineer</a> (github)</p>
-
-<h3>
-<a name="for-more-info-click-here" class="anchor" href="#for-more-info-click-here"><span class="octicon octicon-link"></span></a>For more info click <a href="http://alienengineer.github.com/VirtualObjects/">here</a>
-</h3>
 
 <h3>
 <a name="get-it-as-a-nuget-package-here" class="anchor" href="#get-it-as-a-nuget-package-here"><span class="octicon octicon-link"></span></a>Get it as a NuGet Package <a href="http://www.nuget.org/packages/VirtualObjects/">here</a>
