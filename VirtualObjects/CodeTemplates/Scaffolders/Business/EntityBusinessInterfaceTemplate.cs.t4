@@ -11,14 +11,7 @@ using System.Linq;
     }
 
 
-	if (!String.IsNullOrEmpty(Model.BusinessFolder))
-    {
-		this.Write("namespace " + Model.Namespace + "." + Model.BusinessFolder.Replace("\\","."));
-    }
-	else 
-	{
-		this.Write("namespace " + Model.Namespace);
-    }
+	this.Write("namespace " + Model.Namespace);
 	this.WriteLine("");
 
 	var modelVar = Model.Business.ToLower();
