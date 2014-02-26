@@ -138,7 +138,7 @@ using System.Linq;
                 throw new ArgumentException("<#= modelVar #> not supplied for insert operation", "<#= modelVar #>");
             }
 
-			if ( repository.Exists(task) )
+			if ( repository.Exists(<#= modelVar #>) )
             {
                 throw new ArgumentException("Unable to insert a <#= modelVar #> that already exists", "<#= modelVar #>");
             }
