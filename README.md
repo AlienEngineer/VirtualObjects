@@ -56,6 +56,38 @@ Scaffold Repository
 	* RepositoryExtensions.cs with some helpfull extensions for the new IRepository interface.
 
 
+```
+
+// Sets the configuration string
+Scaffold Config <ServerName> <DataBase>
+	-ProviderName		(Use a different Provider)
+	-ConfigName			(Change the configuration of the given name)
+```
+
+#### What will be created and changed.
+
+* The scaffolder will change the App.Config or Web.Config connectionStrings.
+
+```
+
+// Creates the BusinessLayer
+Scaffold Business <ModelType>
+	-ModelFolder <FolderName>		(By default: Models)
+	-BusinessFolder <FolderName>	(By default: Business)
+	-ToFolder <FolderName>			(By default: Scaffolds into a folder)
+	-NoDelete						(Business doesnt support delete operations)
+	-NoInsert						(Business doesnt support insert operations)
+	-NoUpdate						(Business doesnt support update operations)
+	-ReadOnly						(Business for read operations only)
+
+```
+
+#### What will be created and changed.
+
+* The scaffolder will create:
+    * A Interface for the ModelType Business Layer
+	* An Interface implementation.
+
 
 ****
 
