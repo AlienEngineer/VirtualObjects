@@ -4,8 +4,9 @@ namespace VirtualObjects.Mappings
 {
 
     /// <summary>
-    /// 
+    /// Use this attribute to bind this property to a data source field.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class ColumnAttribute : Attribute
     {
 
@@ -19,24 +20,27 @@ namespace VirtualObjects.Mappings
     }
 
     /// <summary>
-    /// 
+    /// Indicates that this property is a key.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class KeyAttribute : ColumnAttribute
     {
 
     }
 
     /// <summary>
-    /// 
+    /// Indicates that this property is a identity field.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class IdentityAttribute : KeyAttribute
     {
 
     }
 
     /// <summary>
-    /// 
+    /// Bind this class to a data source table.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class TableAttribute : Attribute
     {
         /// <summary>
@@ -49,8 +53,9 @@ namespace VirtualObjects.Mappings
     }
 
     /// <summary>
-    /// 
+    /// Binds this property to a foreignKey.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class AssociationAttribute : ColumnAttribute
     {
         /// <summary>
@@ -72,12 +77,20 @@ namespace VirtualObjects.Mappings
     }
 
     /// <summary>
-    /// 
+    /// Use this property for Version Control
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class VersionAttribute : ColumnAttribute
     {
 
     }
 
+    /// <summary>      
+    /// Indicates that this property should be ignored.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class IgnoreAttribute : ColumnAttribute
+    {
 
+    }
 }

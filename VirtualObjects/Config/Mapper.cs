@@ -18,13 +18,14 @@ namespace VirtualObjects.Config
         private readonly IOperationsProvider _operationsProvider;
         private readonly IEntityProvider _entityProvider;
         private readonly IEntityMapper _entityMapper;
+        public IEnumerable<Func<PropertyInfo, Boolean>> ColumnIgnoreGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, String>> ColumnNameGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnKeyGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnIdentityGetters { get; set; }
         public IEnumerable<Func<Type, String>> EntityNameGetters { get; set; }
         public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKey { get; set; }
         public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKeyLinks { get; set; }
-        public IEnumerable<Func<PropertyInfo, bool>> ColumnVersionField { get; set; }
+        public IEnumerable<Func<PropertyInfo, Boolean>> ColumnVersionField { get; set; }
 
         private IDictionary<Type, EntityInfo> _cacheEntityInfos;
 
@@ -183,13 +184,14 @@ namespace VirtualObjects.Config
         {
             return properties
                 .Where(e => !e.PropertyType.IsGenericType || !e.PropertyType.GetInterfaces().Contains(typeof(IEnumerable)))
+                .Where(e => !ShouldIgnore(e))
                 .Select(e => MapColumn(e, entityInfo));
         }
 
         private IEntityColumnInfo MapColumn(PropertyInfo propertyInfo, EntityInfo entityInfo)
         {
             var columnName = GetName(propertyInfo);
-
+            
             var column = new EntityColumnInfo
             {
                 EntityInfo = entityInfo,
@@ -259,6 +261,10 @@ namespace VirtualObjects.Config
             }
         }
 
+        private bool ShouldIgnore(PropertyInfo propertyInfo)
+        {
+            return ColumnIgnoreGetters.Any(e => e(propertyInfo));
+        }
 
         private bool GetIsIdentity(PropertyInfo propertyInfo)
         {

@@ -90,10 +90,6 @@ if($Repository) {
 			Name = $table.Name;
 			NameSingularized = (Get-SingularizedWord $table.Name);
 		}
-
-		Write-Host ("Name			: " + $tableDynamic.Name)
-		Write-Host ("Singularized	: " + $tableDynamic.NameSingularized)
-		Write-Host ("Columns.Count	: " + $table.Columns.Count)
 		
 		$tableDynamic.Columns = @()
 
@@ -123,7 +119,6 @@ if($Repository) {
 			}
 			
 			$tableDynamic.Columns += $columnDynamic
-			Write-Host ("	DataType			: " + $columnDynamic.DataType)
 		}
 
 		Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `

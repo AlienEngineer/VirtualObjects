@@ -48,8 +48,8 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public virtual IQueryable<EmployeeTerritories> Territories { get; set; }
 
-        //[Db.Ignore]
-        //public bool NonExistingField { get; set; }
+        [Ignore]
+        public bool NonExistingField { get; set; }
 
         public Byte[] Version { get; set; }
     }

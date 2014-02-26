@@ -76,27 +76,30 @@ namespace VirtualObjects
         public virtual void ConfigureMappingBuilder(IMappingBuilder builder)
         {
             //
-            // TableName getters
+            // Table Mapping
             //
-            builder.EntityNameFromType(e => e.Name);
-            builder.EntityNameFromAttribute<TableAttribute>(e => e.TableName);
+            builder.EntityName(e => e.Name);
+            builder.EntityName<TableAttribute>(e => e.TableName);
 
             //
-            // ColumnName getters
+            // Column Mapping
             //
-            builder.ColumnNameFromProperty(e => e.Name);
-            builder.ColumnNameFromAttribute<ColumnAttribute>(e => e.FieldName);
+            builder.ColumnName(e => e.Name);
+            builder.ColumnName<ColumnAttribute>(e => e.FieldName);
 
-            builder.ColumnKeyFromAttribute<KeyAttribute>();
-            builder.ColumnKeyFromAttribute<IdentityAttribute>();
+            builder.ColumnKey<KeyAttribute>();
+            builder.ColumnKey<IdentityAttribute>();
 
-            builder.ColumnIdentityFromAttribute<IdentityAttribute>();
+            builder.ColumnIdentity<IdentityAttribute>();
 
-            builder.ForeignKeyFromAttribute<AssociationAttribute>(e => e.OtherKey);
-            builder.ForeignKeyLinksFromAttribute<AssociationAttribute>(e => e.OtherKeys);
+            builder.ForeignKey<AssociationAttribute>(e => e.OtherKey);
+            builder.ForeignKeyLinks<AssociationAttribute>(e => e.OtherKeys);
 
-            builder.ColumnVersionFromProperty(e => e.Name == "Version");
-            builder.ColumnVersionFromAttribute<VersionAttribute>();
+            builder.ColumnVersion(e => e.Name == "Version");
+            builder.ColumnVersion<VersionAttribute>();
+
+            builder.ColumnIgnore(e => e.Name.StartsWith("Ignore"));
+            builder.ColumnIgnore<IgnoreAttribute>();
 
         }
 
