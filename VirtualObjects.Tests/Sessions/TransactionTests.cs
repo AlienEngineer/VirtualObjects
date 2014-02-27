@@ -16,7 +16,8 @@ namespace VirtualObjects.Tests.Sessions
                 {
                     EmployeeId = 1,
                     LastName = "Ferreira",
-                    FirstName = "Sérgio"
+                    FirstName = "Sérgio",
+                    Version = new byte[] { 9, 9, 9, 9, 9, 9, 9, 9 }
                 });
 
                 safeSession.Insert(new Employee
@@ -61,7 +62,8 @@ namespace VirtualObjects.Tests.Sessions
                 {
                     EmployeeId = 1,
                     LastName = "Ferreira",
-                    FirstName = "Sérgio"
+                    FirstName = "Sérgio",
+                    Version = new byte[] { 9, 9, 9, 9, 9, 9, 9, 9 }
                 });
 
                 transaction.Rollback();
@@ -94,7 +96,8 @@ namespace VirtualObjects.Tests.Sessions
                     {
                         EmployeeId = 1,
                         LastName = "Ferreira",
-                        FirstName = "Sérgio"
+                        FirstName = "Sérgio",
+                        Version = new byte[] { 9, 9, 9, 9, 9, 9, 9, 9 }
                     });
 
                     throw new Exception("Forced Exception");

@@ -1,3 +1,4 @@
+using System;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.CRUD.Operations
@@ -28,7 +29,7 @@ namespace VirtualObjects.CRUD.Operations
                 }
                 var dataSourceVersion = _entityInfo.Operations.GetVersionOperation.PrepareOperation(_entityModel).Execute(sessionContext) as byte[];
 
-                if (dataSourceVersion != null && dataSourceVersion.GetHashCode() > currentSersion.GetHashCode())
+                if ( dataSourceVersion != null && BitConverter.ToInt64(dataSourceVersion, 0) > BitConverter.ToInt64(currentSersion, 0) )
                 {
                     throw new ExecutionException(Errors.Operations_VersionControlError);
                 }

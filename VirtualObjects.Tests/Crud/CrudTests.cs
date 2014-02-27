@@ -31,7 +31,7 @@ namespace VirtualObjects.Tests.Crud
 
             _operations.GetVersionOperation.CommandText
                 .Should().Be("Select [Version] From [Employees] Where [EmployeeId] = @EmployeeId");
-            
+
             _operations.InsertOperation.CommandText
                 .Should().Be("Insert Into [Employees] ([LastName], [FirstName], [Title], [TitleOfCourtesy], [BirthDate], [HireDate], [Address], [City], [Region], [PostalCode], [Country], [HomePhone], [Extension], [Notes], [Photo], [ReportsTo], [PhotoPath]) Values (@LastName, @FirstName, @Title, @TitleOfCourtesy, @BirthDate, @HireDate, @Address, @City, @Region, @PostalCode, @Country, @HomePhone, @Extension, @Notes, @Photo, @ReportsTo, @PhotoPath) Select @@IDENTITY");
 
@@ -97,7 +97,7 @@ namespace VirtualObjects.Tests.Crud
             {
                 EmployeeId = 5
             });
-            
+
             employee.Should().NotBeNull();
             employee.EmployeeId.Should().Be(1);
         }
@@ -111,7 +111,8 @@ namespace VirtualObjects.Tests.Crud
             {
                 EmployeeId = 1,
                 FirstName = "Sérgio",
-                LastName = "Ferreira"
+                LastName = "Ferreira",
+                Version = new byte[] { 9, 9, 9, 9, 9, 9, 9, 9 }
             });
 
             employee.Should().NotBeNull();
