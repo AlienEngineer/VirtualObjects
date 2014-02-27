@@ -1,5 +1,7 @@
 ### Getting Started (Scaffolding)
 
+[Short demonstration video] (http://screencast.com/t/CghgJTdmx)
+
 ```ps
 
 # Creates the entity models based on data source and create a repository Layer.
