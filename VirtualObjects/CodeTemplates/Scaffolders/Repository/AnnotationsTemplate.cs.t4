@@ -2,18 +2,7 @@
 <#@ output extension=".cs" #>
 using System;
 
-<#
-
-	if (!String.IsNullOrEmpty(Model.AnnotationsFolder))
-    {
-		this.Write("namespace " + Model.Namespace + "." + Model.AnnotationsFolder.Replace("\\","."));
-    }
-	else 
-	{
-		this.Write("namespace " + Model.Namespace);
-    }
-	this.WriteLine("");
-#>
+namespace <#= Model.Namespace #>
 {
     /// <summary>
     /// Use this attribute to bind this property to a data source field.

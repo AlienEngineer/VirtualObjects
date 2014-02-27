@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Settings>
+  <!--Switches-->
+  <CopyAttributes Enabled="true" />
+  <UnionDuplicates Enabled="false" />
+  <Debug Enabled="0" />
+  <Internalize Enabled="false" />
+  <MergeXml Enabled="true" />
+  <!--Signing-->
+  <Sign Enabled="false" Delay="false"></Sign>
+  <!--Logging-->
+  <Log Enabled="false"></Log>
+  <!--Assemblies-->
+  <Assemblies>
+    <Assembly>F:\Projectos\VirtualObjects\VirtualObjects\bin\Debug\net45\Castle.Core.dll</Assembly>
+    <Assembly>F:\Projectos\VirtualObjects\VirtualObjects\bin\Debug\net45\Fasterflect.dll</Assembly>
+    <Assembly>F:\Projectos\VirtualObjects\VirtualObjects\bin\Debug\net45\Ninject.dll</Assembly>
+    <Assembly>F:\Projectos\VirtualObjects\VirtualObjects\bin\Debug\net45\VirtualObjects.dll</Assembly>
+    <Primary>F:\Projectos\VirtualObjects\VirtualObjects\bin\Debug\net45\VirtualObjects.dll</Primary>
+  </Assemblies>
+  <!--Output-->
+  <OutputAssembly>F:\Projectos\VirtualObjects\VirtualObjects\bin\Debug\net45\vo.dll</OutputAssembly>
+  <!--.NET Framework-->
+  <Framework>.NET Framework 4.5 Full</Framework>
+  <!--Merge Engine-->
+  <Engine Name="ILMerge" />
+</Settings>

@@ -33,12 +33,12 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.0.2")]
-[assembly: AssemblyFileVersion("1.0.2")]
+[assembly: AssemblyVersion("1.0.3")]
+[assembly: AssemblyFileVersion("1.0.3")]
 [assembly: InternalsVisibleTo("VirtualObjects.Tests")]
 
 //In brief, these correspond to: 
 //  * Major: Breaking changes. 
 //  * Minor: New features, but backwards compatible. 
 //  * Patch: Backwards compatible bug fixes only.
-[assembly: AssemblyInformationalVersion("1.0.2-beta")]
+[assembly: AssemblyInformationalVersion("1.0.3-beta")]

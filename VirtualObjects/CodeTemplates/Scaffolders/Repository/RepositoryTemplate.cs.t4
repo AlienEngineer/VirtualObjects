@@ -5,7 +5,6 @@ using System.Linq;
 using VirtualObjects;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
-using <#= Model.Namespace #>.<#= Model.AnnotationsFolder.Replace("\\",".") #>;
 
 <#
 

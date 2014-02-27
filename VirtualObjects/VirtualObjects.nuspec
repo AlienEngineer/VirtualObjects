@@ -27,24 +27,12 @@
     <tags>ORM VirtualObjects DataBase Repository VODB ObjectRelationalMapping</tags>
   </metadata>
   <files>
-    <!-- Binaries -->
-    <!--<file src="bin\Release\net40\VirtualObjects.dll" target="lib\net35\VirtualObjects.dll" />
-    <file src="bin\Release\net40\VirtualObjects.pdb" target="lib\net35\VirtualObjects.pdb" />
-    <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net35\VirtualObjects.xml" />-->
-
-    <file src="bin\Release\net40\Ninject.dll" target="lib\net40\Ninject.dll" />
-    <file src="bin\Release\net40\Castle.Core.dll" target="lib\net40\Castle.Core.dll" />
-    <file src="bin\Release\net40\Fasterflect.dll" target="lib\net40\Fasterflect.dll" />
+    <!-- Binaries -->    
+    <file src="bin\Release\Publish\net40\VirtualObjects.dll" target="lib\net40\VirtualObjects.dll" />
+    <file src="bin\Release\Publish\net40\VirtualObjects.xml" target="lib\net40\VirtualObjects.xml" />
     
-    <file src="bin\Release\net40\VirtualObjects.dll" target="lib\net40\VirtualObjects.dll" />
-    <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net40\VirtualObjects.xml" />
-
-    <file src="bin\Release\net45\Ninject.dll" target="lib\net45\Ninject.dll" />
-    <file src="bin\Release\net45\Castle.Core.dll" target="lib\net45\Castle.Core.dll" />
-    <file src="bin\Release\net45\Fasterflect.dll" target="lib\net45\Fasterflect.dll" />
-    
-    <file src="bin\Release\net45\VirtualObjects.dll" target="lib\net45\VirtualObjects.dll" />
-    <file src="bin\Release\net45\VirtualObjects.xml" target="lib\net45\VirtualObjects.xml" />
+    <file src="bin\Release\Publish\net45\VirtualObjects.dll" target="lib\net45\VirtualObjects.dll" />
+    <file src="bin\Release\Publish\net45\VirtualObjects.xml" target="lib\net45\VirtualObjects.xml" />
     
     <!-- Tools -->
 
