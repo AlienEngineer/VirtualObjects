@@ -29,6 +29,9 @@ namespace VirtualObjects.Tests.Crud
             _operations.GetOperation.CommandText
                 .Should().Be("Select [EmployeeId], [LastName], [FirstName], [Title], [TitleOfCourtesy], [BirthDate], [HireDate], [Address], [City], [Region], [PostalCode], [Country], [HomePhone], [Extension], [Notes], [Photo], [ReportsTo], [PhotoPath], [Version] From [Employees] Where [EmployeeId] = @EmployeeId");
 
+            _operations.GetVersionOperation.CommandText
+                .Should().Be("Select [Version] From [Employees] Where [EmployeeId] = @EmployeeId");
+            
             _operations.InsertOperation.CommandText
                 .Should().Be("Insert Into [Employees] ([LastName], [FirstName], [Title], [TitleOfCourtesy], [BirthDate], [HireDate], [Address], [City], [Region], [PostalCode], [Country], [HomePhone], [Extension], [Notes], [Photo], [ReportsTo], [PhotoPath]) Values (@LastName, @FirstName, @Title, @TitleOfCourtesy, @BirthDate, @HireDate, @Address, @City, @Region, @PostalCode, @Country, @HomePhone, @Extension, @Notes, @Photo, @ReportsTo, @PhotoPath) Select @@IDENTITY");
 
@@ -40,6 +43,18 @@ namespace VirtualObjects.Tests.Crud
         {
 
             return Diagnostic.Timed(() => (TResult)operation.PrepareOperation(entity).Execute(SessionContext));
+        }
+
+
+        [Test, Repeat(Repeat)]
+        public void GetVersionOperation_Employee_Test()
+        {
+            var version = _operations.GetVersionOperation.PrepareOperation(new Employee
+            {
+                EmployeeId = 1
+            }).Execute(SessionContext);
+
+            version.Should().NotBeNull();
         }
 
         [Test, Repeat(Repeat)]

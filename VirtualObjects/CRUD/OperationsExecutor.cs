@@ -39,6 +39,12 @@ namespace VirtualObjects.CRUD
                 .Execute(sessionContext);
         }
 
+        public byte[] GetVersion(object entityModel, SessionContext sessionContext)
+        {
+            return _entityOperations.GetVersionOperation
+                .PrepareOperation(entityModel)
+                .Execute(sessionContext) as byte[];
+        }
     }
 
     class OperationsExecutor<T> : OperationsExecutor, IOperationsExecutor<T>

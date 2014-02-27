@@ -908,6 +908,36 @@ namespace VirtualObjects.Tests.Sessions
         }
 
         [Test, Repeat(Repeat)]
+        public void Session_Update_Old_Employee()
+        {
+            using (var session = CreateSession())
+            {
+                session.WithRollback(() =>
+                {
+                    var sergio = session.Insert(new Employee
+                    {
+                        FirstName = "Sérgio",
+                        LastName = "Ferreira"
+                    });
+
+                    var id = sergio.EmployeeId;
+                    
+                    session.Update(new Employee
+                    {
+                        EmployeeId = sergio.EmployeeId,
+                        FirstName = "Alien",
+                        LastName = sergio.LastName
+                    });
+
+                    var alien = session.GetById(sergio);
+
+                    Assert.That(alien, Is.Not.Null);
+                    Assert.AreEqual("Alien", alien.FirstName);
+                });
+            }
+        }
+
+        [Test, Repeat(Repeat)]
         public void Session_Update_Employee()
         {
             using (var session = CreateSession())

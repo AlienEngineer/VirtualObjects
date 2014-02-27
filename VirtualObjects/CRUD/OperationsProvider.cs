@@ -27,7 +27,8 @@ namespace VirtualObjects.CRUD
                 DeleteOperation = CreateDeleteOperation(entityInfo),
                 GetOperation = CreateGetOperation(entityInfo),
                 InsertOperation = CreateInsertOperation(entityInfo),
-                UpdateOperation = CreateUpdateOperation(entityInfo)
+                UpdateOperation = CreateUpdateOperation(entityInfo),
+                GetVersionOperation = CreateGetVersionOperation(entityInfo)
             };
         }
 
@@ -54,7 +55,7 @@ namespace VirtualObjects.CRUD
 
             CreateWhereClause(text, entityInfo);
 
-            return new UpdateOperation(text, entityInfo);
+            return new VersionCheckOperation(new UpdateOperation(text, entityInfo), entityInfo);
         }
 
         private IOperation CreateInsertOperation(IEntityInfo entityInfo)
@@ -131,6 +132,26 @@ namespace VirtualObjects.CRUD
 
             return new GetOperation(text, entityInfo, _mapper, _entityProvider);
         }
+
+        private IOperation CreateGetVersionOperation(IEntityInfo entityInfo)
+        {
+
+            StringBuffer text = _formatter.Select;
+            text += " ";
+            text += CreateProjection(entityInfo.Columns.Where(e => e.IsVersionControl));
+            text += " ";
+            text += _formatter.From;
+            text += " ";
+            text += _formatter.FormatTableName(entityInfo.EntityName);
+            text += " ";
+            text += _formatter.Where;
+            text += " ";
+
+            CreateWhereClause(text, entityInfo);
+
+            return new GetVersionOperation(text, entityInfo);
+        }
+
 
         private string CreateProjection(IEnumerable<IEntityColumnInfo> columns)
         {

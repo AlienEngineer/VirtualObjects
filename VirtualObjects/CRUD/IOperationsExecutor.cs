@@ -35,6 +35,14 @@ namespace VirtualObjects.CRUD
         /// <param name="sessionContext">The session context.</param>
         /// <returns></returns>
         Object Get(Object entityModel, SessionContext sessionContext);
+
+        /// <summary>
+        /// Gets the version.
+        /// </summary>
+        /// <param name="entityModel">The entity model.</param>
+        /// <param name="sessionContext">The session context.</param>
+        /// <returns></returns>
+        byte[] GetVersion(Object entityModel, SessionContext sessionContext);
     }
 
     /// <summary>
@@ -71,5 +79,13 @@ namespace VirtualObjects.CRUD
         /// <param name="sessionContext">The session context.</param>
         /// <returns></returns>
         T Get(T entityModel, SessionContext sessionContext);
+
+        /// <summary>
+        /// Gets the version.
+        /// </summary>
+        /// <param name="entityModel">The entity model.</param>
+        /// <param name="sessionContext">The session context.</param>
+        /// <returns></returns>
+        Byte[] GetVersion(Object entityModel, SessionContext sessionContext);
     }
 }

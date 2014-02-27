@@ -37,5 +37,13 @@ namespace VirtualObjects
         /// The get operation.
         /// </value>
         IOperation GetOperation { get; }
+
+        /// <summary>
+        /// Gets the get version operation.
+        /// </summary>
+        /// <value>
+        /// The get version operation.
+        /// </value>
+        IOperation GetVersionOperation { get; }
     }
 }

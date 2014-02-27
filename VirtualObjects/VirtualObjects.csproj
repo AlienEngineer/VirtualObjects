@@ -150,10 +150,12 @@
     <Compile Include="CRUD\OperationsProvider.cs" />
     <Compile Include="CRUD\Operations\DeleteOperation.cs" />
     <Compile Include="CRUD\Operations\GetOperation.cs" />
+    <Compile Include="CRUD\Operations\GetVersionOperation.cs" />
     <Compile Include="CRUD\Operations\InsertOperation.cs" />
     <Compile Include="CRUD\Operations\Operation.cs" />
     <Compile Include="CRUD\Operations\Operations.cs" />
     <Compile Include="CRUD\Operations\UpdateOperation.cs" />
+    <Compile Include="CRUD\Operations\VersionCheckOperation.cs" />
     <Compile Include="Diagnostic.cs" />
     <Compile Include="EntityProvider\CollectionTypeEntityProvider.cs" />
     <Compile Include="EntityProvider\DynamicTypeProvider.cs" />

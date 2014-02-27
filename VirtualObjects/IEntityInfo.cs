@@ -102,5 +102,13 @@ namespace VirtualObjects
         /// The entity mapper.
         /// </value>
         IEntityMapper EntityMapper { get; }
+
+        /// <summary>
+        /// Gets the version control column.
+        /// </summary>
+        /// <value>
+        /// The version control.
+        /// </value>
+        IEntityColumnInfo VersionControl { get; }
     }
 }

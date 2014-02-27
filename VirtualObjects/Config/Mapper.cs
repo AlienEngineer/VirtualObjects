@@ -88,11 +88,12 @@ namespace VirtualObjects.Config
             //
             // Calculation of the entity Key.
             //
-            entityInfo.KeyHashCode = (obj) => entityInfo.KeyColumns
+            entityInfo.KeyHashCode = obj => entityInfo.KeyColumns
                 .Aggregate(new StringBuffer(), (current, key) => current + key.GetFieldFinalValue(obj).ToString())
                 .GetHashCode();
 
             entityInfo.Identity = entityInfo.KeyColumns.FirstOrDefault(e => e.IsIdentity);
+            entityInfo.VersionControl = entityInfo.Columns.FirstOrDefault(e => e.IsVersionControl);
 
             entityInfo.ForeignKeys = entityInfo.Columns.Where(e => e.ForeignKey != null).ToList();
 
@@ -111,10 +112,7 @@ namespace VirtualObjects.Config
 
         private static IEnumerable<IEntityColumnInfo> WrapColumns(IEnumerable<IEntityColumnInfo> columns)
         {
-            foreach ( var column in columns )
-            {
-                yield return WrapColumn(column);
-            }
+            return columns.Select(WrapColumn);
         }
 
         private static IEntityColumnInfo WrapColumn(IEntityColumnInfo column)
@@ -123,14 +121,13 @@ namespace VirtualObjects.Config
             {
                 return WrapWithBoundColumn(column);
             }
-            else if ( column.Property.PropertyType == typeof(DateTime) )
+            
+            if ( column.Property.PropertyType == typeof(DateTime) )
             {
                 return WrapWithDatetimeColumn(column);
             }
-            else
-            {
-                return column;
-            }
+            
+            return column;
         }
 
         private static IEntityColumnInfo WrapWithDatetimeColumn(IEntityColumnInfo column)
@@ -178,7 +175,7 @@ namespace VirtualObjects.Config
 
         #endregion
 
-        #region Auxilary column mapping methods
+        #region Auxiliary column mapping methods
 
         private IEnumerable<IEntityColumnInfo> MapColumns(IEnumerable<PropertyInfo> properties, EntityInfo entityInfo)
         {
@@ -236,8 +233,6 @@ namespace VirtualObjects.Config
         {
             if ( column.ForeignKey != null )
             {
-                var entity = Map(column.Property.PropertyType);
-  
                 var links = ColumnForeignKeyLinks
                     .Select(keyGetter => keyGetter(column.Property))
                     .FirstOrDefault();
@@ -285,7 +280,7 @@ namespace VirtualObjects.Config
 
         private static Func<Object, Object> MakeValueGetter(String fieldName, MemberGetter getter)
         {
-            return (entity) =>
+            return entity =>
             {
                 try
                 {

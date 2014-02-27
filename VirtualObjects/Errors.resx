@@ -212,4 +212,7 @@ There is no connection string configured in [App/Web].Config.</value>
   <data name="Excel_UnableToCreateConnectionString" xml:space="preserve">
     <value>Not possible to create a connection string for {FileName} filename. (*.xls, *.xlsx)</value>
   </data>
+  <data name="Operations_VersionControlError">
+    <value xml:space="preserve">Unable to execute the operation, the entity version is greater in the data source.</value>
+  </data>
 </root>
