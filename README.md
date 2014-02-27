@@ -101,6 +101,8 @@ Dapper Version 1.13
 ```
 
 ### Dependencies
+Internaly VirtualObjects uses:
+
 * Castle.Core       (≥ 3.2.2)
 * fasterflect       (≥ 2.1.3)
 * Ninject           (≥ 3.0.1.10)
