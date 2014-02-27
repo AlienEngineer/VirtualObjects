@@ -309,9 +309,9 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-    <GetAssemblyIdentity AssemblyFiles="$(OutputPath)$(AssemblyName).dll">
-      <Output TaskParameter="Assemblies" ItemName="OutputAssemblyInfo" />
-    </GetAssemblyIdentity>
-    <Message Text="Info: %(OutputAssemblyInfo.Version)" />
+  </Target>
+  <Target Name="Both">
+    <MSBuild Projects="VirtualObjects.csproj" Targets="Rebuild" Properties="Configuration=Release 4.0" StopOnFirstFailure="true" />
+    <MSBuild Projects="VirtualObjects.csproj" Targets="Rebuild" Properties="Configuration=Release 4.5" StopOnFirstFailure="true" />
   </Target>
 </Project>
