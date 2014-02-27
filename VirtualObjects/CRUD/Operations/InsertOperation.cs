@@ -19,11 +19,18 @@ namespace VirtualObjects.CRUD.Operations
             }
             
             var id = connection.ExecuteScalar(commandText, parameters);
+            
+            UpdateIdentityField(entityModel, entityInfo, id);
+            UpdateVersionControlField(entityModel, entityInfo, sessionContext);
+
+            return entityModel;
+        }
+
+        private static void UpdateIdentityField(object entityModel, IEntityInfo entityInfo, object id)
+        {
             var idValue = Convert.ChangeType(id, entityInfo.Identity.Property.PropertyType);
 
             entityInfo.Identity.SetFieldFinalValue(entityModel, idValue);
-
-            return entityModel;
         }
 
         protected override IEnumerable<IEntityColumnInfo> GetParameters(IEntityInfo entityInfo)

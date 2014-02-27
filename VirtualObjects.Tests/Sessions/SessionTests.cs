@@ -907,7 +907,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test, Repeat(Repeat)]
+        [Test, Repeat(Repeat), ExpectedException(typeof(ExecutionException))]
         public void Session_Update_Old_Employee()
         {
             using (var session = CreateSession())
@@ -920,7 +920,52 @@ namespace VirtualObjects.Tests.Sessions
                         LastName = "Ferreira"
                     });
 
-                    var id = sergio.EmployeeId;
+                    //
+                    // Gets the current version of the entity.
+                    //
+                    // sergio = session.GetById(sergio);
+
+                    var oldVersion = sergio.Version;
+
+                    //
+                    // Update to create a new version of Employee.
+                    //
+                    sergio = session.Update(new Employee
+                    {
+                        EmployeeId = sergio.EmployeeId,
+                        FirstName = "Alien",
+                        LastName = sergio.LastName,
+                        Version = sergio.Version
+                    });
+
+                    //
+                    // Try to update with the old version.
+                    //
+                    session.Update(new Employee
+                    {
+                        EmployeeId = sergio.EmployeeId,
+                        FirstName = "Alien",
+                        LastName = sergio.LastName,
+                        Version = oldVersion
+                    });
+
+                });
+            }
+        }
+
+
+        [Test, Repeat(Repeat), ExpectedException(typeof(ExecutionException))]
+        public void Session_Update_Employee_Unversioned()
+        {
+            using (var session = CreateSession())
+            {
+                session.WithRollback(() =>
+                {
+                    var sergio = session.Insert(new Employee
+                    {
+                        FirstName = "Sérgio",
+                        LastName = "Ferreira"
+                    });
                     
                     session.Update(new Employee
                     {
@@ -929,10 +974,6 @@ namespace VirtualObjects.Tests.Sessions
                         LastName = sergio.LastName
                     });
 
-                    var alien = session.GetById(sergio);
-
-                    Assert.That(alien, Is.Not.Null);
-                    Assert.AreEqual("Alien", alien.FirstName);
                 });
             }
         }
@@ -950,6 +991,8 @@ namespace VirtualObjects.Tests.Sessions
                         LastName = "Ferreira"
                     });
 
+                    // gets the version control
+                    // sergio = session.GetById(sergio);
                     sergio.FirstName = "Alien";
 
                     session.Update(sergio);

@@ -8,7 +8,7 @@ namespace VirtualObjects.CRUD.Operations
     abstract class Operation : IOperation
     {
         private readonly IEntityInfo _entityInfo;
-        private IDictionary<String, IOperationParameter> _parameters;
+        private IDictionary<string, IOperationParameter> _parameters;
         private object _entityModel;
 
         protected Operation(String commandText, IEntityInfo entityInfo)
@@ -18,7 +18,18 @@ namespace VirtualObjects.CRUD.Operations
         }
 
         public string CommandText { get; private set; }
-        
+
+
+        protected static void UpdateVersionControlField(object entityModel, IEntityInfo entityInfo, SessionContext sessionContext)
+        {
+            if (entityInfo.VersionControl != null)
+            {
+                var version = entityInfo.Operations.GetVersionOperation.PrepareOperation(entityModel).Execute(sessionContext);
+                entityInfo.VersionControl.SetFieldFinalValue(entityModel, version);
+            }
+        }
+
+
         public object Execute(SessionContext sessionContext)
         {
             return Execute(

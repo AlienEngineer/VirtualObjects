@@ -192,6 +192,15 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to execute the operation, the entity version was not supplied..
+        /// </summary>
+        public static string Operations_VersionControl_NotSupplied {
+            get {
+                return ResourceManager.GetString("Operations_VersionControl_NotSupplied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to execute the operation, the entity version is greater in the data source..
         /// </summary>
         public static string Operations_VersionControlError {

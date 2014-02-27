@@ -215,4 +215,7 @@ There is no connection string configured in [App/Web].Config.</value>
   <data name="Operations_VersionControlError">
     <value xml:space="preserve">Unable to execute the operation, the entity version is greater in the data source.</value>
   </data>
+  <data name="Operations_VersionControl_NotSupplied">
+    <value xml:space="preserve">Unable to execute the operation, the entity version was not supplied.</value>
+  </data>
 </root>

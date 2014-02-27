@@ -12,7 +12,11 @@ namespace VirtualObjects.CRUD.Operations
 
         protected override object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters, SessionContext sessionContext)
         {
-            return connection.ExecuteNonQuery(commandText, parameters) > 0 ? entityModel : null;
+            entityModel = connection.ExecuteNonQuery(commandText, parameters) > 0 ? entityModel : null;
+
+            UpdateVersionControlField(entityModel, entityInfo, sessionContext);
+
+            return entityModel;
         }
 
         protected override IEnumerable<IEntityColumnInfo> GetParameters(IEntityInfo entityInfo)

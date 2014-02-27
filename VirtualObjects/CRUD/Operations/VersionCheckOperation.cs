@@ -15,16 +15,20 @@ namespace VirtualObjects.CRUD.Operations
         }
 
         public string CommandText { get { return _operation.CommandText; } }
-        
+
         public object Execute(SessionContext sessionContext)
         {
             if (_entityInfo.VersionControl != null)
             {
+                var currentSersion = _entityInfo.VersionControl.GetFieldFinalValue(_entityModel) as byte[];
+
+                if (currentSersion == null)
+                {
+                    throw new ExecutionException(Errors.Operations_VersionControl_NotSupplied);
+                }
                 var dataSourceVersion = _entityInfo.Operations.GetVersionOperation.PrepareOperation(_entityModel).Execute(sessionContext) as byte[];
 
-                var currentSersion =_entityInfo.VersionControl.GetFieldFinalValue(_entityModel) as byte[];
-
-                if (dataSourceVersion != null && (currentSersion != null && dataSourceVersion.GetHashCode() > currentSersion.GetHashCode()))
+                if (dataSourceVersion != null && dataSourceVersion.GetHashCode() > currentSersion.GetHashCode())
                 {
                     throw new ExecutionException(Errors.Operations_VersionControlError);
                 }
