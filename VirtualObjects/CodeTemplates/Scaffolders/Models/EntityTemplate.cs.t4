@@ -10,10 +10,6 @@ using System;
 	{
 		this.WriteLine("using VirtualObjects.Mappings;");
     }
-	else 
-	{
-		this.WriteLine("using " + Model.Namespace + "." + Model.AnnotationsFolder.Replace("\\",".") + ";");
-    }
 
 	this.WriteLine("");
 

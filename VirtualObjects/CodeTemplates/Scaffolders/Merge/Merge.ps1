@@ -68,8 +68,7 @@ try
 	$outArgument = "/out:$publishDirectory/$outputAssembly"
 	$inArgument = Get-InputAssemblyNames $buildDirectory
  
- 	#    They have to be referenced directly.
- 
+
 	$cmd = "$ilMergeAssembly /t:library /ndebug /xmldocs /attr:$buildDirectory$targetProject.dll $outArgument $inArgument"
  
 	if ($internalize)
@@ -77,8 +76,6 @@ try
 		$cmd = $cmd + " /internalize"
 	} 
 	
-	Write-Host $cmd
-
 	"Installing ilmerge"
 	nuget install IlMerge -outputDirectory .ilmerge -ExcludeVersion
  
