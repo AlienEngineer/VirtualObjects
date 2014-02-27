@@ -1,6 +1,6 @@
 ### Getting Started (Scaffolding)
 
-[Short demonstration video] (http://screencast.com/t/CghgJTdmx)
+[Short demonstration video] (http://screencast.com/t/CghgJTdmx#mediaDisplayArea)
 
 ```ps
 
