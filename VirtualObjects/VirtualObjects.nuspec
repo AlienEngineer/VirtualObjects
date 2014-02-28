@@ -11,6 +11,10 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Easy and Fast ORM Framework</description>
     <releaseNotes>
+      Version 1.0.6-Beta:
+      * Small bug fixes.
+      * Nuget package changes.
+      
       Version 1.0.2-Beta:
       * Fixed: ForeignKeys were not fully mapped.
       * Feature: Enable fields to be ignored.
@@ -20,19 +24,30 @@
       * Added Scaffolder Config.
 
       Version 1.0.1-Beta:
-      * Multiple bug fixs.
+      * Multiple bug fixes.
       * Improved support for Linq with Unions and Dates.
     </releaseNotes>
     <copyright>Copyright (c) 2014 AlienEngineer</copyright>
     <tags>ORM VirtualObjects DataBase Repository VODB ObjectRelationalMapping</tags>
   </metadata>
   <files>
-    <!-- Binaries -->    
-    <file src="bin\Release\Publish\net40\VirtualObjects.dll" target="lib\net40\VirtualObjects.dll" />
-    <file src="bin\Release\Publish\net40\VirtualObjects.xml" target="lib\net40\VirtualObjects.xml" />
+    <!-- Binaries -->
     
-    <file src="bin\Release\Publish\net45\VirtualObjects.dll" target="lib\net45\VirtualObjects.dll" />
-    <file src="bin\Release\Publish\net45\VirtualObjects.xml" target="lib\net45\VirtualObjects.xml" />
+    <!-- .Net 4.0 -->
+    <file src="bin\Release\net40\Ninject.dll" target="lib\net40\Ninject.dll" />
+    <file src="bin\Release\net40\Castle.Core.dll" target="lib\net40\Castle.Core.dll" />
+    <file src="bin\Release\net40\Fasterflect.dll" target="lib\net40\Fasterflect.dll" />
+    
+    <file src="bin\Release\net40\VirtualObjects.dll" target="lib\net40\VirtualObjects.dll" />
+    <file src="bin\Release\net40\VirtualObjects.xml" target="lib\net40\VirtualObjects.xml" />
+
+    <!-- .Net 4.5 -->
+    <file src="bin\Release\net45\Ninject.dll" target="lib\net45\Ninject.dll" />
+    <file src="bin\Release\net45\Castle.Core.dll" target="lib\net45\Castle.Core.dll" />
+    <file src="bin\Release\net45\Fasterflect.dll" target="lib\net45\Fasterflect.dll" />
+    
+    <file src="bin\Release\net45\VirtualObjects.dll" target="lib\net45\VirtualObjects.dll" />
+    <file src="bin\Release\net45\VirtualObjects.xml" target="lib\net45\VirtualObjects.xml" />
     
     <!-- Tools -->
 

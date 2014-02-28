@@ -55,9 +55,9 @@ $assemblyPath = $packagesPath
 
 # =============== LOADING DEPENDENCIES =========================
 
-#$ninject = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Ninject.dll"))
-#$castleCore = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Castle.Core.dll"))
-#$fasterflact = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Fasterflect.dll"))
+$ninject = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Ninject.dll"))
+$castleCore = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Castle.Core.dll"))
+$fasterflact = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Fasterflect.dll"))
 
 # VirtualObjects.Scaffold.dll
 $virtualObjects = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "VirtualObjects.dll"))

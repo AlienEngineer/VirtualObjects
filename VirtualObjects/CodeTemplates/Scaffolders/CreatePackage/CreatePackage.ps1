@@ -371,11 +371,11 @@ Invoke-MsBuild .\VirtualObjects\VirtualObjects.csproj -MsBuildParameters "/t:Bot
 
 
 Write-Host "Packing version $version...."
-Write-Host ""
-Invoke-Scaffolder Merge net40
-Write-Host ""
-Invoke-Scaffolder Merge net45
-Write-Host ""
+#Write-Host ""
+#Invoke-Scaffolder Merge net40
+#Write-Host ""
+#Invoke-Scaffolder Merge net45
+#Write-Host ""
 
 nuget pack .\VirtualObjects\VirtualObjects.csproj -Symbols -Version $version
 Write-Host "Packing done version $version"
