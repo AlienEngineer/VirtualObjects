@@ -44,7 +44,7 @@ using System;
 
 		foreach(var column in table.Columns)
 		{
-
+			this.WriteLine("");
 			if (column.Identity) {
 				//
 				// In case is an Identity field
