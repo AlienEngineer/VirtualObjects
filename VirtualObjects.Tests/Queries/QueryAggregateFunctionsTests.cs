@@ -283,7 +283,7 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(Repeat)]
-        public void Aggregate_Query_Joined_And_GroupBy_MultipleFields()
+        public void Aggregate_Query_Joined_And_GroupBy()
         {
             var orders = from O in Query<Orders>()
                          join OD in Query<OrderDetails>() on O equals OD.Order
@@ -306,6 +306,58 @@ namespace VirtualObjects.Tests.Queries
             list.Count.Should().Be(89);
         }
 
+
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Joined_And_GroupBy_MultipleFields()
+        {
+            var orders = from O in Query<Orders>()
+                         join OD in Query<OrderDetails>() on O equals OD.Order
+                         group OD by new { O.Customer, OD.Product } into OG
+                         select new
+                         {
+                             Customer = OG.Key.Customer.CustomerId,
+                             Product = OG.Key.Product.ProductId,
+                             Discount = OG.Sum(e => e.Discount)
+                         };
+
+            /*
+              Select [T0].[CustomerId], [T1].[ProductId], Sum([T1].[Discount]) [Discount] 
+              From [Orders] [T0] 
+              Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
+              Group By [T0].[CustomerId]
+             */
+
+            var list = Diagnostic.Timed(() => orders.ToList());
+
+            list.Count.Should().Be(1685);
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Multiple_Joined_And_GroupBy_MultipleFields()
+        {
+            var orders = from O in Query<Orders>()
+                         join OD in Query<OrderDetails>() on O equals OD.Order
+                         join P in Query<Products>() on OD.Product equals P
+                         group OD by new { O.Customer, P.ProductName } into OG
+                         select new
+                         {
+                             Customer = OG.Key.Customer.CustomerId,
+                             Product = OG.Key.ProductName,
+                             Discount = OG.Sum(e => e.Discount)
+                         };
+
+            /*
+              Select [T0].[CustomerId], [T1].[ProductId], Sum([T1].[Discount]) [Discount] 
+              From [Orders] [T0] 
+              Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
+              Group By [T0].[CustomerId]
+             */
+
+            var list = Diagnostic.Timed(() => orders.ToList());
+
+            list.Count.Should().Be(1685);
+        }
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy_With_Sum()
         {

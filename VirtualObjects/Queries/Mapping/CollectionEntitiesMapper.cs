@@ -66,23 +66,25 @@ namespace VirtualObjects.Queries.Mapping
                 _entityProvider.PrepareProvider(context.OutputType, sessionContext);
                 entityMapper.PrepareMapper(context);
 
-                while (context.Read || reader.Read())
+                while ( context.Read || reader.Read() )
                 {
                     result.Add(entityMapper.MapEntity(reader, context.CreateEntity(), context));
                 }
 
-                reader.Close();
-
                 return result;
             }
-            catch (Exception ex)
+            catch ( Exception ex )
             {
-                if (ex is MappingException)
+                if ( ex is MappingException )
                 {
                     throw;
                 }
 
                 throw new MappingException("Unable to map the query into [{Name}]", outputType, ex);
+            }
+            finally
+            {
+                reader.Close();
             }
         }
     }

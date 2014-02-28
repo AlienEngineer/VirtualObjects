@@ -1880,10 +1880,11 @@ namespace VirtualObjects.Queries.Translation
 
             if ( expMember == null )
             {
-                expMember = Expression.Parameter(EntityInfo.EntityType, "e");
-                Indexer[(ParameterExpression)expMember] = this;
+                var column = _memberAccessStack.FirstOrDefault(e => e.Property.Name == member.Member.Name);
 
-                var column = EntityInfo[member.Member.Name];
+                expMember = Expression.Parameter(column.EntityInfo.EntityType, "e");
+
+                Indexer[(ParameterExpression)expMember] = this;
 
                 return Expression.MakeMemberAccess(expMember, column.Property);
             }
