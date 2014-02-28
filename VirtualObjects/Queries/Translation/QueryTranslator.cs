@@ -623,7 +623,9 @@ namespace VirtualObjects.Queries.Translation
         {
             if ( String.IsNullOrEmpty(stringBuffer) )
             {
-                stringBuffer += " " + starter + " ";
+                stringBuffer += " ";
+                stringBuffer += starter;
+                stringBuffer += " ";
             }
             else
             {
@@ -633,7 +635,23 @@ namespace VirtualObjects.Queries.Translation
             var lambda = ExtractLambda(expression, false);
             Indexer[lambda.Parameters.First()] = this;
 
-            stringBuffer += CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
+            if ( lambda.Body is NewExpression )
+            {
+                var newExp = lambda.Body as NewExpression;
+
+                foreach ( var member in newExp.Arguments )
+                {
+
+                    stringBuffer += CompileAndGetBuffer(() => CompileMemberAccess(member, buffer), buffer);
+                    stringBuffer += _formatter.FieldSeparator;
+                }
+
+                stringBuffer.RemoveLast(_formatter.FieldSeparator);
+            }     
+            else
+            {
+                stringBuffer += CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
+            }
 
             return stringBuffer;
         }
@@ -809,7 +827,9 @@ namespace VirtualObjects.Queries.Translation
             buffer.Predicates += _formatter.BeginWrap();
             {
                 CompileCustomProjectionArgument(buffer, callExpression, binary.Left, member, false);
-                buffer.Predicates += " " + _formatter.FormatNode(binary.NodeType) + " ";
+                buffer.Predicates += " ";
+                buffer.Predicates += _formatter.FormatNode(binary.NodeType);
+                buffer.Predicates += " ";
                 CompileCustomProjectionArgument(buffer, callExpression, binary.Right, member, false);
             }
             buffer.Predicates += _formatter.EndWrap();
@@ -935,6 +955,8 @@ namespace VirtualObjects.Queries.Translation
                     }
                     buffer.Take = 1;
                     break;
+                default:
+                    break;
             }
         }
 
@@ -979,7 +1001,9 @@ namespace VirtualObjects.Queries.Translation
                     }
 
 
-                    buffer.From += " " + _formatter.From + " ";
+                    buffer.From += " ";
+                    buffer.From += _formatter.From; 
+                    buffer.From += " ";
                     buffer.From += _formatter.FormatTableName(buffer.EntityInfo.EntityName, 100 + _index);
 
                     //
@@ -1764,7 +1788,7 @@ namespace VirtualObjects.Queries.Translation
             buffer.Parenthesis = 0;
         }
 
-        private IQueryable ExtractQueryable(Expression expression)
+        private static IQueryable ExtractQueryable(Expression expression)
         {
             var callExpression = expression as MethodCallExpression;
             if ( callExpression != null )
@@ -1788,14 +1812,24 @@ namespace VirtualObjects.Queries.Translation
 
         private Expression RemoveDynamicFromMemberAccess(Expression tmpExp)
         {
+            var exp = tmpExp;
+
             if ( IsConstant(tmpExp) )
             {
                 return tmpExp;
             }
 
-            while ( tmpExp is MemberExpression && ExtractAccessor(tmpExp).Type.IsDynamic() )
+            var accessor = ExtractAccessor(tmpExp);
+
+            while ( tmpExp is MemberExpression && accessor.Type.IsDynamic() || accessor.Type.Name.Contains("IGrouping")  )
             {
                 tmpExp = RemoveDynamicType(tmpExp as MemberExpression);
+                accessor = ExtractAccessor(tmpExp);
+
+                if ( tmpExp == null )
+                {
+                    return exp;
+                }
             }
 
             return tmpExp;
@@ -1808,6 +1842,11 @@ namespace VirtualObjects.Queries.Translation
                 return member;
             }
 
+            if ( member == null || member.Expression != null && member.Expression.Type.Name.Contains("IGrouping") )
+            {
+                return null;
+            }
+
             if ( member.Expression is ParameterExpression )
             {
                 return Expression.Parameter(member.Type, member.Member.Name);
@@ -1816,6 +1855,15 @@ namespace VirtualObjects.Queries.Translation
             var nextMember = member.Expression as MemberExpression;
 
             var expMember = RemoveDynamicType(nextMember);
+
+            if ( expMember == null )
+            {
+                expMember = Expression.Parameter(EntityInfo.EntityType, "e");
+
+                var column = EntityInfo[member.Member.Name];
+
+                return Expression.MakeMemberAccess(expMember, column.Property);
+            }
 
             return Expression.MakeMemberAccess(expMember, member.Member);
         }

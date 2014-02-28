@@ -269,6 +269,23 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(Repeat)]
+        public void Aggregate_Query_GroupBy_MultipleFields()
+        {
+            var employee = Diagnostic.Timed(() =>
+                Query<Employee>()
+                    .GroupBy(e => new { e.City, e.Title })
+                    .Select(e => new { City = e.Key.City, Title = e.Key.Title })
+                    .ToList());
+
+
+            // Should this be supported?! This will be done locally... 
+            // Support this if there is any way to group on the SQL Server side.
+
+            employee.Should().NotBeNull();
+            employee.Count().Should().Be(7);
+        }
+
+        [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy_With_Sum()
         {
             var employee = Diagnostic.Timed(() =>
