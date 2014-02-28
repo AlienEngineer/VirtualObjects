@@ -231,7 +231,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
+        [Test, Repeat(Repeat)]
         public void Session_GetAll_Employees_From_Orders()
         {
             using (var session = CreateSession())
@@ -240,6 +240,21 @@ namespace VirtualObjects.Tests.Sessions
                     .Where(e => session.GetAll<Orders>()
                         .Select(o => o.Employee.EmployeeId)
                         .Contains(e.ReportsTo.EmployeeId));
+
+
+                Assert.AreEqual(9, employees.Count());
+            }
+        }
+
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
+        public void Session_GetAll_Employees_From_Orders_MemberAccess_OnProjection()
+        {
+            using ( var session = CreateSession() )
+            {
+                var employees = session.GetAll<Employee>()
+                    .Where(e => session.GetAll<Orders>()
+                        .Select(o => o.Employee.Country)
+                        .Contains(e.ReportsTo.Country));
 
 
                 Assert.AreEqual(9, employees.Count());
@@ -277,7 +292,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
+        [Test, Repeat(Repeat)]
         public void Session_GetAll_Shippers_From_Orders()
         {
             using (var session = CreateSession())
