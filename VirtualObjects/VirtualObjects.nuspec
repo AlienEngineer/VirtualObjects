@@ -11,10 +11,13 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Easy and Fast ORM Framework</description>
     <releaseNotes>
+      Version 1.0.7-Beta:
+      * Linq Support: Group by multiple fields.
+      
       Version 1.0.6-Beta:
       * Small bug fixes.
       * Nuget package changes.
-      
+
       Version 1.0.2-Beta:
       * Fixed: ForeignKeys were not fully mapped.
       * Feature: Enable fields to be ignored.

@@ -72,6 +72,11 @@ namespace VirtualObjects.Queries.Mapping
                     Mapper = context.Mapper
                 });
 
+                if ( entityInfo == null )
+                {
+                    return;
+                }
+
                 entityInfo.ForeignKeys.ForEach(column =>
                 {
                     var fieldInfo = fields.FirstOrDefault(e => column.Property.PropertyType == e.FieldType);

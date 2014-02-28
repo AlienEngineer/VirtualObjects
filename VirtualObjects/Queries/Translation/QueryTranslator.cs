@@ -131,6 +131,7 @@ namespace VirtualObjects.Queries.Translation
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
+        private Boolean hasJoinClause;
         private readonly IDictionary<String, IOperationParameter> _parameters;
         private int _depth;
         private int _parameterCount = -1;
@@ -701,9 +702,12 @@ namespace VirtualObjects.Queries.Translation
             // Custom Projection
             //
 
+            hasJoinClause = true;
 
             buffer.Projection = null;
             CompileCustomProjection(expression.Arguments[4], buffer, expression);
+
+            
         }
 
         private void CompileJoinOnPart(Expression expression, CompilerBuffer buffer, QueryTranslator translator)
@@ -754,7 +758,7 @@ namespace VirtualObjects.Queries.Translation
                         {
                             var member = newExpression.Members[memberIndex++];
                             var tmpExp = RemoveDynamicFromMemberAccess(arg);
-
+                                 
                             CompileCustomProjectionArgument(buffer, callExpression, tmpExp, member);
 
                         }
@@ -925,7 +929,7 @@ namespace VirtualObjects.Queries.Translation
             //
             // If the whole entity is used we need to ungroup.
             //
-            if ( !String.IsNullOrEmpty(buffer.GroupBy) )
+            if (!hasJoinClause && !String.IsNullOrEmpty(buffer.GroupBy) )
             {
                 throw new TranslationException(
                     "\nIts not possible to have a detailed entity and GroupBy clause.\nTo achieve this use .ToList() before the GroupBy methodCall.");
@@ -1332,7 +1336,16 @@ namespace VirtualObjects.Queries.Translation
 
             if ( _compileStack.Peek() == "Select" && HasManyMemberAccess(expression) )
             {
-                throw new TranslationException("\nMore than one member accessed in a projection.\nExpression: {Expression}", new { Expression = expression.ToString() });
+                var entityType = member.Expression.Type;
+
+                var entityInfo = _mapper.Map(entityType);
+
+                if ( !entityInfo[member.Member.Name].IsKey )
+                {
+                    throw new TranslationException("\nMore than one member accessed in a projection.\nExpression: {Expression}", new { Expression = expression.ToString() });
+                }
+
+                member = member.Expression as MemberExpression;
             }
 
             if ( CompileIfConstant(expression, buffer) ) return;
@@ -1365,12 +1378,21 @@ namespace VirtualObjects.Queries.Translation
             var parameterExpression = member.Expression as ParameterExpression;
             if ( parameterExpression != null )
             {
-                var entityInfo = Indexer[parameterExpression].EntityInfo;
+                var translator = Indexer[parameterExpression];
+                var entityInfo = translator.EntityInfo;
 
                 var column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
 
+                if ( column == null )
+                {
+                    translator = Indexer.FirstOrDefault(e => e.Value.EntityInfo.EntityType == parameterExpression.Type).Value;
+
+                    entityInfo = translator.EntityInfo;
+                    column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
+                }
+
                 _memberAccessStack.Push(column);
-                buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, Indexer[parameterExpression]._index);
+                buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, translator._index);
 
                 buffer.AddPredicatedColumn(column);
             }
@@ -1859,6 +1881,7 @@ namespace VirtualObjects.Queries.Translation
             if ( expMember == null )
             {
                 expMember = Expression.Parameter(EntityInfo.EntityType, "e");
+                Indexer[(ParameterExpression)expMember] = this;
 
                 var column = EntityInfo[member.Member.Name];
 

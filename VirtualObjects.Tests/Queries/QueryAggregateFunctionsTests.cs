@@ -16,7 +16,7 @@ namespace VirtualObjects.Tests.Queries
     [TestFixture, Category("Query Aggregate Functions")]
     public class QueryAggregateFunctionsTests : UtilityBelt
     {
-        
+
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_Count()
         {
@@ -251,11 +251,11 @@ namespace VirtualObjects.Tests.Queries
                     .ToList());
         }
 
-        [Test, Repeat(Repeat)]
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Aggregate_Query_GroupBy()
         {
             var employee = Diagnostic.Timed(() =>
-                Query<Employee>().ToList()
+                Query<Employee>()
                     .GroupBy(e => e.City)
                     .Select(e => new { City = e.Key, Employees = e })
                     .ToList());
@@ -278,11 +278,32 @@ namespace VirtualObjects.Tests.Queries
                     .ToList());
 
 
-            // Should this be supported?! This will be done locally... 
-            // Support this if there is any way to group on the SQL Server side.
-
             employee.Should().NotBeNull();
             employee.Count().Should().Be(7);
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Joined_And_GroupBy_MultipleFields()
+        {
+            var orders = from O in Query<Orders>()
+                         join OD in Query<OrderDetails>() on O equals OD.Order
+                         group OD by new { O.Customer } into OG
+                         select new
+                         {
+                             Customer = OG.Key.Customer.CustomerId,
+                             Discount = OG.Sum(e => e.Discount)
+                         };
+
+            /*
+              Select [T0].[CustomerId], Sum([T1].[Discount]) [Discount] 
+              From [Orders] [T0] 
+              Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
+              Group By [T0].[CustomerId]
+             */
+
+            var list = Diagnostic.Timed(() => orders.ToList());
+
+            list.Count.Should().Be(89);
         }
 
         [Test, Repeat(Repeat)]
@@ -295,7 +316,7 @@ namespace VirtualObjects.Tests.Queries
                     .ToList());
 
             // Select [T0].[City], Sum([T0].[EmployeeId]) as N'Sum' from Employees [T0] Group By [T0].[City]
-            
+
 
             employee.Should().NotBeNull();
             employee.Count().Should().Be(5);
@@ -398,8 +419,9 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => e.City)
-                    .Select(e => new { 
-                        City = e.Key, 
+                    .Select(e => new
+                    {
+                        City = e.Key,
                         Min = e.Min(o => o.EmployeeId),
                         Max = e.Max(o => o.EmployeeId),
                         Sum = e.Sum(o => o.EmployeeId),
@@ -446,7 +468,7 @@ namespace VirtualObjects.Tests.Queries
                         City = e.Key,
                         Sum = e.Sum(o => o.EmployeeId),
                         Count = e.Count(),
-                        Average = e.Sum(o => o.EmployeeId) / (e.Count()*1.0) * 100.0
+                        Average = e.Sum(o => o.EmployeeId) / (e.Count() * 1.0) * 100.0
                     })
                     .ToList());
 
@@ -458,7 +480,7 @@ namespace VirtualObjects.Tests.Queries
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_Distinct()
         {
-            var employee = Diagnostic.Timed(() => 
+            var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .Distinct()
                     .Select(e => new { e.City, e.TitleOfCourtesy })
@@ -508,7 +530,7 @@ namespace VirtualObjects.Tests.Queries
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_Union()
         {
-            var employee = Diagnostic.Timed(() => 
+            var employee = Diagnostic.Timed(() =>
                 Query<Employee>().Select(e => new { e.EmployeeId }).Union(
                 Query<Employee>().Select(e => new { e.EmployeeId })).ToList());
 
@@ -614,7 +636,7 @@ namespace VirtualObjects.Tests.Queries
         public void Aggregate_Query_Union_Predicated()
         {
             var employee = Diagnostic.Timed(() =>
-                Query<Employee>().Where(e=> e.EmployeeId > 5).Select(e => new { e.EmployeeId }).Union(
+                Query<Employee>().Where(e => e.EmployeeId > 5).Select(e => new { e.EmployeeId }).Union(
                 Query<Employee>().Where(e => e.EmployeeId <= 5).Select(e => new { e.EmployeeId })).ToList());
 
             employee.Should().NotBeNull();
@@ -624,7 +646,7 @@ namespace VirtualObjects.Tests.Queries
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_YearOfField_Projection()
         {
-            
+
             var employee = Diagnostic.Timed(() => Query<Employee>()
                 .Select(e => new { e.BirthDate.Year })
                 .ToList());
