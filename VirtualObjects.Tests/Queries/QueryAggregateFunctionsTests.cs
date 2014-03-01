@@ -307,6 +307,82 @@ namespace VirtualObjects.Tests.Queries
         }
 
 
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
+        public void Aggregate_Query_Joined_And_GroupBy_With_A_Full_Entity_Missing_Join()
+        {
+            var orders = from O in Query<Orders>()
+                         join OD in Query<OrderDetails>() on O equals OD.Order
+                         group OD by new { O.Customer } into OG
+                         select new
+                         {
+                             Customer = OG.Key.Customer,
+                             Discount = OG.Sum(e => e.Discount)
+                         };
+
+            /*
+                  Select [T2].*, Sum([T1].[Discount]) [Discount] 
+                  From [Orders] [T0] 
+                  Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])
+                  Inner Join [Customers] [T2] On ([T0].[CustomerId] = [T2].[CustomerId])
+                  Group By [T2].*
+             */
+
+            var list = Diagnostic.Timed(() => orders.ToList());
+
+            list.Count.Should().Be(89);
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Joined_And_GroupBy_With_A_Full_Entity()
+        {
+            var orders = from O in Query<Orders>()
+                         join OD in Query<OrderDetails>() on O equals OD.Order
+                         join C in Query<Customers>() on O.Customer equals C
+                         group OD by new { C } into OG
+                         select new
+                         {
+                             Customer = OG.Key.C,
+                             Discount = OG.Sum(e => e.Discount)
+                         };
+
+            /*
+             * Select 
+             *      [T2].[CustomerId], 
+             *      [T2].[CompanyName], 
+             *      [T2].[ContactName], 
+             *      [T2].[ContactTitle], 
+             *      [T2].[Address], 
+             *      [T2].[City], 
+             *      [T2].[Region], 
+             *      [T2].[PostalCode], 
+             *      [T2].[Country], 
+             *      [T2].[Phone], 
+             *      [T2].[Fax], 
+             *      Sum([T1].[Discount]) [Discount] 
+             *      
+             * From [Orders] [T0] 
+             * Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
+             * Inner Join [Customers] [T2] On ([T0].[CustomerId] = [T2].[CustomerId])
+             * 
+             * Group By 
+             *      [T2].[CustomerId], 
+             *      [T2].[CompanyName], 
+             *      [T2].[ContactName], 
+             *      [T2].[ContactTitle], 
+             *      [T2].[Address], 
+             *      [T2].[City],
+             *      [T2].[Region], 
+             *      [T2].[PostalCode], 
+             *      [T2].[Country], 
+             *      [T2].[Phone], 
+             *      [T2].[Fax]
+             */
+
+            var list = Diagnostic.Timed(() => orders.ToList());
+
+            list.Count.Should().Be(89);
+        }
+
 
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_Joined_And_GroupBy_MultipleFields()
@@ -358,6 +434,7 @@ namespace VirtualObjects.Tests.Queries
 
             list.Count.Should().Be(1685);
         }
+
         [Test, Repeat(Repeat)]
         public void Aggregate_Query_GroupBy_With_Sum()
         {
