@@ -898,7 +898,7 @@ namespace VirtualObjects.Queries.Translation
             if (parameterExpression == null && ExtractAccessor(tmpExp).Type.Name.Contains("IGrouping"))
             {
                 var member = tmpExp as MemberExpression;
-                if (member != null)
+                if (member != null && member.Member.Name != "Key")
                 {
                     parameterExpression = Expression.Parameter(tmpExp.Type, member.Member.Name);
                 }
@@ -1403,11 +1403,13 @@ Group by error reaons:
                 //
                 if (_compileStack.Peek() == "GroupBy" && !member.Type.IsFrameworkType() && parameter != null)
                 {
-                    var translator = Indexer[parameter];
-
-                    buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns, translator._index);
-
-                    return;
+                    QueryTranslator translator = null;
+                    
+                    if (Indexer.TryGetValue(parameter, out translator))
+                    {
+                        buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns, translator._index);
+                        return;
+                    }
                 }
             }
 
