@@ -317,7 +317,7 @@ namespace VirtualObjects.Tests.Queries
                          {
                              Customer = OG.Key.Customer,
                              Discount = OG.Sum(e => e.Discount)
-                         };
+                         }; 
 
             /*
                   Select [T2].*, Sum([T1].[Discount]) [Discount] 
