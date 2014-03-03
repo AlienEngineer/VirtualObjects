@@ -8,6 +8,15 @@ using Fasterflect;
 namespace VirtualObjects.Queries.Mapping
 {
 
+    /// <summary>
+    /// 
+    /// Should be able to map:
+    ///  1) Dynamic types;
+    ///  2) With properties that reference another entity type;
+    ///  3) With properties that are native from the framework;
+    ///  4) Without properties that are collections.
+    /// 
+    /// </summary>
     class DynamicWithMemberEntityMapper : DynamicTypeEntityMapper
     {
 
@@ -47,7 +56,10 @@ namespace VirtualObjects.Queries.Mapping
 
                 if ( field.FieldType.IsFrameworkType() )
                 {
-                    setters.Add(field.DelegateForSetFieldValue());
+                    MemberSetter setter = field.DelegateForSetFieldValue();
+                    setters.Add((o, value) =>              
+                        setter(o, Convert.ChangeType(value, field.FieldType))
+                    );
                     fieldCount++;
                     return;
                 }
@@ -77,7 +89,9 @@ namespace VirtualObjects.Queries.Mapping
                     //
                     var column = predictedColumn.GetLastBind();
 
-                    setters.Add((o, value) => column.SetFieldFinalValue(field.Get(o), value));
+                    setters.Add((o, value) =>
+                        column.SetFieldFinalValue(field.Get(o), value)
+                    );
 
                     if ( ++i == ctx.QueryInfo.PredicatedColumns.Count ) break;
 

@@ -8,6 +8,12 @@ namespace VirtualObjects.Queries.Mapping
 {
     /// <summary>
     /// 
+    /// Should be able to map:
+    ///  1) Dynamic types;
+    ///  2) With properties that reference another entity type;
+    ///  3) Without properties that are native from the framework;
+    ///  4) Without properties that are collections.
+    /// 
     /// </summary>
     class DynamicEntityMapper : OrderedEntityMapper
     {
@@ -43,7 +49,7 @@ namespace VirtualObjects.Queries.Mapping
 
             return outputType.IsDynamic() &&
                    !properties.Any(e => e.PropertyType.InheritsOrImplements<IEnumerable>()) &&
-                   properties.Any(e => !e.PropertyType.IsFrameworkType());
+                   properties.All(e => !e.PropertyType.IsFrameworkType());
         }
 
         public override void PrepareMapper(MapperContext context)

@@ -139,6 +139,7 @@ namespace VirtualObjects.Queries.Translation
         private readonly IDictionary<ParameterExpression, QueryTranslator> _indexer;
         private readonly Stack<String> _compileStack = new Stack<String>();
         private readonly Stack<IEntityColumnInfo> _memberAccessStack = new Stack<IEntityColumnInfo>();
+        private readonly Stack<IEntityInfo> _EntitySources = new Stack<IEntityInfo>();
 
         public QueryTranslator(IFormatter formatter, IMapper mapper)
         {
@@ -670,6 +671,8 @@ namespace VirtualObjects.Queries.Translation
             EntityInfo = entityInfo1;
             newTranlator.EntityInfo = entityInfo2;
 
+            _EntitySources.Push(entityInfo2);
+
             //
             // From [Source] Join [Other Source]
             //
@@ -758,6 +761,15 @@ namespace VirtualObjects.Queries.Translation
                         {
                             var member = newExpression.Members[memberIndex++];
                             var tmpExp = RemoveDynamicFromMemberAccess(arg);
+
+                            if ( ExtractAccessor(arg).Type.Name.Contains("IGrouping") && !tmpExp.Type.IsFrameworkType() && _EntitySources.FirstOrDefault(e => e.EntityType == tmpExp.Type) == null )
+                            {
+                                throw new TranslationException(@"
+Group by error reasons:
+    1) A join clause with the entity used on the group by;
+    2) The group by clause is not using the joined entity;
+");
+                            }
 
                             CompileCustomProjectionArgument(buffer, callExpression, tmpExp, member);
 
@@ -1066,6 +1078,7 @@ namespace VirtualObjects.Queries.Translation
                 OutputType = buffer.EntityInfo.EntityType;
             }
 
+            _EntitySources.Push(buffer.EntityInfo);
             buffer.From = _formatter.FormatTableName(buffer.EntityInfo.EntityName, _index);
         }
 
@@ -1365,7 +1378,7 @@ namespace VirtualObjects.Queries.Translation
 
             //
             // Indicates that the accessor is a Dynamic type.
-            // This will happend when using join queries when the projection 
+            // This will happen when using join queries when the projection 
             // is a dynamic type and a Where clause is added using the dynamic type.
             //
             while (ExtractAccessor(member).Type.IsDynamic())
@@ -1389,10 +1402,10 @@ namespace VirtualObjects.Queries.Translation
                 //
                 // Validation for the group by clause.
                 //
-                if (_compileStack.Peek() == "GroupBy" && !member.Type.IsFrameworkType() && parameter == null)
+                if ( _compileStack.Peek() == "GroupBy" && !member.Type.IsFrameworkType() && parameter == null )
                 {
                     throw new TranslationException(@"
-Group by error reaons:
+Group by error reasons:
     1) A join clause with the entity used on the group by;
     2) The group by clause is not using the joined entity;
 ");
@@ -1410,6 +1423,7 @@ Group by error reaons:
                         buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns, translator._index);
                         return;
                     }
+
                 }
             }
 
