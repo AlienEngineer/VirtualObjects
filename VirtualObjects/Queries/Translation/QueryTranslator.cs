@@ -599,6 +599,20 @@ namespace VirtualObjects.Queries.Translation
 
             buffer.WasAggregated = true;
 
+            if ( !String.IsNullOrEmpty(buffer.Projection) && 
+                callExpression.Arguments.First().Type.InheritsOrImplements<IQueryable>() &&
+                callExpression.Arguments.Count == 1 && buffer.Union == null )
+            {
+                var query = Merge(buffer);
+
+                ClearBuffer(buffer);
+
+                buffer.From += _formatter.BeginWrap();
+                buffer.From += query;
+                buffer.From += _formatter.EndWrap();
+                buffer.From += _formatter.FormatTableName("Result");
+            }
+
             switch ( callExpression.Method.Name )
             {
                 case "LongCount":
@@ -872,16 +886,7 @@ namespace VirtualObjects.Queries.Translation
             }
 
             ThrowIfContainsAPredicate(call);
-
-            //
-            // The CompileMethodCall for a sum or other aggregate function
-            // will save the predicates on stack. So we need to forget this save.
-            //
-            if ( _predicates.Count > 0 )
-            {
-                _predicates.Pop();
-            }
-
+                     
             CompileMethodCall(call, buffer, false);
 
             buffer.Predicates += buffer.Projection;
@@ -2225,7 +2230,7 @@ Group by error reasons:
 
         private StringBuffer CompileAndGetBuffer(Action action, CompilerBuffer buffer)
         {
-            SafePredicate(buffer);
+            SavePredicate(buffer);
             try
             {
                 action();
@@ -2235,6 +2240,24 @@ Group by error reasons:
             {
                 RestorePredicate(buffer);
             }
+        }
+
+        private static void ClearBuffer(CompilerBuffer buffer)
+        {
+            buffer.From = null;
+            buffer.EntityInfo = null;
+            buffer.Distinct = false;
+            buffer.GroupBy = null;
+            buffer.OldProjection = null;
+            buffer.OrderBy = null;
+            buffer.Parenthesis = 0;
+            buffer.PredicatedColumns.Clear();
+            buffer.Predicates = null;
+            buffer.Projection = null;
+            buffer.Skip = 0;
+            buffer.Take = 0;
+            buffer.Union = null;
+            buffer.WasAggregated = false;
         }
 
         private CompilerBuffer CreateBuffer(IQueryable queryable)
@@ -2297,7 +2320,7 @@ Group by error reasons:
 
         private readonly Stack<String> _predicates = new Stack<string>();
 
-        private void SafePredicate(CompilerBuffer buffer)
+        private void SavePredicate(CompilerBuffer buffer)
         {
             _predicates.Push(buffer.Predicates);
             buffer.Predicates = null;
