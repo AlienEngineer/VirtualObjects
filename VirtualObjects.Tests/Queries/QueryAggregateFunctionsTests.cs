@@ -436,6 +436,7 @@ namespace VirtualObjects.Tests.Queries
 
             /* Select [Max | Min | Sum | Avg]([Discount]) From (
              *  Select 
+             *      ...
              *      Sum([T1].[Discount]) [Discount] 
              *  From [Orders] [T0] 
              *  Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
@@ -852,23 +853,6 @@ namespace VirtualObjects.Tests.Queries
             var any = Diagnostic.Timed(() =>
                 Query<Employee>().Union(
                 Query<Employee>()).Any());
-
-            /*
-             * Select 
-             *  Case 
-             *      When Count(*) > 0 Then 1 
-             *      When Count(*) = 0 Then 0 
-             *  End 
-             * From (
-             *      Select  
-             *          1 as N'Stub' 
-             *      From [Employees] [T0] 
-             *      Union All 
-             *      Select 
-             *          1 as N'Stub' 
-             *      From [Employees] [T1]
-             * )[Result]
-             */ 
 
             any.Should().BeTrue();
         }
