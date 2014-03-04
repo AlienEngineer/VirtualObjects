@@ -251,13 +251,13 @@ namespace VirtualObjects.Queries.Translation
                 // Propagate the stub to all union queries. 
                 // To ensure they all project with the same number of columns and value types.
                 //
-                var union = buffer;
-                while (union != null)
-                {
-                    union.Projection = "1 ";
-                    union.Projection += _formatter.FormatField("Stub");
-                    union = union.Union;
-                }
+                //var union = buffer;
+                //while (union != null)
+                //{
+                //    union.Projection = "1 ";
+                //    union.Projection += _formatter.FormatField("Stub");
+                //    union = union.Union;
+                //}
 
                 var query = Merge(buffer);
 
@@ -268,7 +268,32 @@ namespace VirtualObjects.Queries.Translation
                 buffer.From += _formatter.EndWrap();
                 buffer.From += _formatter.FormatTableName("Result");
 
-                CompileMethodCall(callExpression, buffer, false);
+                _compileStack.Push(callExpression.Method.Name);
+
+                switch (callExpression.Method.Name)
+                {
+                    case "Any":
+                    case "LongCount":
+                    case "Count":
+                        CompileCountOrAnyCall(callExpression, buffer);
+                        break;
+                    case "Sum":
+                        CompileMethod(callExpression.Arguments[1], _formatter.Sum, buffer);
+                        break;
+                    case "Average":
+                        CompileMethod(callExpression.Arguments[1], _formatter.Avg, buffer);
+                        break;
+                    case "Min":
+                        CompileMinMaxMethod(callExpression, _formatter.Min, buffer);
+                        break;
+                    case "Max":
+                        CompileMinMaxMethod(callExpression, _formatter.Max, buffer);
+                        break;
+                    default:
+                        throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
+                }
+
+                _compileStack.Pop();
             }
 
         }
@@ -1508,8 +1533,16 @@ Group by error reasons:
                 {
                     translator = Indexer.FirstOrDefault(e => e.Value.EntityInfo.EntityType == parameterExpression.Type).Value;
 
-                    entityInfo = translator.EntityInfo;
-                    column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
+                    if (translator != null)
+                    {
+                        entityInfo = translator.EntityInfo;
+                        column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
+                    }
+                    else
+                    {
+                        buffer.Predicates += _formatter.FormatField(memberInfo.Name);
+                        return;
+                    }
                 }
 
                 _memberAccessStack.Push(column);

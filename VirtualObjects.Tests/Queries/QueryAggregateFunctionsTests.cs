@@ -458,16 +458,16 @@ namespace VirtualObjects.Tests.Queries
 
 
             Diagnostic.Timed(() => orders.Sum(e => e.Discount))
-                .Should().Be(89);
+                .Should().Be(121.04F);
 
             Diagnostic.Timed(() => orders.Average(e => e.Discount))
-                .Should().Be(89);
+                .Should().Be(1.36F);
 
             Diagnostic.Timed(() => orders.Max(e => e.Discount))
-                .Should().Be(89);
+                .Should().Be(9.6F);
 
             Diagnostic.Timed(() => orders.Min(e => e.Discount))
-                .Should().Be(89);
+                .Should().Be(0F);
 
         }
 
