@@ -398,7 +398,7 @@ namespace VirtualObjects.Tests.Queries
                          };
 
             /* Select Count(*) From (
-             *  Select 1 [Stub]    
+             *  Select [T2].*, Sum([T1].[Discount]) [Discount]
              *  From [Orders] [T0] 
              *  Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
              *  Inner Join [Customers] [T2] On ([T0].[CustomerId] = [T2].[CustomerId])
