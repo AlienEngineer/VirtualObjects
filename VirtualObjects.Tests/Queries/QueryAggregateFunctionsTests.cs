@@ -398,25 +398,12 @@ namespace VirtualObjects.Tests.Queries
                          };
 
             /* Select Count(*) From (
-             *  Select 
-             *      [T2].[CustomerId], 
-             *      [T2].[CompanyName], 
-             *      [T2].[ContactName], 
-             *      [T2].[ContactTitle], 
-             *      [T2].[Address], 
-             *      [T2].[City], 
-             *      [T2].[Region], 
-             *      [T2].[PostalCode], 
-             *      [T2].[Country], 
-             *      [T2].[Phone], 
-             *      [T2].[Fax], 
-             *      Sum([T1].[Discount]) [Discount] 
-             *      
-             * From [Orders] [T0] 
-             * Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
-             * Inner Join [Customers] [T2] On ([T0].[CustomerId] = [T2].[CustomerId])
+             *  Select 1 [Stub]    
+             *  From [Orders] [T0] 
+             *  Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
+             *  Inner Join [Customers] [T2] On ([T0].[CustomerId] = [T2].[CustomerId])
              * 
-             * Group By 
+             *  Group By 
              *      [T2].[CustomerId], 
              *      [T2].[CompanyName], 
              *      [T2].[ContactName], 
@@ -434,6 +421,85 @@ namespace VirtualObjects.Tests.Queries
             Diagnostic.Timed(() => orders.Count())
                 .Should().Be(89);
         }
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Joined_And_GroupBy_With_A_Full_Entity_Sum()
+        {
+            var orders = from O in Query<Orders>()
+                         join OD in Query<OrderDetails>() on O equals OD.Order
+                         join C in Query<Customers>() on O.Customer equals C
+                         group OD by new { C } into OG
+                         select new
+                         {
+                             Customer = OG.Key.C,
+                             Discount = OG.Sum(e => e.Discount)
+                         };
+
+            /* Select Sum([Discount]) From (
+             *  Select 
+             *      Sum([T1].[Discount]) [Discount] 
+             *  From [Orders] [T0] 
+             *  Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
+             *  Inner Join [Customers] [T2] On ([T0].[CustomerId] = [T2].[CustomerId])
+             * 
+             *  Group By 
+             *      [T2].[CustomerId], 
+             *      [T2].[CompanyName], 
+             *      [T2].[ContactName], 
+             *      [T2].[ContactTitle], 
+             *      [T2].[Address], 
+             *      [T2].[City],
+             *      [T2].[Region], 
+             *      [T2].[PostalCode], 
+             *      [T2].[Country], 
+             *      [T2].[Phone], 
+             *      [T2].[Fax]
+             * ) Result
+             */
+
+            Diagnostic.Timed(() => orders.Sum(e => e.Discount))
+                .Should().Be(89);
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Joined_And_GroupBy_With_A_Full_Entity_Max()
+        {
+            var orders = from O in Query<Orders>()
+                         join OD in Query<OrderDetails>() on O equals OD.Order
+                         join C in Query<Customers>() on O.Customer equals C
+                         group OD by new { C } into OG
+                         select new
+                         {
+                             Customer = OG.Key.C,
+                             Discount = OG.Sum(e => e.Discount)
+                         };
+
+            /* Select Max([Discount]) From (
+             *  Select 
+             *      Sum([T1].[Discount]) [Discount] 
+             *  From [Orders] [T0] 
+             *  Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
+             *  Inner Join [Customers] [T2] On ([T0].[CustomerId] = [T2].[CustomerId])
+             * 
+             *  Group By 
+             *      [T2].[CustomerId], 
+             *      [T2].[CompanyName], 
+             *      [T2].[ContactName], 
+             *      [T2].[ContactTitle], 
+             *      [T2].[Address], 
+             *      [T2].[City],
+             *      [T2].[Region], 
+             *      [T2].[PostalCode], 
+             *      [T2].[Country], 
+             *      [T2].[Phone], 
+             *      [T2].[Fax]
+             * ) Result
+             */
+
+            Diagnostic.Timed(() => orders.Max(e => e.Discount))
+                .Should().Be(89);
+        }
+
 
 
         [Test, Repeat(Repeat)]
