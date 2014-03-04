@@ -210,13 +210,17 @@ namespace VirtualObjects.Queries.Translation
             var callExpression = expression as MethodCallExpression;
             var aggregate = false;
 
-            if (callExpression != null && callExpression.Arguments.Count == 1)
+            if (callExpression != null && IsGroupedQuery(expression))
             {
                 switch (callExpression.Method.Name)
                 {
                     case "LongCount":
                     case "Count":
                     case "Any":
+                    case "Sum":
+                    case "Average":
+                    case "Max":
+                    case "Min":
                         expression = callExpression.Arguments.First();
                         aggregate = true;
                         break;
@@ -264,9 +268,23 @@ namespace VirtualObjects.Queries.Translation
                 buffer.From += _formatter.EndWrap();
                 buffer.From += _formatter.FormatTableName("Result");
 
-                CompileCountOrAnyCall(callExpression, buffer);
+                CompileMethodCall(callExpression, buffer, false);
             }
 
+        }
+
+        private bool IsGroupedQuery(Expression expression)
+        {
+
+            var callExpression = expression as MethodCallExpression;
+
+            if (callExpression != null)
+            {
+                if (callExpression.Method.Name == "GroupBy") return true;
+                return IsGroupedQuery(callExpression.Arguments.FirstOrDefault());
+            }
+
+            return false;
         }
 
         public IQueryInfo TranslateParametersOnly(IQueryable queryable, int howMany)

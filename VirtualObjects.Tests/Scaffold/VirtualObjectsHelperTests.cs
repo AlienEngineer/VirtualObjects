@@ -13,7 +13,7 @@ namespace VirtualObjects.Tests.Scaffold
     {
 
 
-        [Test]
+        //[Test]
         public void Helper_Can_Produce_TablesInformation()
         {
 
