@@ -118,10 +118,10 @@ namespace VirtualObjects.Queries.Translation
 
         class QueryParameter : IOperationParameter
         {
-            public Type Type { get; set; }
+            public Type Type { get; [UsedImplicitly] set; }
             public object Value { get; set; }
-            public string Name { get; set; }
-            public IEntityColumnInfo Column { get; set; }
+            public string Name { get; [UsedImplicitly] set; }
+            public IEntityColumnInfo Column { get; [UsedImplicitly] set; }
         }
 
         #endregion
@@ -174,19 +174,7 @@ namespace VirtualObjects.Queries.Translation
 
         public IEntityInfo EntityInfo { get; set; }
 
-        private Type _outpuType;
-
-        public Type OutputType
-        {
-            get
-            {
-                return _outpuType;
-            }
-            set
-            {
-                _outpuType = value;
-            }
-        }
+        public Type OutputType { get; set; }
 
         #endregion
 
@@ -365,9 +353,6 @@ namespace VirtualObjects.Queries.Translation
             {
                 case ExpressionType.Call:
                     CompileMethodCall((MethodCallExpression)expression, buffer, parametersOnly); break;
-                default:
-                    break;
-
             }
         }
 
@@ -660,8 +645,6 @@ namespace VirtualObjects.Queries.Translation
                 case "Any":
                     buffer.Projection = _formatter.Any;
                     break;
-                default:
-                    break;
             }
 
         }
@@ -697,10 +680,12 @@ namespace VirtualObjects.Queries.Translation
             {
                 var newExp = lambda.Body as NewExpression;
 
+                Debug.Assert(newExp != null, "newExp != null");
+
                 foreach (var member in newExp.Arguments)
                 {
-
-                    stringBuffer += CompileAndGetBuffer(() => CompileMemberAccess(member, buffer), buffer);
+                    var member1 = member;
+                    stringBuffer += CompileAndGetBuffer(() => CompileMemberAccess(member1, buffer), buffer);
                     stringBuffer += _formatter.FieldSeparator;
                 }
 

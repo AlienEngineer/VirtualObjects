@@ -262,7 +262,7 @@ namespace VirtualObjects.Queries.Annotations
   /// (e.g. via reflection, in external library), so this symbol
   /// will not be marked as unused (as well as by other usage inspections)
   /// </summary>
-  [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
+  [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true), MeansImplicitUse]
   public sealed class UsedImplicitlyAttribute : Attribute
   {
     public UsedImplicitlyAttribute()
