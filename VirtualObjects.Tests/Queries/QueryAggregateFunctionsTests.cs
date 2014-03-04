@@ -274,7 +274,7 @@ namespace VirtualObjects.Tests.Queries
             var employee = Diagnostic.Timed(() =>
                 Query<Employee>()
                     .GroupBy(e => new { e.City, e.Title })
-                    .Select(e => new { City = e.Key.City, Title = e.Key.Title })
+                    .Select(e => new { e.Key.City, e.Key.Title })
                     .ToList());
 
 
@@ -315,7 +315,7 @@ namespace VirtualObjects.Tests.Queries
                          group OD by new { O.Customer } into OG
                          select new
                          {
-                             Customer = OG.Key.Customer,
+                             OG.Key.Customer,
                              Discount = OG.Sum(e => e.Discount)
                          }; 
 
@@ -817,6 +817,23 @@ namespace VirtualObjects.Tests.Queries
             var any = Diagnostic.Timed(() =>
                 Query<Employee>().Union(
                 Query<Employee>()).Any());
+
+            /*
+             * Select 
+             *  Case 
+             *      When Count(*) > 0 Then 1 
+             *      When Count(*) = 0 Then 0 
+             *  End 
+             * From (
+             *      Select  
+             *          1 as N'Stub' 
+             *      From [Employees] [T0] 
+             *      Union All 
+             *      Select 
+             *          1 as N'Stub' 
+             *      From [Employees] [T1]
+             * )[Result]
+             */ 
 
             any.Should().BeTrue();
         }

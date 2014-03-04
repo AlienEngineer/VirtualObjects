@@ -1039,6 +1039,14 @@ namespace VirtualObjects.Tests.Sessions
                 }
 
                 Assert.That(orders.Count(), Is.EqualTo(2155));
+
+                /*
+                 * Select Count(*) From (
+                 *      Select 1
+                 *      From [Orders] [T0] 
+                 *      Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])
+                 * )[Result]
+                 */
             }
         }
 
