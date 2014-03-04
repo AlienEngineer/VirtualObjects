@@ -420,6 +420,9 @@ namespace VirtualObjects.Tests.Queries
 
             Diagnostic.Timed(() => orders.Count())
                 .Should().Be(89);
+
+            Diagnostic.Timed(() => orders.Any())
+                .Should().BeTrue();
         }
 
         [Test, Repeat(Repeat)] public void Aggregate_Query_Joined_And_GroupBy_With_A_Full_Entity_Max_Min_Sum_Avg()
