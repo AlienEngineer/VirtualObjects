@@ -236,8 +236,7 @@
     <None Include="CodeTemplates\Scaffolders\Business\EntityBusinessTemplate.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\Business\EntityBusinessInterfaceTemplate.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\Config\Config.ps1" />
-    <None Include="CodeTemplates\Scaffolders\CreatePackage\CreatePackage.ps1" />
-    <None Include="CodeTemplates\Scaffolders\Merge\Merge.ps1" />
+    <None Include="CodeTemplates\Scaffolders\Pack\Pack.ps1" />
     <None Include="CodeTemplates\Scaffolders\Models\EntityTemplate.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\Models\Models.ps1" />
     <None Include="CodeTemplates\Scaffolders\Repository\AnnotationsTemplate.cs.t4">
