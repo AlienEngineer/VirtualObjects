@@ -102,11 +102,3 @@ Dapper Version 1.13
    PM> Install-Package VirtualObjects -Pre
 ```
 
-### Dependencies
-Internaly VirtualObjects uses:
-
-* Castle.Core       (≥ 3.2.2)
-* fasterflect       (≥ 2.1.3)
-* Ninject           (≥ 3.0.1.10)
-
-
