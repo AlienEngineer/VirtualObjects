@@ -93,4 +93,13 @@ namespace VirtualObjects.Mappings
     {
 
     }
+
+    /// <summary>      
+    /// Indicates that this property should be ignored for changes.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class ComputedAttribute : ColumnAttribute
+    {
+
+    }
 }

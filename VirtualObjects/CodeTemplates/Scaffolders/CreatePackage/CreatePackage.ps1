@@ -367,22 +367,25 @@ function Get-MsBuildPath
 	return $null
 }
 
-Invoke-MsBuild .\VirtualObjects\VirtualObjects.csproj -MsBuildParameters "/t:Both"
+$projectDirectory = (Get-Project).Properties.Item("LocalPath").Value;
+$solutionDirectory = "$projectDirectory..\"
+$filename = (Get-Project).Properties.Item("FileName").Value;
+$assemblyName = (Get-Project).Properties.Item("AssemblyName").Value;
+$projectFile = $projectDirectory + "\" + "$filename"
+
+Invoke-MsBuild $projectFile -MsBuildParameters "/t:Both" `
+	-BuildLogDirectoryPath $solutionDirectory `
+	-KeepBuildLogOnSuccessfulBuilds 
 
 
 Write-Host "Packing version $version...."
-#Write-Host ""
-#Invoke-Scaffolder Merge net40
-#Write-Host ""
-#Invoke-Scaffolder Merge net45
-#Write-Host ""
 
-nuget pack .\VirtualObjects\VirtualObjects.csproj -Symbols -Version $version
+nuget pack $projectFile -Symbols -Version $version
 Write-Host "Packing done version $version"
 
 if ($push) 
 {
-	nuget push "VirtualObjects.$version.nupkg"
+	nuget push "$assemblyName.$version.nupkg"
 }
 else 
 {
