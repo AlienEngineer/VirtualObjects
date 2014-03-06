@@ -35,7 +35,9 @@ namespace VirtualObjects.CRUD.Operations
 
         protected override IEnumerable<IEntityColumnInfo> GetParameters(IEntityInfo entityInfo)
         {
-            return entityInfo.Columns.Where(e => !e.IsIdentity);
+            return entityInfo.Columns
+                .Where(e => !e.IsIdentity)
+                .Where(e => !e.IsComputed);
         }
     }
 }
