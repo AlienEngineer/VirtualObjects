@@ -197,7 +197,7 @@ namespace VirtualObjects.Config
                 IsKey = GetIsKey(propertyInfo),
                 IsIdentity = GetIsIdentity(propertyInfo),
                 IsVersionControl = ColumnVersionField.Any(isVersion => isVersion(propertyInfo)),
-                IsComputed = ComputedColumnGetters.Any(isVersion => isVersion(propertyInfo)),
+                IsComputed = ComputedColumnGetters.Any(isComputed => isComputed(propertyInfo)),
                 Property = propertyInfo,
                 ValueGetter = MakeValueGetter(columnName, propertyInfo.DelegateForGetPropertyValue()),
                 ValueSetter = MakeValueSetter(columnName, propertyInfo.DelegateForSetPropertyValue())
