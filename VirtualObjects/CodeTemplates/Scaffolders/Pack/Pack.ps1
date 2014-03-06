@@ -371,20 +371,27 @@ $projectDirectory = (Get-Project).Properties.Item("LocalPath").Value;
 $solutionDirectory = "$projectDirectory..\"
 $filename = (Get-Project).Properties.Item("FileName").Value;
 $assemblyName = (Get-Project).Properties.Item("AssemblyName").Value;
-$projectFile = $projectDirectory + "\" + "$filename"
+$projectFile = $projectDirectory + $filename
 
+Write-Verbose "ProjectFile			: $projectFile"
+Write-Verbose "AssemblyName		: $assemblyName"
+Write-Verbose "SolutionFolder		: $solutionDirectory"
+Write-Verbose "ProjectFolder		: $projectDirectory"
+Write-Verbose "FileName			: $filename"
+
+Write-Host "Compiling..."
 Invoke-MsBuild $projectFile -MsBuildParameters "/t:Both" `
 	-BuildLogDirectoryPath $solutionDirectory `
 	-KeepBuildLogOnSuccessfulBuilds 
 
 
-Write-Host "Packing version $version...."
+Write-Host "Packing with version $version...."
 
-nuget pack $projectFile -Symbols -Version $version
-Write-Host "Packing done version $version"
+nuget pack $projectFile -Build -Symbols -Version $version -Properties 'Configuration=Release 4.5'
 
 if ($push) 
 {
+	Write-Host "Pushing package."
 	nuget push "$assemblyName.$version.nupkg"
 }
 else 

@@ -27,40 +27,108 @@ if (-not ($ToFolder -eq "-"))
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 
-# Getting the package path for the proper version of VirtualObjects.
-$targetFramework = [System.String](Get-Project $Project).Properties.Item("TargetFrameworkMoniker").Value
 
-$backupfolder = "..\";
-
-$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
-
-
-while (-not [System.IO.Directory]::Exists($packagesPath)) 
+function Load-PackageAssembly($packageName) 
 {
-	$backupfolder = $backupfolder + "..\";
-	$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
+	$assemblyPath = Get-NugetAssemblyPath($packageName)
+
+	Write-Verbose "Assembly found at: $assemblyPath"
+
+	$virtualObjects = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "$packageName.dll"))
 }
 
-if ($targetFramework.EndsWith("v4.0"))
+function AppendNet45Folder($path)
 {
-	$packagesPath = $packagesPath + "net40\"
-}
-else
-{
-	$packagesPath = $packagesPath + "net45\"
+	$net45Folders = (Get-ChildItem $path -Filter net45*)
+
+	if ($net45Folders.Count -eq 0)
+	{
+		return AppendNet40Folder($path);
+	}
+
+	$net45Folder = $net45Folders[0].Name;
+	return ($path + "$net45Folder\")
 }
 
-#$assemblyPath = (Get-Project).Properties.Item("LocalPath").Value + (Get-Project).ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value
+function AppendNet40Folder($path)
+{
+	$net40Folders = (Get-ChildItem $path -Filter net40*)
+	$net40Folder = $net40Folders[0].Name;
+	return ($path + "$net40Folder\")
+}
+
+function Get-NugetAssemblyPath($packageName)
+{
+	$package = (Get-Package -Filter $packageName)
+
+	if (-not $package)
+	{
+		throw "Unable to find the package $package."
+	}
+
+	$targetFramework = [System.String](Get-Project $Project).Properties.Item("TargetFrameworkMoniker").Value
+	
+	$backupfolder = "..\";
+
+	$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\$packageName." + (Get-Package -Filter $packageName -Skip ((Get-Package -Filter $packageName).Count-1)).Version.ToString() + "\lib\" 
+	
+	Write-Verbose "Searching assembly in: $packagesPath"
+
+	while (-not [System.IO.Directory]::Exists($packagesPath)) 
+	{
+		$backupfolder = $backupfolder + "..\";
+		$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\$packageName." + (Get-Package -Filter $packageName -Skip ((Get-Package -Filter $packageName).Count-1)).Version.ToString() + "\lib\" 
+		Write-Verbose "Searching assembly in: $packagesPath"
+	}
+
+	if ($targetFramework.EndsWith("v4.0"))
+	{
+		return AppendNet40Folder($packagesPath)
+	}
+	else
+	{
+		return AppendNet45Folder($packagesPath)
+	}
+}
+
+#$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
+
+#while (-not [System.IO.Directory]::Exists($packagesPath)) 
+#{
+#	$backupfolder = $backupfolder + "..\";
+#	$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
+#}
+
+#if ($targetFramework.EndsWith("v4.0"))
+#{
+#	$packagesPath = $packagesPath + "net40\"
+#}
+#else
+#{
+#	$packagesPath = $packagesPath + "net45\"
+#}
+
 $assemblyPath = $packagesPath
 
 # =============== LOADING DEPENDENCIES =========================
 
-$ninject = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Ninject.dll"))
-$castleCore = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Castle.Core.dll"))
-$fasterflact = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Fasterflect.dll"))
+#$ninject = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Ninject.dll"))
+#$castleCore = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Castle.Core.dll"))
+#$fasterflact = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Fasterflect.dll"))
 
-# VirtualObjects.Scaffold.dll
-$virtualObjects = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "VirtualObjects.dll"))
+Write-Verbose "Loading Ninject"
+Load-PackageAssembly('Ninject')
+
+Write-Verbose "Loading Castle.Core"
+Load-PackageAssembly('Castle.Core')
+
+Write-Verbose "Loading FasterFlect"
+Load-PackageAssembly('Fasterflect')
+
+Write-Verbose "Loading VirtualObjects"
+Load-PackageAssembly('VirtualObjects')
+#$assemblyPath = Get-NugetAssemblyPath('VirtualObjects')
+#$virtualObjects = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "VirtualObjects.dll"))
 
 
 if($Repository) {
