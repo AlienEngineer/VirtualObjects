@@ -74,6 +74,7 @@ namespace VirtualObjects.Config
 
         public virtual string BindOrName { get { return ColumnName; } }
         public bool IsVersionControl { get; set; }
+        public bool IsComputed { get; set; }
 
         public virtual IEntityColumnInfo GetLastBind() { return this; }
 

@@ -122,7 +122,19 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <param name="ignoreGetter">The ignore getter.</param>
         void ColumnIgnore(Func<PropertyInfo, Boolean> ignoreGetter);
-        
+
+        /// <summary>
+        /// Appends a parser to find a computed a property.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="computedGetter">The computed getter.</param>
+        void ComputedColumn<TAttribute>(Func<TAttribute, Boolean> computedGetter = null) where TAttribute : Attribute;
+
+        /// <summary>
+        /// Appends a parser to find a computed a property.
+        /// </summary>
+        /// <param name="computedGetter">The computed getter.</param>
+        void ComputedColumn(Func<PropertyInfo, Boolean> computedGetter);
     }
 
     /// <summary>
@@ -131,6 +143,7 @@ namespace VirtualObjects.Config
     public class MappingBuilder : IMappingBuilder
     {
         private readonly ICollection<Func<PropertyInfo, Boolean>> _columnIgnoreGetters;
+        private readonly ICollection<Func<PropertyInfo, Boolean>> _computedColumnGetters;
         private readonly IOperationsProvider _operationsProvider;
         private readonly ICollection<Func<PropertyInfo, String>> _columnNameGetters;
         private readonly ICollection<Func<PropertyInfo, String>> _columnForeignKeyGetters;
@@ -163,6 +176,7 @@ namespace VirtualObjects.Config
             _columnIdentityGetters = new Collection<Func<PropertyInfo, Boolean>>();
             _columnVersionGetters = new Collection<Func<PropertyInfo, Boolean>>();
             _columnIgnoreGetters = new Collection<Func<PropertyInfo, Boolean>>();
+            _computedColumnGetters = new Collection<Func<PropertyInfo, Boolean>>();
             _entityNameGetters = new Collection<Func<Type, String>>();
             _columnForeignKeyGetters = new Collection<Func<PropertyInfo, String>>();
             _columnForeignKeyLinksGetters = new Collection<Func<PropertyInfo, String>>();
@@ -330,7 +344,7 @@ namespace VirtualObjects.Config
         /// <param name="ignoreGetter">The ignore getter.</param>
         public void ColumnIgnore<TAttribute>(Func<TAttribute, Boolean> ignoreGetter) where TAttribute : Attribute
         {
-            if ( ignoreGetter == null )
+            if (ignoreGetter == null)
             {
 #if NET35
                 ignoreGetter = (Func<TAttribute, Boolean>)((TAttribute attribute) => attribute != null);
@@ -354,6 +368,40 @@ namespace VirtualObjects.Config
         public void ColumnIgnore(Func<PropertyInfo, Boolean> ignoreGetter)
         {
             _columnIgnoreGetters.Add(ignoreGetter);
+        }
+
+        /// <summary>
+        /// Appends a parser to find a computed a property.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="computedGetter">The computed getter.</param>
+        public void ComputedColumn<TAttribute>(Func<TAttribute, Boolean> computedGetter) where TAttribute : Attribute
+        {
+            if (computedGetter == null)
+            {
+#if NET35
+                computedGetter = (Func<TAttribute, Boolean>)((TAttribute attribute) => attribute != null);
+#else
+                computedGetter = _defaultBooleanGetter;
+#endif
+            }
+
+            ComputedColumn(prop =>
+            {
+                var attributes = prop.Attributes<TAttribute>();
+
+                return attributes != null && attributes.Select(computedGetter).Any();
+            });
+        }
+
+
+        /// <summary>
+        /// Appends a parser to find a computed a property.
+        /// </summary>
+        /// <param name="computedGetter">The computed getter.</param>
+        public void ComputedColumn(Func<PropertyInfo, Boolean> computedGetter)
+        {
+            _computedColumnGetters.Add(computedGetter);
         }
 
         /// <summary>
@@ -420,7 +468,8 @@ namespace VirtualObjects.Config
                 ColumnForeignKey = _columnForeignKeyGetters.Reverse(),
                 ColumnForeignKeyLinks = _columnForeignKeyLinksGetters.Reverse(),
                 ColumnVersionField = _columnVersionGetters.Reverse(),
-                ColumnIgnoreGetters = _columnIgnoreGetters.Reverse()
+                ColumnIgnoreGetters = _columnIgnoreGetters.Reverse(),
+                ComputedColumnGetters = _computedColumnGetters.Reverse()
             };
         }
 

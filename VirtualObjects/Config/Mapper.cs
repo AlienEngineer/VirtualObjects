@@ -26,6 +26,7 @@ namespace VirtualObjects.Config
         public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKey { get; set; }
         public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKeyLinks { get; set; }
         public IEnumerable<Func<PropertyInfo, Boolean>> ColumnVersionField { get; set; }
+        public IEnumerable<Func<PropertyInfo, Boolean>> ComputedColumnGetters { get; set; }
 
         private IDictionary<Type, EntityInfo> _cacheEntityInfos;
 
@@ -196,6 +197,7 @@ namespace VirtualObjects.Config
                 IsKey = GetIsKey(propertyInfo),
                 IsIdentity = GetIsIdentity(propertyInfo),
                 IsVersionControl = ColumnVersionField.Any(isVersion => isVersion(propertyInfo)),
+                IsComputed = ComputedColumnGetters.Any(isVersion => isVersion(propertyInfo)),
                 Property = propertyInfo,
                 ValueGetter = MakeValueGetter(columnName, propertyInfo.DelegateForGetPropertyValue()),
                 ValueSetter = MakeValueSetter(columnName, propertyInfo.DelegateForSetPropertyValue())

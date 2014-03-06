@@ -101,6 +101,7 @@ namespace VirtualObjects
             builder.ColumnIgnore(e => e.Name.StartsWith("Ignore"));
             builder.ColumnIgnore<IgnoreAttribute>();
 
+            builder.ComputedColumn<ComputedAttribute>();
         }
 
     }

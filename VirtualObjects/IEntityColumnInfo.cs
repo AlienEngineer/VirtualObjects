@@ -97,6 +97,8 @@ namespace VirtualObjects
         /// </value>
         bool IsVersionControl { get; }
 
+        bool IsComputed { get; set; }
+
         /// <summary>
         /// Sets the value.
         /// </summary>
