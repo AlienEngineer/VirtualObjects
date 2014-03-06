@@ -12,6 +12,7 @@
     <description>Easy and Fast ORM Framework</description>
     <releaseNotes>
       Version 1.0.7-Beta:
+      * Feature: Enable computed columns to be read.
       * Linq Support: Count, Max, Min, Avg, Sum, etc. after group and joins.
       * Linq Support: Use key member on projection.
       * Linq Support: Join and Group.
