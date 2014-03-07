@@ -143,6 +143,7 @@
     <Compile Include="CRUD\OperationParameter.cs" />
     <Compile Include="CRUD\OperationsExecutor.cs" />
     <Compile Include="CRUD\OperationsProvider.cs" />
+    <Compile Include="CRUD\Operations\CountOperation.cs" />
     <Compile Include="CRUD\Operations\DeleteOperation.cs" />
     <Compile Include="CRUD\Operations\GetOperation.cs" />
     <Compile Include="CRUD\Operations\GetVersionOperation.cs" />

@@ -16,6 +16,7 @@ namespace VirtualObjects.Connections
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
         private bool _endedTransaction;
+        private IDictionary<String, IOperationParameter> _stub = new Dictionary<String, IOperationParameter>();
 
         #region IDisposable Members
         private bool _disposed;
@@ -38,7 +39,7 @@ namespace VirtualObjects.Connections
                         Commit();
                         _dbTransaction.Dispose();
                     }
-                    
+
                     _dbConnection.Dispose();
                 }
 
@@ -69,7 +70,7 @@ namespace VirtualObjects.Connections
         private TResult AutoClose<TResult>(Func<TResult> execute)
         {
             var value = execute();
-            
+
             return value;
         }
 
@@ -104,7 +105,7 @@ namespace VirtualObjects.Connections
 
         private void Open()
         {
-            if (_dbConnection == null)
+            if ( _dbConnection == null )
             {
                 _dbConnection = _provider.CreateConnection();
             }
@@ -140,7 +141,7 @@ namespace VirtualObjects.Connections
             cmd.Transaction = _dbTransaction;
             cmd.CommandText = commandText;
 
-            parameters
+            (parameters ?? _stub)
                 .Select(e => new { OperParameter = e, Parameter = cmd.CreateParameter() })
                 .ForEach(e =>
                 {
@@ -168,20 +169,20 @@ namespace VirtualObjects.Connections
         {
             Trace.WriteLine("Command executed :\n");
             Trace.WriteLine("");
-            
-            foreach (SqlParameter parameter in cmd.Parameters)
+
+            foreach ( SqlParameter parameter in cmd.Parameters )
             {
-                Trace.Write("Declare @" + parameter.ParameterName + " as " +parameter.SqlDbType);
-                if (parameter.Size > 0)
+                Trace.Write("Declare @" + parameter.ParameterName + " as " + parameter.SqlDbType);
+                if ( parameter.Size > 0 )
                 {
-                    Trace.Write("(" + parameter.Size + ")");    
+                    Trace.Write("(" + parameter.Size + ")");
                 }
 
                 Trace.WriteLine("");
 
                 Trace.Write("Set @" + parameter.ParameterName + " = " + parameter.Value + "");
 
-                if (parameter.Value == DBNull.Value)
+                if ( parameter.Value == DBNull.Value )
                 {
                     Trace.Write("NULL");
                 }

@@ -55,7 +55,7 @@ namespace VirtualObjects.Tests
         {
             var ioc = new NinjectContainer(new SessionConfiguration
             {
-                Logger = Console.Out
+                // Logger = Console.Out
             }, "northwind");
 
             ConnectionManager = ioc.Get<IConnection>();

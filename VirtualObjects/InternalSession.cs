@@ -45,6 +45,16 @@ namespace VirtualObjects
         }
 
         /// <summary>
+        /// Gets how many entities existe of the given TEntity type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <returns></returns>
+        public int Count<TEntity>()
+        {
+            return (int)Context.Map<TEntity>().Operations.CountOperation.Execute(Context);
+        }
+
+        /// <summary>
         /// Inserts the specified entity.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>

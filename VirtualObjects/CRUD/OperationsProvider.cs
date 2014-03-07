@@ -28,8 +28,22 @@ namespace VirtualObjects.CRUD
                 GetOperation = CreateGetOperation(entityInfo),
                 InsertOperation = CreateInsertOperation(entityInfo),
                 UpdateOperation = CreateUpdateOperation(entityInfo),
-                GetVersionOperation = CreateGetVersionOperation(entityInfo)
+                GetVersionOperation = CreateGetVersionOperation(entityInfo),
+                CountOperation = CreateCountOperation(entityInfo)
             };
+        }
+
+        private IOperation CreateCountOperation(IEntityInfo entityInfo)
+        {
+            StringBuffer text = _formatter.Select;
+            text += " ";
+            text += _formatter.Count;
+            text += " ";
+            text += _formatter.From;
+            text += " ";
+            text += _formatter.FormatTableName(entityInfo.EntityName);
+
+            return new CountOperation(text, entityInfo);
         }
 
         private IOperation CreateUpdateOperation(IEntityInfo entityInfo)

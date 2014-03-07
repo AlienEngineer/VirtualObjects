@@ -17,6 +17,13 @@ namespace VirtualObjects
         IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new();
 
         /// <summary>
+        /// Gets how many entities existe of the given TEntity type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <returns></returns>
+        int Count<TEntity>();
+
+        /// <summary>
         /// Gets the entity by its ID.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>

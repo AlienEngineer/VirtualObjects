@@ -15,6 +15,14 @@ namespace VirtualObjects
         IOperation InsertOperation { get; }
 
         /// <summary>
+        /// Gets the count operation.
+        /// </summary>
+        /// <value>
+        /// The count operation.
+        /// </value>
+        IOperation CountOperation { get; }
+
+        /// <summary>
         /// Gets the update operation.
         /// </summary>
         /// <value>

@@ -77,6 +77,16 @@ namespace VirtualObjects
         }
 
         /// <summary>
+        /// Gets how many entities existe of the given TEntity type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <returns></returns>
+        public int Count<TEntity>()
+        {
+            return InternalSession.Count<TEntity>();
+        }
+
+        /// <summary>
         /// Inserts the specified entity.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>

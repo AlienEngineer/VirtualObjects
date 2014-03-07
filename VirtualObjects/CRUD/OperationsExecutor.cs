@@ -45,6 +45,11 @@ namespace VirtualObjects.CRUD
                 .PrepareOperation(entityModel)
                 .Execute(sessionContext) as byte[];
         }
+
+        public int Count(SessionContext sessionContext)
+        {
+            return (int)_entityOperations.CountOperation.Execute(sessionContext);
+        }
     }
 
     class OperationsExecutor<T> : OperationsExecutor, IOperationsExecutor<T>
