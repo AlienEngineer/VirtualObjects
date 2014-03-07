@@ -40,15 +40,34 @@ namespace VirtualObjects.Tests.Sessions
         [Test]
         public void Performance_With_ExcelRecords()
         {
+            int maxRepeat;
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
-                for ( int i = 0; i < 10; i++ )
+                for ( int i = 0; i < maxRepeat; i++ )
                 {
                     Diagnostic.Timed(() => Session.Count<Suppliers>());
                     RegisterTime(session, "VirtualObjects", i, "Count Suppliers", Diagnostic.GetMilliseconds());
 
                     Diagnostic.Timed(() => Connection.Query<int>("Select Count(*) from Suppliers"));
                     RegisterTime(session, "Dapper", i, "Count Suppliers", Diagnostic.GetMilliseconds());
+                }
+
+                for ( int i = 0; i < maxRepeat; i++ )
+                {
+                    Diagnostic.Timed(() => Session.Query<Suppliers>().ToList());
+                    RegisterTime(session, "VirtualObjects", i, "Suppliers", Diagnostic.GetMilliseconds());
+
+                    Diagnostic.Timed(() => Connection.Query<Suppliers>("Select * from Suppliers").ToList());
+                    RegisterTime(session, "Dapper", i, "Suppliers", Diagnostic.GetMilliseconds());
+                }
+
+                for ( int i = 0; i < maxRepeat; i++ )
+                {
+                    Diagnostic.Timed(() => Session.Query<OrderDetailsSimplified>().ToList());
+                    RegisterTime(session, "VirtualObjects", i, "OrderDetails Simplified", Diagnostic.GetMilliseconds());
+
+                    Diagnostic.Timed(() => Connection.Query<OrderDetailsSimplified>("Select * from [Order Details]").ToList());
+                    RegisterTime(session, "Dapper", i, "OrderDetails Simplified", Diagnostic.GetMilliseconds());
                 }
             }
         }
