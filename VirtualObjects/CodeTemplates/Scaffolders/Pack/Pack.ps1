@@ -5,7 +5,8 @@ param(
 	[string]$CodeLanguage,
 	[string[]]$TemplateFolders,
 	[switch]$Force = $false,
-	[switch]$Push = $false
+	[switch]$Push = $false,
+	[switch]$LocalPush = $false
 )
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
@@ -397,4 +398,25 @@ if ($push)
 else 
 {
 	Write-Host "Version $version not yet published."
+}
+
+if ($LocalPush) 
+{
+	
+	$files = Get-ChildItem -Path $solutionDirectory -Filter *.nupkg | foreach { $_.Name }
+	$localPackages = "$solutionDirectory..\Local Packages"
+
+	Write-Host "Pushing package Localy to: $localPackages"
+
+	if ([System.IO.Directory]::Exists($localPackages) -eq $false)
+	{
+		[System.IO.Directory]::CreateDirectory($localPackages)
+	}
+
+	$files | foreach {
+		Copy-Item "$solutionDirectory\$_" -Destination "$localPackages\$_" -Force
+		del "$solutionDirectory\$_"
+		Write-Verbose "Package pushed: $_"
+	}
+	
 }
