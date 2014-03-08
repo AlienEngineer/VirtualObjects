@@ -70,7 +70,7 @@ namespace VirtualObjects.Connections
         private TResult AutoClose<TResult>(Func<TResult> execute)
         {
             var value = execute();
-
+            Close();
             return value;
         }
 
@@ -121,7 +121,12 @@ namespace VirtualObjects.Connections
 
         public void Close()
         {
-            if ( !KeepAlive && !_endedTransaction || _dbConnection == null || _dbConnection.State == ConnectionState.Closed )
+            if (KeepAlive)
+            {
+                return;
+            }
+
+            if ( !_endedTransaction || _dbConnection == null || _dbConnection.State == ConnectionState.Closed )
             {
                 return;
             }

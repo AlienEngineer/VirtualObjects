@@ -40,7 +40,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test]
         public void Performance_With_ExcelRecords()
         {
-            int maxRepeat;
+            int maxRepeat = 10;
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
                 for ( int i = 0; i < maxRepeat; i++ )

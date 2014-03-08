@@ -24,6 +24,8 @@ namespace VirtualObjects.CRUD.Operations
 
         protected override object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters, SessionContext sessionContext)
         {
+            var keepAlive = connection.KeepAlive;
+            connection.KeepAlive = true;
             var reader = connection.ExecuteReader(commandText, parameters);
 
             if (!reader.Read())
@@ -44,6 +46,10 @@ namespace VirtualObjects.CRUD.Operations
             finally
             {
                 reader.Close();
+                //
+                // Restore keep alive flag;
+                connection.KeepAlive = keepAlive;
+                connection.Close();
             }
         }
 
