@@ -9,6 +9,14 @@ namespace VirtualObjects
     /// </summary>
     public interface IConnection : IDisposable
     {
+
+        /// <summary>
+        /// Creates the command.
+        /// </summary>
+        /// <param name="commandText">The command text.</param>
+        /// <returns></returns>
+        IDbCommand CreateCommand(string commandText);
+
         /// <summary>
         /// Executes the scalar.
         /// </summary>
@@ -50,6 +58,15 @@ namespace VirtualObjects
         ///   <c>true</c> if [keep alive]; otherwise, <c>false</c>.
         /// </value>
         bool KeepAlive { get; set; }
+
+        /// <summary>
+        /// Executes the scalar.
+        /// </summary>
+        /// <param name="cmd">The command.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        object ExecuteScalar(IDbCommand cmd, IDictionary<string, IOperationParameter> parameters);
+
         /// <summary>
         /// Closes this instance.
         /// </summary>

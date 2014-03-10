@@ -97,6 +97,12 @@ namespace VirtualObjects
         /// </value>
         bool IsVersionControl { get; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [is computed].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [is computed]; otherwise, <c>false</c>.
+        /// </value>
         bool IsComputed { get; set; }
 
         /// <summary>

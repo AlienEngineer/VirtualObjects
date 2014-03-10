@@ -143,6 +143,11 @@ namespace VirtualObjects
         }
 
 
+        /// <summary>
+        /// Gets the milliseconds.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
         public static double GetMilliseconds(String name = "DEFAULT")
         {
             if ( !Times.ContainsKey(name) )

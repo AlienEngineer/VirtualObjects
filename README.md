@@ -2,8 +2,7 @@
 
 [Short demonstration video] (http://screencast.com/t/CghgJTdmx#mediaDisplayArea)
 
-```ps
-
+```
 # Creates the entity models based on data source and create a repository Layer.
 Scaffold Models .\Development Northwind -Repository
 
@@ -17,13 +16,11 @@ Scaffold Repository
 
 # Create a business Layer. (e.g. Scaffold Business Task)
 Scaffold Business <ModelType>
-
-
 ```
 
 ****
 
-### Getting Started (Manualy)
+### Getting Started (Manually)
 
 #### Create a Model
 ```C#
@@ -61,44 +58,31 @@ public class Employee
 ### Why
 To improve myself and create something really easy to use with the best performance possible. This project started in college with ORMFramework and later VODB.
 
+***
 
 ### Performance
 Verified on unit-tests using NUnit on a I7 intel 3.07Ghz 18Gb RAM.
 
-The unit tests should be executed one at a time. So the assembly load time is calculated correctly for each test.
-Tests are repeated 10x via NUnit RepeatAttribute. The timer ignores the very first result, since the first will be way bigger then the remaining executions.
 
-VO Version 1.0.1-Beta
+* VO Version 1.1
+* Dapper Version 1.13
+* Entity Framework 6
 
-Dapper Version 1.13
+#### Under Northwind Database
+To obtain a fresh Graphic and more detail execute the unit-test _Performance_With_ExcelRecords_ the excel will be filled on Bin\Release\Session or Bin\Debug\Session directory.
 
-#### Using Northwind Order Details table with 2155 Records.
-```C#
-    // VO: Iterated order details Query in ~64 ms
-    Session.GetAll<OrderDetailsSimplified>()
-    
-    // Dapper: Iterated order details Query in ~52 ms
-    Connection.Query<OrderDetailsSimplified>("Select * from [Order Details]")
+```MySQL
+Select Count(*) from Suppliers
 ```
-#### On Northwind supplier table.
-```C#
-    // VO: Iterated the same Query 1000 times in ~410 ms
-    Session.GetAll<Suppliers>()
-    
-    // Dapper: Iterated the same Query 1000 times in ~429 ms
-    Connection.Query<Suppliers>("Select * from Suppliers")
-```
-```C#
-    // VO: Iterated Query in ~8 ms
-    Session.GetAll<Suppliers>()
-    
-    // Dapper: Iterated Query in ~16 ms
-    Connection.Query<Suppliers>("Select * from Suppliers")
-```
+![Count Suppliers](https://raw.github.com/AlienEngineer/VirtualObjects/1.1.0/Docs/CountSuppliers.png)
+> Results in milliseconds.  
+> The lower the better.  
+> The first execution is excluded. Including it results in a unreadable graphic.
+
+***
 
 ### For more info click [here] (http://alienengineer.github.com/VirtualObjects/)
 ### Get it as a NuGet Package [here] (http://www.nuget.org/packages/VirtualObjects/)
 ```
-   PM> Install-Package VirtualObjects -Pre
+   PM> Install-Package VirtualObjects
 ```
-
