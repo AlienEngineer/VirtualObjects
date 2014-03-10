@@ -46,9 +46,9 @@ namespace VirtualObjects.CRUD
                 .Execute(sessionContext) as byte[];
         }
 
-        public int Count(SessionContext sessionContext)
+        public Object Count(SessionContext sessionContext)
         {
-            return (int)_entityOperations.CountOperation.Execute(sessionContext);
+            return _entityOperations.CountOperation.Execute(sessionContext);
         }
     }
 

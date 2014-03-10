@@ -21,6 +21,7 @@ namespace VirtualObjects.Connections
         #region IDisposable Members
         private bool _disposed;
 
+
         public void Dispose()
         {
             Dispose(true);
@@ -79,6 +80,20 @@ namespace VirtualObjects.Connections
             return AutoClose(() => CreateCommand(commandText, parameters).ExecuteScalar());
         }
 
+        public object ExecuteScalar(IDbCommand cmd, IDictionary<string, IOperationParameter> parameters)
+        {
+            RefreshParameters(cmd, parameters);
+
+            cmd.Transaction = _dbTransaction;
+
+            return cmd.ExecuteScalar();
+
+            //return AutoClose(() =>
+            //{
+                
+            //});
+        }
+
         public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
             return AutoClose(() => CreateCommand(commandText, parameters).ExecuteReader());
@@ -102,6 +117,7 @@ namespace VirtualObjects.Connections
 
             return this;
         }
+
 
         private void Open()
         {
@@ -133,13 +149,34 @@ namespace VirtualObjects.Connections
             _log.WriteLine(Resources.Connection_Closed);
         }
 
-        private IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
+        public IDbCommand CreateCommand(string commandText)
         {
             Open();
-            var cmd = DbConnection.CreateCommand();
+            var cmd =  DbConnection.CreateCommand();
+            cmd.CommandText = commandText;
+
+            return cmd;
+        }
+
+        public IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
+        {
+            var cmd =  CreateCommand(commandText);
 
             cmd.Transaction = _dbTransaction;
-            cmd.CommandText = commandText;
+
+            RefreshParameters(cmd, parameters);
+
+            // _log.WriteLine(commandText);
+            // Debug use only.
+            // PrintCommand(cmd);
+
+            return cmd;
+        }
+
+
+        private void RefreshParameters(IDbCommand cmd, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
+        {
+            cmd.Parameters.Clear();
 
             (parameters ?? _stub)
                 .Select(e => new { OperParameter = e, Parameter = cmd.CreateParameter() })
@@ -155,14 +192,7 @@ namespace VirtualObjects.Connections
 
                     cmd.Parameters.Add(e.Parameter);
                 });
-
-            _log.WriteLine(commandText);
-            // Debug use only.
-            // PrintCommand(cmd);
-
-            return cmd;
         }
-
 
         [Conditional("DEBUG")]
         private void PrintCommand(IDbCommand cmd)
@@ -193,7 +223,6 @@ namespace VirtualObjects.Connections
             Trace.WriteLine("");
             Trace.WriteLine(cmd.CommandText);
         }
-
 
         public void Rollback()
         {
@@ -232,6 +261,7 @@ namespace VirtualObjects.Connections
             _endedTransaction = true;
             _dbTransaction.Commit();
         }
+
 
     }
 

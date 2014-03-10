@@ -19,56 +19,45 @@ namespace VirtualObjects.Tests.Sessions
 
         class PerfRecord
         {
-            public String Name { get; set; }
             public int Atempt { get; set; }
-            public String Operation { get; set; }
-            public Double Milliseconds { get; set; }
+            public float VirtualObjects { get; set; }
+            public float Dapper { get; set; }
+            public float Diff { get; set; }
         }
 
-        private void RegisterTime(ISession session, String framework, int atempt, String operation, Double time)
-        {
-
-            session.Insert(new PerfRecord
-            {
-                Name = framework,
-                Atempt = atempt,
-                Operation = operation,
-                Milliseconds = time
-            });
-        }
+        class CountSuppliers : PerfRecord { }
 
         [Test]
         public void Performance_With_ExcelRecords()
         {
-            int maxRepeat;
+            const int maxRepeat = 50;
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
                 for ( int i = 0; i < maxRepeat; i++ )
                 {
-                    Diagnostic.Timed(() => Session.Count<Suppliers>());
-                    RegisterTime(session, "VirtualObjects", i, "Count Suppliers", Diagnostic.GetMilliseconds());
+
+                    Diagnostic.Timed(() =>
+                        Session.Count<Suppliers>()
+                    );
+
+                    var virtualObjects = (float)Diagnostic.GetMilliseconds();
 
                     Diagnostic.Timed(() => Connection.Query<int>("Select Count(*) from Suppliers"));
-                    RegisterTime(session, "Dapper", i, "Count Suppliers", Diagnostic.GetMilliseconds());
+
+                    var dapper = (float)Diagnostic.GetMilliseconds();
+
+                    if ( i > 0 )
+                    {
+                        session.Insert(new CountSuppliers
+                        {
+                            Atempt = i,
+                            VirtualObjects = virtualObjects,
+                            Dapper = dapper,
+                            Diff = virtualObjects - dapper
+                        });
+                    }
                 }
 
-                for ( int i = 0; i < maxRepeat; i++ )
-                {
-                    Diagnostic.Timed(() => Session.Query<Suppliers>().ToList());
-                    RegisterTime(session, "VirtualObjects", i, "Suppliers", Diagnostic.GetMilliseconds());
-
-                    Diagnostic.Timed(() => Connection.Query<Suppliers>("Select * from Suppliers").ToList());
-                    RegisterTime(session, "Dapper", i, "Suppliers", Diagnostic.GetMilliseconds());
-                }
-
-                for ( int i = 0; i < maxRepeat; i++ )
-                {
-                    Diagnostic.Timed(() => Session.Query<OrderDetailsSimplified>().ToList());
-                    RegisterTime(session, "VirtualObjects", i, "OrderDetails Simplified", Diagnostic.GetMilliseconds());
-
-                    Diagnostic.Timed(() => Connection.Query<OrderDetailsSimplified>("Select * from [Order Details]").ToList());
-                    RegisterTime(session, "Dapper", i, "OrderDetails Simplified", Diagnostic.GetMilliseconds());
-                }
             }
         }
 

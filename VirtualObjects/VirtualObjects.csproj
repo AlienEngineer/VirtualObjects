@@ -42,6 +42,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\net45\VirtualObjects.XML</DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug 4.0|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -150,6 +151,7 @@
     <Compile Include="CRUD\Operations\InsertOperation.cs" />
     <Compile Include="CRUD\Operations\Operation.cs" />
     <Compile Include="CRUD\Operations\Operations.cs" />
+    <Compile Include="CRUD\Operations\ScalarOperationExecutor.cs" />
     <Compile Include="CRUD\Operations\UpdateOperation.cs" />
     <Compile Include="CRUD\Operations\VersionCheckOperation.cs" />
     <Compile Include="Diagnostic.cs" />
