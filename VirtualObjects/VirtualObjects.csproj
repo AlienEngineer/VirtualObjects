@@ -188,6 +188,14 @@
     <Compile Include="netfx\System\StringFormatWith.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queries\ConcurrentReader\BlockingDataReader.cs" />
+    <Compile Include="Queries\ConcurrentReader\ConcurrentDataReader.cs" />
+    <Compile Include="Queries\ConcurrentReader\ConcurrentDataReaderBase.cs" />
+    <Compile Include="Queries\ConcurrentReader\DataRow.cs" />
+    <Compile Include="Queries\ConcurrentReader\IConcurrentDataReader.cs" />
+    <Compile Include="Queries\ConcurrentReader\ITuple.cs" />
+    <Compile Include="Queries\ConcurrentReader\RowReader.cs" />
+    <Compile Include="Queries\ConcurrentReader\Tuple.cs" />
     <Compile Include="Queries\Execution\CompositeExecutor.cs" />
     <Compile Include="Queries\Execution\CountQueryExecutor.cs" />
     <Compile Include="Queries\Execution\IQueryExecutor.cs" />
@@ -202,6 +210,7 @@
     <Compile Include="Queries\IQueryInfo.cs" />
     <Compile Include="Queries\IQueryTranslator.cs" />
     <Compile Include="Queries\Mapping\CollectionEntitiesMapper.cs" />
+    <Compile Include="Queries\Mapping\ParallelEntitiesMapper.cs" />
     <Compile Include="Queries\Mapping\DynamicEntityMapper.cs" />
     <Compile Include="Queries\Mapping\DynamicTypeEntityMapper.cs" />
     <Compile Include="Queries\Mapping\DynamicWithMemberEntityMapper.cs" />
@@ -213,6 +222,7 @@
     <Compile Include="Queries\Query.cs" />
     <Compile Include="Queries\QueryInfo.cs" />
     <Compile Include="Queries\QueryProvider.cs" />
+    <Compile Include="Queries\ReaderExtensions.cs" />
     <Compile Include="Queries\Translation\CachingTranslator.cs" />
     <Compile Include="Queries\Translation\QueryTranslator.cs" />
     <Compile Include="ReflectionExtensions.cs" />

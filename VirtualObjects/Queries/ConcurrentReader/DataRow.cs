@@ -36,4 +36,50 @@ namespace VirtualObjects.Queries.ConcurrentReader
             return new Tuple(dic, reader);
         }
     }
+
+    class DataRowTuple : ITuple
+    {
+        private readonly DataRow _row;
+
+
+        public DataRowTuple(DataRow row)
+        {
+            _row = row;
+            Columns = _row.ColumnNames;
+        }
+
+        public IEnumerable<string> Columns { get; private set; }
+        
+        public IConcurrentDataReader Reader { get; private set; }
+        
+        public T GetValue<T>(string column)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetValue<T>(int index)
+        {
+            return (T)Convert.ChangeType(_row.Values[index], typeof(T));
+        }
+
+        public object GetValue(string column)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object GetValue(int index)
+        {
+            return _row.Values[index];
+        }
+
+        public object[] GetValues()
+        {
+            return _row.Values;
+        }
+
+        public string GetName(int index)
+        {
+            return _row.ColumnNames[index];
+        }
+    }
 }
