@@ -42,13 +42,6 @@ namespace VirtualObjects.Tests.Sessions
             }
 
             public DbSet<Suppliers> Suppliers { get; set; }
-
-            protected override void OnModelCreating(DbModelBuilder modelBuilder)
-            {
-                // modelBuilder.Entity<Suppliers>()
-
-                base.OnModelCreating(modelBuilder);
-            }
         }
 
         private static string GetValue(IDataReader reader, String fieldName)
