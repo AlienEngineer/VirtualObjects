@@ -7,7 +7,9 @@ namespace VirtualObjects.Tests.Sessions
     using System;
     using System.Linq;
     using System.Data.Entity;
-using System.Data.Common;
+    using System.Data.Common;
+    using System.Collections.Generic;
+    using System.Data;
 
     /// <summary>
     /// 
@@ -30,9 +32,12 @@ using System.Data.Common;
 
         class CountSuppliers : PerfRecord { }
 
+        class MappingSuppliers : PerfRecord { }
+
         class EFContext : DbContext
         {
-            public EFContext(DbConnection connection) : base(connection, false)
+            public EFContext(DbConnection connection)
+                : base(connection, false)
             {
             }
 
@@ -46,7 +51,40 @@ using System.Data.Common;
             }
         }
 
-        //[Test]
+        private static string GetValue(IDataReader reader, String fieldName)
+        {
+            var value = reader["Address"];
+            
+            if ( value == null || value == DBNull.Value )
+            {
+                return null;
+            }
+
+            return (String)value;
+        }
+        private static IEnumerable<Suppliers> MapSupplier(System.Data.IDataReader reader)
+        {
+            while ( reader.Read() )
+            {
+                yield return new Suppliers
+                {
+                    SupplierId = (int)reader["SupplierId"],
+                    Address = GetValue(reader, "Address"),
+                    City = GetValue(reader, "City"),
+                    CompanyName = GetValue(reader, "CompanyName"),
+                    ContactName = GetValue(reader, "ContactName"),
+                    ContactTitle = GetValue(reader, "ContactTitle"),
+                    Country = GetValue(reader, "Country"),
+                    Fax = GetValue(reader, "Fax"),
+                    HomePage = GetValue(reader, "HomePage"),
+                    Phone = GetValue(reader, "Phone"),
+                    PostalCode = GetValue(reader, "PostalCode"),
+                    Region = GetValue(reader, "Region")
+                };
+            }
+        }
+
+        [Test]
         public void Performance_With_ExcelRecords()
         {
             Connection.Open();
@@ -57,6 +95,10 @@ using System.Data.Common;
 
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
+
+                //
+                // Count Suppliers
+                //
                 for ( int i = 0; i < maxRepeat; i++ )
                 {
                     //
@@ -70,7 +112,7 @@ using System.Data.Common;
                     // Entity Framework
                     //
                     Diagnostic.Timed(() => ef.Suppliers.Count());
-                    
+
                     var entityFramework = (float)Diagnostic.GetMilliseconds();
 
                     //
@@ -102,6 +144,59 @@ using System.Data.Common;
                     });
                 }
 
+
+                //
+                // Mapping Suppliers
+                //
+                for ( int i = 0; i < maxRepeat; i++ )
+                {
+                    //
+                    // Dapper
+                    //        
+                    Diagnostic.Timed(() => Connection.Query<Suppliers>("Select * from Suppliers").ToList());
+
+                    var dapper = (float)Diagnostic.GetMilliseconds();
+
+                    //
+                    // Entity Framework
+                    //
+                    var suppliers = Diagnostic.Timed(() => ef.Suppliers.ToList());
+
+                    var entityFramework = (float)Diagnostic.GetMilliseconds();
+
+                    //
+                    // HardCoded
+                    //
+                    Diagnostic.Timed(() =>
+                    {
+                        var cmd = Connection.CreateCommand();
+                        cmd.CommandText = "Select * from Suppliers";
+                        var reader = cmd.ExecuteReader();
+
+                        MapSupplier(reader).ToList();
+
+                        reader.Close();
+
+                    });
+
+                    var hardCoded = (float)Diagnostic.GetMilliseconds();
+
+                    //
+                    // VirtualObjects
+                    //
+                    Diagnostic.Timed(() => Session.GetAll<Suppliers>().ToList());
+
+                    var virtualObjects = (float)Diagnostic.GetMilliseconds();
+
+                    session.Insert(new MappingSuppliers
+                    {
+                        Atempt = i,
+                        EntityFramework = entityFramework,
+                        VirtualObjects = virtualObjects,
+                        Dapper = dapper,
+                        HardCoded = hardCoded
+                    });
+                }
             }
         }
 
