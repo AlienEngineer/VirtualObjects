@@ -71,7 +71,7 @@ namespace VirtualObjects.Connections
         private TResult AutoClose<TResult>(Func<TResult> execute)
         {
             var value = execute();
-
+            Close();
             return value;
         }
 
@@ -82,16 +82,15 @@ namespace VirtualObjects.Connections
 
         public object ExecuteScalar(IDbCommand cmd, IDictionary<string, IOperationParameter> parameters)
         {
-            RefreshParameters(cmd, parameters);
 
-            cmd.Transaction = _dbTransaction;
+            return AutoClose(() =>
+            {
+                RefreshParameters(cmd, parameters);
 
-            return cmd.ExecuteScalar();
+                cmd.Transaction = _dbTransaction;
 
-            //return AutoClose(() =>
-            //{
-                
-            //});
+                return cmd.ExecuteScalar();
+            });
         }
 
         public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters)
@@ -137,7 +136,12 @@ namespace VirtualObjects.Connections
 
         public void Close()
         {
-            if ( !KeepAlive && !_endedTransaction || _dbConnection == null || _dbConnection.State == ConnectionState.Closed )
+            if ( KeepAlive )
+            {
+                return;
+            }
+
+            if ( !_endedTransaction || _dbConnection == null || _dbConnection.State == ConnectionState.Closed )
             {
                 return;
             }
@@ -166,7 +170,7 @@ namespace VirtualObjects.Connections
 
             RefreshParameters(cmd, parameters);
 
-            // _log.WriteLine(commandText);
+            _log.WriteLine(commandText);
             // Debug use only.
             // PrintCommand(cmd);
 

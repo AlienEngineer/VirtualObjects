@@ -6,6 +6,8 @@ namespace VirtualObjects.Tests.Sessions
     using Dapper;
     using System;
     using System.Linq;
+    using System.Data.Entity;
+using System.Data.Common;
 
     /// <summary>
     /// 
@@ -21,41 +23,82 @@ namespace VirtualObjects.Tests.Sessions
         {
             public int Atempt { get; set; }
             public float VirtualObjects { get; set; }
+            public float EntityFramework { get; set; }
             public float Dapper { get; set; }
-            public float Diff { get; set; }
+            public float HardCoded { get; set; }
         }
 
         class CountSuppliers : PerfRecord { }
 
+        class EFContext : DbContext
+        {
+            public EFContext(DbConnection connection) : base(connection, false)
+            {
+            }
+
+            public DbSet<Suppliers> Suppliers { get; set; }
+
+            protected override void OnModelCreating(DbModelBuilder modelBuilder)
+            {
+                // modelBuilder.Entity<Suppliers>()
+
+                base.OnModelCreating(modelBuilder);
+            }
+        }
+
         [Test]
         public void Performance_With_ExcelRecords()
         {
+            Connection.Open();
+
+            var ef = new EFContext((DbConnection)Connection);
+
             const int maxRepeat = 50;
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
                 for ( int i = 0; i < maxRepeat; i++ )
                 {
-
-                    Diagnostic.Timed(() =>
-                        Session.Count<Suppliers>()
-                    );
-
-                    var virtualObjects = (float)Diagnostic.GetMilliseconds();
-
+                    //
+                    // Dapper
+                    //        
                     Diagnostic.Timed(() => Connection.Query<int>("Select Count(*) from Suppliers"));
 
                     var dapper = (float)Diagnostic.GetMilliseconds();
 
-                    if ( i > 0 )
+                    //
+                    // Entity Framework
+                    //
+                    Diagnostic.Timed(() => ef.Suppliers.Count());
+                    
+                    var entityFramework = (float)Diagnostic.GetMilliseconds();
+
+                    //
+                    // HardCoded
+                    //
+                    Diagnostic.Timed(() =>
                     {
-                        session.Insert(new CountSuppliers
-                        {
-                            Atempt = i,
-                            VirtualObjects = virtualObjects,
-                            Dapper = dapper,
-                            Diff = virtualObjects - dapper
-                        });
-                    }
+                        var cmd = Connection.CreateCommand();
+                        cmd.CommandText = "Select Count(*) from Suppliers";
+                        cmd.ExecuteScalar();
+                    });
+
+                    var hardCoded = (float)Diagnostic.GetMilliseconds();
+
+                    //
+                    // VirtualObjects
+                    //
+                    Diagnostic.Timed(() => Session.Count<Suppliers>());
+
+                    var virtualObjects = (float)Diagnostic.GetMilliseconds();
+
+                    session.Insert(new CountSuppliers
+                    {
+                        Atempt = i,
+                        EntityFramework = entityFramework,
+                        VirtualObjects = virtualObjects,
+                        Dapper = dapper,
+                        HardCoded = hardCoded
+                    });
                 }
 
             }
