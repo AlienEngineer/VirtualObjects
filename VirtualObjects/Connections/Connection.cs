@@ -137,6 +137,7 @@ namespace VirtualObjects.Connections
         public void Close()
         {
             if ( KeepAlive )
+
             {
                 return;
             }

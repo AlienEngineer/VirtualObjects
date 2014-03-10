@@ -11,7 +11,7 @@ using System.Data.Common;
 
     /// <summary>
     /// 
-    /// Testing VODB vs Dapper
+    /// Testing VirualObjects vs Dapper vs EntityFramework and HardCoded.
     /// 
     /// Author: Sérgio
     /// </summary>
@@ -46,7 +46,7 @@ using System.Data.Common;
             }
         }
 
-        [Test]
+        //[Test]
         public void Performance_With_ExcelRecords()
         {
             Connection.Open();
@@ -54,6 +54,7 @@ using System.Data.Common;
             var ef = new EFContext((DbConnection)Connection);
 
             const int maxRepeat = 50;
+
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
                 for ( int i = 0; i < maxRepeat; i++ )
@@ -104,7 +105,7 @@ using System.Data.Common;
             }
         }
 
-        [Test, Repeat(Repeat)]
+        //[Test, Repeat(Repeat)]
         public void Performance_Dapper_GetAll_Suppliers()
         {
             Diagnostic.Timed(() =>
@@ -116,7 +117,7 @@ using System.Data.Common;
             });
         }
 
-        [Test, Repeat(Repeat)]
+        //[Test, Repeat(Repeat)]
         public void Performance_VO_GetAll_Suppliers()
         {
             Diagnostic.Timed(() =>
@@ -128,7 +129,7 @@ using System.Data.Common;
             });
         }
 
-        [Test, Repeat(Repeat)]
+        //[Test, Repeat(Repeat)]
         public void Performance_Dapper_GetAll_OrderDetails()
         {
             Diagnostic.Timed(() =>
@@ -140,7 +141,7 @@ using System.Data.Common;
             });
         }
 
-        [Test, Repeat(Repeat)]
+        //[Test, Repeat(Repeat)]
         public void Performance_VO_GetAll_OrderDetails()
         {
             Diagnostic.Timed(() =>
@@ -153,7 +154,7 @@ using System.Data.Common;
             });
         }
 
-        [Test, Repeat(1000)]
+        //[Test, Repeat(1000)]
         public void Performance_Dapper_GetAll_Supplier_ManyTimes()
         {
             Diagnostic.Timed(() =>
@@ -165,7 +166,7 @@ using System.Data.Common;
             });
         }
 
-        [Test, Repeat(1000)]
+        //[Test, Repeat(1000)]
         public void Performance_VO_GetAll_Supplier_ManyTimes()
         {
             Diagnostic.Timed(() =>

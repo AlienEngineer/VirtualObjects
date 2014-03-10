@@ -83,7 +83,7 @@ namespace VirtualObjects
         /// <returns></returns>
         public int Count<TEntity>()
         {
-            return InternalSession.Count<TEntity>();
+            return InternalSession.Count<TEntity>(); 
         }
 
         /// <summary>
