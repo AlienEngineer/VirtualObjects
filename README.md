@@ -65,36 +65,15 @@ To improve myself and create something really easy to use with the best performa
 ### Performance
 Verified on unit-tests using NUnit on a I7 intel 3.07Ghz 18Gb RAM.
 
-The unit tests should be executed one at a time. So the assembly load time is calculated correctly for each test.
-Tests are repeated 10x via NUnit RepeatAttribute. The timer ignores the very first result, since the first will be way bigger then the remaining executions.
 
-VO Version 1.0.1-Beta
+VO Version 1.1
 
 Dapper Version 1.13
 
-#### Using Northwind Order Details table with 2155 Records.
-```C#
-    // VO: Iterated order details Query in ~64 ms
-    Session.GetAll<OrderDetailsSimplified>()
-    
-    // Dapper: Iterated order details Query in ~52 ms
-    Connection.Query<OrderDetailsSimplified>("Select * from [Order Details]")
-```
-#### On Northwind supplier table.
-```C#
-    // VO: Iterated the same Query 1000 times in ~410 ms
-    Session.GetAll<Suppliers>()
-    
-    // Dapper: Iterated the same Query 1000 times in ~429 ms
-    Connection.Query<Suppliers>("Select * from Suppliers")
-```
-```C#
-    // VO: Iterated Query in ~8 ms
-    Session.GetAll<Suppliers>()
-    
-    // Dapper: Iterated Query in ~16 ms
-    Connection.Query<Suppliers>("Select * from Suppliers")
-```
+Entity Framework 6
+
+#### Using Northwind
+
 
 ### For more info click [here] (http://alienengineer.github.com/VirtualObjects/)
 ### Get it as a NuGet Package [here] (http://www.nuget.org/packages/VirtualObjects/)
