@@ -6,6 +6,7 @@ using System.Linq;
 using Fasterflect;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Queries;
+using VirtualObjects.CodeGenerators;
 
 namespace VirtualObjects.Config
 {
@@ -15,6 +16,7 @@ namespace VirtualObjects.Config
     /// </summary>
     class Mapper : IMapper
     {
+        private readonly MappingGenerator _mappingGenerator = new MappingGenerator();
         private readonly IOperationsProvider _operationsProvider;
         private readonly IEntityProvider _entityProvider;
         private readonly IEntityMapper _entityMapper;
@@ -107,6 +109,7 @@ namespace VirtualObjects.Config
             entityInfo.EntityProvider = _entityProvider.GetProviderForType(entityType);
             entityInfo.EntityProvider.PrepareProvider(entityType, _sessionContext);
             entityInfo.EntityMapper = _entityMapper;
+            entityInfo.MapEntity = _mappingGenerator.GenerateMapper(entityInfo);
 
             return entityInfo;
         }

@@ -24,6 +24,7 @@ namespace VirtualObjects.Config
 
         public IList<IEntityColumnInfo> KeyColumns { get; set; }
         public IEntityColumnInfo Identity { get; set; }
+        public Action<object, object[]> MapEntity { get; set; }
         public IEntityColumnInfo VersionControl { get; set; }
 
         public Type EntityType { get; set; }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Fasterflect;
 
@@ -9,9 +8,8 @@ namespace VirtualObjects.Tests
 {
     using NUnit.Framework;
     using VirtualObjects.Tests.Models.Northwind;
-    using Microsoft.CSharp;
-    using System.CodeDom.Compiler;
-    using VirtualObjects.CodeGenerators;
+
+    
 
     /// <summary>
     /// 
@@ -32,7 +30,7 @@ namespace VirtualObjects.Tests
         private const string STR_Parallel = "Parallel";
         private const string STR_Compiled = "Compiled";
 
-        class EntitiesCreation
+        public class EntitiesCreation
         {
             public int NumberOfEntities { get; set; }
             public float EntityProvider { get; set; }
@@ -41,7 +39,7 @@ namespace VirtualObjects.Tests
             public float Activator { get; set; }
         }
 
-        class EntitiesMapping
+        public class EntitiesMapping
         {
             public float Compiled { get; set; }
             public float HardCoded { get; set; }
@@ -51,6 +49,7 @@ namespace VirtualObjects.Tests
             public float SetValue { get; set; }
         }
 
+        
         [Test]
         public void Performance_Check_EntityCreation_Performance()
         {
@@ -116,7 +115,6 @@ namespace VirtualObjects.Tests
         {
             var type = typeof(Suppliers);
             var entityInfo = Mapper.Map(type);
-            var mapFunction = CreateFunction();
 
             Object[] data = new Object[] 
             {
@@ -173,10 +171,7 @@ namespace VirtualObjects.Tests
                         Parallel.For(0, suppliers.Length, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, i =>
                         {
                             var supplier = suppliers[i];
-                            for ( int j = 0; j < data.Length; j++ )
-                            {
-                                entityInfo.Columns[j].SetValue(supplier, data[j]);
-                            }
+                            entityInfo.MapEntity(supplier, data);
                         });
                     }, name: STR_Parallel);
 
@@ -199,7 +194,6 @@ namespace VirtualObjects.Tests
                             supplier.Phone = (String)data[9];
                             supplier.Fax = (String)data[10];
                             supplier.HomePage = (String)data[11];
-
                         }
                     }, name: STR_HardCoded);
 
@@ -209,7 +203,7 @@ namespace VirtualObjects.Tests
                         for ( int i = 0; i < numberOfEntities; i++ )
                         {
                             var supplier = suppliers[i];
-                            mapFunction(supplier, data);
+                            entityInfo.MapEntity(supplier, data);
                         }
                     }, name: STR_Compiled);
 
@@ -228,12 +222,7 @@ namespace VirtualObjects.Tests
 
         }
 
-        public Action<Object, Object[]> CreateFunction()
-        {
-            return new MappingGenerator().GenerateMapper(Mapper.Map(typeof(Suppliers)));
-        }
-
-        private Suppliers[] GetSuppliers(int howMany)
+        private static Suppliers[] GetSuppliers(int howMany)
         {
             Suppliers[] result = new Suppliers[howMany];
 
@@ -247,3 +236,4 @@ namespace VirtualObjects.Tests
 
     }
 }
+

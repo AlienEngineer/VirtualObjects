@@ -1,16 +1,16 @@
-using Microsoft.CSharp;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using VirtualObjects;
 using Fasterflect;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.CodeGenerators
 {
-    public class MappingGenerator : IMappingGenerator
+
+    public class MappingGenerator : CodeCompiler, IMappingGenerator
     {
+
+        private IEntityInfo entityInfo;
 
         /// <summary>
         /// Generates the mapper.
@@ -19,31 +19,24 @@ namespace VirtualObjects.CodeGenerators
         /// <returns></returns>
         public Action<object, Object[]> GenerateMapper(IEntityInfo entityInfo)
         {
+            this.entityInfo = entityInfo;
 
-            var code = GenerateCode(entityInfo);
-
-            CSharpCodeProvider provider = new CSharpCodeProvider();
-            CompilerParameters cp  = new CompilerParameters();
-
-            string[] References = new[] { entityInfo.EntityType.Module.Name.Replace(".dll", "") };
-            foreach ( var reference in References )
+            if ( !entityInfo.EntityType.IsPublic && !entityInfo.EntityType.IsNestedPublic )
             {
-                cp.ReferencedAssemblies.Add(AppDomain.CurrentDomain.BaseDirectory
-                           + string.Format("\\{0}.dll", reference));
+                throw new CodeCompilerException("The entity type {Name} is not public.", entityInfo.EntityType);
             }
+            
+            string[] References = new[] { entityInfo.EntityType.Module.Name };
+            var results = Compile(References);
 
-            cp.WarningLevel = 3;
-
-            cp.CompilerOptions = "/optimize";
-            cp.GenerateExecutable = false;
-            cp.GenerateInMemory = true;
-
-            CompilerResults results = provider.CompileAssemblyFromSource(cp, code);
-
-            Type binaryFunction = results.CompiledAssembly.GetType("Mapping");
+            Type binaryFunction = results.CompiledAssembly.GetType("Mapping" + entityInfo.EntityType.Name);
             var function = binaryFunction.GetMethod("MapObject");
             return (Action<Object, Object[]>)Delegate.CreateDelegate(typeof(Action<Object, Object[]>), function);
+        }
 
+        protected override string GenerateCode()
+        {
+            return GenerateCode(entityInfo);
         }
 
         private static String GenerateCode(IEntityInfo entityInfo)
@@ -55,7 +48,7 @@ namespace VirtualObjects.CodeGenerators
 using System;
 using {Namespace};
 
-public class Mapping
+public class Mapping{TypeShortName}
 {       
     public static void MapObject(Object entity, Object[] data)
     {
@@ -70,7 +63,8 @@ public class Mapping
 ";
 
             result = result.Replace("{Namespace}", entityInfo.EntityType.Namespace);
-            result = result.Replace("{TypeName}", entityInfo.EntityType.Name);
+            result = result.Replace("{TypeName}", entityInfo.EntityType.FullName.Replace("+","."));
+            result = result.Replace("{TypeShortName}", entityInfo.EntityType.Name);
             result = result.Replace("{Body}", GenerateBody(entityInfo));
 
             return result;
@@ -96,13 +90,10 @@ public class Mapping
                     result += i;
                     result += "];";
                 }
-                else
-                {
-
-                }
             }
 
             return result;
         }
+
     }
 }
