@@ -9,7 +9,8 @@ namespace VirtualObjects.Tests
 {
     using NUnit.Framework;
     using VirtualObjects.Tests.Models.Northwind;
-    using VirtualObjects.Mappings;
+    using Microsoft.CSharp;
+    using System.CodeDom.Compiler;
 
     /// <summary>
     /// 
@@ -24,8 +25,13 @@ namespace VirtualObjects.Tests
         private const string STR_Fasterflect = "Fasterflect";
         private const string STR_New = "New";
         private const string STR_EntityProvider = "EntityProvider";
+        private const string STR_SetFieldFinalValue = "SetFieldFinalValue";
+        private const string STR_SetValue = "SetValue";
+        private const string STR_HardCoded = "HardCoded";
+        private const string STR_Parallel = "Parallel";
+        private const string STR_Compiled = "Compiled";
 
-        class PerfRecord
+        class EntitiesCreation
         {
             public int NumberOfEntities { get; set; }
             public float EntityProvider { get; set; }
@@ -34,14 +40,22 @@ namespace VirtualObjects.Tests
             public float Activator { get; set; }
         }
 
-        [Table(TableName = "Factory")]
-        class EntitiesCreation : PerfRecord { }            
+        class EntitiesMapping
+        {
+            public float Compiled { get; set; }
+            public float HardCoded { get; set; }
+            public int NumberOfEntities { get; set; }
+            public float Parallel { get; set; }
+            public float SetFieldFinalValue { get; set; }
+            public float SetValue { get; set; }
+        }
 
         [Test]
-        public void EntityCreation_Performance_Check()
+        public void Performance_Check_EntityCreation_Performance()
         {
             var provider = Make<IEntityProvider>();
             var type = typeof(Suppliers);
+            var ep = provider.GetProviderForType(type);
 
             using ( var session = new ExcelSession("Performance.xlsx") )
             {
@@ -50,16 +64,13 @@ namespace VirtualObjects.Tests
                 {
                     numberOfEntities += 10;
 
-                    var ep = provider.GetProviderForType(type);
-
                     Diagnostic.Timed(() =>
                     {
                         for ( int i = 0; i < numberOfEntities; i++ )
                         {
                             ep.CreateEntity(type);
                         }
-                    }, name: STR_EntityProvider);                        
-                    
+                    }, name: STR_EntityProvider);
 
                     Diagnostic.Timed(() =>
                     {
@@ -90,12 +101,193 @@ namespace VirtualObjects.Tests
                         NumberOfEntities = numberOfEntities,
                         Activator = (float)Diagnostic.GetMilliseconds(STR_Activador),
                         EntityProvider = (float)Diagnostic.GetMilliseconds(STR_EntityProvider),
-                        Fasterflect = (float) Diagnostic.GetMilliseconds(STR_Fasterflect),
+                        Fasterflect = (float)Diagnostic.GetMilliseconds(STR_Fasterflect),
                         New = (float)Diagnostic.GetMilliseconds(STR_New)
                     });
 
-                } while (numberOfEntities < 500);   
+                } while ( numberOfEntities < 500 );
             }
         }
+
+
+        [Test]
+        public void Performance_Check_EntityMapping()
+        {
+            var type = typeof(Suppliers);
+            var entityInfo = Mapper.Map(type);
+            var mapFunction = CreateFunction();
+
+            Object[] data = new Object[] 
+            {
+                1,
+                "Company Name",
+                "Contact Name",
+                "ContactTitle",
+                "Address",
+                "City",
+                "Region",
+                "PostalCode",
+                "Country",
+                "Phone",
+                "Fax",
+                "HomePage"
+            };
+
+            using ( var session = new ExcelSession("Performance.xlsx") )
+            {
+                int numberOfEntities = 0;
+                do
+                {
+                    numberOfEntities += 10;
+
+                    var suppliers = GetSuppliers(numberOfEntities);
+                    Diagnostic.Timed(() =>
+                    {
+                        for ( int i = 0; i < numberOfEntities; i++ )
+                        {
+                            var supplier = suppliers[i];
+                            for ( int j = 0; j < data.Length; j++ )
+                            {
+                                entityInfo.Columns[j].SetFieldFinalValue(supplier, data[j]);
+                            }
+                        }
+                    }, name: STR_SetFieldFinalValue);
+
+                    suppliers = GetSuppliers(numberOfEntities);
+                    Diagnostic.Timed(() =>
+                    {
+                        for ( int i = 0; i < numberOfEntities; i++ )
+                        {
+                            var supplier = suppliers[i];
+                            for ( int j = 0; j < data.Length; j++ )
+                            {
+                                entityInfo.Columns[j].SetValue(supplier, data[j]);
+                            }
+                        }
+                    }, name: STR_SetValue);
+
+                    suppliers = GetSuppliers(numberOfEntities);
+                    Diagnostic.Timed(() =>
+                    {
+                        Parallel.For(0, suppliers.Length, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, i =>
+                        {
+                            var supplier = suppliers[i];
+                            for ( int j = 0; j < data.Length; j++ )
+                            {
+                                entityInfo.Columns[j].SetValue(supplier, data[j]);
+                            }
+                        });
+                    }, name: STR_Parallel);
+
+                    suppliers = GetSuppliers(numberOfEntities);
+                    Diagnostic.Timed(() =>
+                    {
+                        for ( int i = 0; i < numberOfEntities; i++ )
+                        {
+                            var supplier = suppliers[i];
+
+                            supplier.SupplierId = (int)data[0];
+                            supplier.CompanyName = (String)data[1];
+                            supplier.ContactName = (String)data[2];
+                            supplier.ContactTitle = (String)data[3];
+                            supplier.Address = (String)data[4];
+                            supplier.City = (String)data[5];
+                            supplier.Region = (String)data[6];
+                            supplier.PostalCode = (String)data[7];
+                            supplier.Country = (String)data[8];
+                            supplier.Phone = (String)data[9];
+                            supplier.Fax = (String)data[10];
+                            supplier.HomePage = (String)data[11];
+
+                        }
+                    }, name: STR_HardCoded);
+
+                    suppliers = GetSuppliers(numberOfEntities);
+                    Diagnostic.Timed(() =>
+                    {
+                        for ( int i = 0; i < numberOfEntities; i++ )
+                        {
+                            var supplier = suppliers[i];
+                            mapFunction(supplier, data);
+                        }
+                    }, name: STR_Compiled);
+
+                    session.Insert(new EntitiesMapping
+                    {
+                        NumberOfEntities = numberOfEntities,
+                        SetFieldFinalValue = (float)Diagnostic.GetMilliseconds(STR_SetFieldFinalValue),
+                        SetValue = (float)Diagnostic.GetMilliseconds(STR_SetValue),
+                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded),
+                        Parallel = (float)Diagnostic.GetMilliseconds(STR_Parallel),
+                        Compiled = (float)Diagnostic.GetMilliseconds(STR_Compiled)
+                    });
+
+                } while ( numberOfEntities < 500 );
+            }
+
+        }
+
+        public static Action<Suppliers, Object[]> CreateFunction()
+        {
+            string code = @"
+        using System;            
+        using VirtualObjects.Tests.Models.Northwind;
+
+        public class Mapping
+        {                
+            public static void Map(Suppliers supplier, Object[] data)
+            {
+                supplier.SupplierId = (int)data[0];
+                supplier.CompanyName = (String)data[1];
+                supplier.ContactName = (String)data[2];
+                supplier.ContactTitle = (String)data[3];
+                supplier.Address = (String)data[4];
+                supplier.City = (String)data[5];
+                supplier.Region = (String)data[6];
+                supplier.PostalCode = (String)data[7];
+                supplier.Country = (String)data[8];
+                supplier.Phone = (String)data[9];
+                supplier.Fax = (String)data[10];
+                supplier.HomePage = (String)data[11];
+            }
+        }
+    ";
+
+            CSharpCodeProvider provider = new CSharpCodeProvider();
+            CompilerParameters cp  = new CompilerParameters();
+
+            string[] References = new[] { "VirtualObjects.Tests" };
+            foreach ( var reference in References )
+            {
+                cp.ReferencedAssemblies.Add(AppDomain.CurrentDomain.BaseDirectory
+                           + string.Format("\\{0}.dll", reference));
+            }
+
+            cp.WarningLevel = 3;
+
+            cp.CompilerOptions = "/optimize";
+            cp.GenerateExecutable = false;
+            cp.GenerateInMemory = true;
+
+            CompilerResults results = provider.CompileAssemblyFromSource(cp, code);
+
+            Type binaryFunction = results.CompiledAssembly.GetType("Mapping");
+            var function = binaryFunction.GetMethod("Map");
+            return (Action<Suppliers, Object[]>)Delegate.CreateDelegate(typeof(Action<Suppliers, Object[]>), function);
+        }
+
+
+        private Suppliers[] GetSuppliers(int howMany)
+        {
+            Suppliers[] result = new Suppliers[howMany];
+
+            for ( int i = 0; i < howMany; i++ )
+            {
+                result[i] = new Suppliers();
+            }
+
+            return result;
+        }
+
     }
 }
