@@ -9,7 +9,12 @@ namespace VirtualObjects.EntityProvider
     {
         public virtual object CreateEntity(Type type)
         {
-            return type.CreateInstance();
+            //return type.CreateInstance();
+            //
+            // Activator is faster.
+            // This can be verified in the Bin\Release\Performance.xlsx
+            //
+            return Activator.CreateInstance(type);
         }
 
         public virtual bool CanCreate(Type type)

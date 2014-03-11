@@ -53,10 +53,7 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
-            var ioc = new NinjectContainer(new SessionConfiguration
-            {
-                // Logger = Console.Out
-            }, "northwind");
+            ioc = new NinjectContainer(new SessionConfiguration { }, "northwind");
 
             ConnectionManager = ioc.Get<IConnection>();
             Mapper = ioc.Get<IMapper>();
@@ -69,6 +66,7 @@ namespace VirtualObjects.Tests
             Connection = ConnectionManager.DbConnection;
         }
 
+        private IOcContainer ioc;
         ITransaction _dbTransaction;
 
         [SetUp]
@@ -116,6 +114,11 @@ namespace VirtualObjects.Tests
         public IQueryable<T> Query<T>() where T : class, new()
         {
             return Session.Query<T>();
+        }
+
+        public T Make<T>()
+        {
+            return ioc.Get<T>();
         }
 
         public Session Session { get; private set; }
