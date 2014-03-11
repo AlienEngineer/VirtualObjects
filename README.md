@@ -86,6 +86,7 @@ Select * from Suppliers
 > Results in milliseconds.  
 > The lower the better.  
 > The first execution is excluded. Including it results in a unreadable graphic.
+
 ***
 
 ### For more info click [here] (http://alienengineer.github.com/VirtualObjects/)
