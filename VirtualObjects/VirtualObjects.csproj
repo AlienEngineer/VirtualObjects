@@ -127,6 +127,8 @@
     </When>
   </Choose>
   <ItemGroup>
+    <Compile Include="CodeGenerators\IMappingGenerator.cs" />
+    <Compile Include="CodeGenerators\MappingGenerator.cs" />
     <Compile Include="Config\EntityBoundColumnInfo.cs" />
     <Compile Include="Config\EntityColumnInfo.cs" />
     <Compile Include="Config\EntityDateTimeColumnInfo.cs" />

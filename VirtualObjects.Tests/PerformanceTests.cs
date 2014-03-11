@@ -11,6 +11,7 @@ namespace VirtualObjects.Tests
     using VirtualObjects.Tests.Models.Northwind;
     using Microsoft.CSharp;
     using System.CodeDom.Compiler;
+    using VirtualObjects.CodeGenerators;
 
     /// <summary>
     /// 
@@ -227,55 +228,10 @@ namespace VirtualObjects.Tests
 
         }
 
-        public static Action<Suppliers, Object[]> CreateFunction()
+        public Action<Object, Object[]> CreateFunction()
         {
-            string code = @"
-        using System;            
-        using VirtualObjects.Tests.Models.Northwind;
-
-        public class Mapping
-        {                
-            public static void Map(Suppliers supplier, Object[] data)
-            {
-                supplier.SupplierId = (int)data[0];
-                supplier.CompanyName = (String)data[1];
-                supplier.ContactName = (String)data[2];
-                supplier.ContactTitle = (String)data[3];
-                supplier.Address = (String)data[4];
-                supplier.City = (String)data[5];
-                supplier.Region = (String)data[6];
-                supplier.PostalCode = (String)data[7];
-                supplier.Country = (String)data[8];
-                supplier.Phone = (String)data[9];
-                supplier.Fax = (String)data[10];
-                supplier.HomePage = (String)data[11];
-            }
+            return new MappingGenerator().GenerateMapper(Mapper.Map(typeof(Suppliers)));
         }
-    ";
-
-            CSharpCodeProvider provider = new CSharpCodeProvider();
-            CompilerParameters cp  = new CompilerParameters();
-
-            string[] References = new[] { "VirtualObjects.Tests" };
-            foreach ( var reference in References )
-            {
-                cp.ReferencedAssemblies.Add(AppDomain.CurrentDomain.BaseDirectory
-                           + string.Format("\\{0}.dll", reference));
-            }
-
-            cp.WarningLevel = 3;
-
-            cp.CompilerOptions = "/optimize";
-            cp.GenerateExecutable = false;
-            cp.GenerateInMemory = true;
-
-            CompilerResults results = provider.CompileAssemblyFromSource(cp, code);
-
-            Type binaryFunction = results.CompiledAssembly.GetType("Mapping");
-            var function = binaryFunction.GetMethod("Map");
-            return (Action<Suppliers, Object[]>)Delegate.CreateDelegate(typeof(Action<Suppliers, Object[]>), function);
-        }
-
 
         private Suppliers[] GetSuppliers(int howMany)
         {
