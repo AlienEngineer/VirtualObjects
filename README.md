@@ -69,12 +69,12 @@ Verified on unit-tests using NUnit on a I7 intel 3.07Ghz 18Gb RAM.
 * Entity Framework 6
 
 #### Under Northwind Database
-To obtain a fresh Graphic and more detail execute the unit-test _Performance_With_ExcelRecords_ the excel will be filled on Bin\Release\Session or Bin\Debug\Session directory.
+To obtain a fresh Graphic and more detail execute the unit-test _Performance Check_ the excel will be filled on Bin\Release\Session or Bin\Debug\Session directory.
 
 ```MySQL
 Select Count(*) from Suppliers
 ```
-![Count Suppliers](https://raw.githubusercontent.com/AlienEngineer/VirtualObjects/ParallelMapping/Docs/CountSuppliers.png)
+![Count Suppliers](Docs/CountSuppliers.png)
 > Results in milliseconds.  
 > The lower the better.  
 > The first execution is excluded. Including it results in a unreadable graphic.
@@ -82,7 +82,7 @@ Select Count(*) from Suppliers
 ```MySQL
 Select * from Suppliers
 ```
-![Mapping Suppliers] (https://raw.githubusercontent.com/AlienEngineer/VirtualObjects/ParallelMapping/Docs/SuppliersMapping.png)
+![Mapping Suppliers] (Docs/SuppliersMapping.png) 
 > Results in milliseconds.  
 > The lower the better.  
 > The first execution is excluded. Including it results in a unreadable graphic.
