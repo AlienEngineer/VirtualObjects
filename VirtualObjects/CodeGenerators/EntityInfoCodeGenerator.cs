@@ -11,7 +11,7 @@ namespace VirtualObjects.CodeGenerators
 
         readonly TypeBuilder builder;
         private readonly IEntityInfo entityInfo;
-        
+
         public EntityInfoCodeGenerator(IEntityInfo info)
         {
             this.entityInfo = info;
@@ -75,23 +75,68 @@ namespace VirtualObjects.CodeGenerators
             {
                 var column = entityInfo.Columns[i];
 
-                if ( column.Property.PropertyType.IsFrameworkType() )
-                {
-                    result += "\n           entity.";
-                    result += column.Property.Name;
-                    result += " = ";
-                    result += "(";
-                    result += column.Property.PropertyType.Name;
-                    result += ")";
-                    result += "Parse(data[";
-                    result += i;
-                    result += "]);";
-                }
+#if DEBUG
+                result += "\n       try {";
+#endif
+
+                result += "\n       entity.";
+                result += column.Property.Name;
+
+                result += GenerateFieldAssignment(i, column);
+#if DEBUG
+                result += "\n       } catch (Exception ex) {";
+                result += "\n           throw new Exception(\"Error setting value to [";
+                result += column.Property.Name;
+                result += "]\", ex);";
+                result += "\n       }";
+#endif
             }
 
             return result;
         }
 
+        private static StringBuffer GenerateFieldAssignment(int i, IEntityColumnInfo column, bool finalize = true)
+        {
+            StringBuffer result = " = ";
+            if ( column.Property.PropertyType.IsFrameworkType() )
+            {
+                result += "(";
+                result += column.Property.PropertyType.Name;
+                result += ")";
+
+                if ( column.Property.PropertyType == typeof(DateTime) )
+                {
+                    
+                    result += "(Parse(data[";
+                    result += i;
+                    result += "]) ?? default(";
+                    result += column.Property.PropertyType.Name;
+                    result += "))";
+                }
+                else
+                {
+                    result += "Parse(data[";
+                    result += i;
+                    result += "])";
+                }
+            }
+            else
+            {
+                result += "new ";
+                result += column.Property.PropertyType.FullName.Replace('+', '.');
+                result += " { ";
+                result += column.ForeignKey.Property.Name;
+                result += GenerateFieldAssignment(i, column.ForeignKey, false);
+                result += " }";
+            }
+
+            if ( finalize )
+            {
+                result += ";";
+            }
+
+            return result;
+        }
         public Action<Object, Object[]> GetEntityMapper()
         {
             return (Action<Object, Object[]>)builder.GetDelegate<Action<Object, Object[]>>("MapObject");

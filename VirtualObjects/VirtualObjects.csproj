@@ -129,8 +129,6 @@
   <ItemGroup>
     <Compile Include="CodeGenerators\CodeCompiler.cs" />
     <Compile Include="CodeGenerators\EntityInfoCodeGenerator.cs" />
-    <Compile Include="CodeGenerators\IMappingGenerator.cs" />
-    <Compile Include="CodeGenerators\MappingGenerator.cs" />
     <Compile Include="CodeGenerators\TypeBuilder.cs" />
     <Compile Include="Config\EntityBoundColumnInfo.cs" />
     <Compile Include="Config\EntityColumnInfo.cs" />

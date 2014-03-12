@@ -59,6 +59,7 @@ namespace VirtualObjects.Tests.Sessions
 
             return (String)value;
         }
+        
         private static IEnumerable<Suppliers> MapSupplier(System.Data.IDataReader reader)
         {
             while ( reader.Read() )
@@ -81,7 +82,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test]
+        //[Test]
         public void Performance_Check_SuppliersMapping()
         {
             
@@ -152,11 +153,9 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        [Test]
+        //[Test]
         public void Performance_Check_Count()
         {
-            
-
             var ef = new EFContext((DbConnection)Connection);
                                       
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
@@ -218,79 +217,6 @@ namespace VirtualObjects.Tests.Sessions
                     
 
             }
-        }
-
-        //[Test, Repeat(Repeat)]
-        public void Performance_Dapper_GetAll_Suppliers()
-        {
-            Diagnostic.Timed(() =>
-            {
-                foreach ( var supplier in Connection.Query<Suppliers>("Select * from Suppliers") )
-                {
-                    Assert.That(supplier.SupplierId, Is.GreaterThan(0));
-                }
-            });
-        }
-
-        //[Test, Repeat(Repeat)]
-        public void Performance_VO_GetAll_Suppliers()
-        {
-            Diagnostic.Timed(() =>
-            {
-                foreach ( var supplier in Session.GetAll<Suppliers>() )
-                {
-                    Assert.That(supplier.SupplierId, Is.GreaterThan(0));
-                }
-            });
-        }
-
-        //[Test, Repeat(Repeat)]
-        public void Performance_Dapper_GetAll_OrderDetails()
-        {
-            Diagnostic.Timed(() =>
-            {
-                foreach ( var supplier in Connection.Query<OrderDetailsSimplified>("Select * from [Order Details]") )
-                {
-                    Assert.That(supplier.OrderId, Is.GreaterThan(0));
-                }
-            });
-        }
-
-        //[Test, Repeat(Repeat)]
-        public void Performance_VO_GetAll_OrderDetails()
-        {
-            Diagnostic.Timed(() =>
-            {
-                foreach ( var supplier in Session.GetAll<OrderDetailsSimplified>() )
-                {
-                    Assert.That(supplier.OrderId, Is.GreaterThan(0));
-                }
-
-            });
-        }
-
-        //[Test, Repeat(1000)]
-        public void Performance_Dapper_GetAll_Supplier_ManyTimes()
-        {
-            Diagnostic.Timed(() =>
-            {
-                foreach ( var supplier in Connection.Query<Suppliers>("Select * from Suppliers") )
-                {
-                    Assert.That(supplier.SupplierId, Is.GreaterThan(0));
-                }
-            });
-        }
-
-        //[Test, Repeat(1000)]
-        public void Performance_VO_GetAll_Supplier_ManyTimes()
-        {
-            Diagnostic.Timed(() =>
-            {
-                foreach ( var supplier in Session.GetAll<Suppliers>() )
-                {
-                    Assert.That(supplier.SupplierId, Is.GreaterThan(0));
-                }
-            });
         }
 
     }

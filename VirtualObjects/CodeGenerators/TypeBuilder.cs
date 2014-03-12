@@ -44,12 +44,8 @@ namespace VirtualObjects.CodeGenerators
 
             foreach ( var function in Functions )
             {
-                code += "\n";
                 code += function;
-                code += "\n";
             }
-
-            code += "\n";
 
             return code;
         }
