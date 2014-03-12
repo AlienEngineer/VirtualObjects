@@ -75,33 +75,32 @@ namespace VirtualObjects.CodeGenerators
             {
                 var column = entityInfo.Columns[i];
 
-                var valuestr = "data[" + i + "]";
-
 #if DEBUG
-                result += "\n       try {";
+                const string setter = @"
+                try
+                {{
+                    {Comment}if (data[{i}] != DBNull.Value)
+                        entity.{FieldName} {Value}
+                }}
+                catch ( Exception ex)
+                {{
+                    throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value."", ex);
+                }}
+";
+#else
+                string setter = @"
+                {Comment}if (data[{i}] != DBNull.Value)
+                    entity.{FieldName} {Value}
+";
 #endif
-                if ( column.ForeignKey != null )
-                {
-                    result += "\n           if (" + valuestr + " == DBNull.Value) {";
-                    
-                    result += "\n   }";
-                    result += "\n       else";
-                }
+                result += setter.FormatWith(new
+                 {
+                     FieldName = column.Property.Name,
+                     i,
+                     Value = GenerateFieldAssignment(i, column),
+                     Comment = column.ForeignKey == null ? "//" : String.Empty
+                 });
 
-                result += "\n       entity.";
-                result += column.Property.Name;
-                
-                result += GenerateFieldAssignment(i, column);
-
-                if ( column.Property.PropertyType.IsFrameworkType() )
-                {
-
-                }
-#if DEBUG
-                result += "\n       } catch (Exception ex) {";
-                result += String.Format("\n           throw new Exception(\"Error setting value to [{0}] with [\" + data[{1}] + \"] value.\", ex);", column.Property.Name, i);
-                result += "\n       }";
-#endif
             }
 
             return result;
@@ -134,12 +133,12 @@ namespace VirtualObjects.CodeGenerators
             }
             else
             {
-                result += "new ";
-                result += column.Property.PropertyType.FullName.Replace('+', '.');
-                result += " { ";
-                result += column.ForeignKey.Property.Name;
-                result += GenerateFieldAssignment(i, column.ForeignKey, false);
-                result += " }";
+                result += "new {Type} {{ {BoundField} {Value} }}".FormatWith(new
+                {
+                    Type = column.Property.PropertyType.FullName.Replace('+', '.'),
+                    BoundField = column.ForeignKey.Property.Name,
+                    Value = GenerateFieldAssignment(i, column.ForeignKey, false)
+                });
             }
 
             if ( finalize )
