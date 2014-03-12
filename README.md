@@ -71,7 +71,7 @@ Tests are repeated 10x via NUnit RepeatAttribute. The timer ignores the very fir
 VO Version 1.0.1-Beta  
 Dapper Version 1.13
 
-[Updated Results] (https://github.com/AlienEngineer/VirtualObjects/tree/1.1.0#under-northwind-database)
+[VO Version 1.1.0 Updated Results] (https://github.com/AlienEngineer/VirtualObjects/tree/1.1.0#under-northwind-database)
 
 #### Using Northwind Order Details table with 2155 Records.
 ```C#
