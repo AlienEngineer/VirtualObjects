@@ -75,30 +75,36 @@ namespace VirtualObjects.CodeGenerators
             {
                 var column = entityInfo.Columns[i];
 
-#if DEBUG
                 const string setter = @"
                 try
                 {{
                     {Comment}if (data[{i}] != DBNull.Value)
-                        entity.{FieldName} {Value}
+                        entity.{FieldName} = {Value};
+                }}
+                catch (InvalidCastException) 
+                {{ 
+                     {NotComment}entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
                 }}
                 catch ( Exception ex)
                 {{
                     throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value."", ex);
                 }}
 ";
-#else
-                string setter = @"
-                {Comment}if (data[{i}] != DBNull.Value)
-                    entity.{FieldName} {Value}
-";
-#endif
+
+                String value = GenerateFieldAssignment(i, column);
+                value = value.Substring(3, value.Length - 3);
+
                 result += setter.FormatWith(new
                  {
                      FieldName = column.Property.Name,
                      i,
-                     Value = GenerateFieldAssignment(i, column),
-                     Comment = column.ForeignKey == null ? "//" : String.Empty
+                     Value = value,
+                     ValueNoType = value
+                        .Replace(String.Format("({0})", column.Property.PropertyType.Name), "")
+                        .Replace("default", String.Format("default({0})", column.Property.PropertyType.Name)),
+                     Comment = column.ForeignKey == null ? "//" : String.Empty,
+                     NotComment = column.ForeignKey == null ? String.Empty : "//",
+                     Type = column.Property.PropertyType.Name
                  });
 
             }
@@ -111,25 +117,7 @@ namespace VirtualObjects.CodeGenerators
             StringBuffer result = " = ";
             if ( column.Property.PropertyType.IsFrameworkType() )
             {
-                result += "(";
-                result += column.Property.PropertyType.Name;
-                result += ")";
-
-                if ( column.Property.PropertyType == typeof(DateTime) )
-                {
-                    
-                    result += "(Parse(data[";
-                    result += i;
-                    result += "]) ?? default(";
-                    result += column.Property.PropertyType.Name;
-                    result += "))";
-                }
-                else
-                {
-                    result += "Parse(data[";
-                    result += i;
-                    result += "])";
-                }
+                result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = column.Property.PropertyType.Name });
             }
             else
             {
@@ -139,11 +127,6 @@ namespace VirtualObjects.CodeGenerators
                     BoundField = column.ForeignKey.Property.Name,
                     Value = GenerateFieldAssignment(i, column.ForeignKey, false)
                 });
-            }
-
-            if ( finalize )
-            {
-                result += ";";
             }
 
             return result;

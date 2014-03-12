@@ -82,7 +82,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        //[Test]
+        [Test]
         public void Performance_Check_SuppliersMapping()
         {
             
@@ -153,7 +153,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        //[Test]
+        [Test]
         public void Performance_Check_Count()
         {
             var ef = new EFContext((DbConnection)Connection);

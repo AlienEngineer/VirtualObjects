@@ -43,6 +43,7 @@ namespace VirtualObjects.Tests.Excel
             {
                 var count = session.GetAll<Product1>().ToList().Count();
 
+                
                 Assert.That(count, Is.EqualTo(4));
             }
         }

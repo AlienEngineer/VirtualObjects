@@ -50,7 +50,7 @@ namespace VirtualObjects.Tests
         }
 
         
-        //[Test]
+        [Test]
         public void Performance_Check_EntityCreation_Performance()
         {
             var provider = Make<IEntityProvider>();
@@ -111,7 +111,7 @@ namespace VirtualObjects.Tests
         }
 
 
-        //[Test]
+        [Test]
         public void Performance_Check_EntityMapping()
         {
             var type = typeof(Suppliers);
