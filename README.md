@@ -68,9 +68,10 @@ Verified on unit-tests using NUnit on a I7 intel 3.07Ghz 18Gb RAM.
 The unit tests should be executed one at a time. So the assembly load time is calculated correctly for each test.
 Tests are repeated 10x via NUnit RepeatAttribute. The timer ignores the very first result, since the first will be way bigger then the remaining executions.
 
-VO Version 1.0.1-Beta
-
+VO Version 1.0.1-Beta  
 Dapper Version 1.13
+
+[Updated Results] (https://github.com/AlienEngineer/VirtualObjects/tree/1.1.0#under-northwind-database)
 
 #### Using Northwind Order Details table with 2155 Records.
 ```C#
