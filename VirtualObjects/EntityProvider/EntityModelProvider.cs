@@ -7,7 +7,7 @@ namespace VirtualObjects.EntityProvider
 {
     class EntityModelProvider : IEntityProvider
     {
-        private Func<Object> Make;              
+        private Func<Type, Object> Make;              
 
         public virtual object CreateEntity(Type type)
         {
@@ -18,7 +18,7 @@ namespace VirtualObjects.EntityProvider
             //
             //return Activator.CreateInstance(type);
 
-            return Make();
+            return Make(type);
         }
 
         public virtual bool CanCreate(Type type)
@@ -40,7 +40,14 @@ namespace VirtualObjects.EntityProvider
         public virtual void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
             var entityInfo = sessionContext.Mapper.Map(outputType);
-            Make = entityInfo.EntityFactory;
+            if ( entityInfo != null )
+            {
+                Make = ((type) => entityInfo.EntityFactory());
+            }
+            else
+            {
+                Make = ((type) => Activator.CreateInstance(type));
+            }
         }
     }
 }
