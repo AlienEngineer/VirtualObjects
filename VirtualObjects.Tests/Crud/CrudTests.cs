@@ -2,6 +2,10 @@
 using FluentAssertions;
 using NUnit.Framework;
 using VirtualObjects.Tests.Models.Northwind;
+using VirtualObjects.CRUD;
+using VirtualObjects.Queries.Formatters;
+using VirtualObjects.Queries.Mapping;
+using VirtualObjects.EntityProvider;
 
 namespace VirtualObjects.Tests.Crud
 {
