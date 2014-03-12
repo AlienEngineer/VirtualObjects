@@ -82,7 +82,7 @@ Select Count(*) from Suppliers
 ```MySQL
 Select * from Suppliers
 ```
-![Mapping Suppliers] (https://raw.githubusercontent.com/AlienEngineer/VirtualObjects/ParallelMapping/Docs/MappingSuppliers.png)
+
 > Results in milliseconds.  
 > The lower the better.  
 > The first execution is excluded. Including it results in a unreadable graphic.
