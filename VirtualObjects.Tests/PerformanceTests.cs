@@ -17,7 +17,7 @@ namespace VirtualObjects.Tests
     /// 
     /// Author: Sérgio
     /// </summary>
-    [TestFixture]
+    [TestFixture, Category("Performance")]
     public class PerformanceTests : UtilityBelt
     {
         private const string STR_Activador = "Activador";
@@ -58,7 +58,7 @@ namespace VirtualObjects.Tests
             var ep = provider.GetProviderForType(type);
             ep.PrepareProvider(type, SessionContext);
 
-            using ( var session = new ExcelSession("Performance.xlsx") )
+            using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
                 int numberOfEntities = 0;
                 do
@@ -133,7 +133,7 @@ namespace VirtualObjects.Tests
                 "HomePage"
             };
 
-            using ( var session = new ExcelSession("Performance.xlsx") )
+            using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
                 int numberOfEntities = 0;
                 do

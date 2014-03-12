@@ -136,9 +136,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="Performance.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Sessions\Performance.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
