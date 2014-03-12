@@ -56,6 +56,7 @@ namespace VirtualObjects.Tests
             var provider = Make<IEntityProvider>();
             var type = typeof(Suppliers);
             var ep = provider.GetProviderForType(type);
+            ep.PrepareProvider(type, SessionContext);
 
             using ( var session = new ExcelSession("Performance.xlsx") )
             {

@@ -2,11 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using Fasterflect;
+using VirtualObjects.Config;
 
 namespace VirtualObjects.EntityProvider
 {
     class CollectionTypeEntityProvider : EntityModelProvider
     {
+        public CollectionTypeEntityProvider()
+        {
+            
+        }
+
         public override bool CanCreate(Type type)
         {
             return type.InheritsOrImplements<IEnumerable>();

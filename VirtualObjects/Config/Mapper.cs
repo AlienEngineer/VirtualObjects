@@ -16,7 +16,7 @@ namespace VirtualObjects.Config
     /// </summary>
     class Mapper : IMapper
     {
-        private readonly MappingGenerator _mappingGenerator = new MappingGenerator();
+        
         private readonly IOperationsProvider _operationsProvider;
         private readonly IEntityProvider _entityProvider;
         private readonly IEntityMapper _entityMapper;
@@ -109,7 +109,13 @@ namespace VirtualObjects.Config
             entityInfo.EntityProvider = _entityProvider.GetProviderForType(entityType);
             entityInfo.EntityProvider.PrepareProvider(entityType, _sessionContext);
             entityInfo.EntityMapper = _entityMapper;
-            entityInfo.MapEntity = _mappingGenerator.GenerateMapper(entityInfo);
+
+            var codeGenerator = new EntityInfoCodeGenerator(entityInfo);
+
+            codeGenerator.GenerateCode();
+
+            entityInfo.MapEntity = codeGenerator.GetEntityMapper();
+            entityInfo.EntityFactory = codeGenerator.GetEntityProvider();
 
             return entityInfo;
         }

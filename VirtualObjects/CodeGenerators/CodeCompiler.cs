@@ -18,7 +18,7 @@ namespace VirtualObjects.CodeGenerators
                 {
                     cp.ReferencedAssemblies.Add(AppDomain.CurrentDomain.BaseDirectory + reference);
                 }
-                //F:\Projectos\VirtualObjects\VirtualObjects.Tests\bin\Release
+
                 cp.WarningLevel = 3;
 
                 cp.CompilerOptions = "/optimize";
@@ -27,9 +27,24 @@ namespace VirtualObjects.CodeGenerators
 
                 string code = GenerateCode();
 
-                Console.WriteLine(code);
+                
 
-                return provider.CompileAssemblyFromSource(cp, code);
+                var cr = provider.CompileAssemblyFromSource(cp, code);
+
+                if ( cr.Errors.Count > 0 )
+                {
+                    Console.WriteLine(code);
+
+                    Console.WriteLine("Errors building of {0}", cr.PathToAssembly);
+
+                    foreach ( CompilerError ce in cr.Errors )
+                    {
+                        Console.WriteLine("  {0}", ce.ToString());
+                        Console.WriteLine();
+                    }
+                }
+
+                return cr;
             }
         }
 

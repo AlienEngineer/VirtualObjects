@@ -10,6 +10,7 @@ namespace VirtualObjects
     public interface IEntityInfo
     {
 
+        Func<object> EntityFactory { get; set; }
         Action<object, object[]> MapEntity { get; set; }
         /// <summary>
         /// Gets the <see cref="IEntityColumnInfo"/> with the specified property name.
