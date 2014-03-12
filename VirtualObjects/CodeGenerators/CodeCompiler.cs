@@ -41,6 +41,12 @@ namespace VirtualObjects.CodeGenerators
                         Console.WriteLine();
                     }
                 }
+                else
+                {
+#if DEBUG
+                    Console.WriteLine(code); 
+#endif
+                }
 
                 return cr;
             }

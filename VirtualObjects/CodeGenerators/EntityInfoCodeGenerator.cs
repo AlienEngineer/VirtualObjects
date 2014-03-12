@@ -15,7 +15,7 @@ namespace VirtualObjects.CodeGenerators
         public EntityInfoCodeGenerator(IEntityInfo info)
         {
             this.entityInfo = info;
-            builder = new TypeBuilder("Internal_Builder_" + info.EntityName);
+            builder = new TypeBuilder("Internal_Builder_" + info.EntityType.Name);
         }
 
         public void GenerateCode()
@@ -75,19 +75,31 @@ namespace VirtualObjects.CodeGenerators
             {
                 var column = entityInfo.Columns[i];
 
+                var valuestr = "data[" + i + "]";
+
 #if DEBUG
                 result += "\n       try {";
 #endif
+                if ( column.ForeignKey != null )
+                {
+                    result += "\n           if (" + valuestr + " == DBNull.Value) {";
+                    
+                    result += "\n   }";
+                    result += "\n       else";
+                }
 
                 result += "\n       entity.";
                 result += column.Property.Name;
-
+                
                 result += GenerateFieldAssignment(i, column);
+
+                if ( column.Property.PropertyType.IsFrameworkType() )
+                {
+
+                }
 #if DEBUG
                 result += "\n       } catch (Exception ex) {";
-                result += "\n           throw new Exception(\"Error setting value to [";
-                result += column.Property.Name;
-                result += "]\", ex);";
+                result += String.Format("\n           throw new Exception(\"Error setting value to [{0}] with [\" + data[{1}] + \"] value.\", ex);", column.Property.Name, i);
                 result += "\n       }";
 #endif
             }

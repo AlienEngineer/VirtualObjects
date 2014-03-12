@@ -13,7 +13,15 @@ namespace VirtualObjects.Queries.Mapping
     {
         public virtual object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
         {
-            mapContext.EntityInfo.MapEntity(buffer, reader.GetValues());
+            try
+            {
+                mapContext.EntityInfo.MapEntity(buffer, reader.GetValues());
+            }
+            catch ( Exception ex)
+            {
+                throw;
+            }
+            
             //var i = 0;
             //foreach ( var column in mapContext.EntityInfo.Columns )
             //{
