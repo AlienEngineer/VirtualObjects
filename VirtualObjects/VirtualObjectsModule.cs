@@ -104,18 +104,18 @@ namespace VirtualObjects
             //
             // Entities Mappers
             //
-            //Bind<IEntitiesMapper>().To<CollectionEntitiesMapper>().InSingletonScope();
-            //Bind<IEntityMapper>().To<OrderedEntityMapper>().InSingletonScope();
-            //Bind<IEntityMapper>().To<DynamicTypeEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
-            //Bind<IEntityMapper>().To<DynamicEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
-            //Bind<IEntityMapper>().To<DynamicWithMemberEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
-            //Bind<IEntityMapper>().To<GroupedDynamicEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
-            Bind<IEntitiesMapper>().To<ParallelEntitiesMapper>().InSingletonScope();
+            Bind<IEntitiesMapper>().To<CollectionEntitiesMapper>().InSingletonScope();
             Bind<IEntityMapper>().To<OrderedEntityMapper>().InSingletonScope();
-            Bind<IEntityMapper>().To<DynamicTypeEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
-            Bind<IEntityMapper>().To<DynamicEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
-            Bind<IEntityMapper>().To<DynamicWithMemberEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
-            Bind<IEntityMapper>().To<GroupedDynamicEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
+            Bind<IEntityMapper>().To<DynamicTypeEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
+            Bind<IEntityMapper>().To<DynamicEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
+            Bind<IEntityMapper>().To<DynamicWithMemberEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
+            Bind<IEntityMapper>().To<GroupedDynamicEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
+            //Bind<IEntitiesMapper>().To<ParallelEntitiesMapper>().InSingletonScope();
+            //Bind<IEntityMapper>().To<OrderedEntityMapper>().InSingletonScope();
+            //Bind<IEntityMapper>().To<DynamicTypeEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
+            //Bind<IEntityMapper>().To<DynamicEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
+            //Bind<IEntityMapper>().To<DynamicWithMemberEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
+            //Bind<IEntityMapper>().To<GroupedDynamicEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
 
 
             //

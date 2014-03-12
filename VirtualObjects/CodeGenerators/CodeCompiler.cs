@@ -27,8 +27,6 @@ namespace VirtualObjects.CodeGenerators
 
                 string code = GenerateCode();
 
-                
-
                 var cr = provider.CompileAssemblyFromSource(cp, code);
 
                 if ( cr.Errors.Count > 0 )

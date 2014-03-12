@@ -49,6 +49,16 @@ namespace VirtualObjects.CodeGenerators
     {{
         {Body}
     }}
+
+    private static Object Parse(Object value)
+    {{
+        if ( value == null || value == DBNull.Value )
+        {{
+            return null;
+        }}
+
+        return value;
+    }}
 ".FormatWith(new
  {
      TypeName = properName,
@@ -73,9 +83,9 @@ namespace VirtualObjects.CodeGenerators
                     result += "(";
                     result += column.Property.PropertyType.Name;
                     result += ")";
-                    result += "data[";
+                    result += "Parse(data[";
                     result += i;
-                    result += "];";
+                    result += "]);";
                 }
             }
 

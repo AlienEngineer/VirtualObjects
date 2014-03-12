@@ -20,19 +20,23 @@ namespace VirtualObjects.Tests.Sessions
     [TestFixture, Category("Performance")]
     public class PerformanceCheck : UtilityBelt
     {
+        private const string STR_Dapper = "Dapper";
+        private const string STR_EntityFramework = "EntityFramework";
+        private const string STR_VirtualObjects = "VirtualObjects";
+        private const string STR_HardCoded = "HardCoded";
 
-        class PerfRecord
+        public class PerfRecord
         {
-            public int Atempt { get; set; }
+            public int NumberOfExecutions { get; set; }
             public float VirtualObjects { get; set; }
             public float EntityFramework { get; set; }
             public float Dapper { get; set; }
             public float HardCoded { get; set; }
         }
 
-        class CountSuppliers : PerfRecord { }
+        public class CountSuppliers : PerfRecord { }
 
-        class MappingSuppliers : PerfRecord { }
+        public class MappingSuppliers : PerfRecord { }
 
         class EFContext : DbContext
         {
@@ -46,7 +50,7 @@ namespace VirtualObjects.Tests.Sessions
 
         private static string GetValue(IDataReader reader, String fieldName)
         {
-            var value = reader["Address"];
+            var value = reader[fieldName];
             
             if ( value == null || value == DBNull.Value )
             {
@@ -78,9 +82,9 @@ namespace VirtualObjects.Tests.Sessions
         }
 
         [Test]
-        public void Performance_With_ExcelRecords()
+        public void Performance_Check_SuppliersMapping()
         {
-            Connection.Open();
+            
 
             var ef = new EFContext((DbConnection)Connection);
 
@@ -88,108 +92,131 @@ namespace VirtualObjects.Tests.Sessions
 
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
-
-                //
-                // Count Suppliers
-                //
-                for ( int i = 0; i < maxRepeat; i++ )
+                int numberOfExecutions = 0;
+                do
                 {
-                    //
-                    // Dapper
-                    //        
-                    Diagnostic.Timed(() => Connection.Query<int>("Select Count(*) from Suppliers"));
+                    numberOfExecutions += 10;
 
-                    var dapper = (float)Diagnostic.GetMilliseconds();
-
-                    //
-                    // Entity Framework
-                    //
-                    Diagnostic.Timed(() => ef.Suppliers.Count());
-
-                    var entityFramework = (float)Diagnostic.GetMilliseconds();
-
-                    //
-                    // HardCoded
-                    //
                     Diagnostic.Timed(() =>
                     {
-                        var cmd = Connection.CreateCommand();
-                        cmd.CommandText = "Select Count(*) from Suppliers";
-                        cmd.ExecuteScalar();
-                    });
+                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        {
+                            Connection.Query<Suppliers>("Select * from Suppliers").ToList();
+                        }
+                    }, name: STR_Dapper);
 
-                    var hardCoded = (float)Diagnostic.GetMilliseconds();
-
-                    //
-                    // VirtualObjects
-                    //
-                    Diagnostic.Timed(() => Session.Count<Suppliers>());
-
-                    var virtualObjects = (float)Diagnostic.GetMilliseconds();
-
-                    session.Insert(new CountSuppliers
-                    {
-                        Atempt = i,
-                        EntityFramework = entityFramework,
-                        VirtualObjects = virtualObjects,
-                        Dapper = dapper,
-                        HardCoded = hardCoded
-                    });
-                }
-
-
-                //
-                // Mapping Suppliers
-                //
-                for ( int i = 0; i < maxRepeat; i++ )
-                {
-                    //
-                    // Dapper
-                    //        
-                    Diagnostic.Timed(() => Connection.Query<Suppliers>("Select * from Suppliers").ToList());
-
-                    var dapper = (float)Diagnostic.GetMilliseconds();
-
-                    //
-                    // Entity Framework
-                    //
-                    var suppliers = Diagnostic.Timed(() => ef.Suppliers.ToList());
-
-                    var entityFramework = (float)Diagnostic.GetMilliseconds();
-
-                    //
-                    // HardCoded
-                    //
                     Diagnostic.Timed(() =>
                     {
-                        var cmd = Connection.CreateCommand();
-                        cmd.CommandText = "Select * from Suppliers";
-                        var reader = cmd.ExecuteReader();
+                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        {
+                            ef.Suppliers.ToList();
+                        }
+                    }, name: STR_EntityFramework);
 
-                        MapSupplier(reader).ToList();
+                    Diagnostic.Timed(() =>
+                    {
+                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        {
+                            Session.GetAll<Suppliers>().ToList();
+                        }
+                    }, name: STR_VirtualObjects);
 
-                        reader.Close();
+                    Diagnostic.Timed(() =>
+                    {
+                        if (Connection.State != ConnectionState.Open)
+                            Connection.Open();
 
-                    });
+                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        {
+                            var cmd = Connection.CreateCommand();
+                            cmd.CommandText = "Select * from Suppliers";
+                            var reader = cmd.ExecuteReader();
 
-                    var hardCoded = (float)Diagnostic.GetMilliseconds();
+                            MapSupplier(reader).ToList();
 
-                    //
-                    // VirtualObjects
-                    //
-                    Diagnostic.Timed(() => Session.GetAll<Suppliers>().ToList());
-
-                    var virtualObjects = (float)Diagnostic.GetMilliseconds();
+                            reader.Close();
+                        }
+                        Connection.Close();
+                    }, name: STR_HardCoded);
 
                     session.Insert(new MappingSuppliers
                     {
-                        Atempt = i,
-                        EntityFramework = entityFramework,
-                        VirtualObjects = virtualObjects,
-                        Dapper = dapper,
-                        HardCoded = hardCoded
+                        NumberOfExecutions = numberOfExecutions,
+                        EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
+                        VirtualObjects = (float)Diagnostic.GetMilliseconds(STR_VirtualObjects),
+                        Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
+                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
                     });
-                }
+
+                } while ( numberOfExecutions < 500 );
+            }
+        }
+
+        [Test]
+        public void Performance_Check_Count()
+        {
+            
+
+            var ef = new EFContext((DbConnection)Connection);
+                                      
+            using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
+            {
+                int numberOfExecutions = 0;
+                do
+                {
+                    numberOfExecutions += 10;
+
+                    Diagnostic.Timed(() =>
+                    {
+                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        {
+                            Connection.Query<int>("Select Count(*) from Suppliers");
+                        }
+                    }, name: STR_Dapper);
+
+                    Diagnostic.Timed(() =>
+                    {
+                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        {
+                            ef.Suppliers.Count();
+                        }
+                    }, name: STR_EntityFramework);
+
+                    Diagnostic.Timed(() =>
+                    {
+                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        {
+                            Session.Count<Suppliers>();
+                        }
+                    }, name: STR_VirtualObjects);
+
+                    Diagnostic.Timed(() =>
+                    {
+                        if ( Connection.State != ConnectionState.Open )
+                            Connection.Open();
+
+                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        {
+                            var cmd = Connection.CreateCommand();
+                            cmd.CommandText = "Select Count(*) from Suppliers";
+                            cmd.ExecuteScalar();
+                        }
+                        Connection.Close();
+                    }, name: STR_HardCoded);
+
+                    session.Insert(new CountSuppliers
+                    {
+                        NumberOfExecutions = numberOfExecutions,
+                        EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
+                        VirtualObjects = (float)Diagnostic.GetMilliseconds(STR_VirtualObjects),
+                        Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
+                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
+                    });
+
+                } while ( numberOfExecutions < 500 );
+               
+                    
+
             }
         }
 

@@ -13,25 +13,26 @@ namespace VirtualObjects.Queries.Mapping
     {
         public virtual object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
         {
-            var i = 0;
-            foreach ( var column in mapContext.EntityInfo.Columns )
-            {
-                var value = reader.GetValue(i++);
-                try
-                {
-                    var foreignKey = column.SetFieldFinalValue(buffer, value);
+            mapContext.EntityInfo.MapEntity(buffer, reader.GetValues());
+            //var i = 0;
+            //foreach ( var column in mapContext.EntityInfo.Columns )
+            //{
+            //    var value = reader.GetValue(i++);
+            //    try
+            //    {
+            //        var foreignKey = column.SetFieldFinalValue(buffer, value);
 
-                    //if ( foreignKey != null && column.ForeignKey.EntityInfo.KeyColumns.Count > 1 )
-                    //{
-                    //    MapForeignKeys(reader, column, foreignKey);
-                    //}
+            //        //if ( foreignKey != null && column.ForeignKey.EntityInfo.KeyColumns.Count > 1 )
+            //        //{
+            //        //    MapForeignKeys(reader, column, foreignKey);
+            //        //}
 
-                }
-                catch ( ConfigException ex)
-                {
-                    TrySet(buffer, column, value, ex);
-                }
-            }
+            //    }
+            //    catch ( ConfigException ex )
+            //    {
+            //        TrySet(buffer, column, value, ex);
+            //    }
+            //}
 
             return buffer;
         }
