@@ -21,7 +21,7 @@ namespace VirtualObjects.Tests
 
     public class TimedTests : TestsBase
     {
-        public const int Repeat = 10;
+        public const int Repeat = 2;
 
         int _count;
 

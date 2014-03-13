@@ -10,12 +10,6 @@ using VirtualObjects.CodeGenerators;
 
 namespace VirtualObjects.Config
 {
-
-    class MyClass
-    {
-        
-    }
-
     /// <summary>
     /// Maps a type into an IEntityInfo. Caches out the results.
     /// </summary>
@@ -50,9 +44,29 @@ namespace VirtualObjects.Config
 
         public IEntityInfo Map(Type entityType)
         {
+            try
+            {
+                return MapType(entityType);
+            }
+            catch ( Exception )
+            {
+                
+                throw;
+            }
+            
+        }
+
+        private IEntityInfo MapType(Type entityType)
+        {
+            
             if ( entityType.IsFrameworkType() || entityType.IsDynamic() )
             {
                 return null;
+            }
+
+            if ( entityType.Name.EndsWith("Proxy") && entityType.Name.StartsWith(entityType.BaseType.Name) )
+            {
+                return Map(entityType.BaseType);
             }
 
             EntityInfo entityInfo;
@@ -115,7 +129,7 @@ namespace VirtualObjects.Config
             entityInfo.EntityProvider.PrepareProvider(entityType, _sessionContext);
             entityInfo.EntityMapper = _entityMapper;
 
-            var codeGenerator = new EntityInfoCodeGenerator(entityInfo);
+            var codeGenerator = new EntityInfoCodeGenerator(entityInfo, this);
 
             codeGenerator.GenerateCode();
 

@@ -21,7 +21,6 @@ namespace VirtualObjects.CodeGenerators
             Namespaces = new Collection<String>();
             Body = new Collection<String>();
             References = new Collection<String>();
-            Namespaces.Add("System");
         }
 
         protected override string GenerateCode()

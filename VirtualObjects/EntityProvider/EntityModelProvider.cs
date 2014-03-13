@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
-using Fasterflect;
 
 namespace VirtualObjects.EntityProvider
 {
     class EntityModelProvider : IEntityProvider
     {
-        private Func<Type, Object> Make;              
-
+        private Func<ISession, Type, Object> Make;
+        private Type outputType;
+        private SessionContext sessionContext;
+        
         public virtual object CreateEntity(Type type)
         {
             // return type.CreateInstance();
@@ -18,14 +18,12 @@ namespace VirtualObjects.EntityProvider
             //
             //return Activator.CreateInstance(type);
 
-            return Make(type);
+            return Make(sessionContext.Session, type);
         }
 
         public virtual bool CanCreate(Type type)
         {
-            var canCreate = !type.IsDynamic() &&
-                !type.InheritsOrImplements<IEnumerable>() &&
-                !type.Properties().Any(e => e.GetGetMethod().IsVirtual);
+            var canCreate = !type.IsDynamic() && !type.IsCollection();
 
             return canCreate;
         }
@@ -39,14 +37,18 @@ namespace VirtualObjects.EntityProvider
 
         public virtual void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
+            this.outputType = outputType;
+            this.sessionContext = sessionContext;
             var entityInfo = sessionContext.Mapper.Map(outputType);
             if ( entityInfo != null )
             {
-                Make = ((type) => entityInfo.EntityFactory());
+                Make = ((session, type) => 
+                    entityInfo.EntityProxyFactory(session)
+                );
             }
             else
             {
-                Make = ((type) => Activator.CreateInstance(type));
+                Make = ((session, type) => Activator.CreateInstance(type));
             }
         }
     }

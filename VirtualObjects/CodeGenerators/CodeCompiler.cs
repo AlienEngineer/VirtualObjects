@@ -16,7 +16,7 @@ namespace VirtualObjects.CodeGenerators
 
                 foreach ( var reference in References )
                 {
-                    cp.ReferencedAssemblies.Add(AppDomain.CurrentDomain.BaseDirectory + reference);
+                    cp.ReferencedAssemblies.Add(reference);
                 }
 
                 cp.WarningLevel = 3;
@@ -40,12 +40,6 @@ namespace VirtualObjects.CodeGenerators
                         Console.WriteLine("  {0}", ce.ToString());
                         Console.WriteLine();
                     }
-                }
-                else
-                {
-#if DEBUG
-                    Console.WriteLine(code); 
-#endif
                 }
 
                 return cr;

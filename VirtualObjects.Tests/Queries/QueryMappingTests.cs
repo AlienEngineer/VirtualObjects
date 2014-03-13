@@ -23,24 +23,7 @@ namespace VirtualObjects.Tests.Queries
 
         public QueryMappingTests()
         {
-            _entitiesMapper = new CollectionEntitiesMapper(Mapper,
-                new EntityProviderComposite(
-                    new List<IEntityProvider>
-                        {
-                            new EntityModelProvider(),
-                            new DynamicTypeProvider(),
-                            new CollectionTypeEntityProvider(),
-                            new ProxyEntityProvider()
-                        }
-                    ),
-                new List<IEntityMapper>
-                {
-                    new OrderedEntityMapper(),
-                    new DynamicTypeEntityMapper(),
-                    new DynamicEntityMapper(),
-                    new DynamicWithMemberEntityMapper(),
-                    new GroupedDynamicEntityMapper()
-                });
+            _entitiesMapper = Make<IEntitiesMapper>();
         }
 
 
@@ -80,7 +63,7 @@ namespace VirtualObjects.Tests.Queries
             var queryInfo = TranslateQuery(queryable);
             var reader = ExecuteReader(queryInfo);
             return Diagnostic.Timed(() => _entitiesMapper.MapEntities<TEntity>(reader, queryInfo, SessionContext)).ToList();
-        }                       
+        }
 
         [Test, Repeat(Repeat)]
         public void Mapper_GetAllEmployees()
