@@ -72,9 +72,10 @@ namespace VirtualObjects
             //
             // Entity info Mapper
             //
-            Bind<IMapper>().ToMethod(context => _configuration.MappingBuilder.Build()).InThreadScope();
+            Bind<IMapper>().ToMethod(context => _configuration.MappingBuilder.Build()).WhenInjectedInto<ThreadSafeMapper>();
+            Bind<IMapper>().To<ThreadSafeMapper>().InSingletonScope();
 
-            Bind<IMappingBuilder>().To<MappingBuilder>().InThreadScope();
+            Bind<IMappingBuilder>().To<MappingBuilder>().InSingletonScope();
 
             //
             // QueryTranslation

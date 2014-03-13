@@ -136,6 +136,7 @@
     <Compile Include="Config\EntityDateTimeColumnInfo.cs" />
     <Compile Include="Config\EntityInfo.cs" />
     <Compile Include="Config\IMapper.cs" />
+    <Compile Include="Config\ThreadSafeMapper.cs" />
     <Compile Include="Config\Mapper.cs" />
     <Compile Include="Config\MappingBuilder.cs" />
     <Compile Include="Config\ThreadSafeMapper.cs" />

@@ -156,7 +156,7 @@ namespace VirtualObjects.Config
         private readonly Func<Attribute, Boolean> _defaultBooleanGetter;
         private readonly IEntityProvider _entityProvider;
         private readonly IEntityMapper _entityMapper;
-        private readonly SessionContext _sessionContext;
+        //private readonly SessionContext _sessionContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MappingBuilder"/> class.
@@ -165,12 +165,12 @@ namespace VirtualObjects.Config
         /// <param name="entityProvider">The entity provider.</param>
         /// <param name="entityMapper">The entity mapper.</param>
         /// <param name="sessionContext">The session context.</param>
-        public MappingBuilder(IOperationsProvider operationsProvider, IEntityProvider entityProvider, IEntityMapper entityMapper, SessionContext sessionContext)
+        public MappingBuilder(IOperationsProvider operationsProvider, IEntityProvider entityProvider, IEntityMapper entityMapper/*, SessionContext sessionContext */)
         {
             _operationsProvider = operationsProvider;
             _entityProvider = entityProvider;
             _entityMapper = entityMapper;
-            _sessionContext = sessionContext;
+          //  _sessionContext = sessionContext;
             _columnNameGetters = new Collection<Func<PropertyInfo, String>>();
             _columnKeyGetters = new Collection<Func<PropertyInfo, Boolean>>();
             _columnIdentityGetters = new Collection<Func<PropertyInfo, Boolean>>();
@@ -459,7 +459,7 @@ namespace VirtualObjects.Config
         /// <returns></returns>
         public IMapper Build()
         {
-            return new Mapper(_operationsProvider, _entityProvider, _entityMapper, _sessionContext)
+            return new ThreadSafeMapper(new Mapper(_operationsProvider, _entityProvider, _entityMapper/*, _sessionContext*/)
             {
                 ColumnNameGetters = _columnNameGetters.Reverse(),
                 EntityNameGetters = _entityNameGetters.Reverse(),
@@ -470,7 +470,7 @@ namespace VirtualObjects.Config
                 ColumnVersionField = _columnVersionGetters.Reverse(),
                 ColumnIgnoreGetters = _columnIgnoreGetters.Reverse(),
                 ComputedColumnGetters = _computedColumnGetters.Reverse()
-            };
+            });
         }
 
     }

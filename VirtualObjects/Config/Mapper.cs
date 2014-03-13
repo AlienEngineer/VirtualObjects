@@ -15,7 +15,8 @@ namespace VirtualObjects.Config
     /// </summary>
     class Mapper : IMapper
     {
-        
+
+        // private readonly SessionContext _sessionContext;
         private readonly IOperationsProvider _operationsProvider;
         private readonly IEntityProvider _entityProvider;
         private readonly IEntityMapper _entityMapper;
@@ -36,7 +37,15 @@ namespace VirtualObjects.Config
             _operationsProvider = operationsProvider;
             _entityProvider = entityProvider;
             _entityMapper = entityMapper;
-            _sessionContext = sessionContext;
+            // _sessionContext = sessionContext;
+            _cacheEntityInfos = new Dictionary<Type, EntityInfo>();
+        }
+
+        public Mapper(IOperationsProvider operationsProvider, IEntityProvider entityProvider, IEntityMapper entityMapper)
+        {
+            _operationsProvider = operationsProvider;
+            _entityProvider = entityProvider;
+            _entityMapper = entityMapper;
             _cacheEntityInfos = new Dictionary<Type, EntityInfo>();
         }
 
@@ -44,21 +53,6 @@ namespace VirtualObjects.Config
 
         public IEntityInfo Map(Type entityType)
         {
-            try
-            {
-                return MapType(entityType);
-            }
-            catch ( Exception )
-            {
-                
-                throw;
-            }
-            
-        }
-
-        private IEntityInfo MapType(Type entityType)
-        {
-            
             if ( entityType.IsFrameworkType() || entityType.IsDynamic() )
             {
                 return null;
@@ -69,6 +63,11 @@ namespace VirtualObjects.Config
                 return Map(entityType.BaseType);
             }
 
+            return MapType(entityType);
+        }
+
+        private IEntityInfo MapType(Type entityType)
+        {
             EntityInfo entityInfo;
 
             if ( _cacheEntityInfos.TryGetValue(entityType, out entityInfo) )
@@ -126,7 +125,7 @@ namespace VirtualObjects.Config
 
             entityInfo.Operations = _operationsProvider.CreateOperations(entityInfo);
             entityInfo.EntityProvider = _entityProvider.GetProviderForType(entityType);
-            entityInfo.EntityProvider.PrepareProvider(entityType, _sessionContext);
+            // entityInfo.EntityProvider.PrepareProvider(entityType, _sessionContext);
             entityInfo.EntityMapper = _entityMapper;
 
             var codeGenerator = new EntityInfoCodeGenerator(entityInfo, this);
@@ -354,7 +353,7 @@ namespace VirtualObjects.Config
 
         #region IDisposable Members
         private bool _disposed;
-        private readonly SessionContext _sessionContext;
+        
 
         public void Dispose()
         {
