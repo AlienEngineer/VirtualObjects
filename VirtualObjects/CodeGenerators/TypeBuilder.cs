@@ -11,7 +11,7 @@ namespace VirtualObjects.CodeGenerators
         private CompilerResults results;
         private readonly String typeName;
 
-        public ICollection<String> Functions { get; private set; }
+        public ICollection<String> Body { get; private set; }
         public ICollection<String> References { get; private set; }
         public ICollection<String> Namespaces { get; private set; }
 
@@ -19,7 +19,7 @@ namespace VirtualObjects.CodeGenerators
         {
             this.typeName = typeName;
             Namespaces = new Collection<String>();
-            Functions = new Collection<String>();
+            Body = new Collection<String>();
             References = new Collection<String>();
             Namespaces.Add("System");
         }
@@ -42,7 +42,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var code = new StringBuffer();
 
-            foreach ( var function in Functions )
+            foreach ( var function in Body )
             {
                 code += function;
             }

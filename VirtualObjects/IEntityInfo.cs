@@ -10,8 +10,30 @@ namespace VirtualObjects
     public interface IEntityInfo
     {
 
+        /// <summary>
+        /// Gets or sets the entity factory.
+        /// </summary>
+        /// <value>
+        /// The entity factory.
+        /// </value>
         Func<object> EntityFactory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity proxy factory.
+        /// </summary>
+        /// <value>
+        /// The entity proxy factory.
+        /// </value>
+        Func<ISession, object> EntityProxyFactory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the map entity.
+        /// </summary>
+        /// <value>
+        /// The map entity.
+        /// </value>
         Action<object, object[]> MapEntity { get; set; }
+
         /// <summary>
         /// Gets the <see cref="IEntityColumnInfo"/> with the specified property name.
         /// </summary>

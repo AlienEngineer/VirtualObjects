@@ -28,6 +28,7 @@ namespace VirtualObjects.Config
         public IEntityColumnInfo Identity { get; set; }
         public Action<object, object[]> MapEntity { get; set; }
         public Func<object> EntityFactory { get; set; }
+        public Func<ISession, object> EntityProxyFactory { get; set; }
         public IEntityColumnInfo VersionControl { get; set; }
 
         public Type EntityType { get; set; }

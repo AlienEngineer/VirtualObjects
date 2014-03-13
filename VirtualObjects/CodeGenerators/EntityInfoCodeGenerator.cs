@@ -26,25 +26,50 @@ namespace VirtualObjects.CodeGenerators
             }
 
             builder.References.Add(entityInfo.EntityType.Module.Name);
+            builder.References.Add("VirtualObjects.dll");
             builder.Namespaces.Add(entityInfo.EntityType.Namespace);
+            builder.Namespaces.Add("VirtualObjects");
 
             var properName = entityInfo.EntityType.FullName.Replace("+", ".");
 
-            builder.Functions.Add(@"
+            builder.Body.Add(@"
+    public class {Name} : {TypeName}
+    {{
+        private ISession Session {{ get; set; }}
+
+        public {Name}(ISession session) 
+        {{
+            Session = session;
+        }}
+
+        {OverridableMembers}
+    }}
+
+    public static {TypeName} MakeProxy(ISession session)
+    {{
+        return new {Name}(session);
+    }}
+".FormatWith(new { 
+     TypeName = properName,
+     Name = entityInfo.EntityType.Name + "Proxy",
+     OverridableMembers = ""
+ }));
+
+            builder.Body.Add(@"
     public static void MapObject(Object entity, Object[] data)
     {{
         Map(({TypeName})entity, data);
     }}
 ".FormatWith(new { TypeName = properName }));
 
-            builder.Functions.Add(@"
+            builder.Body.Add(@"
     public static Object Make()
     {{
         return new {TypeName}();
     }}
 ".FormatWith(new { TypeName = properName }));
 
-            builder.Functions.Add(@"
+            builder.Body.Add(@"
     public static void Map({TypeName} entity, Object[] data)
     {{
         {Body}
@@ -141,5 +166,9 @@ namespace VirtualObjects.CodeGenerators
             return (Func<Object>)builder.GetDelegate<Func<Object>>("Make");
         }
 
+        public Func<ISession, Object> GetEntityProxyProvider()
+        {
+            return (Func<ISession, Object>)builder.GetDelegate<Func<ISession, Object>>("MakeProxy");
+        }
     }
 }

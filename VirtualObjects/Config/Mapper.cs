@@ -11,6 +11,11 @@ using VirtualObjects.CodeGenerators;
 namespace VirtualObjects.Config
 {
 
+    class MyClass
+    {
+        
+    }
+
     /// <summary>
     /// Maps a type into an IEntityInfo. Caches out the results.
     /// </summary>
@@ -116,6 +121,7 @@ namespace VirtualObjects.Config
 
             entityInfo.MapEntity = codeGenerator.GetEntityMapper();
             entityInfo.EntityFactory = codeGenerator.GetEntityProvider();
+            entityInfo.EntityProxyFactory = codeGenerator.GetEntityProxyProvider();
 
             return entityInfo;
         }

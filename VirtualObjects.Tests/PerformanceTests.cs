@@ -24,6 +24,7 @@ namespace VirtualObjects.Tests
         private const string STR_Fasterflect = "Fasterflect";
         private const string STR_New = "New";
         private const string STR_EntityProvider = "EntityProvider";
+        private const string STR_EntityProxyProvider = "EntityProxyProvider";           
         private const string STR_SetFieldFinalValue = "SetFieldFinalValue";
         private const string STR_SetValue = "SetValue";
         private const string STR_HardCoded = "HardCoded";
@@ -32,6 +33,7 @@ namespace VirtualObjects.Tests
 
         public class EntitiesCreation
         {
+            public float EntityProxyProvider { get; set; }
             public int NumberOfEntities { get; set; }
             public float EntityProvider { get; set; }
             public float New { get; set; }
@@ -53,10 +55,11 @@ namespace VirtualObjects.Tests
         [Test]
         public void Performance_Check_EntityCreation_Performance()
         {
-            var provider = Make<IEntityProvider>();
+
             var type = typeof(Suppliers);
-            var ep = provider.GetProviderForType(type);
-            ep.PrepareProvider(type, SessionContext);
+            var mapped = Mapper.Map(typeof(Suppliers));
+            var createInstance = mapped.EntityFactory;
+            var createProxyInstance = mapped.EntityProxyFactory;
 
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
@@ -69,9 +72,17 @@ namespace VirtualObjects.Tests
                     {
                         for ( int i = 0; i < numberOfEntities; i++ )
                         {
-                            ep.CreateEntity(type);
+                            createInstance();
                         }
                     }, name: STR_EntityProvider);
+
+                    Diagnostic.Timed(() =>
+                    {
+                        for ( int i = 0; i < numberOfEntities; i++ )
+                        {
+                            createProxyInstance(Session);
+                        }
+                    }, name: STR_EntityProxyProvider);
 
                     Diagnostic.Timed(() =>
                     {
@@ -102,6 +113,7 @@ namespace VirtualObjects.Tests
                         NumberOfEntities = numberOfEntities,
                         Activator = (float)Diagnostic.GetMilliseconds(STR_Activador),
                         EntityProvider = (float)Diagnostic.GetMilliseconds(STR_EntityProvider),
+                        EntityProxyProvider = (float)Diagnostic.GetMilliseconds(STR_EntityProxyProvider),
                         Fasterflect = (float)Diagnostic.GetMilliseconds(STR_Fasterflect),
                         New = (float)Diagnostic.GetMilliseconds(STR_New)
                     });
