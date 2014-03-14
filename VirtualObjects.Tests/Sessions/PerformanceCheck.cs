@@ -85,8 +85,6 @@ namespace VirtualObjects.Tests.Sessions
         [Test]
         public void Performance_Check_SuppliersMapping()
         {
-            
-
             var ef = new EFContext((DbConnection)Connection);
 
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )

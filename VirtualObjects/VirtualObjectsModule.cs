@@ -71,7 +71,8 @@ namespace VirtualObjects
             // Entity info Mapper
             //
 
-            Bind<IEntityBag>().To<EntityBag>().InSingletonScope();
+            Bind<IEntityBag>().To<HybridEntityBag>().InThreadScope();
+            Bind<IEntityBag>().To<EntityBag>().WhenInjectedInto<HybridEntityBag>().InSingletonScope();
             
             //
             // Bind the mapper to the framework entry points.

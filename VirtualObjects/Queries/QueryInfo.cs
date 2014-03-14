@@ -14,6 +14,8 @@ namespace VirtualObjects.Queries
 
         public string CommandText { get; set; }
 
+        public IEntityInfo EntityInfo { get; set; }
+
         public IDictionary<string, IOperationParameter> Parameters { get; set; }
 
         public IList<IEntityColumnInfo> PredicatedColumns { get; set; }

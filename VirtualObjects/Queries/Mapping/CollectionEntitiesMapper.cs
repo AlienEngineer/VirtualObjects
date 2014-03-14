@@ -24,14 +24,14 @@ namespace VirtualObjects.Queries.Mapping
         {
             // reader = new BlockingDataReader(reader);
 
-            return MapEntities(reader, queryInfo, typeof (TEntity), sessionContext).Cast<TEntity>();
+            return MapEntities(reader, queryInfo, typeof(TEntity), sessionContext).Cast<TEntity>();
         }
 
         public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType, SessionContext sessionContext)
         {
             var result = new List<Object>();
 
-            var entityInfo = _entityBag[outputType];
+            var entityInfo = queryInfo.EntityInfo;
 
             var context = new MapperContext
             {
@@ -42,12 +42,16 @@ namespace VirtualObjects.Queries.Mapping
                 QueryInfo = queryInfo
             };
 
-            if (entityInfo != null && entityInfo.EntityProvider != null)
+            if ( entityInfo != null && entityInfo.EntityProvider != null )
             {
                 context.EntityProvider = entityInfo.EntityProvider;
             }
 
-            var entityMapper = _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));
+            var entityMapper = 
+                (entityInfo != null && entityInfo.EntityMapper != null) ?
+                    entityInfo.EntityMapper :
+                    _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));
+
 
             if ( entityMapper == null )
             {
@@ -62,6 +66,7 @@ namespace VirtualObjects.Queries.Mapping
                 //
                 _entityProvider.PrepareProvider(context.OutputType, sessionContext);
                 entityMapper.PrepareMapper(context);
+
 
                 while ( context.Read || reader.Read() )
                 {

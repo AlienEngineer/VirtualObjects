@@ -29,6 +29,42 @@ namespace VirtualObjects.Config
 
     }
 
+    class HybridEntityBag : IEntityBag
+    {
+        readonly IDictionary<Type, IEntityInfo> collection = new Dictionary<Type, IEntityInfo>();
+        private readonly IEntityBag entityBag;
+
+        public HybridEntityBag(IEntityBag entityBag)
+        {
+            this.entityBag = entityBag;
+        }
+
+        #region IEntityBag Members
+
+        public IEntityInfo this[Type type]
+        {
+            get
+            {
+                IEntityInfo value = null;
+                return TryGetValue(type, out value) ? value : null;
+            }
+            set
+            {
+                entityBag[type] = value;
+                collection[type] = value;
+            }
+        }
+
+        public bool TryGetValue(Type entityType, out IEntityInfo entityInfo)
+        {
+            if ( collection.TryGetValue(entityType, out entityInfo) ) return true;
+
+            return entityBag.TryGetValue(entityType, out entityInfo);
+        }
+
+        #endregion
+    }
+
     class EntityBag : IEntityBag
     {
         readonly ConcurrentDictionary<Type, IEntityInfo> collection = new ConcurrentDictionary<Type, IEntityInfo>();
@@ -40,7 +76,8 @@ namespace VirtualObjects.Config
 
         public IEntityInfo this[Type type]
         {
-            get {
+            get
+            {
                 IEntityInfo value = null;
                 return TryGetValue(type, out value) ? value : null;
             }

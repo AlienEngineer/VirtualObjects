@@ -10,6 +10,7 @@ namespace VirtualObjects.Queries
     /// </summary>
     public interface IQueryInfo
     {
+        IEntityInfo EntityInfo { get; set; }
         /// <summary>
         /// Gets the command text.
         /// </summary>

@@ -37,15 +37,18 @@ namespace VirtualObjects.EntityProvider
 
         public virtual void PrepareProvider(Type outputType, SessionContext sessionContext)
         {
+            if ( this.outputType == outputType )
+            {
+                return;
+            }
+
             this.outputType = outputType;
             this.sessionContext = sessionContext;
             var entityInfo = sessionContext.Map(outputType);
 
             if ( entityInfo != null )
             {
-                Make = ((session, type) => 
-                    entityInfo.EntityProxyFactory(session)
-                );
+                Make = ((session, type) => entityInfo.EntityProxyFactory(session));
             }
             else
             {

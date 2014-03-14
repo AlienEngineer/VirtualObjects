@@ -200,7 +200,8 @@ namespace VirtualObjects.Queries.Translation
                 Parameters = Parameters,
                 PredicatedColumns = buffer.PredicatedColumns,
                 OutputType = OutputType ?? queryable.ElementType,
-                Buffer = buffer
+                Buffer = buffer   ,
+                EntityInfo = OutputType == null || OutputType.IsDynamic() ? null : EntityInfo
             };
         }
 

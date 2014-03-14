@@ -18,9 +18,11 @@ namespace VirtualObjects.Config
         private readonly IEntityInfoCodeGeneratorFactory _codeGeneratorFactory;
         private readonly ITranslationConfiguration _configuration;
         private readonly IEntityBag _entityBag;
+        private readonly IEntityProvider entityProvider;
 
-        public Mapper(IEntityBag entityBag, ITranslationConfiguration configuration, IOperationsProvider operationsProvider, IEntityInfoCodeGeneratorFactory codeGeneratorFactory)
+        public Mapper(IEntityBag entityBag, ITranslationConfiguration configuration, IEntityProvider entityProvider, IOperationsProvider operationsProvider, IEntityInfoCodeGeneratorFactory codeGeneratorFactory)
         {
+            this.entityProvider = entityProvider;
             _configuration = configuration;
             _codeGeneratorFactory = codeGeneratorFactory;
             _operationsProvider = operationsProvider;
@@ -117,6 +119,7 @@ namespace VirtualObjects.Config
 
             codeGenerator.GenerateCode();
 
+            entityInfo.EntityProvider = entityProvider.GetProviderForType(entityType);
             entityInfo.MapEntity = codeGenerator.GetEntityMapper();
             entityInfo.EntityFactory = codeGenerator.GetEntityProvider();
             entityInfo.EntityProxyFactory = codeGenerator.GetEntityProxyProvider();
@@ -338,6 +341,7 @@ namespace VirtualObjects.Config
 
         #region IDisposable Members
         private bool _disposed;
+        
         
         
 
