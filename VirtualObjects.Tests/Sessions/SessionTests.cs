@@ -40,7 +40,7 @@ namespace VirtualObjects.Tests.Sessions
         public void Session_Transaction_Should_Be_Created_And_Disposed()
         {
 
-            var session = Session;
+            using ( var session = CreateSession() )
             {
                 using (session.BeginTransaction())
                 {
@@ -884,7 +884,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Insert_Employee()
         {
-            var session = Session;
+            using(var session = CreateSession())
             {
                 session.WithRollback(() =>
                 {
@@ -925,7 +925,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat), ExpectedException(typeof(ExecutionException))]
         public void Session_Update_Old_Employee()
         {
-            var session = Session;
+            using ( var session = CreateSession() )
             {
                 session.WithRollback(() =>
                 {
@@ -972,7 +972,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat), ExpectedException(typeof(ExecutionException))]
         public void Session_Update_Employee_Unversioned()
         {
-            var session = Session;
+            using ( var session = CreateSession() )
             {
                 session.WithRollback(() =>
                 {
@@ -996,7 +996,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Update_Employee()
         {
-            var session = Session;
+            using ( var session = CreateSession() )
             {
                 session.WithRollback(() =>
                 {
