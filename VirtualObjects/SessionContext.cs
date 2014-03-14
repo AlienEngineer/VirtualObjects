@@ -18,23 +18,14 @@ namespace VirtualObjects
         /// <value>
         /// The query provider.
         /// </value>
-        [Inject]
         public IQueryProvider QueryProvider { get; set; }
-        /// <summary>
-        /// Gets or sets the mapper.
-        /// </summary>
-        /// <value>
-        /// The mapper.
-        /// </value>
-        [Inject]
-        public IMapper Mapper { get; set; }
+
         /// <summary>
         /// Gets or sets the connection.
         /// </summary>
         /// <value>
         /// The connection.
         /// </value>
-        [Inject]
         public IConnection Connection { get; set; }
 
         /// <summary>
@@ -46,14 +37,12 @@ namespace VirtualObjects
         public ISession Session { get; set; }
 
         /// <summary>
-        /// Maps the type of TEntity.
+        /// Gets or sets the map.
         /// </summary>
-        /// <typeparam name="TEntity">The type of the entity.</typeparam>
-        /// <returns></returns>
-        public IEntityInfo Map<TEntity>()
-        {
-            return Mapper.Map(typeof (TEntity));
-        }
+        /// <value>
+        /// The map.
+        /// </value>
+        public Func<Type, IEntityInfo> Map { get; set; }
 
         #region IDisposable Members
         private bool _disposed;
@@ -79,11 +68,9 @@ namespace VirtualObjects
                 if ( disposing )
                 {
                     Connection.Dispose();
-                    Mapper.Dispose();
                 }
 
                 Connection = null;
-                Mapper = null;
                 QueryProvider = null;
 
                 _disposed = true;

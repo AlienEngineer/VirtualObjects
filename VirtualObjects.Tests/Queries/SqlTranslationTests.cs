@@ -35,39 +35,25 @@ namespace VirtualObjects.Tests.Queries
     /// 
     /// Author: Sérgio
     /// </summary>
-    [TestFixture(typeof(TranslatorProvider))]
-    [TestFixture(typeof(CachingTranslatorProvider))]
     [Category("Query Building")]
-    public class SqlTranslationTests<TTranslatorProvider> : UtilityBelt where TTranslatorProvider : IQueryTranslatorProvider, new()
+    public class SqlTranslationTests : UtilityBelt
     {
 
         private IQueryTranslator _translator;
 
         public SqlTranslationTests()
         {
-            _translator = new TTranslatorProvider()
-                .CreateQueryTranslator(new SqlFormatter(), Mapper);
+            _translator = Make<CachingTranslator>();
         }
 
         private String Translate(IQueryable query)
         {
-            if (typeof(TTranslatorProvider) != typeof(CachingTranslatorProvider))
-            {
-                _translator = new TTranslatorProvider()
-                    .CreateQueryTranslator(new SqlFormatter(), Mapper);
-            }
-
             var str = Diagnostic.Timed(() => _translator.TranslateQuery(query).CommandText);
 
             Trace.WriteLine(str);
 
             return str;
         }
-
-
-        
-
-
 
         /// <summary>
         /// 

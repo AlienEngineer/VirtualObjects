@@ -80,15 +80,11 @@ namespace VirtualObjects.CodeGenerators
 
             return code;
         }
-                
+
         /// <summary>
         /// Gets the delegate.
         /// </summary>
-        /// <typeparam name="TFunc">The type of the function.
-        /// <code>
-        /// GetDelegate<Action<Object>>()
-        /// </code>
-        /// </typeparam>
+        /// <typeparam name="TFunc">The type of the function.</typeparam>
         /// <param name="functionName">Name of the function.</param>
         /// <returns></returns>
         public Delegate GetDelegate<TFunc>(String functionName)

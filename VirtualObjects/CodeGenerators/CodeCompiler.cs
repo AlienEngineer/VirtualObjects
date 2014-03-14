@@ -6,8 +6,16 @@ using System.Linq;
 
 namespace VirtualObjects.CodeGenerators
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public abstract class CodeCompiler
     {
+        /// <summary>
+        /// Compiles the specified references.
+        /// </summary>
+        /// <param name="References">The references.</param>
+        /// <returns></returns>
         protected CompilerResults Compile(string[] References)
         {
             using ( var provider = new CSharpCodeProvider() )

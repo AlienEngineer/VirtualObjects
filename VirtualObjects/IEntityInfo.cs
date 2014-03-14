@@ -11,6 +11,13 @@ namespace VirtualObjects
     {
 
         /// <summary>
+        /// Gets or sets the key hash code.
+        /// </summary>
+        /// <value>
+        /// The key hash code.
+        /// </value>
+        Func<Object, int> KeyHashCode { get; set; }
+        /// <summary>
         /// Gets or sets the entity factory.
         /// </summary>
         /// <value>
@@ -50,7 +57,7 @@ namespace VirtualObjects
         /// <value>
         /// The name of the entity.
         /// </value>
-        String EntityName { get; }
+        String EntityName { get; set; }
 
         /// <summary>
         /// Gets the columns.
@@ -58,7 +65,7 @@ namespace VirtualObjects
         /// <value>
         /// The columns.
         /// </value>
-        IList<IEntityColumnInfo> Columns { get; }
+        IList<IEntityColumnInfo> Columns { get; set; }
 
         /// <summary>
         /// Gets the key columns.
@@ -66,7 +73,7 @@ namespace VirtualObjects
         /// <value>
         /// The key columns.
         /// </value>
-        IList<IEntityColumnInfo> KeyColumns { get; }
+        IList<IEntityColumnInfo> KeyColumns { get; set; }
 
         /// <summary>
         /// Gets the identity.
@@ -74,7 +81,7 @@ namespace VirtualObjects
         /// <value>
         /// The identity.
         /// </value>
-        IEntityColumnInfo Identity { get; }
+        IEntityColumnInfo Identity { get; set; }
 
         /// <summary>
         /// Gets the type of the entity.
@@ -82,7 +89,7 @@ namespace VirtualObjects
         /// <value>
         /// The type of the entity.
         /// </value>
-        Type EntityType { get; }
+        Type EntityType { get; set; }
 
         /// <summary>
         /// Gets the field associated with.
@@ -104,28 +111,28 @@ namespace VirtualObjects
         /// <value>
         /// The operations.
         /// </value>
-        IOperations Operations { get; }
+        IOperations Operations { get; set; }
         /// <summary>
         /// Gets the foreign keys.
         /// </summary>
         /// <value>
         /// The foreign keys.
         /// </value>
-        IList<IEntityColumnInfo> ForeignKeys { get; }
+        IList<IEntityColumnInfo> ForeignKeys { get; set; }
         /// <summary>
         /// Gets the entity provider.
         /// </summary>
         /// <value>
         /// The entity provider.
         /// </value>
-        IEntityProvider EntityProvider { get; }
+        IEntityProvider EntityProvider { get; set; }
         /// <summary>
         /// Gets the entity mapper.
         /// </summary>
         /// <value>
         /// The entity mapper.
         /// </value>
-        IEntityMapper EntityMapper { get; }
+        IEntityMapper EntityMapper { get; set; }
 
         /// <summary>
         /// Gets the version control column.
@@ -133,6 +140,6 @@ namespace VirtualObjects
         /// <value>
         /// The version control.
         /// </value>
-        IEntityColumnInfo VersionControl { get; }
+        IEntityColumnInfo VersionControl { get; set; }
     }
 }

@@ -22,11 +22,31 @@ namespace VirtualObjects
             return type.Name.StartsWith("<>");
         }
 
+        /// <summary>
+        /// Determines whether the specified type is proxy.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        public static Boolean IsProxy(this Type type)
+        {
+            return type.Name.EndsWith("Proxy") && type.BaseType != null && type.Name.StartsWith(type.BaseType.Name);
+        }
+
+        /// <summary>
+        /// Determines whether the specified property information is virtual.
+        /// </summary>
+        /// <param name="propertyInfo">The property information.</param>
+        /// <returns></returns>
         public static Boolean IsVirtual(this PropertyInfo propertyInfo)
         {
             return propertyInfo.GetMethod.IsVirtual;
         }
 
+        /// <summary>
+        /// Determines whether the specified type is collection.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         public static Boolean IsCollection(this Type type)
         {
             return type.GetInterfaces()

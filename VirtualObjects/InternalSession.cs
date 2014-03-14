@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using VirtualObjects.Config;
 using VirtualObjects.Queries.Annotations;
 using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
 
@@ -11,15 +12,27 @@ namespace VirtualObjects
     public class InternalSession : ISession
     {
         internal SessionContext Context { get; private set; }
+        private readonly IConnection connection;
+        private readonly IQueryProvider queryProvider;
+        private readonly IMapper mapper;
+
+        internal IMapper Mapper { get { return mapper; } }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InternalSession"/> class.
+        /// Initializes a new instance of the <see cref="InternalSession" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public InternalSession(SessionContext context)
+        /// <param name="mapper">The mapper.</param>
+        public InternalSession(SessionContext context, IMapper mapper, IConnection connection, IQueryProvider queryProvider)
         {
+            this.connection = connection;
+            this.queryProvider = queryProvider;
+            this.mapper = mapper;
             Context = context;
             context.Session = this;
+            context.Map = mapper.Map;
+            context.QueryProvider = queryProvider;
+            context.Connection = connection;
         }
 
         /// <summary>
@@ -40,8 +53,10 @@ namespace VirtualObjects
         /// <returns></returns>
         public TEntity GetById<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return entity == null ? null 
-                : ExecuteOperation(Context.Map<TEntity>().Operations.GetOperation, entity);
+            var entityInfo = Mapper.Map<TEntity>();
+
+            return entity == null ? null
+                : ExecuteOperation(entityInfo.Operations.GetOperation, entity);
         }
 
         /// <summary>
@@ -51,7 +66,8 @@ namespace VirtualObjects
         /// <returns></returns>
         public int Count<TEntity>()
         {
-            return (int)Context.Map<TEntity>().Operations.CountOperation.Execute(Context);
+            var entityInfo = Mapper.Map<TEntity>();
+            return (int)entityInfo.Operations.CountOperation.Execute(Context);
         }
 
         /// <summary>
@@ -65,7 +81,8 @@ namespace VirtualObjects
         {
             if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
 
-            return ExecuteOperation(Context.Map<TEntity>().Operations.InsertOperation, entity);
+            var entityInfo = Mapper.Map<TEntity>();
+            return ExecuteOperation(entityInfo.Operations.InsertOperation, entity);
         }
 
         /// <summary>
@@ -77,9 +94,9 @@ namespace VirtualObjects
         /// <exception cref="ArgumentNullException"></exception>
         public TEntity Update<TEntity>([NotNull] TEntity entity) where TEntity : class, new()
         {
-            if (entity == null) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
-
-            return ExecuteOperation(Context.Map<TEntity>().Operations.UpdateOperation, entity);
+            if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
+            var entityInfo = Mapper.Map<TEntity>();
+            return ExecuteOperation(entityInfo.Operations.UpdateOperation, entity);
         }
 
         /// <summary>
@@ -92,8 +109,8 @@ namespace VirtualObjects
         public bool Delete<TEntity>(TEntity entity) where TEntity : class, new()
         {
             if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
-
-            return ExecuteOperation(Context.Map<TEntity>().Operations.DeleteOperation, entity) != null;
+            var entityInfo = Mapper.Map<TEntity>();
+            return ExecuteOperation(entityInfo.Operations.DeleteOperation, entity) != null;
         }
 
         /// <summary>
@@ -112,7 +129,9 @@ namespace VirtualObjects
 
         #region IDisposable Members
         private bool _disposed;
-
+        
+        
+        
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -142,6 +161,7 @@ namespace VirtualObjects
             }
         }
 
+        
         #endregion
     }
 }

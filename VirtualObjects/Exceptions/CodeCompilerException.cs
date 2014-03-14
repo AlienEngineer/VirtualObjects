@@ -5,6 +5,9 @@ using System.Text;
 
 namespace VirtualObjects.Exceptions
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class CodeCompilerException : VirtualObjectsException
     {
         /// <summary>

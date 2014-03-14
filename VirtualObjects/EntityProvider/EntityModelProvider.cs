@@ -39,7 +39,8 @@ namespace VirtualObjects.EntityProvider
         {
             this.outputType = outputType;
             this.sessionContext = sessionContext;
-            var entityInfo = sessionContext.Mapper.Map(outputType);
+            var entityInfo = sessionContext.Map(outputType);
+
             if ( entityInfo != null )
             {
                 Make = ((session, type) => 

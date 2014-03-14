@@ -68,14 +68,14 @@ namespace VirtualObjects.Queries.Mapping
             {
                 context.PropertyGetters.Add(field.DelegateForGetFieldValue());
 
-                var entityInfo = context.Mapper.Map(field.FieldType);
+                var entityInfo = context.EntityBag[field.FieldType];
 
                 context.Contexts.Add(new MapperContext
                 {
                     EntityInfo = entityInfo,
                     OutputType = field.FieldType,
                     EntityProvider = context.EntityProvider,
-                    Mapper = context.Mapper
+                    EntityBag = context.EntityBag
                 });
 
                 if ( entityInfo == null )

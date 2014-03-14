@@ -9,13 +9,13 @@ namespace VirtualObjects.Queries.Mapping
 {
     class CollectionEntitiesMapper : IEntitiesMapper
     {
-        private readonly IMapper _mapper;
+        private readonly IEntityBag _entityBag;
         private readonly IEntityProvider _entityProvider;
         private readonly IEnumerable<IEntityMapper> _entityMappers;
 
-        public CollectionEntitiesMapper(IMapper mapper, IEntityProvider entityProvider, IEnumerable<IEntityMapper> entityMappers)
+        public CollectionEntitiesMapper(IEntityBag entityBag, IEntityProvider entityProvider, IEnumerable<IEntityMapper> entityMappers)
         {
-            _mapper = mapper;
+            _entityBag = entityBag;
             _entityProvider = entityProvider;
             _entityMappers = entityMappers;
         }
@@ -31,14 +31,14 @@ namespace VirtualObjects.Queries.Mapping
         {
             var result = new List<Object>();
 
-            var entityInfo = _mapper.Map(outputType);
+            var entityInfo = _entityBag[outputType];
 
             var context = new MapperContext
             {
                 EntityInfo = entityInfo,
                 OutputType = outputType,
                 EntityProvider = _entityProvider,
-                Mapper = _mapper,
+                EntityBag = _entityBag,
                 QueryInfo = queryInfo
             };
 
@@ -47,10 +47,7 @@ namespace VirtualObjects.Queries.Mapping
                 context.EntityProvider = entityInfo.EntityProvider;
             }
 
-            var entityMapper = 
-                (entityInfo != null && entityInfo.EntityMapper != null) ?
-                    entityInfo.EntityMapper : 
-                    _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));
+            var entityMapper = _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));
 
             if ( entityMapper == null )
             {

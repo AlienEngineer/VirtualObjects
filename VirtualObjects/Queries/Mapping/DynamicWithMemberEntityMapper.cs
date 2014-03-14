@@ -66,10 +66,10 @@ namespace VirtualObjects.Queries.Mapping
 
                 var ctx = new MapperContext
                 {
-                    EntityInfo = context.Mapper.Map(field.FieldType),
+                    EntityInfo = context.EntityBag[field.FieldType],
                     OutputType = field.FieldType,
                     EntityProvider = context.EntityProvider,
-                    Mapper = context.Mapper,
+                    EntityBag = context.EntityBag,
                     QueryInfo = context.QueryInfo
                 };
 

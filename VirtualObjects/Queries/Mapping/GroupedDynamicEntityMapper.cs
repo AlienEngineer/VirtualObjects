@@ -162,10 +162,10 @@ namespace VirtualObjects.Queries.Mapping
 
                 var ctx = new MapperContext
                 {
-                    EntityInfo = context.Mapper.Map(fieldType),
+                    EntityInfo = context.EntityBag[fieldType],
                     OutputType = fieldType,
                     EntityProvider = context.EntityProvider,
-                    Mapper = context.Mapper,
+                    EntityBag = context.EntityBag,
                     QueryInfo = context.QueryInfo
                 };
 

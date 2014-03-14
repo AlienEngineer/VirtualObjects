@@ -89,8 +89,6 @@ namespace VirtualObjects.Tests.Sessions
 
             var ef = new EFContext((DbConnection)Connection);
 
-            const int maxRepeat = 50;
-
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
                 int numberOfExecutions = 0;

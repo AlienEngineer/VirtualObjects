@@ -10,6 +10,11 @@ namespace VirtualObjects.Queries.ConcurrentReader
         private IList<Object> dataList;
         private IList<String> keyList;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tuple"/> class.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="reader">The reader.</param>
         public Tuple(IDictionary<String, Object> data, IConcurrentDataReader reader)
         {
             this.data = data;

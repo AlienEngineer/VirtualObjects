@@ -56,12 +56,13 @@ namespace VirtualObjects.Tests
             ioc = new NinjectContainer(new SessionConfiguration { }, "northwind");
 
             ConnectionManager = ioc.Get<IConnection>();
-            Mapper = ioc.Get<IMapper>();
             Translator = ioc.Get<IQueryTranslator>();
             QueryProvider = ioc.Get<IQueryProvider>();
             SessionContext = ioc.Get<SessionContext>();
 
             Session = new Session(ioc);
+
+            Mapper = ((InternalSession)(ISession)Session.InternalSession).Mapper;
 
             Connection = ConnectionManager.DbConnection;
         }

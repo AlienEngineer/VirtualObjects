@@ -68,13 +68,14 @@ namespace VirtualObjects.Queries
         /// The output type setters.
         /// </value>
         public IList<MemberSetter> OutputTypeSetters { get; set; }
+
         /// <summary>
-        /// Gets or sets the mapper.
+        /// Gets or sets the entity bag.
         /// </summary>
         /// <value>
-        /// The mapper.
+        /// The entity bag.
         /// </value>
-        public IMapper Mapper { get; set; }
+        public IEntityBag EntityBag { get; set; }
         /// <summary>
         /// Gets or sets the contexts.
         /// </summary>

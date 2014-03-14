@@ -8,16 +8,16 @@ using VirtualObjects.Config;
 
 namespace VirtualObjects.CodeGenerators
 {
-    class EntityInfoCodeGenerator
+    class EntityInfoCodeGenerator : IEntityInfoCodeGenerator
     {
 
         readonly TypeBuilder builder;
         private readonly IEntityInfo entityInfo;
-        private readonly IMapper mapper;
+        private readonly IEntityBag entityBag;
 
-        public EntityInfoCodeGenerator(IEntityInfo info, IMapper mapper)
+        public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag)
         {
-            this.mapper = mapper;
+            this.entityBag = entityBag;
             this.entityInfo = info;
             builder = new TypeBuilder("Internal_Builder_" + info.EntityType.Name);
         }
@@ -113,7 +113,7 @@ namespace VirtualObjects.CodeGenerators
 
             var entityType = property.PropertyType.GetGenericArguments().First();
 
-            var foreignTable = mapper.Map(entityType);
+            var foreignTable = entityBag[entityType];
 
             foreach ( var key in entityInfo.KeyColumns )
             {

@@ -23,12 +23,7 @@ namespace VirtualObjects.Queries
             return result;
         }
 
-        public static Object[] GetValues(this IDataReader reader)
-        {
-            var values = new Object[reader.FieldCount];
-            reader.GetValues(values);
-            return values;
-        }
+        
 
         /// <summary>
         /// Makes this reader into a Thread Safe reader.
@@ -41,17 +36,38 @@ namespace VirtualObjects.Queries
             return new BlockingDataReader(reader, readWhile);
         }
 
+        /// <summary>
+        /// Parallels for each.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="maxThreads">The maximum threads.</param>
+        /// <returns></returns>
         public static IEnumerable<ITuple> ParallelForEach(this IDataReader reader, Action<IConcurrentDataReader> action,
                                                           int maxThreads)
         {
             return reader.AsParallel().ForEach(action, maxThreads);
         }
 
+        /// <summary>
+        /// Parallels for each.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="action">The action.</param>
+        /// <returns></returns>
         public static IEnumerable<ITuple> ParallelForEach(this IDataReader reader, Action<IConcurrentDataReader> action)
         {
             return reader.AsParallel().ForEach(action);
         }
 
+        /// <summary>
+        /// Parallels the transform.
+        /// </summary>
+        /// <typeparam name="TModel">The type of the model.</typeparam>
+        /// <param name="reader">The reader.</param>
+        /// <param name="transform">The transform.</param>
+        /// <param name="maxThreads">The maximum threads.</param>
+        /// <returns></returns>
         public static IEnumerable<TModel> ParallelTransform<TModel>(this IConcurrentDataReader reader,
                                                                     Func<ITuple, TModel> transform, int maxThreads)
             where TModel: class,
@@ -60,6 +76,13 @@ namespace VirtualObjects.Queries
             return reader.AsParallel().Transform(transform, maxThreads);
         }
 
+        /// <summary>
+        /// Parallels the transform.
+        /// </summary>
+        /// <typeparam name="TModel">The type of the model.</typeparam>
+        /// <param name="reader">The reader.</param>
+        /// <param name="transform">The transform.</param>
+        /// <returns></returns>
         public static IEnumerable<TModel> ParallelTransform<TModel>(this IConcurrentDataReader reader,
                                                                     Func<ITuple, TModel> transform)
             where TModel: class,
@@ -130,6 +153,14 @@ namespace VirtualObjects.Queries
             return reader.GetTuples().Select(t => models[t]);
         }
 
+        /// <summary>
+        /// Transforms the specified reader.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="modelType">Type of the model.</param>
+        /// <param name="transform">The transform.</param>
+        /// <param name="maxThreads">The maximum threads.</param>
+        /// <returns></returns>
         public static IEnumerable Transform(this IConcurrentDataReader reader, Type modelType,
                                             Func<ITuple, Object> transform, int maxThreads)
         {
@@ -143,6 +174,13 @@ namespace VirtualObjects.Queries
             return reader.GetTuples().Select(t => models[t]).ToList();
         }
 
+        /// <summary>
+        /// Transforms the specified reader.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="modelType">Type of the model.</param>
+        /// <param name="transform">The transform.</param>
+        /// <returns></returns>
         public static IEnumerable Transform(this IConcurrentDataReader reader, Type modelType,
                                             Func<ITuple, Object> transform)
         {

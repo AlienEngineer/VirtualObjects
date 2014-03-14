@@ -91,8 +91,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="PerformanceTests.cs" />
     <Compile Include="Config\MappingTests.cs" />
+    <Compile Include="PerformanceTests.cs" />
     <Compile Include="Connection\ConnectionProviderTests.cs" />
     <Compile Include="Crud\CrudTests.cs" />
     <Compile Include="Excel\ExcelSessionTests.cs" />

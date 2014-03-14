@@ -42,7 +42,9 @@ namespace VirtualObjects.Tests.Crud
         private TResult Execute<TResult>(IOperation operation, TResult entity)
         {
 
-            return Diagnostic.Timed(() => (TResult)operation.PrepareOperation(entity).Execute(SessionContext));
+            return Diagnostic.Timed(() => 
+                (TResult)operation.PrepareOperation(entity).Execute(SessionContext)
+                );
         }
 
 

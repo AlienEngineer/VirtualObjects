@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using Castle.DynamicProxy;
 using Fasterflect;
 using Ninject.Modules;
 using Ninject.Syntax;
@@ -14,6 +13,7 @@ using VirtualObjects.Queries.Execution;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Mapping;
 using VirtualObjects.Queries.Translation;
+using VirtualObjects.CodeGenerators;
 
 namespace VirtualObjects
 {
@@ -40,9 +40,7 @@ namespace VirtualObjects
         /// Loads the module into the kernel.
         /// </summary>
         public override void Load()
-        {
-            _configuration.Init(new NinjectContainer(Kernel));
-
+        {                                  
             //
             // Connection
             //
@@ -72,15 +70,25 @@ namespace VirtualObjects
             //
             // Entity info Mapper
             //
-            Bind<IMapper>().ToMethod(context => _configuration.MappingBuilder.Build()).WhenInjectedInto<ThreadSafeMapper>();
-            Bind<IMapper>().To<ThreadSafeMapper>().InSingletonScope();
 
-            Bind<IMappingBuilder>().To<MappingBuilder>().InSingletonScope();
+            Bind<IEntityBag>().To<EntityBag>().InSingletonScope();
+            
+            //
+            // Bind the mapper to the framework entry points.
+            //
+            Bind<IMapper>().To<Mapper>().WhenInjectedInto<InternalSession>();
+            Bind<IMapper>().To<Mapper>().WhenInjectedInto<CachingTranslator>();
+            
+            Bind<IEntityInfoCodeGeneratorFactory>().To<EntityInfoCodeGeneratorFactory>().InSingletonScope();
+
+            Bind<ITranslationConfiguration>()
+                .ToConstant(_configuration.TranslationConfigurationBuilder.Build())
+                .InSingletonScope();
 
             //
             // QueryTranslation
             //
-            if (_configuration.Formatter == null)
+            if ( _configuration.Formatter == null )
             {
                 Bind<IFormatter>().To<SqlFormatter>().InSingletonScope();
             }
@@ -95,12 +103,8 @@ namespace VirtualObjects
             //
             Bind<IEntityProvider>().To<EntityProviderComposite>().ExcludeSelf().InThreadScope();
             Bind<IEntityProvider>().To<EntityModelProvider>().WhenInjectedInto<EntityProviderComposite>();
-            Bind<IEntityProvider>().To<ProxyEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<DynamicTypeProvider>().WhenInjectedInto<EntityProviderComposite>();
             Bind<IEntityProvider>().To<CollectionTypeEntityProvider>().WhenInjectedInto<EntityProviderComposite>();
-
-            Bind<ProxyGenerator>().ToSelf().InThreadScope();
-            
 
             //
             // Entities Mappers
@@ -111,13 +115,6 @@ namespace VirtualObjects
             Bind<IEntityMapper>().To<DynamicEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
             Bind<IEntityMapper>().To<DynamicWithMemberEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
             Bind<IEntityMapper>().To<GroupedDynamicEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
-            //Bind<IEntitiesMapper>().To<ParallelEntitiesMapper>().InSingletonScope();
-            //Bind<IEntityMapper>().To<OrderedEntityMapper>().InSingletonScope();
-            //Bind<IEntityMapper>().To<DynamicTypeEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
-            //Bind<IEntityMapper>().To<DynamicEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
-            //Bind<IEntityMapper>().To<DynamicWithMemberEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
-            //Bind<IEntityMapper>().To<GroupedDynamicEntityMapper>().WhenInjectedInto<ParallelEntitiesMapper>();
-
 
             //
             // Query Executors
@@ -126,7 +123,6 @@ namespace VirtualObjects
             Bind<IQueryExecutor>().To<CountQueryExecutor>().WhenInjectedInto<CompositeExecutor>();
             Bind<IQueryExecutor>().To<QueryExecutor>().WhenInjectedInto<CompositeExecutor>();
             Bind<IQueryExecutor>().To<SingleQueryExecutor>().WhenInjectedInto<CompositeExecutor>();
-
 
             //
             // Query Provider
@@ -137,8 +133,6 @@ namespace VirtualObjects
             // CRUD Operations
             //
             Bind<IOperationsProvider>().To<OperationsProvider>();
-
-            
         }
 
     }
