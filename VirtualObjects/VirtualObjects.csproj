@@ -138,6 +138,7 @@
     <Compile Include="Config\IMapper.cs" />
     <Compile Include="Config\Mapper.cs" />
     <Compile Include="Config\MappingBuilder.cs" />
+    <Compile Include="Config\ThreadSafeMapper.cs" />
     <Compile Include="Connections\Connection.cs" />
     <Compile Include="Connections\DbConnectionProvider.cs" />
     <Compile Include="Connections\FirstConnectionDbConnectionProvider.cs" />
