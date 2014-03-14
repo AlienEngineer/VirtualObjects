@@ -40,7 +40,10 @@ namespace VirtualObjects.Config
 
         public IEntityInfo this[Type type]
         {
-            get { return collection[type]; }
+            get {
+                IEntityInfo value = null;
+                return TryGetValue(type, out value) ? value : null;
+            }
             set { collection[type] = value; }
         }
     }
