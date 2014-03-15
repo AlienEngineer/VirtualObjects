@@ -61,7 +61,7 @@ To improve myself and create something really easy to use with the best performa
 ***
 
 ### Performance
-Verified on unit-tests using NUnit on a I7 intel 3.07Ghz 18Gb RAM.
+Verified on unit-tests using NUnit on a intel i7 3.07GHz 18Gb RAM and intel i7-3537U 2.0GHz 8Gb RAM.
 
 
 * VO Version 1.1
