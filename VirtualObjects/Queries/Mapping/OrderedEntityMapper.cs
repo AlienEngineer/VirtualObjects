@@ -1,7 +1,4 @@
-﻿using System;
-using System.Data;
-using System.Linq;
-using VirtualObjects.Exceptions;
+﻿using System.Data;
 
 namespace VirtualObjects.Queries.Mapping
 {

@@ -24,6 +24,8 @@ namespace VirtualObjects.Queries
         
         internal QueryTranslator.CompilerBuffer Buffer { get; set; }
 
+        public IEntitiesMapper EntitiesMapper { get; set; }
+
         #endregion
     }
 }

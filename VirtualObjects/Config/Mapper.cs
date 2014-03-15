@@ -6,6 +6,7 @@ using System.Linq;
 using Fasterflect;
 using VirtualObjects.Exceptions;
 using VirtualObjects.CodeGenerators;
+using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.Config
 {
@@ -120,6 +121,7 @@ namespace VirtualObjects.Config
             codeGenerator.GenerateCode();
 
             entityInfo.EntityProvider = entityProvider.GetProviderForType(entityType);
+            entityInfo.EntityMapper = new OrderedEntityMapper();
             entityInfo.MapEntity = codeGenerator.GetEntityMapper();
             entityInfo.EntityFactory = codeGenerator.GetEntityProvider();
             entityInfo.EntityProxyFactory = codeGenerator.GetEntityProxyProvider();

@@ -13,6 +13,7 @@ using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Queries.Annotations;
 using VirtualObjects.Queries.Formatters;
+using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.Queries.Translation
 {
@@ -194,14 +195,24 @@ namespace VirtualObjects.Queries.Translation
 
             Compile(queryable.Expression, buffer);
 
+
+            var entityInfo = OutputType == null || OutputType.IsDynamic() ? null : EntityInfo;
+            IEntitiesMapper entitiesMapper = null;
+
+            if (entityInfo != null)
+            {
+                entitiesMapper = new EntityModelEntitiesMapper();
+            }
+
             return new QueryInfo
             {
                 CommandText = Merge(buffer),
                 Parameters = Parameters,
                 PredicatedColumns = buffer.PredicatedColumns,
                 OutputType = OutputType ?? queryable.ElementType,
-                Buffer = buffer   ,
-                EntityInfo = OutputType == null || OutputType.IsDynamic() ? null : EntityInfo
+                EntitiesMapper = entitiesMapper,
+                Buffer = buffer,
+                EntityInfo = entityInfo
             };
         }
 

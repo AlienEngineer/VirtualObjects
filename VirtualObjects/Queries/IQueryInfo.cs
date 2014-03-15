@@ -10,6 +10,12 @@ namespace VirtualObjects.Queries
     /// </summary>
     public interface IQueryInfo
     {
+        /// <summary>
+        /// Gets or sets the entity information.
+        /// </summary>
+        /// <value>
+        /// The entity information.
+        /// </value>
         IEntityInfo EntityInfo { get; set; }
         /// <summary>
         /// Gets the command text.
@@ -50,5 +56,13 @@ namespace VirtualObjects.Queries
         /// The type of the output.
         /// </value>
         Type OutputType { get; }
+
+        /// <summary>
+        /// Gets or sets the entity mapper.
+        /// </summary>
+        /// <value>
+        /// The entity mapper.
+        /// </value>
+        IEntitiesMapper EntitiesMapper { get; set; }
     }
 }

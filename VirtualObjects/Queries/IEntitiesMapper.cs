@@ -14,10 +14,10 @@ namespace VirtualObjects.Queries
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="reader">The reader.</param>
-        /// <param name="context">The context.</param>
+        /// <param name="queryInfo">The query information.</param>
         /// <param name="sessionContext">The session context.</param>
         /// <returns></returns>
-        IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader, IQueryInfo context, SessionContext sessionContext);
+        IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader, IQueryInfo queryInfo, SessionContext sessionContext);
 
         /// <summary>
         /// Maps the entities.

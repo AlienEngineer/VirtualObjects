@@ -82,7 +82,7 @@ namespace VirtualObjects.Queries.Mapping
                     throw;
                 }
 
-                throw new MappingException("Unable to map the query into [{Name}]", outputType, ex);
+                throw new MappingException(Errors.EntitiesMapper_UnableToMapType, outputType, ex);
 
             }
             finally

@@ -38,7 +38,9 @@ namespace VirtualObjects.Queries.Execution
             {
                 var reader = context.Connection.ExecuteReader(queryInfo.CommandText, queryInfo.Parameters);
 
-                return _mapper.MapEntities(reader, queryInfo, queryInfo.OutputType, context);
+                var mapper = queryInfo.EntitiesMapper ?? _mapper;
+
+                return mapper.MapEntities(reader, queryInfo, queryInfo.OutputType, context);
             }
             finally
             {
