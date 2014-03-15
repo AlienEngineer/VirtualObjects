@@ -30,36 +30,36 @@ namespace VirtualObjects.Queries.Mapping
         public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType, SessionContext sessionContext)
         {
             var result = new List<Object>();
-
-            var entityInfo = queryInfo.EntityInfo;
-
-            var context = new MapperContext
-            {
-                EntityInfo = entityInfo,
-                OutputType = outputType,
-                EntityProvider = _entityProvider,
-                EntityBag = _entityBag,
-                QueryInfo = queryInfo
-            };
-
-            if ( entityInfo != null && entityInfo.EntityProvider != null )
-            {
-                context.EntityProvider = entityInfo.EntityProvider;
-            }
-
-            var entityMapper = 
-                (entityInfo != null && entityInfo.EntityMapper != null) ?
-                    entityInfo.EntityMapper :
-                    _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));
-
-
-            if ( entityMapper == null )
-            {
-                throw new MappingException(Errors.Mapping_OutputTypeNotSupported, context);
-            }
-
             try
             {
+                var entityInfo = queryInfo.EntityInfo;// ?? _entityBag[outputType];
+
+                var context = new MapperContext
+                {
+                    EntityInfo = entityInfo,
+                    OutputType = outputType,
+                    EntityProvider = _entityProvider,
+                    EntityBag = _entityBag,
+                    QueryInfo = queryInfo
+                };
+
+                if (entityInfo != null && entityInfo.EntityProvider != null)
+                {
+                    context.EntityProvider = entityInfo.EntityProvider;
+                }
+
+                var entityMapper =
+                    (entityInfo != null && entityInfo.EntityMapper != null) ?
+                        entityInfo.EntityMapper :
+                        _entityMappers.FirstOrDefault(e => e.CanMapEntity(context));
+
+
+                if (entityMapper == null)
+                {
+                    throw new MappingException(Errors.Mapping_OutputTypeNotSupported, context);
+                }
+
+
 
                 //
                 // This line enables about 50% more code eficiency.
@@ -68,16 +68,16 @@ namespace VirtualObjects.Queries.Mapping
                 entityMapper.PrepareMapper(context);
 
 
-                while ( context.Read || reader.Read() )
+                while (context.Read || reader.Read())
                 {
                     result.Add(entityMapper.MapEntity(reader, context.CreateEntity(), context));
                 }
 
                 return result;
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
-                if ( ex is MappingException )
+                if (ex is MappingException)
                 {
                     throw;
                 }

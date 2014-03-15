@@ -2,6 +2,7 @@
 
 namespace VirtualObjects.Tests.Sessions
 {
+#if !DEBUG
     using NUnit.Framework;
     using Dapper;
     using System;
@@ -214,6 +215,8 @@ namespace VirtualObjects.Tests.Sessions
 
             }
         }
+    
 
     }
+#endif
 }
