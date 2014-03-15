@@ -4,7 +4,7 @@ using Fasterflect;
 
 namespace VirtualObjects.Tests
 {
-#if !DEBUG
+#if PERFORMANCE
     using NUnit.Framework;
     using Models.Northwind;
 

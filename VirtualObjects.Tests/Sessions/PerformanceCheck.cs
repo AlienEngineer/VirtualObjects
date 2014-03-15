@@ -2,7 +2,7 @@
 
 namespace VirtualObjects.Tests.Sessions
 {
-#if !DEBUG
+#if PERFORMANCE
     using NUnit.Framework;
     using Dapper;
     using System;
@@ -103,6 +103,28 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
+        private static IEnumerable<dynamic> MapDynamicSupplier(System.Data.IDataReader reader)
+        {
+            while (reader.Read())
+            {
+                yield return new
+                {
+                    SupplierId = (int)reader["SupplierId"],
+                    Address = GetValue(reader, "Address"),
+                    City = GetValue(reader, "City"),
+                    CompanyName = GetValue(reader, "CompanyName"),
+                    ContactName = GetValue(reader, "ContactName"),
+                    ContactTitle = GetValue(reader, "ContactTitle"),
+                    Country = GetValue(reader, "Country"),
+                    Fax = GetValue(reader, "Fax"),
+                    HomePage = GetValue(reader, "HomePage"),
+                    Phone = GetValue(reader, "Phone"),
+                    PostalCode = GetValue(reader, "PostalCode"),
+                    Region = GetValue(reader, "Region")
+                };
+            }
+        }
+
         private static IEnumerable<OrderDetails> MapOrderDetail(IDataReader reader)
         {
             while (reader.Read())
@@ -185,6 +207,112 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
+        [Test]
+        public void Performance_Check_DynamicSuppliersMapping()
+        {
+            var ef = new EFContext((DbConnection)Connection);
+
+            using (var session = new ExcelSession("Sessions\\Performance.xlsx"))
+            {
+                int numberOfExecutions = 0;
+                do
+                {
+                    numberOfExecutions += 10;
+
+                    Diagnostic.Timed(() =>
+                    {
+                        for (int i = 0; i < numberOfExecutions; i++)
+                        {
+                            Connection.Query("Select * from Suppliers").Select(e => new
+                            {
+                                e.Address,
+                                e.City,
+                                e.CompanyName,
+                                e.ContactName,
+                                e.ContactTitle,
+                                e.Country,
+                                e.Fax,
+                                e.HomePage,
+                                e.Phone,
+                                e.PostalCode,
+                                e.Region,
+                                e.SupplierId
+                            }).ToList();
+                        }
+                    }, name: STR_Dapper);
+
+                    Diagnostic.Timed(() =>
+                    {
+                        for (int i = 0; i < numberOfExecutions; i++)
+                        {
+                            ef.Suppliers.Select(e => new { 
+                                e.Address,
+                                e.City,
+                                e.CompanyName,
+                                e.ContactName,
+                                e.ContactTitle,
+                                e.Country,
+                                e.Fax,
+                                e.HomePage,
+                                e.Phone,
+                                e.PostalCode,
+                                e.Region,
+                                e.SupplierId
+                            }).ToList();
+                        }
+                    }, name: STR_EntityFramework);
+
+                    Diagnostic.Timed(() =>
+                    {
+                        for (int i = 0; i < numberOfExecutions; i++)
+                        {
+                            Session.GetAll<Suppliers>().Select(e => new { 
+                                e.Address,
+                                e.City,
+                                e.CompanyName,
+                                e.ContactName,
+                                e.ContactTitle,
+                                e.Country,
+                                e.Fax,
+                                e.HomePage,
+                                e.Phone,
+                                e.PostalCode,
+                                e.Region,
+                                e.SupplierId
+                            }).ToList();
+                        }
+                    }, name: STR_VirtualObjects);
+
+                    Diagnostic.Timed(() =>
+                    {
+                        if (Connection.State != ConnectionState.Open)
+                            Connection.Open();
+
+                        for (int i = 0; i < numberOfExecutions; i++)
+                        {
+                            var cmd = Connection.CreateCommand();
+                            cmd.CommandText = "Select * from Suppliers";
+                            var reader = cmd.ExecuteReader();
+
+                            MapDynamicSupplier(reader).ToList();
+
+                            reader.Close();
+                        }
+                        Connection.Close();
+                    }, name: STR_HardCoded);
+
+                    session.Insert(new MappingSuppliers
+                    {
+                        NumberOfExecutions = numberOfExecutions,
+                        EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
+                        VirtualObjects = (float)Diagnostic.GetMilliseconds(STR_VirtualObjects),
+                        Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
+                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
+                    });
+
+                } while (numberOfExecutions < 500);
+            }
+        }
 
         //[Test]
         public void Performance_Check_OrderDetailsMapping()
@@ -254,8 +382,6 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-
-
         [Test]
         public void Performance_Check_Count()
         {
@@ -321,8 +447,6 @@ namespace VirtualObjects.Tests.Sessions
 
             }
         }
-
-
     }
 #endif
 }
