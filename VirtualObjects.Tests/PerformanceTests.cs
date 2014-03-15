@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Fasterflect;
 
 namespace VirtualObjects.Tests
 {
+#if !DEBUG
     using NUnit.Framework;
-    using VirtualObjects.Tests.Models.Northwind;
-
-    
+    using Models.Northwind;
 
     /// <summary>
     /// 
@@ -248,5 +245,5 @@ namespace VirtualObjects.Tests
         }
 
     }
+#endif
 }
-
