@@ -11,7 +11,6 @@ using System.Text;
 using Fasterflect;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
-using VirtualObjects.Queries.Annotations;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Mapping;
 
@@ -114,15 +113,15 @@ namespace VirtualObjects.Queries.Translation
 
             public Expression Expression { get; private set; }
             public Type ElementType { get; private set; }
-            public IQueryProvider Provider { get; [UsedImplicitly] private set; }
+            public IQueryProvider Provider { get; private set; }
         }
 
         class QueryParameter : IOperationParameter
         {
-            public Type Type { get; [UsedImplicitly] set; }
+            public Type Type { get; set; }
             public object Value { get; set; }
-            public string Name { get; [UsedImplicitly] set; }
-            public IEntityColumnInfo Column { get; [UsedImplicitly] set; }
+            public string Name { get; set; }
+            public IEntityColumnInfo Column { get; set; }
         }
 
         #endregion

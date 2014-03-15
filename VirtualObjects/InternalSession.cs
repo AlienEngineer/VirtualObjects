@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using VirtualObjects.Config;
-using VirtualObjects.Queries.Annotations;
 using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
 
 namespace VirtualObjects
@@ -22,7 +21,9 @@ namespace VirtualObjects
         /// Initializes a new instance of the <see cref="InternalSession" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="connection">The connection</param>
         /// <param name="mapper">The mapper.</param>
+        /// <param name="queryProvider">The QueryProvider</param>
         public InternalSession(SessionContext context, IMapper mapper, IConnection connection, IQueryProvider queryProvider)
         {
             this.connection = connection;
@@ -92,7 +93,7 @@ namespace VirtualObjects
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public TEntity Update<TEntity>([NotNull] TEntity entity) where TEntity : class, new()
+        public TEntity Update<TEntity>(TEntity entity) where TEntity : class, new()
         {
             if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
             var entityInfo = Mapper.Map<TEntity>();

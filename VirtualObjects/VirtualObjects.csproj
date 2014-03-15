@@ -198,7 +198,6 @@
     <Compile Include="ITransaction.cs" />
     <Compile Include="Mappings\Annotations.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
-    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\Execution\CompositeExecutor.cs" />
     <Compile Include="Queries\Execution\CountQueryExecutor.cs" />

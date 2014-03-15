@@ -21,17 +21,4 @@ namespace VirtualObjects.Tests.Models.Northwind
         public Single Discount { get; set; }
     }
 
-    [Table(TableName = "Order Details")]
-    public class OrderDetailsSimplified
-    {
-        public int OrderId { get; set; }
-
-        public int ProductId { get; set; }
-
-        public Decimal UnitPrice { get; set; }
-
-        public Int16 Quantity { get; set; }
-
-        public Single Discount { get; set; }
-    }
 }

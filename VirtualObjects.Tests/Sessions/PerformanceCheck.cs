@@ -39,31 +39,51 @@ namespace VirtualObjects.Tests.Sessions
 
         public class MappingSuppliers : PerfRecord { }
 
+        public class MappingOrderDetails : PerfRecord { }
+
+
+        [VirtualObjects.Mappings.Table(TableName = "Order Details")]
+        public class OrderDetails
+        {
+            [System.ComponentModel.DataAnnotations.Key]
+            public int OrderId { get; set; }
+
+            public int ProductId { get; set; }
+
+            public Decimal UnitPrice { get; set; }
+
+            public Int16 Quantity { get; set; }
+
+            public Single Discount { get; set; }
+        }
+
         class EFContext : DbContext
         {
             public EFContext(DbConnection connection)
                 : base(connection, false)
             {
             }
-
+            
             public DbSet<Suppliers> Suppliers { get; set; }
+            public DbSet<OrderDetails> OrderDetails { get; set; }
+
         }
 
         private static string GetValue(IDataReader reader, String fieldName)
         {
             var value = reader[fieldName];
-            
-            if ( value == null || value == DBNull.Value )
+
+            if (value == null || value == DBNull.Value)
             {
                 return null;
             }
 
             return (String)value;
         }
-        
+
         private static IEnumerable<Suppliers> MapSupplier(System.Data.IDataReader reader)
         {
-            while ( reader.Read() )
+            while (reader.Read())
             {
                 yield return new Suppliers
                 {
@@ -83,12 +103,27 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
+        private static IEnumerable<OrderDetails> MapOrderDetail(IDataReader reader)
+        {
+            while (reader.Read())
+            {
+                yield return new OrderDetails
+                {
+                    OrderId = (int)reader["OrderId"],
+                    Discount = (float)reader["Discount"],
+                    ProductId = (int)reader["ProductId"],
+                    Quantity = (short)reader["Quantity"],
+                    UnitPrice = (decimal)reader["UnitPrice"]
+                };
+            }
+        }
+
         [Test]
         public void Performance_Check_SuppliersMapping()
         {
             var ef = new EFContext((DbConnection)Connection);
 
-            using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
+            using (var session = new ExcelSession("Sessions\\Performance.xlsx"))
             {
                 int numberOfExecutions = 0;
                 do
@@ -97,7 +132,7 @@ namespace VirtualObjects.Tests.Sessions
 
                     Diagnostic.Timed(() =>
                     {
-                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        for (int i = 0; i < numberOfExecutions; i++)
                         {
                             Connection.Query<Suppliers>("Select * from Suppliers").ToList();
                         }
@@ -105,7 +140,7 @@ namespace VirtualObjects.Tests.Sessions
 
                     Diagnostic.Timed(() =>
                     {
-                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        for (int i = 0; i < numberOfExecutions; i++)
                         {
                             ef.Suppliers.ToList();
                         }
@@ -113,7 +148,7 @@ namespace VirtualObjects.Tests.Sessions
 
                     Diagnostic.Timed(() =>
                     {
-                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        for (int i = 0; i < numberOfExecutions; i++)
                         {
                             Session.GetAll<Suppliers>().ToList();
                         }
@@ -124,7 +159,7 @@ namespace VirtualObjects.Tests.Sessions
                         if (Connection.State != ConnectionState.Open)
                             Connection.Open();
 
-                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        for (int i = 0; i < numberOfExecutions; i++)
                         {
                             var cmd = Connection.CreateCommand();
                             cmd.CommandText = "Select * from Suppliers";
@@ -146,16 +181,17 @@ namespace VirtualObjects.Tests.Sessions
                         HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
                     });
 
-                } while ( numberOfExecutions < 500 );
+                } while (numberOfExecutions < 500);
             }
         }
 
-        [Test]
-        public void Performance_Check_Count()
+
+        //[Test]
+        public void Performance_Check_OrderDetailsMapping()
         {
             var ef = new EFContext((DbConnection)Connection);
-                                      
-            using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
+
+            using (var session = new ExcelSession("Sessions\\Performance.xlsx"))
             {
                 int numberOfExecutions = 0;
                 do
@@ -164,7 +200,77 @@ namespace VirtualObjects.Tests.Sessions
 
                     Diagnostic.Timed(() =>
                     {
-                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        for (int i = 0; i < numberOfExecutions; i++)
+                        {
+                            Connection.Query<OrderDetails>("Select * from [Order Details]").ToList();
+                        }
+                    }, name: STR_Dapper);
+
+                    /*
+                    Diagnostic.Timed(() =>
+                    {
+                        for (int i = 0; i < numberOfExecutions; i++)
+                        {
+                            ef.OrderDetails.ToList();
+                        }
+                    }, name: STR_EntityFramework);
+                */
+                    Diagnostic.Timed(() =>
+                    {
+                        for (int i = 0; i < numberOfExecutions; i++)
+                        {
+                            Session.GetAll<OrderDetails>().ToList();
+                        }
+                    }, name: STR_VirtualObjects);
+
+                    Diagnostic.Timed(() =>
+                    {
+                        if (Connection.State != ConnectionState.Open)
+                            Connection.Open();
+
+                        for (int i = 0; i < numberOfExecutions; i++)
+                        {
+                            var cmd = Connection.CreateCommand();
+                            cmd.CommandText = "Select * from [Order Details]";
+                            var reader = cmd.ExecuteReader();
+
+                            MapOrderDetail(reader).ToList();
+
+                            reader.Close();
+                        }
+                        Connection.Close();
+                    }, name: STR_HardCoded);
+
+                    session.Insert(new MappingOrderDetails
+                    {
+                        NumberOfExecutions = numberOfExecutions,
+                        EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
+                        VirtualObjects = (float)Diagnostic.GetMilliseconds(STR_VirtualObjects),
+                        Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
+                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
+                    });
+
+                } while (numberOfExecutions < 500);
+            }
+        }
+
+
+
+        [Test]
+        public void Performance_Check_Count()
+        {
+            var ef = new EFContext((DbConnection)Connection);
+
+            using (var session = new ExcelSession("Sessions\\Performance.xlsx"))
+            {
+                int numberOfExecutions = 0;
+                do
+                {
+                    numberOfExecutions += 10;
+
+                    Diagnostic.Timed(() =>
+                    {
+                        for (int i = 0; i < numberOfExecutions; i++)
                         {
                             Connection.Query<int>("Select Count(*) from Suppliers");
                         }
@@ -172,7 +278,7 @@ namespace VirtualObjects.Tests.Sessions
 
                     Diagnostic.Timed(() =>
                     {
-                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        for (int i = 0; i < numberOfExecutions; i++)
                         {
                             ef.Suppliers.Count();
                         }
@@ -180,7 +286,7 @@ namespace VirtualObjects.Tests.Sessions
 
                     Diagnostic.Timed(() =>
                     {
-                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        for (int i = 0; i < numberOfExecutions; i++)
                         {
                             Session.Count<Suppliers>();
                         }
@@ -188,10 +294,10 @@ namespace VirtualObjects.Tests.Sessions
 
                     Diagnostic.Timed(() =>
                     {
-                        if ( Connection.State != ConnectionState.Open )
+                        if (Connection.State != ConnectionState.Open)
                             Connection.Open();
 
-                        for ( int i = 0; i < numberOfExecutions; i++ )
+                        for (int i = 0; i < numberOfExecutions; i++)
                         {
                             var cmd = Connection.CreateCommand();
                             cmd.CommandText = "Select Count(*) from Suppliers";
@@ -209,13 +315,13 @@ namespace VirtualObjects.Tests.Sessions
                         HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
                     });
 
-                } while ( numberOfExecutions < 500 );
-               
-                    
+                } while (numberOfExecutions < 500);
+
+
 
             }
         }
-    
+
 
     }
 #endif
