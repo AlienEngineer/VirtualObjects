@@ -32,7 +32,7 @@ namespace VirtualObjects.Queries.Mapping
             var result = new List<Object>();
             try
             {
-                var entityInfo = queryInfo.EntityInfo;// ?? _entityBag[outputType];
+                var entityInfo = queryInfo.EntityInfo ?? _entityBag[outputType];
 
                 var context = new MapperContext
                 {
