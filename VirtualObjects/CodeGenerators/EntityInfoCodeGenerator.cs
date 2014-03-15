@@ -8,7 +8,7 @@ using VirtualObjects.Config;
 
 namespace VirtualObjects.CodeGenerators
 {
-    class EntityInfoCodeGenerator : IEntityInfoCodeGenerator
+    class EntityInfoCodeGenerator : EntityCodeGenerator
     {
 
         readonly TypeBuilder builder;
@@ -16,6 +16,7 @@ namespace VirtualObjects.CodeGenerators
         private readonly IEntityBag entityBag;
 
         public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag)
+            : base("Internal_Builder_" + info.EntityType.Name)
         {
             this.entityBag = entityBag;
             this.entityInfo = info;
@@ -279,19 +280,6 @@ namespace VirtualObjects.CodeGenerators
 
             return result;
         }
-        public Action<Object, Object[]> GetEntityMapper()
-        {
-            return (Action<Object, Object[]>)builder.GetDelegate<Action<Object, Object[]>>("MapObject");
-        }
-
-        public Func<Object> GetEntityProvider()
-        {
-            return (Func<Object>)builder.GetDelegate<Func<Object>>("Make");
-        }
-
-        public Func<ISession, Object> GetEntityProxyProvider()
-        {
-            return (Func<ISession, Object>)builder.GetDelegate<Func<ISession, Object>>("MakeProxy");
-        }
+        
     }
 }

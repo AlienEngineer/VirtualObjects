@@ -14,7 +14,7 @@ namespace VirtualObjects.CodeGenerators
             this.entityBag = entityBag;
         }
 
-        public IEntityInfoCodeGenerator Make(IEntityInfo info)
+        public IEntityCodeGenerator Make(IEntityInfo info)
         {
             return new EntityInfoCodeGenerator(info, entityBag);
         }

@@ -6,6 +6,6 @@ namespace VirtualObjects.CodeGenerators
 {
     interface IEntityInfoCodeGeneratorFactory
     {
-        IEntityInfoCodeGenerator Make(IEntityInfo info);
+        IEntityCodeGenerator Make(IEntityInfo info);
     }
 }
