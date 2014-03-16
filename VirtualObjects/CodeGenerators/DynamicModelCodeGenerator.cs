@@ -16,24 +16,24 @@ namespace VirtualObjects.CodeGenerators
             builder = new TypeBuilder("Internal_Builder_Dynamic_" + type.Name);
         }
 
-        public void GenerateCode()
+        protected override string GenerateMapObjectCode()
         {
             throw new NotImplementedException();
         }
 
-        public Action<Object, Object[]> GetEntityMapper()
+        protected override string GenerateMakeCode()
         {
-            return (Action<Object, Object[]>)builder.GetDelegate<Action<Object, Object[]>>("MapObject");
+            throw new NotImplementedException();
         }
 
-        public Func<Object> GetEntityProvider()
+        protected override string GenerateMakeProxyCode()
         {
-            return (Func<Object>)builder.GetDelegate<Func<Object>>("Make");
+            throw new NotImplementedException();
         }
 
-        public Func<ISession, Object> GetEntityProxyProvider()
+        protected override string GenerateOtherMethodsCode()
         {
-            return (Func<ISession, Object>)builder.GetDelegate<Func<ISession, Object>>("MakeProxy");
+            throw new NotImplementedException();
         }
     }
 }
