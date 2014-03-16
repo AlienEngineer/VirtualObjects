@@ -10,44 +10,61 @@ namespace VirtualObjects.CodeGenerators
 {
     class EntityInfoCodeGenerator : EntityCodeGenerator
     {
-
-        readonly TypeBuilder builder;
         private readonly IEntityInfo entityInfo;
         private readonly IEntityBag entityBag;
+        private readonly String properName;
 
         public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag)
             : base("Internal_Builder_" + info.EntityType.Name)
         {
             this.entityBag = entityBag;
             this.entityInfo = info;
-            builder = new TypeBuilder("Internal_Builder_" + info.EntityType.Name);
-        }
+            properName = entityInfo.EntityType.FullName.Replace("+", ".");
 
-        private void AddReference(Type type)
-        {
-            builder.References.Add(type.Assembly.CodeBase.Remove(0, "file:///".Length));
-        }
-
-        public void GenerateCode()
-        {
-            if ( !entityInfo.EntityType.IsPublic && !entityInfo.EntityType.IsNestedPublic )
-            {
-                throw new CodeCompilerException("The entity type {Name} is not public.", entityInfo.EntityType);
-            }
 
             AddReference(entityInfo.EntityType);
             AddReference(typeof(Object));
             AddReference(typeof(ISession));
             AddReference(typeof(IQueryable));
-                                                              
-            builder.Namespaces.Add(entityInfo.EntityType.Namespace);
-            builder.Namespaces.Add("VirtualObjects");
-            builder.Namespaces.Add("System");
-            builder.Namespaces.Add("System.Linq");
 
-            var properName = entityInfo.EntityType.FullName.Replace("+", ".");
+            AddNamespace(entityInfo.EntityType.Namespace);
+            AddNamespace("VirtualObjects");
+            AddNamespace("System");
+            AddNamespace("System.Linq");
+        }
 
-            builder.Body.Add(@"
+        protected override string GenerateMapObjectCode()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string GenerateMakeCode()
+        {
+            return @"
+    public static Object Make()
+    {{
+        return new {TypeName}();
+    }}
+".FormatWith(new { TypeName = properName });
+        }
+
+        protected override string GenerateMakeProxyCode()
+        {
+            return @"
+    public static {TypeName} MakeProxy(ISession session)
+    {{
+        return new {Name}(session);
+    }}
+".FormatWith(new
+ {
+     TypeName = properName,
+     Name = entityInfo.EntityType.Name + "Proxy"
+ });
+        }
+
+        protected override string GenerateOtherMethodsCode()
+        {
+            return @"
     public class {Name} : {TypeName}
     {{
         private ISession Session {{ get; set; }}
@@ -59,17 +76,21 @@ namespace VirtualObjects.CodeGenerators
 
         {OverridableMembers}
     }}
-
-    public static {TypeName} MakeProxy(ISession session)
-    {{
-        return new {Name}(session);
-    }}
 ".FormatWith(new
  {
      TypeName = properName,
      Name = entityInfo.EntityType.Name + "Proxy",
      OverridableMembers = GenerateOverridableMembers(entityInfo)
- }));
+ });
+        }
+
+        public void GenerateCode()
+        {
+            if (!entityInfo.EntityType.IsPublic && !entityInfo.EntityType.IsNestedPublic)
+            {
+                throw new CodeCompilerException("The entity type {Name} is not public.", entityInfo.EntityType);
+            }
+
 
             builder.Body.Add(@"
     public static void MapObject(Object entity, Object[] data)
@@ -116,15 +137,15 @@ namespace VirtualObjects.CodeGenerators
 
             var foreignTable = entityBag[entityType];
 
-            foreach ( var key in entityInfo.KeyColumns )
+            foreach (var key in entityInfo.KeyColumns)
             {
                 var foreignField = foreignTable.ForeignKeys
                     .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
 
-                if ( foreignField != null )
+                if (foreignField != null)
                 {
 
-                    if ( foreignField.Property.PropertyType == entityInfo.EntityType )
+                    if (foreignField.Property.PropertyType == entityInfo.EntityType)
                     {
 
                         result += "e.{Field} == this && ".FormatWith(new { Field = foreignField.Property.Name });
@@ -152,9 +173,9 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            foreach ( var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()) )
+            foreach (var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()))
             {
-                
+
 
                 result += @"
         {Type} _{Name};
@@ -185,7 +206,7 @@ namespace VirtualObjects.CodeGenerators
 
             }
 
-            foreach ( var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()) )
+            foreach (var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()))
             {
                 var entityType = property.PropertyType.GetGenericArguments().First();
                 result += @"
@@ -220,7 +241,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            for ( int i = 0; i < entityInfo.Columns.Count; i++ )
+            for (int i = 0; i < entityInfo.Columns.Count; i++)
             {
                 var column = entityInfo.Columns[i];
 
@@ -264,7 +285,7 @@ namespace VirtualObjects.CodeGenerators
         private static StringBuffer GenerateFieldAssignment(int i, IEntityColumnInfo column, bool finalize = true)
         {
             StringBuffer result = " = ";
-            if ( column.Property.PropertyType.IsFrameworkType() )
+            if (column.Property.PropertyType.IsFrameworkType())
             {
                 result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = column.Property.PropertyType.Name });
             }
@@ -280,6 +301,6 @@ namespace VirtualObjects.CodeGenerators
 
             return result;
         }
-        
+
     }
 }
