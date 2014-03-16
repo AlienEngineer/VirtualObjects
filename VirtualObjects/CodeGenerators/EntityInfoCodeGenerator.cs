@@ -35,7 +35,12 @@ namespace VirtualObjects.CodeGenerators
 
         protected override string GenerateMapObjectCode()
         {
-            throw new NotImplementedException();
+            return @"
+    public static void MapObject(Object entity, Object[] data)
+    {{
+        Map(({TypeName})entity, data);
+    }}
+".FormatWith(new { TypeName = properName });
         }
 
         protected override string GenerateMakeCode()
@@ -64,6 +69,11 @@ namespace VirtualObjects.CodeGenerators
 
         protected override string GenerateOtherMethodsCode()
         {
+            if (!entityInfo.EntityType.IsPublic && !entityInfo.EntityType.IsNestedPublic)
+            {
+                throw new CodeCompilerException("The entity type {Name} is not public.", entityInfo.EntityType);
+            }
+
             return @"
     public class {Name} : {TypeName}
     {{
@@ -76,37 +86,7 @@ namespace VirtualObjects.CodeGenerators
 
         {OverridableMembers}
     }}
-".FormatWith(new
- {
-     TypeName = properName,
-     Name = entityInfo.EntityType.Name + "Proxy",
-     OverridableMembers = GenerateOverridableMembers(entityInfo)
- });
-        }
 
-        public void GenerateCode()
-        {
-            if (!entityInfo.EntityType.IsPublic && !entityInfo.EntityType.IsNestedPublic)
-            {
-                throw new CodeCompilerException("The entity type {Name} is not public.", entityInfo.EntityType);
-            }
-
-
-            builder.Body.Add(@"
-    public static void MapObject(Object entity, Object[] data)
-    {{
-        Map(({TypeName})entity, data);
-    }}
-".FormatWith(new { TypeName = properName }));
-
-            builder.Body.Add(@"
-    public static Object Make()
-    {{
-        return new {TypeName}();
-    }}
-".FormatWith(new { TypeName = properName }));
-
-            builder.Body.Add(@"
     public static void Map({TypeName} entity, Object[] data)
     {{
         {Body}
@@ -124,10 +104,13 @@ namespace VirtualObjects.CodeGenerators
 ".FormatWith(new
  {
      TypeName = properName,
+     Name = entityInfo.EntityType.Name + "Proxy",
+     OverridableMembers = GenerateOverridableMembers(entityInfo),
      Body = GenerateBody(entityInfo)
- }));
+ });
 
         }
+
 
         private String GenerateWhereClause(IEntityInfo entityInfo, PropertyInfo property)
         {
