@@ -10,7 +10,7 @@ namespace VirtualObjects.CodeGenerators
         private readonly Type _type;
 
         public DynamicModelCodeGenerator(Type type)
-            : base("Internal_Builder_Dynamic_" + type.Name)
+            : base("Internal_Builder_Dynamic_" + type.Name.Replace("<>", "").Replace('`', '_'))
         {
             _type = type;
 
@@ -18,7 +18,6 @@ namespace VirtualObjects.CodeGenerators
             AddReference(typeof(ISession));
             AddReference(typeof(IQueryable));
 
-            AddNamespace(_entityInfo.EntityType.Namespace);
             AddNamespace("VirtualObjects");
             AddNamespace("System");
             AddNamespace("System.Linq");
@@ -28,9 +27,9 @@ namespace VirtualObjects.CodeGenerators
         {
             return @"
     public static void MapObject(Object entity, Object[] data)
-    {{
+    {
         Map(entity, data);
-    }}
+    }
 ";
         }
 
@@ -38,19 +37,19 @@ namespace VirtualObjects.CodeGenerators
         {
             return @"
     public static Object Make()
-    {{
-        return new {{ }};
-    }}
+    {
+        return new { };
+    }
 ";
         }
 
         protected override string GenerateMakeProxyCode()
         {
             return @"
-    public static {TypeName} MakeProxy(ISession session)
-    {{
-        return new {{ }};
-    }}
+    public static dynamic MakeProxy(ISession session)
+    {
+        return new { };
+    }
 ";
         }
         protected override string GenerateOtherMethodsCode()
@@ -87,8 +86,7 @@ namespace VirtualObjects.CodeGenerators
                 const string setter = @"
                 try
                 {{
-                    if (data[{i}] != DBNull.Value)
-                        entity.{FieldName} = {Value};
+                    entity.{FieldName} = {Value};
                 }}
                 catch (InvalidCastException) 
                 {{ 

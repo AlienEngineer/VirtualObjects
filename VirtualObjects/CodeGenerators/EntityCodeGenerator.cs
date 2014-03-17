@@ -11,7 +11,6 @@ namespace VirtualObjects.CodeGenerators
             builder = new TypeBuilder(typeName);
         }
 
-
         public void GenerateCode()
         {
             var mapObject = GenerateMapObjectCode();
