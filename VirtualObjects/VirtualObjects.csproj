@@ -224,16 +224,10 @@
     <Compile Include="Queries\IEntityMapper.cs" />
     <Compile Include="Queries\IQueryInfo.cs" />
     <Compile Include="Queries\IQueryTranslator.cs" />
-    <Compile Include="Queries\Mapping\CollectionEntitiesMapper.cs" />
-    <Compile Include="Queries\Mapping\DynamicEntityMapper.cs" />
-    <Compile Include="Queries\Mapping\DynamicTypeEntityMapper.cs" />
-    <Compile Include="Queries\Mapping\DynamicWithMemberEntityMapper.cs" />
+    <Compile Include="Queries\Mapping\EntityInfoModelMapper.cs" />
     <Compile Include="Queries\Mapping\EntityModelEntitiesMapper.cs" />
-    <Compile Include="Queries\Mapping\GroupedDynamicEntityMapper.cs" />
     <Compile Include="Queries\Mapping\IdentityMap.cs" />
-    <Compile Include="Queries\Mapping\MappingStatus.cs" />
     <Compile Include="Queries\Mapping\OffsetedReader.cs" />
-    <Compile Include="Queries\Mapping\OrderedEntityMapper.cs" />
     <Compile Include="Queries\Query.cs" />
     <Compile Include="Queries\QueryInfo.cs" />
     <Compile Include="Queries\QueryProvider.cs" />

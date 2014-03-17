@@ -30,10 +30,10 @@ namespace VirtualObjects.Tests.CodeGenerators
 
             dynCodeGen.GenerateCode();
 
-            // force compilation.
-            dynCodeGen.GetEntityMapper();
+            //// force compilation.
+            //dynCodeGen.GetEntityMapper();
 
-            dynCodeGen.PrintCode();
+            //dynCodeGen.PrintCode();
 
             return dynCodeGen;
         }

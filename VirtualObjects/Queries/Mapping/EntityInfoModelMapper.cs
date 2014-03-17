@@ -6,7 +6,7 @@ namespace VirtualObjects.Queries.Mapping
     /// Maps an entity based on the EntityInfo.
     /// Assumes that the order of the columns is the same as the result in the datareader.
     /// </summary>
-    class OrderedEntityMapper : IEntityMapper
+    class EntityInfoModelMapper : IEntityMapper
     {
         public virtual object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
         {

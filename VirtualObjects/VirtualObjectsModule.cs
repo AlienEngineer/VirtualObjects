@@ -110,13 +110,8 @@ namespace VirtualObjects
             //
             // Entities Mappers
             //
-            Bind<IEntitiesMapper>().To<CollectionEntitiesMapper>().InSingletonScope();
-            Bind<IEntityMapper>().To<OrderedEntityMapper>().InSingletonScope();
-            Bind<IEntityMapper>().To<DynamicTypeEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
-            Bind<IEntityMapper>().To<DynamicEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
-            Bind<IEntityMapper>().To<DynamicWithMemberEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
-            Bind<IEntityMapper>().To<GroupedDynamicEntityMapper>().WhenInjectedInto<CollectionEntitiesMapper>();
-
+            Bind<IEntitiesMapper>().To<EntityModelEntitiesMapper>().InSingletonScope();
+            Bind<IEntityMapper>().To<EntityInfoModelMapper>().InSingletonScope();
             //
             // Query Executors
             //

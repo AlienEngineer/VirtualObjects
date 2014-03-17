@@ -120,8 +120,6 @@ namespace VirtualObjects.Config
 
             codeGenerator.GenerateCode();
 
-            entityInfo.EntityProvider = entityProvider.GetProviderForType(entityType);
-            entityInfo.EntityMapper = new OrderedEntityMapper();
             entityInfo.MapEntity = codeGenerator.GetEntityMapper();
             entityInfo.EntityFactory = codeGenerator.GetEntityProvider();
             entityInfo.EntityProxyFactory = codeGenerator.GetEntityProxyProvider();

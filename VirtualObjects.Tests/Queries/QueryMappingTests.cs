@@ -38,7 +38,7 @@ namespace VirtualObjects.Tests.Queries
         {
             var queryInfo = TranslateQuery(Query<Employee>());
             var reader = ExecuteReader(queryInfo);
-            var mapper = new OrderedEntityMapper();
+            var mapper = new EntityInfoModelMapper();
             var mapperContext = new MapperContext
             {
                 EntityInfo = Mapper.Map(typeof(Employee)),

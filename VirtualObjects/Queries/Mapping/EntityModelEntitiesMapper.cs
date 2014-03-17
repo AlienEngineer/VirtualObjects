@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Queries.Mapping
@@ -20,15 +19,13 @@ namespace VirtualObjects.Queries.Mapping
             var result = new List<Object>();
             try
             {
-                var mapperContext = new MapperContext { EntityInfo = queryInfo.EntityInfo };
                 while (reader.Read())
                 {
                     result.Add(
-                            queryInfo.EntityInfo.EntityMapper.MapEntity(
-                                reader, 
-                                queryInfo.EntityInfo.EntityProxyFactory(sessionContext.Session),
-                                mapperContext
-                            )
+                        queryInfo.MapEntity(
+                            queryInfo.EntityInfo.EntityProxyFactory(sessionContext.Session),
+                            reader.GetValues()
+                        )
                     );
                 }
 

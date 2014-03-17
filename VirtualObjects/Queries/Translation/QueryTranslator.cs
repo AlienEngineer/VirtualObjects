@@ -12,12 +12,16 @@ using Fasterflect;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Queries.Formatters;
-using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.Queries.Translation
 {
     class QueryTranslator : IQueryTranslator
     {
+        public QueryTranslator(IEntitiesMapper entitiesMapper)
+        {
+            this.entitiesMapper = entitiesMapper;
+        }
+
         #region Internal types
 
         public class CompilerBuffer
@@ -131,6 +135,7 @@ namespace VirtualObjects.Queries.Translation
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
+        private readonly IEntitiesMapper entitiesMapper;
         private Boolean hasJoinClause;
         private readonly IDictionary<String, IOperationParameter> _parameters;
         private int _depth;
@@ -196,11 +201,16 @@ namespace VirtualObjects.Queries.Translation
 
 
             var entityInfo = OutputType == null || OutputType.IsDynamic() ? null : EntityInfo;
-            IEntitiesMapper entitiesMapper = null;
 
-            if (entityInfo != null)
+            Func<object, object[], Object> mapEntity = null;
+
+            if ( entityInfo == null )
             {
-                entitiesMapper = new EntityModelEntitiesMapper();
+
+            }
+            else
+            {
+                mapEntity = entityInfo.MapEntity;
             }
 
             return new QueryInfo
@@ -210,6 +220,7 @@ namespace VirtualObjects.Queries.Translation
                 PredicatedColumns = buffer.PredicatedColumns,
                 OutputType = OutputType ?? queryable.ElementType,
                 EntitiesMapper = entitiesMapper,
+                MapEntity = mapEntity,
                 Buffer = buffer,
                 EntityInfo = entityInfo
             };

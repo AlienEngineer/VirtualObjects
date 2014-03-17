@@ -47,6 +47,15 @@ namespace VirtualObjects.Queries
         /// The type of the output.
         /// </value>
         public Type OutputType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the map entity.
+        /// </summary>
+        /// <value>
+        /// The map entity.
+        /// </value>
+        public Func<object, object[], Object> MapEntity { get; set; }
+
         /// <summary>
         /// Gets or sets the entity information.
         /// </summary>

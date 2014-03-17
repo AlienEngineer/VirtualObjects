@@ -26,6 +26,8 @@ namespace VirtualObjects.Queries
 
         public IEntitiesMapper EntitiesMapper { get; set; }
 
+        public Func<object, object[], Object> MapEntity { get; set; }
+
         #endregion
     }
 }

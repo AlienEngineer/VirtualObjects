@@ -10,6 +10,7 @@ namespace VirtualObjects.Queries
     /// </summary>
     public interface IQueryInfo
     {
+        Func<object, object[], Object> MapEntity { get; set; }
         /// <summary>
         /// Gets or sets the entity information.
         /// </summary>

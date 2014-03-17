@@ -35,9 +35,9 @@ namespace VirtualObjects.CodeGenerators
         protected override string GenerateMapObjectCode()
         {
             return @"
-    public static void MapObject(Object entity, Object[] data)
+    public static Object MapObject(Object entity, Object[] data)
     {{
-        Map(({TypeName})entity, data);
+        return Map(({TypeName})entity, data);
     }}
 ".FormatWith(new { TypeName = properName });
         }
