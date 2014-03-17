@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Fasterflect;
 
@@ -12,6 +13,15 @@ namespace VirtualObjects.CodeGenerators
             : base("Internal_Builder_Dynamic_" + type.Name)
         {
             _type = type;
+
+            AddReference(typeof(Object));
+            AddReference(typeof(ISession));
+            AddReference(typeof(IQueryable));
+
+            AddNamespace(_entityInfo.EntityType.Namespace);
+            AddNamespace("VirtualObjects");
+            AddNamespace("System");
+            AddNamespace("System.Linq");
         }
 
         protected override string GenerateMapObjectCode()
