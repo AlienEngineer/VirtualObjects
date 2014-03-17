@@ -133,6 +133,7 @@ namespace VirtualObjects.Queries.Translation
 
         #region Declaration Zone
 
+        private Type outputType;
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
@@ -180,7 +181,17 @@ namespace VirtualObjects.Queries.Translation
 
         public IEntityInfo EntityInfo { get; set; }
 
-        public Type OutputType { get; set; }
+        public Type OutputType
+        {
+            get
+            {
+                return outputType;
+            }
+            set
+            {
+                outputType = value;
+            }
+        }
 
         #endregion
 
@@ -1131,6 +1142,11 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileFrom(CompilerBuffer buffer)
         {
+            if ( OutputType == null )
+            {
+                OutputType = buffer.EntityInfo.EntityType;
+            }
+
             if (buffer.Skip > 0)
             {
                 buffer.From += _formatter.BeginWrap();
@@ -1206,10 +1222,7 @@ namespace VirtualObjects.Queries.Translation
                 return;
             }
 
-            if (OutputType == null)
-            {
-                OutputType = buffer.EntityInfo.EntityType;
-            }
+            
 
             _EntitySources.Push(buffer.EntityInfo);
             buffer.From = _formatter.FormatTableName(buffer.EntityInfo.EntityName, _index);
