@@ -40,8 +40,9 @@ namespace VirtualObjects.Tests.Sessions
         public class MappingSuppliers : PerfRecord { }
 
         public class MappingOrderDetails : PerfRecord { }
-
-
+        
+        public class MappingDynamicSuppliers : PerfRecord { }
+                  
         [VirtualObjects.Mappings.Table(TableName = "Order Details")]
         public class OrderDetails
         {
@@ -301,7 +302,7 @@ namespace VirtualObjects.Tests.Sessions
                         Connection.Close();
                     }, name: STR_HardCoded);
 
-                    session.Insert(new MappingSuppliers
+                    session.Insert(new MappingDynamicSuppliers
                     {
                         NumberOfExecutions = numberOfExecutions,
                         EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
@@ -314,7 +315,7 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        //[Test]
+        [Test]
         public void Performance_Check_OrderDetailsMapping()
         {
             var ef = new EFContext((DbConnection)Connection);
