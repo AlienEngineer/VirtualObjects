@@ -133,6 +133,7 @@ namespace VirtualObjects.Queries.Translation
 
         #region Declaration Zone
 
+        private readonly IEntityBag entityBag;
         private Type outputType;
         private readonly int _index;
         private readonly IFormatter _formatter;
@@ -158,8 +159,9 @@ namespace VirtualObjects.Queries.Translation
             _rootTranslator = this;
         }
 
-        public QueryTranslator(IFormatter formatter, IMapper mapper, int index)
+        public QueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, int index)
         {
+            this.entityBag = entityBag;
             _formatter = formatter;
             _mapper = mapper;
             _index = index;
@@ -227,7 +229,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 if ( OutputType.IsDynamic() )
                 {
-                    var dynCodeGen = new DynamicModelCodeGenerator(OutputType);
+                    var dynCodeGen = new DynamicModelCodeGenerator(OutputType, entityBag);
 
                     //
                     // Generates the code to be compiled.
@@ -2164,7 +2166,7 @@ Group by error reasons:
 
         private QueryTranslator CreateNewTranslator()
         {
-            return new QueryTranslator(_formatter, _mapper, ++_rootTranslator._depth)
+            return new QueryTranslator(_formatter, _mapper, entityBag, ++_rootTranslator._depth)
             {
                 //
                 // Bind the new compile to the root.

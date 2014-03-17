@@ -5,16 +5,19 @@ using Fasterflect;
 using System.Dynamic;
 using System.Collections.Generic;
 using System.Collections;
+using VirtualObjects.Config;
 
 namespace VirtualObjects.CodeGenerators
 {
     class DynamicModelCodeGenerator : EntityCodeGenerator
     {
         private readonly Type _type;
-
-        public DynamicModelCodeGenerator(Type type)
+        private readonly IEntityBag entityBag;
+        
+        public DynamicModelCodeGenerator(Type type, IEntityBag entityBag)
             : base("Internal_Builder_Dynamic_" + type.Name.Replace("<>", "").Replace('`', '_'))
         {
+            this.entityBag = entityBag;
             _type = type;
 
             AddReference(typeof(Object));
@@ -91,6 +94,7 @@ namespace VirtualObjects.CodeGenerators
 
     public static Object Map(dynamic entity, Object[] data)
     {{
+        int i = 0;
         {Body}
         
         return entity;
@@ -105,12 +109,47 @@ namespace VirtualObjects.CodeGenerators
 
         return value;
     }}
+
+    {SpecificMethods}
+
+   
 ".FormatWith(new
    {
        Body = GenerateMapBody(_type),
        Name = TypeName,
-       UnderlyingType = _type.FullName.Replace('+', '.')
+       UnderlyingType = _type.FullName.Replace('+', '.'),
+       SpecificMethods = GenerateSpecificMethods(_type)
    });
+        }
+
+        private static String GenerateSpecificMethods(Type type)
+        {
+            var result = new StringBuffer();
+
+            foreach ( var property in type.GetProperties() )
+            {
+                if ( property.PropertyType.IsFrameworkType() )
+                {
+                    if ( property.PropertyType.IsCollection() )
+                    {
+                        result += @"
+    private static IList<TEntity> FillCollection_{PropertyName}<TEntity>(Object[] data, out int i)  where TEntity : class, new() 
+    {{
+        i = 0;
+        var list = new List<TEntity>();
+
+        
+
+        return list;
+    }}".FormatWith(new
+       {
+           PropertyName = property.Name
+       });
+                    }
+                }
+            }
+
+            return result;
         }
 
         private static String GenerateMapBody(Type type)
@@ -122,7 +161,9 @@ namespace VirtualObjects.CodeGenerators
             {
                 var propertyInfo = properties[i];
                 const string setter = @"
-        entity.{FieldName} = {Value};";
+        entity.{FieldName} = {Value};
+        ++i;
+";
 
                 String value = GenerateFieldAssignment(i, propertyInfo);
                 value = value.Substring(3, value.Length - 3);
@@ -149,20 +190,21 @@ namespace VirtualObjects.CodeGenerators
             StringBuffer result = " = ";
             if ( propertyInfo.PropertyType.IsFrameworkType() )
             {
-                if ( propertyInfo.PropertyType.InheritsOrImplements<IEnumerable>() && propertyInfo.PropertyType != typeof(String) )
+                if ( propertyInfo.PropertyType.IsCollection() )
                 {
                     //
                     // In case of a model type create a new instance of that model and set its values.
                     //
-                    result += "new List<{Type}>()".FormatWith(new
+                    result += "FillCollection_{PropertyName}<{Type}>(data, out i)".FormatWith(new
                     {
-                        Type = propertyInfo.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.')
+                        Type = propertyInfo.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.'),
+                        PropertyName = propertyInfo.Name
                     });
                 }
                 else
                 {
-                    result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = propertyInfo.PropertyType.Name });
-                }   
+                    result += "({Type})(Parse(data[i]) ?? default({Type}))".FormatWith(new { i, Type = propertyInfo.PropertyType.Name });
+                }
             }
             else
             {
@@ -172,7 +214,8 @@ namespace VirtualObjects.CodeGenerators
                 //
                 result += "new {Type} {{ }}".FormatWith(new
                 {
-                    Type = propertyInfo.PropertyType.FullName.Replace('+', '.')
+                    Type = propertyInfo.PropertyType.FullName.Replace('+', '.'),
+                    PropertyName = propertyInfo.Name
                 });
             }
 

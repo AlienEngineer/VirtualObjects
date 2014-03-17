@@ -5,12 +5,13 @@ using NUnit.Framework;
 using VirtualObjects.CodeGenerators;
 using System.Collections.Generic;
 using System.Dynamic;
+using VirtualObjects.Config;
 
 namespace VirtualObjects.Tests.CodeGenerators
 {
 
     [TestFixture, Category("Code Generators")]
-    public class CodeGeneratorTests
+    public class CodeGeneratorTests : UtilityBelt
     {
         private readonly IEntityCodeGenerator dynCodeGen;
 
@@ -19,7 +20,7 @@ namespace VirtualObjects.Tests.CodeGenerators
             dynCodeGen = GetDynamicModelCodeGenerator();
         }
 
-        private static IEntityCodeGenerator GetDynamicModelCodeGenerator()
+        private IEntityCodeGenerator GetDynamicModelCodeGenerator()
         {
             var obj = new
             {
@@ -27,7 +28,7 @@ namespace VirtualObjects.Tests.CodeGenerators
                 Name = "This is a test"
             };
 
-            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(obj.GetType());
+            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(obj.GetType(), Make<IEntityBag>());
 
             dynCodeGen.GenerateCode();
 
@@ -90,9 +91,9 @@ namespace VirtualObjects.Tests.CodeGenerators
             result.Count.Should().Be(4);
         }
 
-        public static List<TEntity> MapEntities<TEntity>(TEntity entity, Object[][] data)
+        public List<TEntity> MapEntities<TEntity>(TEntity entity, Object[][] data)
         {
-            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(typeof(TEntity));
+            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(typeof(TEntity), Make<IEntityBag>());
 
             dynCodeGen.GenerateCode();
 

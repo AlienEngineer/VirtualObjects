@@ -50,7 +50,8 @@ namespace VirtualObjects
         public static Boolean IsCollection(this Type type)
         {
             return type.GetInterfaces()
-                .Any(e => e == typeof(IEnumerable));
+                .Any(e => e == typeof(IEnumerable))
+                && type != typeof(String);
         }
 
     }
