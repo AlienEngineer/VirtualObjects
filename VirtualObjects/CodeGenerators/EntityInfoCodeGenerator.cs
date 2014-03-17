@@ -86,9 +86,11 @@ namespace VirtualObjects.CodeGenerators
         {OverridableMembers}
     }}
 
-    public static void Map({TypeName} entity, Object[] data)
+    public static Object Map({TypeName} entity, Object[] data)
     {{
         {Body}
+
+        return entity;
     }}
 
     private static Object Parse(Object value)

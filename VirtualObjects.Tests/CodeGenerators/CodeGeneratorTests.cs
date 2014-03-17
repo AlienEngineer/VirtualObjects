@@ -2,6 +2,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using VirtualObjects.CodeGenerators;
+using System.Collections.Generic;
+using System.Dynamic;
 
 namespace VirtualObjects.Tests.CodeGenerators
 {
@@ -16,7 +18,7 @@ namespace VirtualObjects.Tests.CodeGenerators
             dynCodeGen = GetDynamicModelCodeGenerator();
         }
 
-        private static DynamicModelCodeGenerator GetDynamicModelCodeGenerator()
+        private static IEntityCodeGenerator GetDynamicModelCodeGenerator()
         {
             var obj = new
             {
@@ -24,9 +26,15 @@ namespace VirtualObjects.Tests.CodeGenerators
                 Name = "This is a test"
             };
 
-            var dynCodeGen = new DynamicModelCodeGenerator(obj.GetType());
+            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(obj.GetType());
 
             dynCodeGen.GenerateCode();
+
+            // force compilation.
+            dynCodeGen.GetEntityMapper();
+
+            dynCodeGen.PrintCode();
+
             return dynCodeGen;
         }
 
@@ -55,22 +63,14 @@ namespace VirtualObjects.Tests.CodeGenerators
         [Test]
         public void DynamicType_CodeGenerator_Make_And_Map()
         {
-            var make = dynCodeGen.GetEntityProvider();
             var map = dynCodeGen.GetEntityMapper();
 
-            dynamic provided = new { Id = int.MinValue, Name = String.Empty }; // make();
+            dynamic mapped = map(null, new object[] { 7, "Sérgio" });
 
-            Map(provided, new object[] { 7, "Sérgio" });
+            ((String)mapped.Name).Should().Be("Sérgio");
 
-            ((String)provided.Name).Should().Be("Sérgio");
-
-            ((int)provided.Id).Should().Be(7);
+            ((int)mapped.Id).Should().Be(7);
         }
 
-        public static void Map(dynamic obj, Object[] data)
-        {
-            obj.Id = (int)data[0];
-            obj.Name = (String) data[1];
-        }
     }
 }

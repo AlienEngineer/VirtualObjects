@@ -39,7 +39,7 @@ namespace VirtualObjects
         /// <value>
         /// The map entity.
         /// </value>
-        Action<object, object[]> MapEntity { get; set; }
+        Func<object, object[], Object> MapEntity { get; set; }
 
         /// <summary>
         /// Gets the <see cref="IEntityColumnInfo"/> with the specified property name.

@@ -26,9 +26,9 @@ namespace VirtualObjects.CodeGenerators
         protected override string GenerateMapObjectCode()
         {
             return @"
-    public static void MapObject(Object entity, Object[] data)
+    public static Object MapObject(Object entity, Object[] data)
     {
-        Map(entity, data);
+        return Map(entity, data);
     }
 ";
         }
@@ -37,27 +37,40 @@ namespace VirtualObjects.CodeGenerators
         {
             return @"
     public static Object Make()
-    {
-        return new { };
-    }
-";
+    {{
+        return new {Name}Model();
+    }}
+".FormatWith(new
+ {
+     Name = TypeName
+ });
         }
 
         protected override string GenerateMakeProxyCode()
         {
             return @"
-    public static dynamic MakeProxy(ISession session)
-    {
-        return new { };
-    }
-";
+    public static Object MakeProxy(ISession session)
+    {{
+        return new {Name}Model();
+    }}
+".FormatWith(new
+ {
+     Name = TypeName
+ });
         }
         protected override string GenerateOtherMethodsCode()
         {
-          return @"
-    public static void Map(dynamic entity, Object[] data)
+            return @"
+    public class {Name}Model
     {{
-        {Body}
+        {Members}
+    }}
+
+    public static Object Map(dynamic entity, Object[] data)
+    {{
+        return new {Name}Model {{
+            {Body}
+        }};
     }}
 
     private static Object Parse(Object value)
@@ -70,59 +83,71 @@ namespace VirtualObjects.CodeGenerators
         return value;
     }}
 ".FormatWith(new
- {
-     Body = GenerateMapBody(_type)
- });
+   {
+       Body = GenerateMapBody(_type),
+       Name = TypeName,
+       Members = GenerateMembers(_type)
+   });
+        }
+
+        private static String GenerateMembers(Type type)
+        {
+            var result = new StringBuffer();
+
+            var properties = type.GetProperties();
+            for ( var i = 0; i < properties.Length; i++ )
+            {
+                var propertyInfo = properties[i];
+                result += @"
+        public {Type} {FieldName} {{ get; set; }}"
+                    .FormatWith(new {
+                        Type = propertyInfo.PropertyType.Name,
+                        FieldName = propertyInfo.Name
+                    });
+
+            }
+
+            return result;
         }
 
         private static String GenerateMapBody(Type type)
         {
             var result = new StringBuffer();
 
-            var fields = type.GetFields();
-            for (var i = 0; i < fields.Length; i++)
+            var properties = type.GetProperties();
+            for ( var i = 0; i < properties.Length; i++ )
             {
-                var fieldInfo = fields[i];
+                var propertyInfo = properties[i];
                 const string setter = @"
-                try
-                {{
-                    entity.{FieldName} = {Value};
-                }}
-                catch (InvalidCastException) 
-                {{ 
-                     entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
-                }}
-                catch ( Exception ex)
-                {{
-                    throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value."", ex);
-                }}
+                    {FieldName} = {Value},
 ";
 
-                String value = GenerateFieldAssignment(i, fieldInfo);
+                String value = GenerateFieldAssignment(i, propertyInfo);
                 value = value.Substring(3, value.Length - 3);
 
                 result += setter.FormatWith(new
                 {
-                    FieldName = fieldInfo.Name,
+                    FieldName = propertyInfo.Name,
                     i,
                     Value = value,
                     ValueNoType = value
-                       .Replace(String.Format("({0})", fieldInfo.FieldType.Name), "")
-                       .Replace("default", String.Format("default({0})", fieldInfo.FieldType.Name)),
-                    Type = fieldInfo.FieldType.Name
+                       .Replace(String.Format("({0})", propertyInfo.PropertyType.Name), "")
+                       .Replace("default", String.Format("default({0})", propertyInfo.PropertyType.Name)),
+                    Type = propertyInfo.PropertyType.Name
                 });
-    
+
             }
 
+            // result.RemoveLast(",");
             return result;
         }
 
-        private static StringBuffer GenerateFieldAssignment(int i, FieldInfo fieldInfo)
+        private static StringBuffer GenerateFieldAssignment(int i, PropertyInfo propertyInfo)
         {
             StringBuffer result = " = ";
-            if (fieldInfo.FieldType.IsFrameworkType())
+            if ( propertyInfo.PropertyType.IsFrameworkType() )
             {
-                result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = fieldInfo.FieldType.Name });
+                result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = propertyInfo.PropertyType.Name });
             }
             else
             {
@@ -131,7 +156,7 @@ namespace VirtualObjects.CodeGenerators
                 //
                 result += "new {Type} {{ }}".FormatWith(new
                 {
-                    Type = fieldInfo.FieldType.FullName.Replace('+', '.')
+                    Type = propertyInfo.PropertyType.FullName.Replace('+', '.')
                 });
             }
 

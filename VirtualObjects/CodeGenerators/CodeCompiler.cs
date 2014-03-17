@@ -11,6 +11,8 @@ namespace VirtualObjects.CodeGenerators
     /// </summary>
     public abstract class CodeCompiler
     {
+        public String Code { get; private set; }
+
         /// <summary>
         /// Compiles the specified references.
         /// </summary>
@@ -33,13 +35,13 @@ namespace VirtualObjects.CodeGenerators
                 cp.GenerateExecutable = false;
                 cp.GenerateInMemory = true;
 
-                string code = GenerateCode();
+                Code = GenerateCode();
 
-                var cr = provider.CompileAssemblyFromSource(cp, code);
+                var cr = provider.CompileAssemblyFromSource(cp, Code);
 
                 if ( cr.Errors.Count > 0 )
                 {
-                    Console.WriteLine(code);
+                    Console.WriteLine(Code);
 
                     Console.WriteLine("Errors building of {0}", cr.PathToAssembly);
 

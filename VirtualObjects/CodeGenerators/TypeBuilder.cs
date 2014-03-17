@@ -28,7 +28,7 @@ namespace VirtualObjects.CodeGenerators
             var code = new StringBuffer();
 
             code += GenerateUsings();
-            code += BeginClass(typeName);
+            code += BeginClass(TypeName);
 
             code += GenerateFunctions();
 
@@ -91,9 +91,11 @@ namespace VirtualObjects.CodeGenerators
         {
             results = results ?? Compile(References.ToArray());
 
-            Type binaryFunction = results.CompiledAssembly.GetType(typeName);
+            Type binaryFunction = results.CompiledAssembly.GetType(TypeName);
             var function = binaryFunction.GetMethod(functionName);
             return Delegate.CreateDelegate(typeof(TFunc), function);
         }
+
+        public String TypeName { get { return typeName; } }
     }
 }

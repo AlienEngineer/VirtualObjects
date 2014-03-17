@@ -9,7 +9,10 @@ namespace VirtualObjects.CodeGenerators
         protected EntityCodeGenerator(String typeName)
         {
             builder = new TypeBuilder(typeName);
+            TypeName = typeName;
         }
+
+        public String TypeName { get; private set; }
 
         public void GenerateCode()
         {
@@ -40,14 +43,24 @@ namespace VirtualObjects.CodeGenerators
         protected abstract String GenerateOtherMethodsCode();
 
 
-        public Action<Object, Object[]> GetEntityMapper()
+        public Func<Object, Object[], Object> GetEntityMapper()
         {
-            return (Action<Object, Object[]>)builder.GetDelegate<Action<Object, Object[]>>("MapObject");
+            return (Func<Object, Object[], Object>)builder.GetDelegate<Func<Object, Object[], Object>>("MapObject");
         }
 
         public Func<Object> GetEntityProvider()
         {
             return (Func<Object>)builder.GetDelegate<Func<Object>>("Make");
+        }
+
+        public void PrintCode()
+        {
+
+            Console.WriteLine("-----------------------------------------------------------"); 
+            Console.WriteLine(" -> Code generated for : {0} <-", builder.TypeName);
+            Console.WriteLine("-----------------------------------------------------------");
+            Console.WriteLine(builder.Code);
+            Console.WriteLine("-----------------------------------------------------------");
         }
 
         public Func<ISession, Object> GetEntityProxyProvider()
