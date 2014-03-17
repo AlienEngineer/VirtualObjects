@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using VirtualObjects.Exceptions;
 using Fasterflect;
@@ -10,7 +9,7 @@ namespace VirtualObjects.CodeGenerators
 {
     class EntityInfoCodeGenerator : EntityCodeGenerator
     {
-        private readonly IEntityInfo entityInfo;
+        private readonly IEntityInfo _entityInfo;
         private readonly IEntityBag entityBag;
         private readonly String properName;
 
@@ -18,16 +17,16 @@ namespace VirtualObjects.CodeGenerators
             : base("Internal_Builder_" + info.EntityType.Name)
         {
             this.entityBag = entityBag;
-            this.entityInfo = info;
-            properName = entityInfo.EntityType.FullName.Replace("+", ".");
+            _entityInfo = info;
+            properName = _entityInfo.EntityType.FullName.Replace("+", ".");
 
 
-            AddReference(entityInfo.EntityType);
+            AddReference(_entityInfo.EntityType);
             AddReference(typeof(Object));
             AddReference(typeof(ISession));
             AddReference(typeof(IQueryable));
 
-            AddNamespace(entityInfo.EntityType.Namespace);
+            AddNamespace(_entityInfo.EntityType.Namespace);
             AddNamespace("VirtualObjects");
             AddNamespace("System");
             AddNamespace("System.Linq");
@@ -63,15 +62,15 @@ namespace VirtualObjects.CodeGenerators
 ".FormatWith(new
  {
      TypeName = properName,
-     Name = entityInfo.EntityType.Name + "Proxy"
+     Name = _entityInfo.EntityType.Name + "Proxy"
  });
         }
 
         protected override string GenerateOtherMethodsCode()
         {
-            if (!entityInfo.EntityType.IsPublic && !entityInfo.EntityType.IsNestedPublic)
+            if (!_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic)
             {
-                throw new CodeCompilerException("The entity type {Name} is not public.", entityInfo.EntityType);
+                throw new CodeCompilerException("The entity type {Name} is not public.", _entityInfo.EntityType);
             }
 
             return @"
@@ -104,9 +103,9 @@ namespace VirtualObjects.CodeGenerators
 ".FormatWith(new
  {
      TypeName = properName,
-     Name = entityInfo.EntityType.Name + "Proxy",
-     OverridableMembers = GenerateOverridableMembers(entityInfo),
-     Body = GenerateBody(entityInfo)
+     Name = _entityInfo.EntityType.Name + "Proxy",
+     OverridableMembers = GenerateOverridableMembers(_entityInfo),
+     Body = GenerateBody(_entityInfo)
  });
 
         }
@@ -183,8 +182,8 @@ namespace VirtualObjects.CodeGenerators
         }}
 ".FormatWith(new
  {
-     Type = column.Property.PropertyType.FullName.Replace('+', '.'),
-     Name = column.Property.Name
+     Type = column.Property.PropertyType.FullName.Replace('+', '.'), 
+     column.Property.Name
  });
 
             }
@@ -212,7 +211,7 @@ namespace VirtualObjects.CodeGenerators
  {
      Type = String.Format("{0}.{1}<{2}>", property.PropertyType.Namespace, property.PropertyType.Name.Replace("`1", ""), entityType.FullName.Replace('+', '.')),
      EntityType = entityType.FullName.Replace('+', '.'),
-     Name = property.Name,
+     property.Name,
      WhereClause = GenerateWhereClause(entityInfo, property)
  });
             }
@@ -265,7 +264,7 @@ namespace VirtualObjects.CodeGenerators
             return result;
         }
 
-        private static StringBuffer GenerateFieldAssignment(int i, IEntityColumnInfo column, bool finalize = true)
+        private static StringBuffer GenerateFieldAssignment(int i, IEntityColumnInfo column)
         {
             StringBuffer result = " = ";
             if (column.Property.PropertyType.IsFrameworkType())
@@ -278,7 +277,7 @@ namespace VirtualObjects.CodeGenerators
                 {
                     Type = column.Property.PropertyType.FullName.Replace('+', '.'),
                     BoundField = column.ForeignKey.Property.Name,
-                    Value = GenerateFieldAssignment(i, column.ForeignKey, false)
+                    Value = GenerateFieldAssignment(i, column.ForeignKey)
                 });
             }
 
