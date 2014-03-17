@@ -9,7 +9,7 @@ namespace VirtualObjects.Queries
     {
 
         #region IQueryInfo Members
-        
+
         public DbCommand Command { get; set; }
 
         public string CommandText { get; set; }
@@ -19,15 +19,16 @@ namespace VirtualObjects.Queries
         public IDictionary<string, IOperationParameter> Parameters { get; set; }
 
         public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
-        
+
         public Type OutputType { get; set; }
-        
+
         internal QueryTranslator.CompilerBuffer Buffer { get; set; }
 
         public IEntitiesMapper EntitiesMapper { get; set; }
 
         public Func<object, object[], Object> MapEntity { get; set; }
-
+        
+        public Func<ISession, Object> MakeEntity { get; set; }
         #endregion
     }
 }

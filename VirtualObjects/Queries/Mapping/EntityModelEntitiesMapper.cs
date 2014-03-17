@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.Linq;
 using VirtualObjects.Exceptions;
 
@@ -11,19 +12,19 @@ namespace VirtualObjects.Queries.Mapping
 
         public IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader, IQueryInfo queryInfo, SessionContext sessionContext)
         {
-            return MapEntities(reader, queryInfo, typeof(TEntity), sessionContext).Cast<TEntity>();
+            return MapEntities(reader, queryInfo, typeof(TEntity), sessionContext).Select(e => (TEntity)e);
         }
 
         public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType, SessionContext sessionContext)
         {
-            var result = new List<Object>();
+            var result = new List<dynamic>();
             try
             {
                 while (reader.Read())
                 {
                     result.Add(
                         queryInfo.MapEntity(
-                            queryInfo.EntityInfo.EntityProxyFactory(sessionContext.Session),
+                            queryInfo.MakeEntity(sessionContext.Session),
                             reader.GetValues()
                         )
                     );

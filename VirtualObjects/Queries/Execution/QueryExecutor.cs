@@ -32,13 +32,13 @@ namespace VirtualObjects.Queries.Execution
             return MapEntities(queryInfo, context);
         }
 
-        private object MapEntities(IQueryInfo queryInfo, SessionContext context)
+        private static object MapEntities(IQueryInfo queryInfo, SessionContext context)
         {
             try
             {
                 var reader = context.Connection.ExecuteReader(queryInfo.CommandText, queryInfo.Parameters);
 
-                var mapper = queryInfo.EntitiesMapper ?? _mapper;
+                var mapper = queryInfo.EntitiesMapper;
 
                 return mapper.MapEntities(reader, queryInfo, queryInfo.OutputType, context);
             }

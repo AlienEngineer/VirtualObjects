@@ -12,6 +12,7 @@ using Fasterflect;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Queries.Formatters;
+using VirtualObjects.CodeGenerators;
 
 namespace VirtualObjects.Queries.Translation
 {
@@ -202,15 +203,29 @@ namespace VirtualObjects.Queries.Translation
 
             var entityInfo = OutputType == null || OutputType.IsDynamic() ? null : EntityInfo;
 
-            Func<object, object[], Object> mapEntity = null;
+            Func<Object, Object[], Object> mapEntity = null;
+            Func<ISession, Object> makeEntity = null;
+
+            if ( entityInfo == null && !OutputType.IsDynamic() )
+            {
+                entityInfo = _mapper.Map(OutputType);
+            }
 
             if ( entityInfo == null )
             {
+                if ( OutputType.IsDynamic() )
+                {
+                    var dynCodeGen = new DynamicModelCodeGenerator(OutputType);
 
+                    dynCodeGen.GenerateCode();
+                    mapEntity = dynCodeGen.GetEntityMapper();
+                    makeEntity = dynCodeGen.GetEntityProxyProvider();
+                }
             }
             else
             {
                 mapEntity = entityInfo.MapEntity;
+                makeEntity = entityInfo.EntityProxyFactory;
             }
 
             return new QueryInfo
@@ -220,6 +235,7 @@ namespace VirtualObjects.Queries.Translation
                 PredicatedColumns = buffer.PredicatedColumns,
                 OutputType = OutputType ?? queryable.ElementType,
                 EntitiesMapper = entitiesMapper,
+                MakeEntity = makeEntity,
                 MapEntity = mapEntity,
                 Buffer = buffer,
                 EntityInfo = entityInfo

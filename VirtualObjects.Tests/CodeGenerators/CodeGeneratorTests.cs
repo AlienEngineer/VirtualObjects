@@ -63,13 +63,20 @@ namespace VirtualObjects.Tests.CodeGenerators
         [Test]
         public void DynamicType_CodeGenerator_Make_And_Map()
         {
-            var map = dynCodeGen.GetEntityMapper();
+            var make = dynCodeGen.GetEntityProxyProvider();
 
-            dynamic mapped = map(null, new object[] { 7, "Sérgio" });
+            dynamic mapped = Map(new object[] { 7, "Sérgio" }, make(null));
 
             ((String)mapped.Name).Should().Be("Sérgio");
 
             ((int)mapped.Id).Should().Be(7);
+        }
+
+        public T Map<T>(Object[] data, T obj)
+        {
+            var map = dynCodeGen.GetEntityMapper();
+
+            return (T)map(obj, data);
         }
 
     }

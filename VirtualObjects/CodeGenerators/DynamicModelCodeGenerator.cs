@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Fasterflect;
+using System.Dynamic;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -15,12 +16,16 @@ namespace VirtualObjects.CodeGenerators
             _type = type;
 
             AddReference(typeof(Object));
+            AddReference(typeof(System.Uri));
+            AddReference(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException));
+            AddReference(typeof(ExpandoObject));
             AddReference(typeof(ISession));
             AddReference(typeof(IQueryable));
 
             AddNamespace("VirtualObjects");
             AddNamespace("System");
             AddNamespace("System.Linq");
+            AddNamespace("System.Dynamic");
         }
 
         protected override string GenerateMapObjectCode()
@@ -38,7 +43,7 @@ namespace VirtualObjects.CodeGenerators
             return @"
     public static Object Make()
     {{
-        return new {Name}Model();
+        return new ExpandoObject();
     }}
 ".FormatWith(new
  {
@@ -51,7 +56,7 @@ namespace VirtualObjects.CodeGenerators
             return @"
     public static Object MakeProxy(ISession session)
     {{
-        return new {Name}Model();
+        return new ExpandoObject();
     }}
 ".FormatWith(new
  {
@@ -61,16 +66,11 @@ namespace VirtualObjects.CodeGenerators
         protected override string GenerateOtherMethodsCode()
         {
             return @"
-    public class {Name}Model
-    {{
-        {Members}
-    }}
-
     public static Object Map(dynamic entity, Object[] data)
     {{
-        return new {Name}Model {{
-            {Body}
-        }};
+        {Body}
+        
+        return entity;
     }}
 
     private static Object Parse(Object value)
@@ -119,8 +119,7 @@ namespace VirtualObjects.CodeGenerators
             {
                 var propertyInfo = properties[i];
                 const string setter = @"
-                    {FieldName} = {Value},
-";
+        entity.{FieldName} = {Value};";
 
                 String value = GenerateFieldAssignment(i, propertyInfo);
                 value = value.Substring(3, value.Length - 3);
