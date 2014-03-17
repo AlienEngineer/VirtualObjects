@@ -137,6 +137,7 @@
   <ItemGroup>
     <Compile Include="CodeGenerators\CodeCompiler.cs" />
     <Compile Include="CodeGenerators\DynamicModelCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\EntityCodeGenerator.cs" />
     <Compile Include="CodeGenerators\EntityInfoCodeGenerator.cs" />
     <Compile Include="CodeGenerators\EntityInfoCodeGeneratorFactory.cs" />
     <Compile Include="CodeGenerators\IEntityCodeGenerator.cs" />
