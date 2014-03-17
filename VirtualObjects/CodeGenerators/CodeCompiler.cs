@@ -11,6 +11,12 @@ namespace VirtualObjects.CodeGenerators
     /// </summary>
     public abstract class CodeCompiler
     {
+        /// <summary>
+        /// Gets the code.
+        /// </summary>
+        /// <value>
+        /// The code.
+        /// </value>
         public String Code { get; private set; }
 
         /// <summary>

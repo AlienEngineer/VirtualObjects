@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Fasterflect;
 using System.Dynamic;
+using System.Collections.Generic;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -20,12 +21,14 @@ namespace VirtualObjects.CodeGenerators
             AddReference(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException));
             AddReference(typeof(ExpandoObject));
             AddReference(typeof(ISession));
+            AddReference(typeof(IDictionary<Object, Object>));
             AddReference(typeof(IQueryable));
 
             AddNamespace("VirtualObjects");
             AddNamespace("System");
             AddNamespace("System.Linq");
-            AddNamespace("System.Dynamic");
+            AddNamespace("System.Dynamic"); 
+            AddNamespace("System.Collections.Generic");
         }
 
         protected override string GenerateMapObjectCode()
@@ -66,6 +69,24 @@ namespace VirtualObjects.CodeGenerators
         protected override string GenerateOtherMethodsCode()
         {
             return @"
+    private static System.Reflection.ConstructorInfo ctor;
+    private static System.Reflection.ParameterInfo[] parameters;
+
+    public static void Init(Type type) 
+    {{
+        ctor = type.GetConstructors().Single();
+        parameters = ctor.GetParameters();
+    }}
+
+    public static Object EntityCast(Object source)
+    {{
+        IDictionary<string, object> dict = (ExpandoObject)source;
+
+        var parameterValues = parameters.Select(p => dict[p.Name]).ToArray();
+
+        return ctor.Invoke(parameterValues);
+    }}
+
     public static Object Map(dynamic entity, Object[] data)
     {{
         {Body}
@@ -86,7 +107,8 @@ namespace VirtualObjects.CodeGenerators
    {
        Body = GenerateMapBody(_type),
        Name = TypeName,
-       Members = GenerateMembers(_type)
+       Members = GenerateMembers(_type),
+       UnderlyingType = _type.FullName.Replace('+', '.')
    });
         }
 

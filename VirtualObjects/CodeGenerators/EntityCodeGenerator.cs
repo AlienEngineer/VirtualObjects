@@ -42,6 +42,16 @@ namespace VirtualObjects.CodeGenerators
         protected abstract String GenerateMakeProxyCode();
         protected abstract String GenerateOtherMethodsCode();
 
+                           
+        public void PrintCode()
+        {
+
+            Console.WriteLine("-----------------------------------------------------------"); 
+            Console.WriteLine(" -> Code generated for : {0} <-", builder.TypeName);
+            Console.WriteLine("-----------------------------------------------------------");
+            Console.WriteLine(builder.Code);
+            Console.WriteLine("-----------------------------------------------------------");
+        }
 
         public Func<Object, Object[], Object> GetEntityMapper()
         {
@@ -53,19 +63,19 @@ namespace VirtualObjects.CodeGenerators
             return (Func<Object>)builder.GetDelegate<Func<Object>>("Make");
         }
 
-        public void PrintCode()
-        {
-
-            Console.WriteLine("-----------------------------------------------------------"); 
-            Console.WriteLine(" -> Code generated for : {0} <-", builder.TypeName);
-            Console.WriteLine("-----------------------------------------------------------");
-            Console.WriteLine(builder.Code);
-            Console.WriteLine("-----------------------------------------------------------");
-        }
-
         public Func<ISession, Object> GetEntityProxyProvider()
         {
             return (Func<ISession, Object>)builder.GetDelegate<Func<ISession, Object>>("MakeProxy");
+        }
+
+        public Func<Object, Object> GetEntityCast()
+        {
+            return (Func<Object, Object>)builder.GetDelegate<Func<Object, Object>>("EntityCast");
+        }
+
+        public Action<Type> GetInitializer()
+        {
+            return (Action<Type>)builder.GetDelegate<Action<Type>>("Init");
         }
     }
 }

@@ -12,22 +12,21 @@ namespace VirtualObjects.Queries.Mapping
 
         public IEnumerable<TEntity> MapEntities<TEntity>(IDataReader reader, IQueryInfo queryInfo, SessionContext sessionContext)
         {
-            return MapEntities(reader, queryInfo, typeof(TEntity), sessionContext).Select(e => (TEntity)e);
+            return MapEntities(reader, queryInfo, typeof(TEntity), sessionContext).Cast<TEntity>();
         }
 
         public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType, SessionContext sessionContext)
         {
-            var result = new List<dynamic>();
+            var result = new List<object>();
             try
             {
                 while (reader.Read())
                 {
-                    result.Add(
-                        queryInfo.MapEntity(
-                            queryInfo.MakeEntity(sessionContext.Session),
-                            reader.GetValues()
-                        )
-                    );
+                    var entity = queryInfo.MakeEntity(sessionContext.Session);
+                    var mapped = queryInfo.MapEntity(entity, reader.GetValues());
+                    var casted = queryInfo.EntityCast(mapped);
+
+                    result.Add(casted);
                 }
 
                 return result;

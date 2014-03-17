@@ -205,6 +205,7 @@ namespace VirtualObjects.Queries.Translation
 
             Func<Object, Object[], Object> mapEntity = null;
             Func<ISession, Object> makeEntity = null;
+            Func<Object, Object> entityCast = null;
 
             if ( entityInfo == null && !OutputType.IsDynamic() )
             {
@@ -217,15 +218,27 @@ namespace VirtualObjects.Queries.Translation
                 {
                     var dynCodeGen = new DynamicModelCodeGenerator(OutputType);
 
+                    //
+                    // Generates the code to be compiled.
+                    //
                     dynCodeGen.GenerateCode();
+                    
+                    //
+                    // Initializes the new type created.
+                    //
+                    dynCodeGen.GetInitializer()(OutputType);
+
                     mapEntity = dynCodeGen.GetEntityMapper();
                     makeEntity = dynCodeGen.GetEntityProxyProvider();
+                    entityCast = dynCodeGen.GetEntityCast();
+                    
                 }
             }
             else
             {
                 mapEntity = entityInfo.MapEntity;
                 makeEntity = entityInfo.EntityProxyFactory;
+                entityCast = entityInfo.EntityCast;
             }
 
             return new QueryInfo
@@ -237,6 +250,7 @@ namespace VirtualObjects.Queries.Translation
                 EntitiesMapper = entitiesMapper,
                 MakeEntity = makeEntity,
                 MapEntity = mapEntity,
+                EntityCast = entityCast,
                 Buffer = buffer,
                 EntityInfo = entityInfo
             };

@@ -14,6 +14,7 @@ namespace VirtualObjects.Queries
 
         public string CommandText { get; set; }
 
+        
         public IEntityInfo EntityInfo { get; set; }
 
         public IDictionary<string, IOperationParameter> Parameters { get; set; }
@@ -28,6 +29,8 @@ namespace VirtualObjects.Queries
 
         public Func<object, object[], Object> MapEntity { get; set; }
         
+        public Func<object, object> EntityCast { get; set; }
+
         public Func<ISession, Object> MakeEntity { get; set; }
         #endregion
     }

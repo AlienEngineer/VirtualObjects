@@ -11,6 +11,13 @@ namespace VirtualObjects.Queries
     public interface IQueryInfo
     {
         /// <summary>
+        /// Gets or sets the entity cast.
+        /// </summary>
+        /// <value>
+        /// The entity cast.
+        /// </value>
+        Func<object, object> EntityCast { get; set; }
+        /// <summary>
         /// Gets or sets the map entity.
         /// </summary>
         /// <value>

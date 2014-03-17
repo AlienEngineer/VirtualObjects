@@ -86,11 +86,20 @@ namespace VirtualObjects.CodeGenerators
         {OverridableMembers}
     }}
 
+    public static void Init(Type type) 
+    {{
+    }}
+
     public static Object Map({TypeName} entity, Object[] data)
     {{
         {Body}
 
         return entity;
+    }}
+
+    public static Object EntityCast(Object source)
+    {{
+        return source;
     }}
 
     private static Object Parse(Object value)

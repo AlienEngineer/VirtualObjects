@@ -141,5 +141,14 @@ namespace VirtualObjects
         /// The version control.
         /// </value>
         IEntityColumnInfo VersionControl { get; set; }
+
+        /// <summary>
+        /// Entities the cast.
+        /// </summary>
+        /// <value>
+        /// The entity cast.
+        /// </value>
+        ///   <returns></returns>
+        Func<Object, Object> EntityCast { get; set; }
     }
 }

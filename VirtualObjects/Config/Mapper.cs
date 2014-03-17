@@ -123,6 +123,7 @@ namespace VirtualObjects.Config
             entityInfo.MapEntity = codeGenerator.GetEntityMapper();
             entityInfo.EntityFactory = codeGenerator.GetEntityProvider();
             entityInfo.EntityProxyFactory = codeGenerator.GetEntityProxyProvider();
+            entityInfo.EntityCast = codeGenerator.GetEntityCast();
 
             return entityInfo;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using VirtualObjects.CodeGenerators;
@@ -60,24 +61,70 @@ namespace VirtualObjects.Tests.CodeGenerators
         }
 
 
+
         [Test]
         public void DynamicType_CodeGenerator_Make_And_Map()
         {
             var make = dynCodeGen.GetEntityProxyProvider();
+            var map = dynCodeGen.GetEntityMapper();
 
-            dynamic mapped = Map(new object[] { 7, "Sérgio" }, make(null));
+            dynamic mapped = map(make(null), new object[] { 7, "Sérgio" });
 
             ((String)mapped.Name).Should().Be("Sérgio");
 
             ((int)mapped.Id).Should().Be(7);
         }
 
-        public T Map<T>(Object[] data, T obj)
+        [Test]
+        public void DynamicType_CodeGenerator_Make_And_Map_Collection()
         {
-            var map = dynCodeGen.GetEntityMapper();
+            var data = new Object[][] {
+                new object[] { 1, "Sérgio" },
+                new object[] { 2, "Daniel" },
+                new object[] { 3, "Bernardo" },
+                new object[] { 4, "Ferreira" }
+            };
 
-            return (T)map(obj, data);
+            var result = MapEntities(new { Numero = 0, Nome = "" }, data);
+
+            result.Count.Should().Be(4);
         }
 
+        public static List<TEntity> MapEntities<TEntity>(TEntity entity, Object[][] data)
+        {
+            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(typeof(TEntity));
+
+            dynCodeGen.GenerateCode();
+
+            var make = dynCodeGen.GetEntityProxyProvider();
+            var map = dynCodeGen.GetEntityMapper();
+
+            type = typeof(TEntity);
+            ctor = type.GetConstructors().Single();
+            parameters = ctor.GetParameters();
+
+            var result = new List<TEntity>();
+
+            for ( int i = 0; i < data.Length; i++ )
+            {
+                dynamic mapped = map(make(null), data[i]);
+                result.Add((TEntity)Convert(mapped));
+            }
+
+            return result;
+        }
+
+        private static Type type;
+        private static System.Reflection.ConstructorInfo ctor;
+        private static System.Reflection.ParameterInfo[] parameters;
+
+        public static Object Convert(Object source)
+        {
+            IDictionary<string, object> dict = (ExpandoObject)source;
+
+            var parameterValues = parameters.Select(p => dict[p.Name]).ToArray();
+
+            return ctor.Invoke(parameterValues);
+        }
     }
 }
