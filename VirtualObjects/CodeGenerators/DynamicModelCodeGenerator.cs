@@ -4,6 +4,7 @@ using System.Reflection;
 using Fasterflect;
 using System.Dynamic;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -17,17 +18,18 @@ namespace VirtualObjects.CodeGenerators
             _type = type;
 
             AddReference(typeof(Object));
-            AddReference(typeof(System.Uri));
+            AddReference(typeof(Uri));
             AddReference(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException));
             AddReference(typeof(ExpandoObject));
             AddReference(typeof(ISession));
             AddReference(typeof(IDictionary<Object, Object>));
             AddReference(typeof(IQueryable));
+            AddReference(type);
 
             AddNamespace("VirtualObjects");
             AddNamespace("System");
             AddNamespace("System.Linq");
-            AddNamespace("System.Dynamic"); 
+            AddNamespace("System.Dynamic");
             AddNamespace("System.Collections.Generic");
         }
 
@@ -107,29 +109,8 @@ namespace VirtualObjects.CodeGenerators
    {
        Body = GenerateMapBody(_type),
        Name = TypeName,
-       Members = GenerateMembers(_type),
        UnderlyingType = _type.FullName.Replace('+', '.')
    });
-        }
-
-        private static String GenerateMembers(Type type)
-        {
-            var result = new StringBuffer();
-
-            var properties = type.GetProperties();
-            for ( var i = 0; i < properties.Length; i++ )
-            {
-                var propertyInfo = properties[i];
-                result += @"
-        public {Type} {FieldName} {{ get; set; }}"
-                    .FormatWith(new {
-                        Type = propertyInfo.PropertyType.Name,
-                        FieldName = propertyInfo.Name
-                    });
-
-            }
-
-            return result;
         }
 
         private static String GenerateMapBody(Type type)
@@ -168,10 +149,24 @@ namespace VirtualObjects.CodeGenerators
             StringBuffer result = " = ";
             if ( propertyInfo.PropertyType.IsFrameworkType() )
             {
-                result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = propertyInfo.PropertyType.Name });
+                if ( propertyInfo.PropertyType.InheritsOrImplements<IEnumerable>() && propertyInfo.PropertyType != typeof(String) )
+                {
+                    //
+                    // In case of a model type create a new instance of that model and set its values.
+                    //
+                    result += "new List<{Type}>()".FormatWith(new
+                    {
+                        Type = propertyInfo.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.')
+                    });
+                }
+                else
+                {
+                    result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = propertyInfo.PropertyType.Name });
+                }   
             }
             else
             {
+
                 //
                 // In case of a model type create a new instance of that model and set its values.
                 //
