@@ -134,7 +134,7 @@ namespace VirtualObjects.Queries.Translation
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
-        private readonly IEntitiesMapper entitiesMapper;
+        //private readonly IEntitiesMapper entitiesMapper;
         private Boolean hasJoinClause;
         private readonly IDictionary<String, IOperationParameter> _parameters;
         private int _depth;
@@ -257,7 +257,7 @@ namespace VirtualObjects.Queries.Translation
                 Parameters = Parameters,
                 PredicatedColumns = buffer.PredicatedColumns,
                 OutputType = OutputType ?? queryable.ElementType,
-                EntitiesMapper = entitiesMapper,
+                //EntitiesMapper = entitiesMapper,
                 MakeEntity = makeEntity,
                 MapEntity = mapEntity,
                 EntityCast = entityCast,

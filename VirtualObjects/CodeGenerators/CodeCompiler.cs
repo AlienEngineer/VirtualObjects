@@ -65,10 +65,9 @@ namespace VirtualObjects.CodeGenerators
                     }
                 }
 #if DEBUG
-                else
-                {
-                    File.WriteAllText(cr.PathToAssembly + cr.CompiledAssembly.GetName().Name + ".0.cs", Code);    
-                }
+                    // c:\Users\sérgio\AppData\Local\Temp\w1tyysbq.0.cs
+                    File.WriteAllText(cr.TempFiles.BasePath + ".0.cs", Code);    
+                
 #endif
                 return cr;
             }

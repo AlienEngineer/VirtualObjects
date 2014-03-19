@@ -139,14 +139,12 @@ namespace VirtualObjects.CodeGenerators
         
         var list = new List<{Type}>();
 
-        do {{
-            i = index;
-            var entity = new {Type}();
+        i = index;
+        var entity = new {Type}();
 
-            {Body}
+        {Body}
 
-            list.Add(entity);
-        }} while({StopCondition});
+        list.Add(entity);
         
         return list;
     }}".FormatWith(new
@@ -220,7 +218,6 @@ namespace VirtualObjects.CodeGenerators
                 var propertyInfo = properties[i];
                 const string setter = @"
         entity.{FieldName} = {Value};
-        ++i;
 ";
 
                 String value = GenerateFieldAssignment(i, propertyInfo);
