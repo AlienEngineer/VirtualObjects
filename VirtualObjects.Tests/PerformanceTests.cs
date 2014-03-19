@@ -4,9 +4,11 @@ using Fasterflect;
 
 namespace VirtualObjects.Tests
 {
-#if PERFORMANCE
+#if !PERFORMANCE
     using NUnit.Framework;
     using Models.Northwind;
+    using System.Data;
+    using Moq;
 
     /// <summary>
     /// 
@@ -118,7 +120,32 @@ namespace VirtualObjects.Tests
                 } while ( numberOfEntities < 500 );
             }
         }
+        
+        private IDataReader MockIDataReader(Object[] data)
+        {
+            var moq = new Mock<IDataReader>();
 
+            // This var stores current position in 'ojectsToEmulate' list
+            int count = -1;
+
+            moq.Setup(x => x.Read())
+                // Return 'True' while list still has an item
+                .Returns(() => count < data.Length - 1)
+                // Go to next position
+                .Callback(() => count++);
+
+            moq.Setup(x => x.GetValues(data))
+                .Callback<Object[]>(array =>
+                {
+                    for ( int i = 0; i < array.Length; i++ )
+                    {
+                        array[i] = data[i];
+                    }
+                })
+                .Returns(data.Length);
+
+            return moq.Object;
+        }
 
         [Test]
         public void Performance_Check_EntityMapping()
@@ -141,6 +168,10 @@ namespace VirtualObjects.Tests
                 "Fax",
                 "HomePage"
             };
+
+            var reader = MockIDataReader(data);
+
+            var values = reader.GetValues();
 
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
@@ -176,12 +207,13 @@ namespace VirtualObjects.Tests
                     }, name: STR_SetValue);
 
                     suppliers = GetSuppliers(numberOfEntities);
+                    
                     Diagnostic.Timed(() =>
                     {
                         Parallel.For(0, suppliers.Length, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, i =>
                         {
                             var supplier = suppliers[i];
-                            entityInfo.MapEntity(supplier, data);
+                            entityInfo.MapEntity(supplier, reader);
                         });
                     }, name: STR_Parallel);
 
@@ -213,7 +245,7 @@ namespace VirtualObjects.Tests
                         for ( int i = 0; i < numberOfEntities; i++ )
                         {
                             var supplier = suppliers[i];
-                            entityInfo.MapEntity(supplier, data);
+                            entityInfo.MapEntity(supplier, reader);
                         }
                     }, name: STR_Compiled);
 

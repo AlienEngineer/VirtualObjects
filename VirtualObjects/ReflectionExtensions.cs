@@ -39,7 +39,11 @@ namespace VirtualObjects
         /// <returns></returns>
         public static Boolean IsVirtual(this PropertyInfo propertyInfo)
         {
+#if NET40
+            return propertyInfo.GetGetMethod().IsVirtual;
+#else
             return propertyInfo.GetMethod.IsVirtual;
+#endif
         }
 
         /// <summary>
