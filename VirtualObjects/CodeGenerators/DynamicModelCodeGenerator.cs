@@ -270,7 +270,7 @@ namespace VirtualObjects.CodeGenerators
             StringBuffer result = " = ";
             if (propertyInfo.PropertyType.IsFrameworkType())
             {
-                if (propertyInfo.PropertyType.IsCollection())
+                if ( propertyInfo.PropertyType.IsGenericCollection() )
                 {
                     //
                     // In case of a model type create a new instance of that model and set its values.

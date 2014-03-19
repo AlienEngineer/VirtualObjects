@@ -54,6 +54,11 @@ namespace VirtualObjects
                 && type != typeof(String);
         }
 
+        public static Boolean IsGenericCollection(this Type type)
+        {
+            return type.IsCollection() && type.GetGenericArguments().Any();
+        }
+
     }
 
     /// <summary>
