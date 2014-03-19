@@ -23,6 +23,8 @@ namespace VirtualObjects.CodeGenerators
             References = new Collection<String>();
         }
 
+        protected override string AssemblyName { get { return typeName; } }
+
         protected override string GenerateCode()
         {
             var code = new StringBuffer();
@@ -41,7 +43,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var code = new StringBuffer();
 
-            foreach ( var function in Body )
+            foreach (var function in Body)
             {
                 code += function;
             }
@@ -69,7 +71,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var code = new StringBuffer();
 
-            foreach ( var name in Namespaces )
+            foreach (var name in Namespaces)
             {
                 code += "using ";
                 code += name;

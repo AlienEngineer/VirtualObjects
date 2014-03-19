@@ -4,7 +4,6 @@ using System.Reflection;
 using Fasterflect;
 using System.Dynamic;
 using System.Collections.Generic;
-using System.Collections;
 using VirtualObjects.Config;
 
 namespace VirtualObjects.CodeGenerators
@@ -13,7 +12,7 @@ namespace VirtualObjects.CodeGenerators
     {
         private readonly Type _type;
         private readonly IEntityBag entityBag;
-        
+
         public DynamicModelCodeGenerator(Type type, IEntityBag entityBag)
             : base("Internal_Builder_Dynamic_" + type.Name.Replace("<>", "").Replace('`', '_'))
         {
@@ -118,35 +117,94 @@ namespace VirtualObjects.CodeGenerators
        Body = GenerateMapBody(_type),
        Name = TypeName,
        UnderlyingType = _type.FullName.Replace('+', '.'),
-       SpecificMethods = GenerateSpecificMethods(_type)
+       SpecificMethods = GenerateSpecificMethods(_type, entityBag)
    });
         }
 
-        private static String GenerateSpecificMethods(Type type)
+        private static string GenerateSpecificMethods(Type type, IEntityBag bag)
         {
             var result = new StringBuffer();
 
-            foreach ( var property in type.GetProperties() )
+            foreach (var property in type.GetProperties())
             {
-                if ( property.PropertyType.IsFrameworkType() )
+                if (property.PropertyType.IsFrameworkType())
                 {
-                    if ( property.PropertyType.IsCollection() )
+                    if (property.PropertyType.IsCollection())
                     {
+
+
                         result += @"
-    private static IList<TEntity> FillCollection_{PropertyName}<TEntity>(Object[] data, out int i)  where TEntity : class, new() 
+    private static IList<{Type}> FillCollection_{PropertyName}(Object[] data, out int i, int index)
     {{
-        i = 0;
-        var list = new List<TEntity>();
-
         
+        var list = new List<{Type}>();
 
+        do {{
+            i = index;
+            var entity = new {Type}();
+
+            {Body}
+
+            list.Add(entity);
+        }} while({StopCondition});
+        
         return list;
     }}".FormatWith(new
        {
-           PropertyName = property.Name
+           PropertyName = property.Name,
+           Type = property.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.'),
+           Body = GenerateFillEntity(property.PropertyType.GetGenericArguments().First(), bag),
+           StopCondition = GenerateStopCondition(property, bag) 
        });
+
                     }
                 }
+                else
+                {
+                    result += @"
+    private static {Type} FillEntity_{PropertyName}(Object[] data, out int i, int index)
+    {{
+        i = index;
+        var entity = new {Type}();
+
+        {Body}
+
+        return entity;
+    }}".FormatWith(new
+       {
+           PropertyName = property.Name,
+           Body = GenerateFillEntity(property.PropertyType, bag),
+           Type = property.PropertyType.FullName.Replace('+', '.')
+       });
+                }
+            }
+
+            return result;
+        }
+
+        private static object GenerateStopCondition(PropertyInfo property, IEntityBag bag)
+        {
+            return "true";
+        }
+
+        private static string GenerateFillEntity(Type propertyType, IEntityBag bag)
+        {
+            var result = new StringBuffer();
+            var entityInfo = bag[propertyType];
+
+            for (var i = 0; i < entityInfo.Columns.Count; i++)
+            {
+                result += @"
+        entity.{FieldName} {Value}; ++i;
+".FormatWith(new
+ {
+     FieldName = entityInfo.Columns[i].Property.Name,
+     //Increments = entityInfo.Columns[i].Property.PropertyType.IsFrameworkType() ? "++i;" : String.Empty,
+     Value = GenerateFieldAssignment(
+                        i,
+                        entityInfo.Columns[i].Property,
+                        withFillMethodCall: false)
+ });
             }
 
             return result;
@@ -157,7 +215,7 @@ namespace VirtualObjects.CodeGenerators
             var result = new StringBuffer();
 
             var properties = type.GetProperties();
-            for ( var i = 0; i < properties.Length; i++ )
+            for (var i = 0; i < properties.Length; i++)
             {
                 var propertyInfo = properties[i];
                 const string setter = @"
@@ -185,17 +243,17 @@ namespace VirtualObjects.CodeGenerators
             return result;
         }
 
-        private static StringBuffer GenerateFieldAssignment(int i, PropertyInfo propertyInfo)
+        private static StringBuffer GenerateFieldAssignment(int i, PropertyInfo propertyInfo, bool withFillMethodCall = true)
         {
             StringBuffer result = " = ";
-            if ( propertyInfo.PropertyType.IsFrameworkType() )
+            if (propertyInfo.PropertyType.IsFrameworkType())
             {
-                if ( propertyInfo.PropertyType.IsCollection() )
+                if (propertyInfo.PropertyType.IsCollection())
                 {
                     //
                     // In case of a model type create a new instance of that model and set its values.
                     //
-                    result += "FillCollection_{PropertyName}<{Type}>(data, out i)".FormatWith(new
+                    result += "FillCollection_{PropertyName}(data, out i, i)".FormatWith(new
                     {
                         Type = propertyInfo.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.'),
                         PropertyName = propertyInfo.Name
@@ -209,14 +267,26 @@ namespace VirtualObjects.CodeGenerators
             else
             {
 
-                //
-                // In case of a model type create a new instance of that model and set its values.
-                //
-                result += "new {Type} {{ }}".FormatWith(new
+                if (!withFillMethodCall)
                 {
-                    Type = propertyInfo.PropertyType.FullName.Replace('+', '.'),
-                    PropertyName = propertyInfo.Name
-                });
+                    result += "new {Type}()".FormatWith(new
+                    {
+                        Type = propertyInfo.PropertyType.FullName.Replace('+', '.'),
+                        PropertyName = propertyInfo.Name
+                    });
+                }
+                else
+                {
+                    //
+                    // In case of a model type create a new instance of that model and set its values.
+                    //
+                    result += "FillEntity_{PropertyName}(data, out i, i)".FormatWith(new
+                    {
+                        Type = propertyInfo.PropertyType.FullName.Replace('+', '.'),
+                        PropertyName = propertyInfo.Name
+                    });
+                }
+
             }
 
             return result;

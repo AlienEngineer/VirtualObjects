@@ -49,6 +49,6 @@ namespace VirtualObjects.Queries
         /// <param name="formatter">The formatter.</param>
         /// <param name="mapper">The mapper.</param>
         /// <returns></returns>
-        IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper);
+        IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag);
     }
 }

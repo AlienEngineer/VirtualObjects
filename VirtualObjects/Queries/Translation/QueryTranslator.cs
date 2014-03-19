@@ -18,10 +18,6 @@ namespace VirtualObjects.Queries.Translation
 {
     class QueryTranslator : IQueryTranslator
     {
-        public QueryTranslator(IEntitiesMapper entitiesMapper)
-        {
-            this.entitiesMapper = entitiesMapper;
-        }
 
         #region Internal types
 
@@ -149,8 +145,9 @@ namespace VirtualObjects.Queries.Translation
         private readonly Stack<IEntityColumnInfo> _memberAccessStack = new Stack<IEntityColumnInfo>();
         private readonly Stack<IEntityInfo> _EntitySources = new Stack<IEntityInfo>();
 
-        public QueryTranslator(IFormatter formatter, IMapper mapper)
+        public QueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag)
         {
+            this.entityBag = entityBag;
             _formatter = formatter;
             _mapper = mapper;
             _index = _depth = 0;

@@ -1,8 +1,7 @@
+using System.IO;
 using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -20,6 +19,11 @@ namespace VirtualObjects.CodeGenerators
         public String Code { get; private set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        protected abstract String AssemblyName { get; }
+
+        /// <summary>
         /// Compiles the specified references.
         /// </summary>
         /// <param name="References">The references.</param>
@@ -28,7 +32,7 @@ namespace VirtualObjects.CodeGenerators
         {
             using ( var provider = new CSharpCodeProvider() )
             {
-                CompilerParameters cp  = new CompilerParameters();
+                var cp  = new CompilerParameters();
 
                 foreach ( var reference in References )
                 {
@@ -37,27 +41,35 @@ namespace VirtualObjects.CodeGenerators
 
                 cp.WarningLevel = 3;
 
-                cp.CompilerOptions = "/optimize";
+                //cp.CompilerOptions = "/optimize";
                 cp.GenerateExecutable = false;
                 cp.GenerateInMemory = true;
+                cp.IncludeDebugInformation = true;
+                //cp.CoreAssemblyFileName = AssemblyName;
 
                 Code = GenerateCode();
 
                 var cr = provider.CompileAssemblyFromSource(cp, Code);
 
-                if ( cr.Errors.Count > 0 )
+
+                if (cr.Errors.Count > 0)
                 {
                     Console.WriteLine(Code);
 
                     Console.WriteLine("Errors building of {0}", cr.PathToAssembly);
 
-                    foreach ( CompilerError ce in cr.Errors )
+                    foreach (CompilerError ce in cr.Errors)
                     {
                         Console.WriteLine("  {0}", ce.ToString());
                         Console.WriteLine();
                     }
                 }
-
+#if DEBUG
+                else
+                {
+                    File.WriteAllText(cr.PathToAssembly + cr.CompiledAssembly.GetName().Name + ".0.cs", Code);    
+                }
+#endif
                 return cr;
             }
         }
