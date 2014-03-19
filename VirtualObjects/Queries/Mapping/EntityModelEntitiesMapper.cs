@@ -23,7 +23,7 @@ namespace VirtualObjects.Queries.Mapping
                 while (reader.Read())
                 {
                     var entity = queryInfo.MakeEntity(sessionContext.Session);
-                    var mapped = queryInfo.MapEntity(entity, reader.GetValues());
+                    var mapped = queryInfo.MapEntity(entity, reader);
                     var casted = queryInfo.EntityCast(mapped);
 
                     result.Add(casted);

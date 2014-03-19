@@ -4,6 +4,7 @@ using VirtualObjects.Exceptions;
 using Fasterflect;
 using System.Reflection;
 using VirtualObjects.Config;
+using System.Data;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -25,19 +26,21 @@ namespace VirtualObjects.CodeGenerators
             AddReference(typeof(Object));
             AddReference(typeof(ISession));
             AddReference(typeof(IQueryable));
+            AddReference(typeof(IDataReader));
 
             AddNamespace(_entityInfo.EntityType.Namespace);
             AddNamespace("VirtualObjects");
             AddNamespace("System");
             AddNamespace("System.Linq");
+            AddNamespace("System.Data");
         }
 
         protected override string GenerateMapObjectCode()
         {
             return @"
-    public static Object MapObject(Object entity, Object[] data)
+    public static Object MapObject(Object entity, IDataReader reader)
     {{
-        return Map(({TypeName})entity, data);
+        return Map(({TypeName})entity, reader);
     }}
 ".FormatWith(new { TypeName = properName });
         }
@@ -90,8 +93,10 @@ namespace VirtualObjects.CodeGenerators
     {{
     }}
 
-    public static Object Map({TypeName} entity, Object[] data)
+    public static Object Map({TypeName} entity, IDataReader reader)
     {{
+        var data = reader.GetValues();
+
         {Body}
 
         return entity;

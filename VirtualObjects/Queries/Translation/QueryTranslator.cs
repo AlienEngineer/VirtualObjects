@@ -13,6 +13,7 @@ using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.CodeGenerators;
+using System.Data;
 
 namespace VirtualObjects.Queries.Translation
 {
@@ -213,7 +214,7 @@ namespace VirtualObjects.Queries.Translation
 
             var entityInfo = OutputType == null || OutputType.IsDynamic() ? null : EntityInfo;
 
-            Func<Object, Object[], Object> mapEntity = null;
+            Func<Object, IDataReader, Object> mapEntity = null;
             Func<ISession, Object> makeEntity = null;
             Func<Object, Object> entityCast = null;
 

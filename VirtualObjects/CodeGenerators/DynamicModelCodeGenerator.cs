@@ -5,6 +5,7 @@ using Fasterflect;
 using System.Dynamic;
 using System.Collections.Generic;
 using VirtualObjects.Config;
+using System.Data;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -26,6 +27,7 @@ namespace VirtualObjects.CodeGenerators
             AddReference(typeof(ISession));
             AddReference(typeof(IDictionary<Object, Object>));
             AddReference(typeof(IQueryable));
+            AddReference(typeof(IDataReader));
             AddReference(type);
 
             AddNamespace("VirtualObjects");
@@ -33,14 +35,15 @@ namespace VirtualObjects.CodeGenerators
             AddNamespace("System.Linq");
             AddNamespace("System.Dynamic");
             AddNamespace("System.Collections.Generic");
+            AddNamespace("System.Data");
         }
 
         protected override string GenerateMapObjectCode()
         {
             return @"
-    public static Object MapObject(Object entity, Object[] data)
+    public static Object MapObject(Object entity, IDataReader reader)
     {
-        return Map(entity, data);
+        return Map(entity, reader);
     }
 ";
         }
@@ -91,9 +94,10 @@ namespace VirtualObjects.CodeGenerators
         return ctor.Invoke(parameterValues);
     }}
 
-    public static Object Map(dynamic entity, Object[] data)
+    public static Object Map(dynamic entity, IDataReader reader)
     {{
         int i = 0;
+        var data = reader.GetValues();
         {Body}
         
         return entity;
@@ -134,17 +138,20 @@ namespace VirtualObjects.CodeGenerators
 
 
                         result += @"
-    private static IList<{Type}> FillCollection_{PropertyName}(Object[] data, out int i, int index)
+    private static IList<{Type}> FillCollection_{PropertyName}(IDataReader reader, out int i, int index)
     {{
         
         var list = new List<{Type}>();
 
-        i = index;
-        var entity = new {Type}();
+        do {{
+            i = index;
+            var data = reader.GetValues();
+            var entity = new {Type}();
 
-        {Body}
+            {Body}
 
-        list.Add(entity);
+            list.Add(entity);
+        }} while(reader.Read());
         
         return list;
     }}".FormatWith(new
@@ -250,7 +257,7 @@ namespace VirtualObjects.CodeGenerators
                     //
                     // In case of a model type create a new instance of that model and set its values.
                     //
-                    result += "FillCollection_{PropertyName}(data, out i, i)".FormatWith(new
+                    result += "FillCollection_{PropertyName}(reader, out i, i)".FormatWith(new
                     {
                         Type = propertyInfo.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.'),
                         PropertyName = propertyInfo.Name

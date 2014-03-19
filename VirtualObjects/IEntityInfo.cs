@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using VirtualObjects.Queries;
 
 namespace VirtualObjects
@@ -39,7 +40,7 @@ namespace VirtualObjects
         /// <value>
         /// The map entity.
         /// </value>
-        Func<object, object[], Object> MapEntity { get; set; }
+        Func<object, IDataReader, Object> MapEntity { get; set; }
 
         /// <summary>
         /// Gets the <see cref="IEntityColumnInfo"/> with the specified property name.

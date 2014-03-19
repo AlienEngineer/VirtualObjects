@@ -6,6 +6,8 @@ using VirtualObjects.CodeGenerators;
 using System.Collections.Generic;
 using System.Dynamic;
 using VirtualObjects.Config;
+using System.Data;
+using Moq;
 
 namespace VirtualObjects.Tests.CodeGenerators
 {
@@ -61,7 +63,29 @@ namespace VirtualObjects.Tests.CodeGenerators
             provided.Should().NotBeNull();
         }
 
+        private class TestData
+        {
+            public int Id { get; set; }
+            public String Name { get; set; }
+        }
 
+        private IDataReader MockIDataReader(Object[] data)
+        {
+            var moq = new Mock<IDataReader>();
+
+            // This var stores current position in 'ojectsToEmulate' list
+            int count = -1;
+
+            moq.Setup(x => x.Read())
+                // Return 'True' while list still has an item
+                .Returns(() => count < data.Length - 1)
+                // Go to next position
+                .Callback(() => count++);
+
+            moq.Setup(x => x.GetValues()).Returns(data);
+
+            return moq.Object;
+        }
 
         [Test]
         public void DynamicType_CodeGenerator_Make_And_Map()
@@ -69,7 +93,7 @@ namespace VirtualObjects.Tests.CodeGenerators
             var make = dynCodeGen.GetEntityProxyProvider();
             var map = dynCodeGen.GetEntityMapper();
 
-            dynamic mapped = map(make(null), new object[] { 7, "Sérgio" });
+            dynamic mapped = map(make(null), MockIDataReader(new object[] { 7, "Sérgio" }));
 
             ((String)mapped.Name).Should().Be("Sérgio");
 
@@ -108,7 +132,7 @@ namespace VirtualObjects.Tests.CodeGenerators
 
             for ( int i = 0; i < data.Length; i++ )
             {
-                dynamic mapped = map(make(null), data[i]);
+                dynamic mapped = map(make(null), MockIDataReader(data[i]));
                 result.Add((TEntity)Convert(mapped));
             }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -8,7 +9,7 @@ namespace VirtualObjects.CodeGenerators
         void GenerateCode();
         void PrintCode();
 
-        Func<Object, Object[], Object> GetEntityMapper();
+        Func<Object, IDataReader, Object> GetEntityMapper();
         Func<Object> GetEntityProvider();        
         Func<ISession, Object> GetEntityProxyProvider();
         Func<Object, Object> GetEntityCast();

@@ -10,7 +10,7 @@ namespace VirtualObjects.Queries.Mapping
     {
         public virtual object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
         {
-            mapContext.EntityInfo.MapEntity(buffer, reader.GetValues());
+            mapContext.EntityInfo.MapEntity(buffer, reader);
 
             return buffer;
         }

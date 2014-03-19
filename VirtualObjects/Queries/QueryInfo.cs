@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using VirtualObjects.Queries.Translation;
 
@@ -27,7 +28,7 @@ namespace VirtualObjects.Queries
 
         public IEntitiesMapper EntitiesMapper { get; set; }
 
-        public Func<object, object[], Object> MapEntity { get; set; }
+        public Func<object, IDataReader, Object> MapEntity { get; set; }
         
         public Func<object, object> EntityCast { get; set; }
 

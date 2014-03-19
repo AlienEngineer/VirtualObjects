@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using VirtualObjects.Config;
 
@@ -23,7 +24,7 @@ namespace VirtualObjects.Queries
         /// <value>
         /// The map entity.
         /// </value>
-        Func<object, object[], Object> MapEntity { get; set; }
+        Func<object, IDataReader, Object> MapEntity { get; set; }
 
         /// <summary>
         /// Gets or sets the make entity.

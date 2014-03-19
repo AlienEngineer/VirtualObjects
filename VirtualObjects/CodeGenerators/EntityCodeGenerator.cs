@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -53,9 +54,9 @@ namespace VirtualObjects.CodeGenerators
             Console.WriteLine("-----------------------------------------------------------");
         }
 
-        public Func<Object, Object[], Object> GetEntityMapper()
+        public Func<Object, IDataReader, Object> GetEntityMapper()
         {
-            return (Func<Object, Object[], Object>)builder.GetDelegate<Func<Object, Object[], Object>>("MapObject");
+            return (Func<Object, IDataReader, Object>)builder.GetDelegate<Func<Object, IDataReader, Object>>("MapObject");
         }
 
         public Func<Object> GetEntityProvider()
