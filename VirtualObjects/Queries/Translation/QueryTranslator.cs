@@ -231,7 +231,7 @@ namespace VirtualObjects.Queries.Translation
                 Parameters = Parameters,
                 PredicatedColumns = buffer.PredicatedColumns,
                 OutputType = OutputType ?? queryable.ElementType,
-
+                Sources = _EntitySources.ToList(),
                 OnClauses = _OnClauses,
                 Buffer = buffer,
                 EntityInfo = entityInfo

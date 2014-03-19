@@ -103,7 +103,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="CodeGenerators\CodeGeneratorTests.cs" />
     <Compile Include="Config\MappingTests.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="Connection\ConnectionProviderTests.cs" />

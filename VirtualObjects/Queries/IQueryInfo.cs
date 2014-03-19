@@ -13,6 +13,13 @@ namespace VirtualObjects.Queries
     public interface IQueryInfo
     {
         /// <summary>
+        /// Gets or sets the sources.
+        /// </summary>
+        /// <value>
+        /// The sources.
+        /// </value>
+        IList<IEntityInfo> Sources { get; set; }
+        /// <summary>
         /// Gets or sets the on clauses.
         /// </summary>
         /// <value>

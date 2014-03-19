@@ -34,8 +34,12 @@ namespace VirtualObjects.Queries
         public Func<object, object> EntityCast { get; set; }
 
         public Func<ISession, Object> MakeEntity { get; set; }
-        #endregion
+        
+        public IList<IEntityInfo> Sources { get; set; }
 
         public IList<OnClause> OnClauses { get; set; }
+
+        #endregion
+
     }
 }

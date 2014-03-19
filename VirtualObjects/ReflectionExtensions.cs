@@ -54,6 +54,11 @@ namespace VirtualObjects
                 && type != typeof(String);
         }
 
+        /// <summary>
+        /// Determines whether [the specified type] [is generic collection] .
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         public static Boolean IsGenericCollection(this Type type)
         {
             return type.IsCollection() && type.GetGenericArguments().Any();

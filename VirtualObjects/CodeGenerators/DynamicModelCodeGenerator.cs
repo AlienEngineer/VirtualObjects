@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using VirtualObjects.Config;
 using System.Data;
 using VirtualObjects.Queries;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -15,6 +16,7 @@ namespace VirtualObjects.CodeGenerators
         private readonly Type _type;
         private readonly IEntityBag entityBag;
         private readonly IQueryInfo queryInfo;
+        private int projectionIndex = 0;
         
         public DynamicModelCodeGenerator(Type type, IEntityBag entityBag, IQueryInfo queryInfo)
             : base("Internal_Builder_Dynamic_" + type.Name.Replace("<>", "").Replace('`', '_'))
@@ -77,8 +79,10 @@ namespace VirtualObjects.CodeGenerators
      Name = TypeName
  });
         }
+        
         protected override string GenerateOtherMethodsCode()
         {
+            projectionIndex = 0;
             return @"
     private static System.Reflection.ConstructorInfo ctor;
     private static System.Reflection.ParameterInfo[] parameters;
@@ -126,14 +130,14 @@ namespace VirtualObjects.CodeGenerators
    
 ".FormatWith(new
    {
-       Body = GenerateMapBody(_type),
+       Body = GenerateMapBody(_type, queryInfo),
        Name = TypeName,
        UnderlyingType = _type.FullName.Replace('+', '.'),
        SpecificMethods = GenerateSpecificMethods(_type, entityBag, queryInfo)
    });
         }
 
-        private static string GenerateSpecificMethods(Type type, IEntityBag bag, IQueryInfo queryinfo)
+        private string GenerateSpecificMethods(Type type, IEntityBag bag, IQueryInfo queryinfo)
         {
             var result = new StringBuffer();
 
@@ -168,8 +172,8 @@ namespace VirtualObjects.CodeGenerators
        {
            PropertyName = property.Name,
            Type = property.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.'),
-           Body = GenerateFillEntity(property.PropertyType.GetGenericArguments().First(), bag),
-           StopCondition = GenerateStopCondition(property, bag, queryinfo) 
+           Body = GenerateFillEntity(property.PropertyType.GetGenericArguments().First(), bag, queryinfo),
+           StopCondition = GenerateStopCondition(property, queryinfo) 
        });
 
                     }
@@ -188,7 +192,7 @@ namespace VirtualObjects.CodeGenerators
     }}".FormatWith(new
        {
            PropertyName = property.Name,
-           Body = GenerateFillEntity(property.PropertyType, bag),
+           Body = GenerateFillEntity(property.PropertyType, bag, queryinfo),
            Type = property.PropertyType.FullName.Replace('+', '.')
        });
                 }
@@ -197,7 +201,7 @@ namespace VirtualObjects.CodeGenerators
             return result;
         }
 
-        private static object GenerateStopCondition(PropertyInfo property, IEntityBag bag, IQueryInfo queryinfo)
+        private static object GenerateStopCondition(PropertyInfo property, IQueryInfo queryinfo)
         {
             var type = property.PropertyType.GetGenericArguments().First();
 
@@ -211,61 +215,101 @@ namespace VirtualObjects.CodeGenerators
                 });
         }
 
-        private static string GenerateFillEntity(Type propertyType, IEntityBag bag)
+        private string GenerateFillEntity(Type propertyType, IEntityBag bag, IQueryInfo queryInfo)
         {
             var result = new StringBuffer();
             var entityInfo = bag[propertyType];
 
             for (var i = 0; i < entityInfo.Columns.Count; i++)
             {
+                
                 result += @"
         entity.{FieldName} {Value}; ++i;
 ".FormatWith(new
  {
      FieldName = entityInfo.Columns[i].Property.Name,
      Value = GenerateFieldAssignment(
-                        i,
                         entityInfo.Columns[i].Property,
-                        withFillMethodCall: false)
+                        queryInfo, 
+                        withMethodCall: false, 
+                        column: entityInfo.Columns[i])
  });
+                ++projectionIndex;
             }
 
+            result.Replace(" --i; ++i;", "");
             return result;
         }
 
-        private static String GenerateMapBody(Type type)
+        private String GenerateMapBody(Type type, IQueryInfo queryInfo)
         {
             var result = new StringBuffer();
 
             var properties = type.GetProperties();
             for (var i = 0; i < properties.Length; i++)
             {
+                
                 var propertyInfo = properties[i];
                 const string setter = @"
-        entity.{FieldName} = {Value};
+        try
+        {{
+            {Comment}if (data[{i}] != DBNull.Value)
+                entity.{FieldName} = {Value};
+        }}
+        catch (InvalidCastException) 
+        {{ 
+            {NotComment}entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
+        }}
+        catch ( Exception ex)
+        {{
+            throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value."", ex);
+        }}
+        ++i;
 ";
 
-                String value = GenerateFieldAssignment(i, propertyInfo);
+                String value = GenerateFieldAssignment(
+                    propertyInfo, 
+                    queryInfo, 
+                    withMethodCall: true, 
+                    column: projectionIndex < queryInfo.PredicatedColumns.Count ? queryInfo.PredicatedColumns[projectionIndex] : null);
                 value = value.Substring(3, value.Length - 3);
 
                 result += setter.FormatWith(new
                 {
-                    FieldName = propertyInfo.Name,
                     i,
+                    FieldName = propertyInfo.Name,
                     Value = value,
+                    Comment = propertyInfo.PropertyType.IsFrameworkType() || propertyInfo.PropertyType.IsGenericCollection() ? "//" : String.Empty,
+                    NotComment = propertyInfo.PropertyType.IsFrameworkType() && !propertyInfo.PropertyType.IsGenericCollection() ? String.Empty : "//",
                     ValueNoType = value
                        .Replace(String.Format("({0})", propertyInfo.PropertyType.Name), "")
                        .Replace("default", String.Format("default({0})", propertyInfo.PropertyType.Name)),
                     Type = propertyInfo.PropertyType.Name
                 });
 
+
+                if ( propertyInfo.PropertyType.IsFrameworkType() )
+                {
+                    if ( propertyInfo.PropertyType.IsGenericCollection() )
+                    {
+                        projectionIndex += entityBag[propertyInfo.PropertyType.GetGenericArguments().First()].Columns.Count;
+                    }
+                    else
+                    {
+                        ++projectionIndex;
+                    }
+                }
+                else
+                {
+                    projectionIndex += entityBag[propertyInfo.PropertyType].Columns.Count;
+                }
             }
 
-            // result.RemoveLast(",");
+            result.Replace(" --i; ++i;", "");
             return result;
         }
 
-        private static StringBuffer GenerateFieldAssignment(int i, PropertyInfo propertyInfo, bool withFillMethodCall = true)
+        private StringBuffer GenerateFieldAssignment(PropertyInfo propertyInfo, IQueryInfo queryInfo, Boolean withMethodCall = false, IEntityColumnInfo column = null)
         {
             StringBuffer result = " = ";
             if (propertyInfo.PropertyType.IsFrameworkType())
@@ -275,7 +319,7 @@ namespace VirtualObjects.CodeGenerators
                     //
                     // In case of a model type create a new instance of that model and set its values.
                     //
-                    result += "FillCollection_{PropertyName}(reader, out i, i, out hasMoreData)".FormatWith(new
+                    result += "FillCollection_{PropertyName}(reader, out i, i, out hasMoreData); --i".FormatWith(new
                     {
                         Type = propertyInfo.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.'),
                         PropertyName = propertyInfo.Name
@@ -283,26 +327,34 @@ namespace VirtualObjects.CodeGenerators
                 }
                 else
                 {
-                    result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = propertyInfo.PropertyType.Name });
+                    result += "({Type})(Parse(data[i]) ?? default({Type}))".FormatWith(new { Type = propertyInfo.PropertyType.Name });
                 }
             }
             else
             {
 
-                if (!withFillMethodCall)
+                if ( !withMethodCall && column != null && column.ForeignKey != null)
                 {
-                    result += "new {Type}()".FormatWith(new
+                    result += "new {Type} {{ {BoundField} {Value} }}".FormatWith(new
                     {
-                        Type = propertyInfo.PropertyType.FullName.Replace('+', '.'),
-                        PropertyName = propertyInfo.Name
+                        Type = column.Property.PropertyType.FullName.Replace('+', '.'),
+                        BoundField = column.ForeignKey.Property.Name,
+                        Value = GenerateFieldAssignment(column.ForeignKey.Property, queryInfo, withMethodCall, column.ForeignKey)
                     });
                 }
                 else
                 {
+                    var entityInfo = entityBag[propertyInfo.PropertyType];
+
+                    if ( !queryInfo.Sources.Contains(entityInfo) && projectionIndex + entityInfo.Columns.Count > queryInfo.PredicatedColumns.Count )
+                    {
+                        throw new TranslationException("\nUnable to use the full entity of type [{Name}] on projection without a proper join statement.", propertyInfo.PropertyType);
+                    }
+
                     //
                     // In case of a model type create a new instance of that model and set its values.
                     //
-                    result += "FillEntity_{PropertyName}(data, out i, i)".FormatWith(new
+                    result += "FillEntity_{PropertyName}(data, out i, i); --i".FormatWith(new
                     {
                         Type = propertyInfo.PropertyType.FullName.Replace('+', '.'),
                         PropertyName = propertyInfo.Name

@@ -9,6 +9,7 @@ using VirtualObjects.Tests.Models.Northwind;
 namespace VirtualObjects.Tests.Queries
 {
     using NUnit.Framework;
+    using VirtualObjects.Exceptions;
 
     /// <summary>
     /// 
@@ -155,7 +156,8 @@ namespace VirtualObjects.Tests.Queries
             entities.Should().NotBeEmpty();
             entities.Count().Should().Be(169);
         }
-        [Test, Repeat(Repeat)]
+
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Mapper_GetAllOrders_Joined_Query_CustomProjection_With_ForeignKey()
         {
             var query = from o in Query<Orders>()
