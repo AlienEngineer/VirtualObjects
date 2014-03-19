@@ -283,7 +283,7 @@ namespace VirtualObjects.CodeGenerators
                 }
                 else
                 {
-                    result += "({Type})(Parse(data[i]) ?? default({Type}))".FormatWith(new { i, Type = propertyInfo.PropertyType.Name });
+                    result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = propertyInfo.PropertyType.Name });
                 }
             }
             else
