@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -9,7 +10,7 @@ namespace VirtualObjects.CodeGenerators
         void GenerateCode();
         void PrintCode();
 
-        Func<Object, IDataReader, Object> GetEntityMapper();
+        Func<Object, IDataReader, MapResult> GetEntityMapper();
         Func<Object> GetEntityProvider();        
         Func<ISession, Object> GetEntityProxyProvider();
         Func<Object, Object> GetEntityCast();

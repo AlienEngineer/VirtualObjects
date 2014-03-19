@@ -1,15 +1,17 @@
 ﻿using VirtualObjects;
+using VirtualObjects.Queries.Mapping;
 using System;
 using System.Linq;
 using System.Dynamic;
 using System.Collections.Generic;
+using System.Data;
 
-public class Internal_Builder_Dynamic_f__AnonymousType2d_2
+public class Internal_Builder_Dynamic_f__AnonymousType21_2
 {
 
-    public static Object MapObject(Object entity, Object[] data)
+    public static MapResult MapObject(Object entity, IDataReader reader)
     {
-        return Map(entity, data);
+        return Map(entity, reader);
     }
 
     public static Object Make()
@@ -25,7 +27,7 @@ public class Internal_Builder_Dynamic_f__AnonymousType2d_2
     private static System.Reflection.ConstructorInfo ctor;
     private static System.Reflection.ParameterInfo[] parameters;
 
-    public static void Init(Type type)
+    public static void Init(Type type) 
     {
         ctor = type.GetConstructors().Single();
         parameters = ctor.GetParameters();
@@ -40,23 +42,26 @@ public class Internal_Builder_Dynamic_f__AnonymousType2d_2
         return ctor.Invoke(parameterValues);
     }
 
-    public static Object Map(dynamic entity, Object[] data)
+    public static MapResult Map(dynamic entity, IDataReader reader)
     {
         int i = 0;
-
+        var data = reader.GetValues();
+        var hasMoreData = false;
+        
         entity.Order = FillEntity_Order(data, out i, i);
-        ++i;
 
-        entity.OrderDetails = FillCollection_OrderDetails<VirtualObjects.Tests.Models.Northwind.OrderDetails>(data, out i, i);
-        ++i;
+        entity.Details = FillCollection_Details(reader, out i, i, out hasMoreData);
 
-
-        return entity;
+        
+        return new MapResult {
+            Entity = entity,
+            HasMore = hasMoreData
+        };
     }
 
     private static Object Parse(Object value)
     {
-        if (value == null || value == DBNull.Value)
+        if ( value == null || value == DBNull.Value )
         {
             return null;
         }
@@ -64,53 +69,73 @@ public class Internal_Builder_Dynamic_f__AnonymousType2d_2
         return value;
     }
 
-
+    
     private static VirtualObjects.Tests.Models.Northwind.Orders FillEntity_Order(Object[] data, out int i, int index)
     {
         i = index;
         var entity = new VirtualObjects.Tests.Models.Northwind.Orders();
 
+        
+        entity.OrderId  = (Int32)(Parse(data[i]) ?? default(Int32)); ++i;
 
-        entity.OrderId = (Int32)(Parse(data[i]) ?? default(Int32)); ++i;
+        entity.Customer  = new VirtualObjects.Tests.Models.Northwind.Customers(); ++i;
 
-        entity.Customer = new VirtualObjects.Tests.Models.Northwind.Customers();
+        entity.Employee  = new VirtualObjects.Tests.Models.Northwind.Employee(); ++i;
 
-        entity.Employee = new VirtualObjects.Tests.Models.Northwind.Employee();
+        entity.OrderDate  = (DateTime)(Parse(data[i]) ?? default(DateTime)); ++i;
 
-        entity.OrderDate = (DateTime)(Parse(data[i]) ?? default(DateTime)); ++i;
+        entity.RequiredDate  = (DateTime)(Parse(data[i]) ?? default(DateTime)); ++i;
 
-        entity.RequiredDate = (DateTime)(Parse(data[i]) ?? default(DateTime)); ++i;
+        entity.ShippedDate  = (DateTime)(Parse(data[i]) ?? default(DateTime)); ++i;
 
-        entity.ShippedDate = (DateTime)(Parse(data[i]) ?? default(DateTime)); ++i;
+        entity.Shipper  = new VirtualObjects.Tests.Models.Northwind.Shippers(); ++i;
 
-        entity.Shipper = new VirtualObjects.Tests.Models.Northwind.Shippers();
+        entity.Freight  = (Decimal)(Parse(data[i]) ?? default(Decimal)); ++i;
 
-        entity.Freight = (Decimal)(Parse(data[i]) ?? default(Decimal)); ++i;
+        entity.ShipName  = (String)(Parse(data[i]) ?? default(String)); ++i;
 
-        entity.ShipName = (String)(Parse(data[i]) ?? default(String)); ++i;
+        entity.ShipAddress  = (String)(Parse(data[i]) ?? default(String)); ++i;
 
-        entity.ShipAddress = (String)(Parse(data[i]) ?? default(String)); ++i;
+        entity.ShipCity  = (String)(Parse(data[i]) ?? default(String)); ++i;
 
-        entity.ShipCity = (String)(Parse(data[i]) ?? default(String)); ++i;
+        entity.ShipRegion  = (String)(Parse(data[i]) ?? default(String)); ++i;
 
-        entity.ShipRegion = (String)(Parse(data[i]) ?? default(String)); ++i;
+        entity.ShipPostalCode  = (String)(Parse(data[i]) ?? default(String)); ++i;
 
-        entity.ShipPostalCode = (String)(Parse(data[i]) ?? default(String)); ++i;
-
-        entity.ShipCountry = (String)(Parse(data[i]) ?? default(String)); ++i;
+        entity.ShipCountry  = (String)(Parse(data[i]) ?? default(String)); ++i;
 
 
         return entity;
     }
-    private static IList<TEntity> FillCollection_OrderDetails<TEntity>(Object[] data, out int i, int index) where TEntity : class, new()
+    private static IList<VirtualObjects.Tests.Models.Northwind.OrderDetails> FillCollection_Details(IDataReader reader, out int i, int index, out Boolean hasMoreData)
     {
-        i = index;
-        var list = new List<TEntity>();
+        
+        var list = new List<VirtualObjects.Tests.Models.Northwind.OrderDetails>();
+        Object id = null;
+        hasMoreData = false;
+
+        do {
+            i = index;
+            var data = reader.GetValues();
+            var entity = new VirtualObjects.Tests.Models.Northwind.OrderDetails();
+
+            
+        entity.Order  = new VirtualObjects.Tests.Models.Northwind.Orders(); ++i;
+
+        entity.Product  = new VirtualObjects.Tests.Models.Northwind.Products(); ++i;
+
+        entity.UnitPrice  = (Decimal)(Parse(data[i]) ?? default(Decimal)); ++i;
+
+        entity.Quantity  = (Int16)(Parse(data[i]) ?? default(Int16)); ++i;
+
+        entity.Discount  = (Single)(Parse(data[i]) ?? default(Single)); ++i;
 
 
-
+            list.Add(entity);
+        } while((id = reader[0]) != null && (hasMoreData = reader.Read()) && id.ToString() == reader[0 + index].ToString());
+        
         return list;
     }
 
-
+   
 }

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using VirtualObjects.Config;
+using VirtualObjects.Queries.Mapping;
+using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects.Queries
 {
@@ -11,6 +12,13 @@ namespace VirtualObjects.Queries
     /// </summary>
     public interface IQueryInfo
     {
+        /// <summary>
+        /// Gets or sets the on clauses.
+        /// </summary>
+        /// <value>
+        /// The on clauses.
+        /// </value>
+        IList<OnClause> OnClauses { get; set; }
         /// <summary>
         /// Gets or sets the entity cast.
         /// </summary>
@@ -24,7 +32,7 @@ namespace VirtualObjects.Queries
         /// <value>
         /// The map entity.
         /// </value>
-        Func<object, IDataReader, Object> MapEntity { get; set; }
+        Func<Object, IDataReader, MapResult> MapEntity { get; set; }
 
         /// <summary>
         /// Gets or sets the make entity.

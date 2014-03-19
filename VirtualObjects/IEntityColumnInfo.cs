@@ -10,6 +10,13 @@ namespace VirtualObjects
     public interface IEntityColumnInfo
     {
         /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        /// <value>
+        /// The index.
+        /// </value>
+        int Index { get; set; }
+        /// <summary>
         /// Gets the name of the column.
         /// </summary>
         /// <value>

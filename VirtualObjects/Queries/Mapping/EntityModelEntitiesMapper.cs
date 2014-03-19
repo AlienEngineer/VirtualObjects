@@ -18,15 +18,18 @@ namespace VirtualObjects.Queries.Mapping
         public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType, SessionContext sessionContext)
         {
             var result = new List<object>();
+            var hasMore = false;
             try
             {
-                while (reader.Read())
+                while ( hasMore || reader.Read() )
                 {
                     var entity = queryInfo.MakeEntity(sessionContext.Session);
                     var mapped = queryInfo.MapEntity(entity, reader);
-                    var casted = queryInfo.EntityCast(mapped);
+                    var casted = queryInfo.EntityCast(mapped.Entity);
 
                     result.Add(casted);
+
+                    hasMore = mapped.HasMore;
                 }
 
                 return result;

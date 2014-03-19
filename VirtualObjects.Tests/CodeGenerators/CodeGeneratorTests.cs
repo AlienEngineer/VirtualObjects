@@ -30,7 +30,7 @@ namespace VirtualObjects.Tests.CodeGenerators
                 Name = "This is a test"
             };
 
-            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(obj.GetType(), Make<IEntityBag>());
+            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(obj.GetType(), Make<IEntityBag>(), null);
 
             dynCodeGen.GenerateCode();
 
@@ -117,7 +117,7 @@ namespace VirtualObjects.Tests.CodeGenerators
 
         public List<TEntity> MapEntities<TEntity>(TEntity entity, Object[][] data)
         {
-            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(typeof(TEntity), Make<IEntityBag>());
+            IEntityCodeGenerator dynCodeGen = new DynamicModelCodeGenerator(typeof(TEntity), Make<IEntityBag>(), null);
 
             dynCodeGen.GenerateCode();
 

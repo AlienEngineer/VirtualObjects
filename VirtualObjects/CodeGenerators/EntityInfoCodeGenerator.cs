@@ -30,6 +30,7 @@ namespace VirtualObjects.CodeGenerators
 
             AddNamespace(_entityInfo.EntityType.Namespace);
             AddNamespace("VirtualObjects");
+            AddNamespace("VirtualObjects.Queries.Mapping");
             AddNamespace("System");
             AddNamespace("System.Linq");
             AddNamespace("System.Data");
@@ -38,7 +39,7 @@ namespace VirtualObjects.CodeGenerators
         protected override string GenerateMapObjectCode()
         {
             return @"
-    public static Object MapObject(Object entity, IDataReader reader)
+    public static MapResult MapObject(Object entity, IDataReader reader)
     {{
         return Map(({TypeName})entity, reader);
     }}
@@ -93,13 +94,15 @@ namespace VirtualObjects.CodeGenerators
     {{
     }}
 
-    public static Object Map({TypeName} entity, IDataReader reader)
+    public static MapResult Map({TypeName} entity, IDataReader reader)
     {{
         var data = reader.GetValues();
 
         {Body}
 
-        return entity;
+        return new MapResult {{
+            Entity = entity
+        }};
     }}
 
     public static Object EntityCast(Object source)

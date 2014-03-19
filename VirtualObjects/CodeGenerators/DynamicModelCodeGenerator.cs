@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Collections.Generic;
 using VirtualObjects.Config;
 using System.Data;
+using VirtualObjects.Queries;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -13,10 +14,12 @@ namespace VirtualObjects.CodeGenerators
     {
         private readonly Type _type;
         private readonly IEntityBag entityBag;
-
-        public DynamicModelCodeGenerator(Type type, IEntityBag entityBag)
+        private readonly IQueryInfo queryInfo;
+        
+        public DynamicModelCodeGenerator(Type type, IEntityBag entityBag, IQueryInfo queryInfo)
             : base("Internal_Builder_Dynamic_" + type.Name.Replace("<>", "").Replace('`', '_'))
         {
+            this.queryInfo = queryInfo;
             this.entityBag = entityBag;
             _type = type;
 
@@ -31,17 +34,18 @@ namespace VirtualObjects.CodeGenerators
             AddReference(type);
 
             AddNamespace("VirtualObjects");
+            AddNamespace("VirtualObjects.Queries.Mapping");
             AddNamespace("System");
             AddNamespace("System.Linq");
             AddNamespace("System.Dynamic");
             AddNamespace("System.Collections.Generic");
-            AddNamespace("System.Data");
+            AddNamespace("System.Data");            
         }
 
         protected override string GenerateMapObjectCode()
         {
             return @"
-    public static Object MapObject(Object entity, IDataReader reader)
+    public static MapResult MapObject(Object entity, IDataReader reader)
     {
         return Map(entity, reader);
     }
@@ -94,13 +98,17 @@ namespace VirtualObjects.CodeGenerators
         return ctor.Invoke(parameterValues);
     }}
 
-    public static Object Map(dynamic entity, IDataReader reader)
+    public static MapResult Map(dynamic entity, IDataReader reader)
     {{
         int i = 0;
         var data = reader.GetValues();
+        var hasMoreData = false;
         {Body}
         
-        return entity;
+        return new MapResult {{
+            Entity = entity,
+            HasMore = hasMoreData
+        }};
     }}
 
     private static Object Parse(Object value)
@@ -121,11 +129,11 @@ namespace VirtualObjects.CodeGenerators
        Body = GenerateMapBody(_type),
        Name = TypeName,
        UnderlyingType = _type.FullName.Replace('+', '.'),
-       SpecificMethods = GenerateSpecificMethods(_type, entityBag)
+       SpecificMethods = GenerateSpecificMethods(_type, entityBag, queryInfo)
    });
         }
 
-        private static string GenerateSpecificMethods(Type type, IEntityBag bag)
+        private static string GenerateSpecificMethods(Type type, IEntityBag bag, IQueryInfo queryinfo)
         {
             var result = new StringBuffer();
 
@@ -138,10 +146,12 @@ namespace VirtualObjects.CodeGenerators
 
 
                         result += @"
-    private static IList<{Type}> FillCollection_{PropertyName}(IDataReader reader, out int i, int index)
+    private static IList<{Type}> FillCollection_{PropertyName}(IDataReader reader, out int i, int index, out Boolean hasMoreData)
     {{
         
         var list = new List<{Type}>();
+        Object id = null;
+        hasMoreData = false;
 
         do {{
             i = index;
@@ -151,7 +161,7 @@ namespace VirtualObjects.CodeGenerators
             {Body}
 
             list.Add(entity);
-        }} while(reader.Read());
+        }} while({StopCondition});
         
         return list;
     }}".FormatWith(new
@@ -159,7 +169,7 @@ namespace VirtualObjects.CodeGenerators
            PropertyName = property.Name,
            Type = property.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.'),
            Body = GenerateFillEntity(property.PropertyType.GetGenericArguments().First(), bag),
-           StopCondition = GenerateStopCondition(property, bag) 
+           StopCondition = GenerateStopCondition(property, bag, queryinfo) 
        });
 
                     }
@@ -187,9 +197,18 @@ namespace VirtualObjects.CodeGenerators
             return result;
         }
 
-        private static object GenerateStopCondition(PropertyInfo property, IEntityBag bag)
+        private static object GenerateStopCondition(PropertyInfo property, IEntityBag bag, IQueryInfo queryinfo)
         {
-            return "true";
+            var type = property.PropertyType.GetGenericArguments().First();
+
+            var clause = queryinfo.OnClauses.FirstOrDefault(e => e.Column2.EntityInfo.EntityType == type);
+
+
+            return "(id = reader[{FieldIndex1}]) != null && (hasMoreData = reader.Read()) && id.ToString() == reader[{FieldIndex2} + index].ToString()"
+                .FormatWith(new { 
+                    FieldIndex1 = clause.Column1.Index,
+                    FieldIndex2 = clause.Column2.Index 
+                });
         }
 
         private static string GenerateFillEntity(Type propertyType, IEntityBag bag)
@@ -204,7 +223,6 @@ namespace VirtualObjects.CodeGenerators
 ".FormatWith(new
  {
      FieldName = entityInfo.Columns[i].Property.Name,
-     //Increments = entityInfo.Columns[i].Property.PropertyType.IsFrameworkType() ? "++i;" : String.Empty,
      Value = GenerateFieldAssignment(
                         i,
                         entityInfo.Columns[i].Property,
@@ -257,7 +275,7 @@ namespace VirtualObjects.CodeGenerators
                     //
                     // In case of a model type create a new instance of that model and set its values.
                     //
-                    result += "FillCollection_{PropertyName}(reader, out i, i)".FormatWith(new
+                    result += "FillCollection_{PropertyName}(reader, out i, i, out hasMoreData)".FormatWith(new
                     {
                         Type = propertyInfo.PropertyType.GetGenericArguments().First().FullName.Replace('+', '.'),
                         PropertyName = propertyInfo.Name

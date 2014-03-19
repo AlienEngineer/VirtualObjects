@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using VirtualObjects.Queries.Mapping;
 using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects.Queries
@@ -28,11 +29,13 @@ namespace VirtualObjects.Queries
 
         public IEntitiesMapper EntitiesMapper { get; set; }
 
-        public Func<object, IDataReader, Object> MapEntity { get; set; }
+        public Func<Object, IDataReader, MapResult> MapEntity { get; set; }
         
         public Func<object, object> EntityCast { get; set; }
 
         public Func<ISession, Object> MakeEntity { get; set; }
         #endregion
+
+        public IList<OnClause> OnClauses { get; set; }
     }
 }

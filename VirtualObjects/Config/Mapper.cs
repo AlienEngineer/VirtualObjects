@@ -74,8 +74,10 @@ namespace VirtualObjects.Config
             entityInfo.Columns = MapColumns(entityType.Properties(), entityInfo).ToList();
             entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey).ToList();
 
+            int i = 0;
             foreach ( var column in entityInfo.Columns )
             {
+                column.Index = i++;
                 column.ForeignKey = GetForeignKey(column.Property);
             }
 
