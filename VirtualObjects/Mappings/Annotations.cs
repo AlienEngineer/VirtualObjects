@@ -102,4 +102,21 @@ namespace VirtualObjects.Mappings
     {
 
     }
+
+    /// <summary>
+    /// Filters a Collection field with the field specified in this attribute.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    public class FilterWith : Attribute
+    {
+
+        /// <summary>
+        /// Gets or sets the name of the field you wish to filter the collection with.
+        /// </summary>
+        /// <value>
+        /// The name of the field.
+        /// </value>
+        public String FieldName { get; set; }
+
+    }
 }

@@ -16,5 +16,6 @@ namespace VirtualObjects.Config
         public IList<Func<PropertyInfo, String>> ColumnForeignKeyLinksGetters { get; set; }
         public IList<Func<PropertyInfo, Boolean>> ColumnVersionFieldGetters { get; set; }
         public IList<Func<PropertyInfo, Boolean>> ComputedColumnGetters { get; set; }
+        public IList<Func<PropertyInfo, String>> CollectionFilterGetters { get; set; }
     }
 }

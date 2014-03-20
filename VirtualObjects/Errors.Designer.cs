@@ -212,12 +212,11 @@ namespace VirtualObjects {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///Unable to map [{Name}] entity type.
-        ///.
+        ///The model for [{TargetName}] needs a bind with the field [{FieldName}] in the [{CurrentName}] model..
         /// </summary>
-        public static string UnableToMapEntity {
+        public static string Mapping_CollectionNeedsBindedField {
             get {
-                return ResourceManager.GetString("UnableToMapEntity", resourceCulture);
+                return ResourceManager.GetString("Mapping_CollectionNeedsBindedField", resourceCulture);
             }
         }
         
@@ -414,6 +413,17 @@ namespace VirtualObjects {
         public static string UnableToGetType {
             get {
                 return ResourceManager.GetString("UnableToGetType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///Unable to map [{Name}] entity type.
+        ///.
+        /// </summary>
+        public static string UnableToMapEntity {
+            get {
+                return ResourceManager.GetString("UnableToMapEntity", resourceCulture);
             }
         }
     }

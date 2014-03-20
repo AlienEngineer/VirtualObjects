@@ -132,5 +132,19 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <param name="computedGetter">The computed getter.</param>
         void ComputedColumn(Func<PropertyInfo, Boolean> computedGetter);
+
+
+        /// <summary>
+        /// Appends a parser to find the filter based on the property.
+        /// </summary>
+        /// <param name="filterGetter">The filter getter.</param>
+        void CollectionFilter(Func<PropertyInfo, String> filterGetter);
+
+        /// <summary>
+        /// Appends a parser to find the filter based on the property attribute.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="filterGetter">The filter getter.</param>
+        void CollectionFilter<TAttribute>(Func<TAttribute, String> filterGetter) where TAttribute : Attribute;
     }
 }

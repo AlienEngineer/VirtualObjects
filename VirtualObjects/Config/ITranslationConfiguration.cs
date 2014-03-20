@@ -73,5 +73,13 @@ namespace VirtualObjects.Config
         /// The computed column getters.
         /// </value>
         IList<Func<PropertyInfo, Boolean>> ComputedColumnGetters { get; }
+
+        /// <summary>
+        /// Gets the collection filter getters.
+        /// </summary>
+        /// <value>
+        /// The collection filter getters.
+        /// </value>
+        IList<Func<PropertyInfo, String>> CollectionFilterGetters { get; }
     }
 }

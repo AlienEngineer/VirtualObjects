@@ -12,12 +12,14 @@ namespace VirtualObjects.CodeGenerators
     class EntityInfoCodeGenerator : EntityCodeGenerator
     {
         private readonly IEntityInfo _entityInfo;
+        private readonly ITranslationConfiguration configuration;
         private readonly IEntityBag entityBag;
         private readonly String properName;
 
-        public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag)
+        public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration)
             : base("Internal_Builder_" + info.EntityType.Name)
         {
+            this.configuration = configuration;
             this.entityBag = entityBag;
             _entityInfo = info;
             properName = _entityInfo.EntityType.FullName.Replace("+", ".");
@@ -73,7 +75,7 @@ namespace VirtualObjects.CodeGenerators
 
         protected override string GenerateOtherMethodsCode()
         {
-            if (!_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic)
+            if ( !_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic )
             {
                 throw new CodeCompilerException("The entity type {Name} is not public.", _entityInfo.EntityType);
             }
@@ -136,18 +138,31 @@ namespace VirtualObjects.CodeGenerators
             var result = new StringBuffer();
 
             var entityType = property.PropertyType.GetGenericArguments().First();
+            var filterFields = configuration.CollectionFilterGetters
+                .Select(g => g(property)).ToList();
 
             var foreignTable = entityBag[entityType];
 
-            foreach (var key in entityInfo.KeyColumns)
+            foreach ( var key in entityInfo.KeyColumns )
             {
+                if ( (foreignTable.ForeignKeys == null || !foreignTable.ForeignKeys.Any()) && !filterFields.Any() )
+                {
+                    throw new MappingException(VirtualObjects.Errors.Mapping_CollectionNeedsBindedField,
+                      new
+                      {
+                          TargetName = foreignTable.EntityName,
+                          FieldName = key.ColumnName,
+                          CurrentName = entityInfo.EntityName
+                      });
+                }
+
                 var foreignField = foreignTable.ForeignKeys
                     .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
 
-                if (foreignField != null)
+                if ( foreignField != null )
                 {
 
-                    if (foreignField.Property.PropertyType == entityInfo.EntityType)
+                    if ( foreignField.Property.PropertyType == entityInfo.EntityType )
                     {
 
                         result += "e.{Field} == this && ".FormatWith(new { Field = foreignField.Property.Name });
@@ -164,8 +179,19 @@ namespace VirtualObjects.CodeGenerators
                     }
 
                 }
+                else
+                {
+                    throw new MappingException("\nThe model for [{TargetName}] needs a bind with the field [{FieldName}] in the [{CurrentName}] model.",
+                        new
+                        {
+                            TargetName = foreignTable.EntityName,
+                            FieldName = key.ColumnName,
+                            CurrentName = entityInfo.EntityName
+                        });
+                }
             }
 
+            
             result.RemoveLast(" && ");
 
             return result;
@@ -175,7 +201,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            foreach (var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()))
+            foreach ( var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()) )
             {
 
 
@@ -202,13 +228,13 @@ namespace VirtualObjects.CodeGenerators
         }}
 ".FormatWith(new
  {
-     Type = column.Property.PropertyType.FullName.Replace('+', '.'), 
+     Type = column.Property.PropertyType.FullName.Replace('+', '.'),
      column.Property.Name
  });
 
             }
 
-            foreach (var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()))
+            foreach ( var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()) )
             {
                 var entityType = property.PropertyType.GetGenericArguments().First();
                 result += @"
@@ -231,7 +257,7 @@ namespace VirtualObjects.CodeGenerators
  {
      Type = String.Format("{0}.{1}<{2}>", property.PropertyType.Namespace, property.PropertyType.Name.Replace("`1", ""), entityType.FullName.Replace('+', '.')),
      EntityType = entityType.FullName.Replace('+', '.'),
-     ToList = property.PropertyType.Name.Contains("ICollection") ? ".ToList()" : String.Empty, 
+     ToList = property.PropertyType.Name.Contains("ICollection") ? ".ToList()" : String.Empty,
      property.Name,
      WhereClause = GenerateWhereClause(entityInfo, property)
  });
@@ -244,7 +270,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            for (int i = 0; i < entityInfo.Columns.Count; i++)
+            for ( int i = 0; i < entityInfo.Columns.Count; i++ )
             {
                 var column = entityInfo.Columns[i];
 
@@ -288,7 +314,7 @@ namespace VirtualObjects.CodeGenerators
         private static StringBuffer GenerateFieldAssignment(int i, IEntityColumnInfo column)
         {
             StringBuffer result = " = ";
-            if (column.Property.PropertyType.IsFrameworkType())
+            if ( column.Property.PropertyType.IsFrameworkType() )
             {
                 result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = column.Property.PropertyType.Name });
             }

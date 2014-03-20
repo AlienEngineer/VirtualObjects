@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using Fasterflect;
 using System.Linq;
@@ -33,6 +32,7 @@ namespace VirtualObjects.Config
                 EntityNameGetters = new List<Func<Type, String>>(),
                 ColumnForeignKeyGetters = new List<Func<PropertyInfo, String>>(),
                 ColumnForeignKeyLinksGetters = new List<Func<PropertyInfo, String>>(),
+                CollectionFilterGetters = new List<Func<PropertyInfo, String>>()
             };
 
             _defaultBooleanGetter = attribute => attribute != null;
@@ -285,6 +285,28 @@ namespace VirtualObjects.Config
             });
         }
 
+        /// <summary>
+        /// Appends a parser to find the association based on the property.
+        /// </summary>
+        /// <param name="foreignKeyGetter">The foreign key getter.</param>
+        public void CollectionFilter(Func<PropertyInfo, String> filterGetter)
+        {
+            configuration.CollectionFilterGetters.Insert(0, filterGetter);
+        }
+
+        /// <summary>
+        /// Appends a parser to find the filter based on the property attribute.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="filterGetter">The filter getter.</param>
+        public void CollectionFilter<TAttribute>(Func<TAttribute, String> filterGetter) where TAttribute : Attribute
+        {
+            CollectionFilter(prop =>
+            {
+                var attribute = prop.Attribute<TAttribute>();
+                return attribute != null ? filterGetter(attribute) : null;
+            });
+        }
         #endregion
 
         /// <summary>
