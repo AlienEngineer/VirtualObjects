@@ -5,7 +5,6 @@ using Fasterflect;
 using System.Reflection;
 using VirtualObjects.Config;
 using System.Data;
-using System.Collections.Generic;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -139,7 +138,7 @@ namespace VirtualObjects.CodeGenerators
 
             var entityType = property.PropertyType.GetGenericArguments().First();
             var filterFields = configuration.CollectionFilterGetters
-                .Select(g => g(property)).ToList();
+                .Select(g => g(property).ToLower()).ToList();
 
             var foreignTable = entityBag[entityType];
 
@@ -156,8 +155,22 @@ namespace VirtualObjects.CodeGenerators
                       });
                 }
 
-                var foreignField = foreignTable.ForeignKeys
-                    .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
+                IEntityColumnInfo foreignField = null;
+
+                if (filterFields.Any())
+                {
+                    foreignField = foreignTable.Columns
+                        .FirstOrDefault(e => 
+                            e.ColumnName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase) &&
+                            filterFields.Contains(e.ColumnName.ToLower()));
+                }
+
+                if (foreignField == null && foreignTable.ForeignKeys != null)
+                {
+                    foreignField = foreignTable.ForeignKeys
+                        .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
+                }
+
 
                 if ( foreignField != null )
                 {
