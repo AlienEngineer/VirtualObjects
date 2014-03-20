@@ -64,28 +64,6 @@ To improve myself and create something really easy to use with the best performa
 Verified on unit-tests using NUnit on a intel i7 3.07GHz 18Gb RAM and intel i7-3537U 2.0GHz 8Gb RAM.
 
 
-<<<<<<< HEAD
-VO Version 1.0.1-Beta  
-Dapper Version 1.13
-
-[VO Version 1.1.0 Updated Results] (https://github.com/AlienEngineer/VirtualObjects/tree/1.1.0#under-northwind-database)
-
-#### Using Northwind Order Details table with 2155 Records.
-```C#
-    // VO: Iterated order details Query in ~64 ms
-    Session.GetAll<OrderDetailsSimplified>()
-    
-    // Dapper: Iterated order details Query in ~52 ms
-    Connection.Query<OrderDetailsSimplified>("Select * from [Order Details]")
-```
-#### On Northwind supplier table.
-```C#
-    // VO: Iterated the same Query 1000 times in ~410 ms
-    Session.GetAll<Suppliers>()
-    
-    // Dapper: Iterated the same Query 1000 times in ~429 ms
-    Connection.Query<Suppliers>("Select * from Suppliers")
-=======
 * VO Version 1.1
 * Dapper Version 1.13
 * Entity Framework 6
@@ -95,7 +73,6 @@ To obtain a fresh Graphic and more detail execute the unit-test _Performance Che
 
 ```MySQL
 Select Count(*) from Suppliers
->>>>>>> 1.1.0
 ```
 ![Count Suppliers](Docs/CountSuppliers.png)
 > Results from Laptop and PC were iqual.
