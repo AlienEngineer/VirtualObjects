@@ -4,11 +4,10 @@ using Fasterflect;
 
 namespace VirtualObjects.Tests
 {
-#if !PERFORMANCE
+
+#if PERFORMANCE
     using NUnit.Framework;
     using Models.Northwind;
-    using System.Data;
-    using Moq;
 
     /// <summary>
     /// 
@@ -23,7 +22,7 @@ namespace VirtualObjects.Tests
         private const string STR_Fasterflect = "Fasterflect";
         private const string STR_New = "New";
         private const string STR_EntityProvider = "EntityProvider";
-        private const string STR_EntityProxyProvider = "EntityProxyProvider";           
+        private const string STR_EntityProxyProvider = "EntityProxyProvider";
         private const string STR_SetFieldFinalValue = "SetFieldFinalValue";
         private const string STR_SetValue = "SetValue";
         private const string STR_HardCoded = "HardCoded";
@@ -50,9 +49,9 @@ namespace VirtualObjects.Tests
             public float SetValue { get; set; }
         }
 
-        
+
         [Test]
-        public void Performance_Check_EntityCreation_Performance()
+        public void Performance_Check_EntityCreation()
         {
 
             var type = typeof(Suppliers);
@@ -120,32 +119,6 @@ namespace VirtualObjects.Tests
                 } while ( numberOfEntities < 500 );
             }
         }
-        
-        private IDataReader MockIDataReader(Object[] data)
-        {
-            var moq = new Mock<IDataReader>();
-
-            // This var stores current position in 'ojectsToEmulate' list
-            int count = -1;
-
-            moq.Setup(x => x.Read())
-                // Return 'True' while list still has an item
-                .Returns(() => count < data.Length - 1)
-                // Go to next position
-                .Callback(() => count++);
-
-            moq.Setup(x => x.GetValues(data))
-                .Callback<Object[]>(array =>
-                {
-                    for ( int i = 0; i < array.Length; i++ )
-                    {
-                        array[i] = data[i];
-                    }
-                })
-                .Returns(data.Length);
-
-            return moq.Object;
-        }
 
         [Test]
         public void Performance_Check_EntityMapping()
@@ -153,7 +126,7 @@ namespace VirtualObjects.Tests
             var type = typeof(Suppliers);
             var entityInfo = Mapper.Map(type);
 
-            Object[] data = new Object[] 
+            Object[] tmpData = new Object[] 
             {
                 1,
                 "Company Name",
@@ -169,10 +142,8 @@ namespace VirtualObjects.Tests
                 "HomePage"
             };
 
-            var reader = MockIDataReader(data);
-
-            var values = reader.GetValues();
-
+            var reader = new MockReader(tmpData);
+                        
             using ( var session = new ExcelSession("Sessions\\Performance.xlsx") )
             {
                 int numberOfEntities = 0;
@@ -186,6 +157,7 @@ namespace VirtualObjects.Tests
                         for ( int i = 0; i < numberOfEntities; i++ )
                         {
                             var supplier = suppliers[i];
+                            var data = reader.GetValues();
                             for ( int j = 0; j < data.Length; j++ )
                             {
                                 entityInfo.Columns[j].SetFieldFinalValue(supplier, data[j]);
@@ -199,6 +171,7 @@ namespace VirtualObjects.Tests
                         for ( int i = 0; i < numberOfEntities; i++ )
                         {
                             var supplier = suppliers[i];
+                            var data = reader.GetValues();
                             for ( int j = 0; j < data.Length; j++ )
                             {
                                 entityInfo.Columns[j].SetValue(supplier, data[j]);
@@ -207,13 +180,16 @@ namespace VirtualObjects.Tests
                     }, name: STR_SetValue);
 
                     suppliers = GetSuppliers(numberOfEntities);
-                    
+
                     Diagnostic.Timed(() =>
                     {
+                        var sups = suppliers;
                         Parallel.For(0, suppliers.Length, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, i =>
                         {
-                            var supplier = suppliers[i];
+
+                            var supplier = sups[i];
                             entityInfo.MapEntity(supplier, reader);
+
                         });
                     }, name: STR_Parallel);
 
@@ -222,6 +198,7 @@ namespace VirtualObjects.Tests
                     {
                         for ( int i = 0; i < numberOfEntities; i++ )
                         {
+                            var data = reader.GetValues();
                             var supplier = suppliers[i];
 
                             supplier.SupplierId = (int)data[0];
