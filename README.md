@@ -69,7 +69,8 @@ Verified on unit-tests using NUnit on a intel i7 3.07GHz 18Gb RAM and intel i7-3
 * Entity Framework 6
 
 #### Under Northwind Database
-To obtain a fresh Graphic and more detail execute the unit-test _Performance Check_ the excel will be filled on Bin\Release\Session or Bin\Debug\Session directory.
+To obtain a fresh Graphic and more detail execute the unit-test _Performance Check_ the excel will be filled on Bin\Performance\Session folder.
+More graphics will be provided on /docs folder.
 
 ```MySQL
 Select Count(*) from Suppliers
