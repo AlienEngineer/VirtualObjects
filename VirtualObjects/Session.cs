@@ -22,7 +22,7 @@ namespace VirtualObjects
         /// </summary>
         public Session()
             : this(configuration: null, connectionName: null) { }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
@@ -96,6 +96,7 @@ namespace VirtualObjects
         {
             return InternalSession.Insert(entity);
         }
+
         
         /// <summary>
         /// Updates the specified entity.
