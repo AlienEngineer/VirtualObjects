@@ -93,3 +93,4 @@ Select * from Suppliers
 ```
    PM> Install-Package VirtualObjects
 ```
+> The version 1.1.0 is not yet published on Nuget.
