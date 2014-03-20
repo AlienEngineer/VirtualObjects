@@ -22,6 +22,7 @@ namespace VirtualObjects
             TranslationConfigurationBuilder = new TranslationConfigurationBuilder();
 
             Initialize();
+            ConfigureMappingBuilder(TranslationConfigurationBuilder);
         }
 
         internal ITranslationConfigurationBuilder TranslationConfigurationBuilder { get; set; }
@@ -55,8 +56,7 @@ namespace VirtualObjects
         /// </summary>
         public virtual void Initialize()
         {
-            ConnectionProvider = new NamedDbConnectionProvider();
-            ConfigureMappingBuilder(TranslationConfigurationBuilder);
+            ConnectionProvider = new NamedDbConnectionProvider();              
         }
 
 

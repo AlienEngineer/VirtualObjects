@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using VirtualObjects.Mappings;
 
@@ -47,6 +48,8 @@ namespace VirtualObjects.Tests.Models.Northwind
         public String PhotoPath { get; set; }
 
         public virtual IQueryable<EmployeeTerritories> Territories { get; set; }
+
+        public virtual ICollection<EmployeeTerritories> TerritoriesCollection { get; set; }
 
         [Ignore]
         public bool NonExistingField { get; set; }

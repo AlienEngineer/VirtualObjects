@@ -58,6 +58,13 @@ namespace VirtualObjects
                 && type != typeof(String);
         }
 
+
+        public static Boolean IsType(this Type type, Type target)
+        {
+            return type.GetInterfaces()
+                .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == target);
+        }
+
         /// <summary>
         /// Determines whether [the specified type] [is generic collection] .
         /// </summary>

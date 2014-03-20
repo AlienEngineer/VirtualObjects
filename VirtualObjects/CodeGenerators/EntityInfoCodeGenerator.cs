@@ -5,6 +5,7 @@ using Fasterflect;
 using System.Reflection;
 using VirtualObjects.Config;
 using System.Data;
+using System.Collections.Generic;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -219,7 +220,7 @@ namespace VirtualObjects.CodeGenerators
             {{
                 return _{Name} ?? Session
                                     .GetAll<{EntityType}>()
-                                    .Where(e => {WhereClause});
+                                    .Where(e => {WhereClause}){ToList};
             }}
             set
             {{
@@ -230,6 +231,7 @@ namespace VirtualObjects.CodeGenerators
  {
      Type = String.Format("{0}.{1}<{2}>", property.PropertyType.Namespace, property.PropertyType.Name.Replace("`1", ""), entityType.FullName.Replace('+', '.')),
      EntityType = entityType.FullName.Replace('+', '.'),
+     ToList = property.PropertyType.Name.Contains("ICollection") ? ".ToList()" : String.Empty, 
      property.Name,
      WhereClause = GenerateWhereClause(entityInfo, property)
  });
