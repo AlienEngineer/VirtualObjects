@@ -385,6 +385,32 @@ namespace VirtualObjects.Tests.Sessions
         }
 
         [Test, Repeat(Repeat)]
+        public void Session_GetAll_Employees_Null_Compare_Predicate()
+        {
+            var session = Session;
+            {
+                String lastName = null;
+                var employees = session.GetAll<Employee>()
+                    .Where(e => e.LastName == lastName || lastName == null);
+
+                Assert.AreEqual(0, employees.Count());
+            }
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Session_GetAll_Employees_Null_Compare_Predicate1()
+        {
+            var session = Session;
+            {
+                String lastName = "Leverling";
+                var employees = session.GetAll<Employee>()
+                    .Where(e => e.LastName == lastName || lastName == null);
+
+                Assert.AreEqual(1, employees.Count());
+            }
+        }
+
+        [Test, Repeat(Repeat)]
         public void Session_GetAll_LikeCondition()
         {
             var session = Session;
