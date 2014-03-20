@@ -11,12 +11,14 @@ namespace VirtualObjects.Queries.Translation
     {
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
+        private readonly IEntityBag _entityBag;
         private readonly IDictionary<int, IQueryInfo> _cachedQueries;
 
-        public CachingTranslator(IFormatter formatter, IMapper mapper)
+        public CachingTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag)
         {
             _formatter = formatter;
             _mapper = mapper;
+            _entityBag = entityBag;
 
             _cachedQueries = new Dictionary<int, IQueryInfo>();
         }
@@ -38,7 +40,7 @@ namespace VirtualObjects.Queries.Translation
                 return result;
             }
 
-            return _cachedQueries[hashCode] = new QueryTranslator(_formatter, _mapper).TranslateQuery(expression);
+            return _cachedQueries[hashCode] = new QueryTranslator(_formatter, _mapper, _entityBag).TranslateQuery(expression);
         }
 
         public IQueryInfo TranslateQuery(IQueryable queryable)
@@ -48,12 +50,12 @@ namespace VirtualObjects.Queries.Translation
 
         public IQueryInfo TranslateParametersOnly(IQueryable queryable, int howMany)
         {
-            return new QueryTranslator(_formatter, _mapper).TranslateParametersOnly(queryable, howMany);
+            return new QueryTranslator(_formatter, _mapper, _entityBag).TranslateParametersOnly(queryable, howMany);
         }
 
         public IQueryInfo TranslateParametersOnly(Expression expression, int howMany)
         {
-            return new QueryTranslator(_formatter, _mapper).TranslateParametersOnly(expression, howMany);
+            return new QueryTranslator(_formatter, _mapper, _entityBag).TranslateParametersOnly(expression, howMany);
         }
     }
 }

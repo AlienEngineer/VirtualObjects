@@ -10,6 +10,8 @@ namespace VirtualObjects.Config
         private Object _defaultValue;
         private PropertyInfo _property;
 
+        public int Index { get; set; }
+
         public string ColumnName { get; set; }
 
         public bool IsKey { get; set; }

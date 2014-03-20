@@ -7,5 +7,6 @@
         public IOperation DeleteOperation { get; set; }
         public IOperation GetOperation { get; set; }
         public IOperation GetVersionOperation { get; set; }
+        public IOperation CountOperation { get; set; }
     }
 }

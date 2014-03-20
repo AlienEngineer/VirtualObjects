@@ -41,4 +41,5 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public virtual IEnumerable<OrderDetails> Details { get; set; }
     }
+
 }

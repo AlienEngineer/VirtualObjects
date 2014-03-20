@@ -22,7 +22,7 @@ namespace VirtualObjects
         /// </summary>
         public Session()
             : this(configuration: null, connectionName: null) { }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
@@ -77,6 +77,16 @@ namespace VirtualObjects
         }
 
         /// <summary>
+        /// Gets how many entities existe of the given TEntity type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <returns></returns>
+        public int Count<TEntity>()
+        {
+            return InternalSession.Count<TEntity>(); 
+        }
+
+        /// <summary>
         /// Inserts the specified entity.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
@@ -86,6 +96,7 @@ namespace VirtualObjects
         {
             return InternalSession.Insert(entity);
         }
+
         
         /// <summary>
         /// Updates the specified entity.
@@ -180,7 +191,7 @@ namespace VirtualObjects
 
         static ExcelSession()
         {
-            Masks.Add(Extension.Xls.ToString().ToLower(), "Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{0}';Extended Properties='Excel 8.0;HDR=YES;';");
+            Masks.Add(Extension.Xls.ToString().ToLower(), "Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{0}';Extended Properties='Excel 8.0;HDR=YES;'");
             Masks.Add(Extension.Xlsx.ToString().ToLower(), "Provider=Microsoft.ACE.OLEDB.12.0;Data Source='{0}';Extended Properties='Excel 12.0;HDR=YES;'");
         }
 

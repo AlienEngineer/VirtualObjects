@@ -9,6 +9,7 @@ using VirtualObjects.Tests.Models.Northwind;
 namespace VirtualObjects.Tests.Queries
 {
     using NUnit.Framework;
+    using VirtualObjects.Exceptions;
 
     /// <summary>
     /// 
@@ -23,24 +24,7 @@ namespace VirtualObjects.Tests.Queries
 
         public QueryMappingTests()
         {
-            _entitiesMapper = new CollectionEntitiesMapper(Mapper,
-                new EntityProviderComposite(
-                    new List<IEntityProvider>
-                        {
-                            new EntityModelProvider(),
-                            new DynamicTypeProvider(),
-                            new CollectionTypeEntityProvider(),
-                            new ProxyEntityProvider()
-                        }
-                    ),
-                new List<IEntityMapper>
-                {
-                    new OrderedEntityMapper(),
-                    new DynamicTypeEntityMapper(),
-                    new DynamicEntityMapper(),
-                    new DynamicWithMemberEntityMapper(),
-                    new GroupedDynamicEntityMapper()
-                });
+            _entitiesMapper = Make<IEntitiesMapper>();
         }
 
 
@@ -55,7 +39,7 @@ namespace VirtualObjects.Tests.Queries
         {
             var queryInfo = TranslateQuery(Query<Employee>());
             var reader = ExecuteReader(queryInfo);
-            var mapper = new OrderedEntityMapper();
+            var mapper = new EntityInfoModelMapper();
             var mapperContext = new MapperContext
             {
                 EntityInfo = Mapper.Map(typeof(Employee)),
@@ -172,7 +156,8 @@ namespace VirtualObjects.Tests.Queries
             entities.Should().NotBeEmpty();
             entities.Count().Should().Be(169);
         }
-        [Test, Repeat(Repeat)]
+
+        [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Mapper_GetAllOrders_Joined_Query_CustomProjection_With_ForeignKey()
         {
             var query = from o in Query<Orders>()

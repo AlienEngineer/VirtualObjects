@@ -13,13 +13,18 @@ namespace VirtualObjects
     /// </summary>
     public class SessionConfiguration
     {
-        internal IMappingBuilder MappingBuilder
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SessionConfiguration"/> class.
+        /// </summary>
+        public SessionConfiguration()
         {
-            get
-            {
-                return InternalConfigureMappingBuilder(_container.Get<IMappingBuilder>());
-            }
+            TranslationConfigurationBuilder = new TranslationConfigurationBuilder();
+
+            Initialize();
         }
+
+        internal ITranslationConfigurationBuilder TranslationConfigurationBuilder { get; set; }
 
         /// <summary>
         /// Gets or sets the connection provider.
@@ -45,35 +50,22 @@ namespace VirtualObjects
         /// </value>
         public IFormatter Formatter { get; set; }
 
-        private IOcContainer _container;
-
-        internal void Init(IOcContainer container)
-        {
-            _container = container;
-            Initialize();
-        }
-
         /// <summary>
         /// Initializes this instance.
         /// </summary>
         public virtual void Initialize()
         {
-            
+            ConnectionProvider = new NamedDbConnectionProvider();
+            ConfigureMappingBuilder(TranslationConfigurationBuilder);
         }
 
-        private IMappingBuilder InternalConfigureMappingBuilder(IMappingBuilder builder)
-        {
-            ConfigureMappingBuilder(builder);
-
-            return builder;
-        }
 
         /// <summary>
         /// Configures the mapping builder. Override this method to define the rules how entities are mapped.
         /// Use this to configure custom Attributes or custom conventions.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public virtual void ConfigureMappingBuilder(IMappingBuilder builder)
+        public virtual void ConfigureMappingBuilder(ITranslationConfigurationBuilder builder)
         {
             //
             // Table Mapping

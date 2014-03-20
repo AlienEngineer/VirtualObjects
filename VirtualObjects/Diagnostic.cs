@@ -142,5 +142,31 @@ namespace VirtualObjects
             Times.Remove(name);
         }
 
+
+        /// <summary>
+        /// Gets the milliseconds.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        public static double GetMilliseconds(String name = "DEFAULT")
+        {
+            if ( !Times.ContainsKey(name) )
+            {
+                return 0.0;
+            }
+
+            try
+            {
+                var acum = Times[name];
+                var timer = acum.Time;
+                
+                return timer.TotalMilliseconds;
+            }
+            finally
+            {
+               Times.Remove(name); 
+            }
+
+        }
     }
 }

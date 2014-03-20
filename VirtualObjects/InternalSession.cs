@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using VirtualObjects.Queries.Annotations;
+using VirtualObjects.Config;
 using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
 
 namespace VirtualObjects
@@ -11,15 +11,29 @@ namespace VirtualObjects
     public class InternalSession : ISession
     {
         internal SessionContext Context { get; private set; }
+        private readonly IConnection connection;
+        private readonly IQueryProvider queryProvider;
+        private readonly IMapper mapper;
+
+        internal IMapper Mapper { get { return mapper; } }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InternalSession"/> class.
+        /// Initializes a new instance of the <see cref="InternalSession" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public InternalSession(SessionContext context)
+        /// <param name="connection">The connection</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="queryProvider">The QueryProvider</param>
+        public InternalSession(SessionContext context, IMapper mapper, IConnection connection, IQueryProvider queryProvider)
         {
+            this.connection = connection;
+            this.queryProvider = queryProvider;
+            this.mapper = mapper;
             Context = context;
             context.Session = this;
+            context.Map = mapper.Map;
+            context.QueryProvider = queryProvider;
+            context.Connection = connection;
         }
 
         /// <summary>
@@ -40,8 +54,21 @@ namespace VirtualObjects
         /// <returns></returns>
         public TEntity GetById<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            return entity == null ? null 
-                : ExecuteOperation(Context.Map<TEntity>().Operations.GetOperation, entity);
+            var entityInfo = Mapper.Map<TEntity>();
+
+            return entity == null ? null
+                : ExecuteOperation(entityInfo.Operations.GetOperation, entity);
+        }
+
+        /// <summary>
+        /// Gets how many entities existe of the given TEntity type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <returns></returns>
+        public int Count<TEntity>()
+        {
+            var entityInfo = Mapper.Map<TEntity>();
+            return (int)entityInfo.Operations.CountOperation.Execute(Context);
         }
 
         /// <summary>
@@ -55,7 +82,8 @@ namespace VirtualObjects
         {
             if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
 
-            return ExecuteOperation(Context.Map<TEntity>().Operations.InsertOperation, entity);
+            var entityInfo = Mapper.Map<TEntity>();
+            return ExecuteOperation(entityInfo.Operations.InsertOperation, entity);
         }
 
         /// <summary>
@@ -65,11 +93,11 @@ namespace VirtualObjects
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public TEntity Update<TEntity>([NotNull] TEntity entity) where TEntity : class, new()
+        public TEntity Update<TEntity>(TEntity entity) where TEntity : class, new()
         {
-            if (entity == null) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
-
-            return ExecuteOperation(Context.Map<TEntity>().Operations.UpdateOperation, entity);
+            if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
+            var entityInfo = Mapper.Map<TEntity>();
+            return ExecuteOperation(entityInfo.Operations.UpdateOperation, entity);
         }
 
         /// <summary>
@@ -82,8 +110,8 @@ namespace VirtualObjects
         public bool Delete<TEntity>(TEntity entity) where TEntity : class, new()
         {
             if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
-
-            return ExecuteOperation(Context.Map<TEntity>().Operations.DeleteOperation, entity) != null;
+            var entityInfo = Mapper.Map<TEntity>();
+            return ExecuteOperation(entityInfo.Operations.DeleteOperation, entity) != null;
         }
 
         /// <summary>
@@ -102,7 +130,9 @@ namespace VirtualObjects
 
         #region IDisposable Members
         private bool _disposed;
-
+        
+        
+        
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -132,6 +162,7 @@ namespace VirtualObjects
             }
         }
 
+        
         #endregion
     }
 }

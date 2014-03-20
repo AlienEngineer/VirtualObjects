@@ -91,44 +91,22 @@ function Get-NugetAssemblyPath($packageName)
 	}
 }
 
-#$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
-
-#while (-not [System.IO.Directory]::Exists($packagesPath)) 
-#{
-#	$backupfolder = $backupfolder + "..\";
-#	$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\VirtualObjects." + (Get-Package -Filter VirtualObjects -Skip ((Get-Package -Filter VirtualObjects).Count-1)).Version.ToString() + "\lib\" 
-#}
-
-#if ($targetFramework.EndsWith("v4.0"))
-#{
-#	$packagesPath = $packagesPath + "net40\"
-#}
-#else
-#{
-#	$packagesPath = $packagesPath + "net45\"
-#}
 
 $assemblyPath = $packagesPath
 
 # =============== LOADING DEPENDENCIES =========================
 
-#$ninject = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Ninject.dll"))
-#$castleCore = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Castle.Core.dll"))
-#$fasterflact = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "Fasterflect.dll"))
-
 Write-Verbose "Loading Ninject"
 Load-PackageAssembly('Ninject')
-
-Write-Verbose "Loading Castle.Core"
-Load-PackageAssembly('Castle.Core')
 
 Write-Verbose "Loading FasterFlect"
 Load-PackageAssembly('Fasterflect')
 
+Write-Verbose "Loading Castle.Core"
+Load-PackageAssembly('Castle.Core')
+
 Write-Verbose "Loading VirtualObjects"
 Load-PackageAssembly('VirtualObjects')
-#$assemblyPath = Get-NugetAssemblyPath('VirtualObjects')
-#$virtualObjects = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "VirtualObjects.dll"))
 
 
 if($Repository) {

@@ -47,6 +47,15 @@ namespace VirtualObjects.Queries
         /// The type of the output.
         /// </value>
         public Type OutputType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the map entity.
+        /// </summary>
+        /// <value>
+        /// The map entity.
+        /// </value>
+        public Func<object, object[], Object> MapEntity { get; set; }
+
         /// <summary>
         /// Gets or sets the entity information.
         /// </summary>
@@ -68,13 +77,14 @@ namespace VirtualObjects.Queries
         /// The output type setters.
         /// </value>
         public IList<MemberSetter> OutputTypeSetters { get; set; }
+
         /// <summary>
-        /// Gets or sets the mapper.
+        /// Gets or sets the entity bag.
         /// </summary>
         /// <value>
-        /// The mapper.
+        /// The entity bag.
         /// </value>
-        public IMapper Mapper { get; set; }
+        public IEntityBag EntityBag { get; set; }
         /// <summary>
         /// Gets or sets the contexts.
         /// </summary>

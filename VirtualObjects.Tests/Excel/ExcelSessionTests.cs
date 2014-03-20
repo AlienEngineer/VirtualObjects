@@ -11,7 +11,7 @@ namespace VirtualObjects.Tests.Excel
     /// 
     /// Author: Sérgio
     /// </summary>
-    [TestFixture]
+    [TestFixture, Category("Excel")]
     public class ExcelSessionTests
     {
 
@@ -43,6 +43,7 @@ namespace VirtualObjects.Tests.Excel
             {
                 var count = session.GetAll<Product1>().ToList().Count();
 
+                
                 Assert.That(count, Is.EqualTo(4));
             }
         }
@@ -97,7 +98,7 @@ namespace VirtualObjects.Tests.Excel
         }
     }
 
-    class Person
+    public class Person
     {
         public String Name { get; set; }
         public Double Age { get; set; }
@@ -107,7 +108,7 @@ namespace VirtualObjects.Tests.Excel
     }
 
     [Table(TableName = "Folha1")]
-    class Product
+    public class Product
     {
         public int Artigo { get; set; }
 
@@ -121,7 +122,7 @@ namespace VirtualObjects.Tests.Excel
     }
 
     [Table(TableName = "Folha2")]
-    class Product1
+    public class Product1
     {
         [Column(FieldName = "A")]
         public int Artigo { get; set; }

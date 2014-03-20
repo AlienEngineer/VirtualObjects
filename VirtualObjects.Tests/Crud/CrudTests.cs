@@ -1,11 +1,11 @@
 ﻿using System.Data.SqlClient;
 using FluentAssertions;
 using NUnit.Framework;
+using VirtualObjects.Tests.Models.Northwind;
 using VirtualObjects.CRUD;
-using VirtualObjects.EntityProvider;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Mapping;
-using VirtualObjects.Tests.Models.Northwind;
+using VirtualObjects.EntityProvider;
 
 namespace VirtualObjects.Tests.Crud
 {
@@ -16,7 +16,7 @@ namespace VirtualObjects.Tests.Crud
 
         public CrudTests()
         {
-            var provider = new OperationsProvider(new SqlFormatter(), new OrderedEntityMapper(), new EntityModelProvider());
+            var provider = new OperationsProvider(new SqlFormatter(), new EntityInfoModelMapper(), new EntityModelProvider());
             _operations = provider.CreateOperations(Mapper.Map(typeof(Employee)));
         }
 
@@ -42,7 +42,9 @@ namespace VirtualObjects.Tests.Crud
         private TResult Execute<TResult>(IOperation operation, TResult entity)
         {
 
-            return Diagnostic.Timed(() => (TResult)operation.PrepareOperation(entity).Execute(SessionContext));
+            return Diagnostic.Timed(() => 
+                (TResult)operation.PrepareOperation(entity).Execute(SessionContext)
+                );
         }
 
 

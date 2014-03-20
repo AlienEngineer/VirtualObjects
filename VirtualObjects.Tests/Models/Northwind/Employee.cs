@@ -53,4 +53,5 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public Byte[] Version { get; set; }
     }
+
 }

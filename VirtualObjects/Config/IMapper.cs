@@ -12,5 +12,6 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <param name="entityType">Type of the entity.</param>
         IEntityInfo Map(Type entityType);
+
     }
 }

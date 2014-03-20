@@ -5,38 +5,29 @@ using System.Reflection;
 using System.Linq;
 using Fasterflect;
 using VirtualObjects.Exceptions;
-using VirtualObjects.Queries;
+using VirtualObjects.CodeGenerators;
+using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.Config
 {
-
     /// <summary>
     /// Maps a type into an IEntityInfo. Caches out the results.
     /// </summary>
     class Mapper : IMapper
     {
         private readonly IOperationsProvider _operationsProvider;
-        private readonly IEntityProvider _entityProvider;
-        private readonly IEntityMapper _entityMapper;
-        public IEnumerable<Func<PropertyInfo, Boolean>> ColumnIgnoreGetters { get; set; }
-        public IEnumerable<Func<PropertyInfo, String>> ColumnNameGetters { get; set; }
-        public IEnumerable<Func<PropertyInfo, Boolean>> ColumnKeyGetters { get; set; }
-        public IEnumerable<Func<PropertyInfo, Boolean>> ColumnIdentityGetters { get; set; }
-        public IEnumerable<Func<Type, String>> EntityNameGetters { get; set; }
-        public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKey { get; set; }
-        public IEnumerable<Func<PropertyInfo, String>> ColumnForeignKeyLinks { get; set; }
-        public IEnumerable<Func<PropertyInfo, Boolean>> ColumnVersionField { get; set; }
-        public IEnumerable<Func<PropertyInfo, Boolean>> ComputedColumnGetters { get; set; }
+        private readonly IEntityInfoCodeGeneratorFactory _codeGeneratorFactory;
+        private readonly ITranslationConfiguration _configuration;
+        private readonly IEntityBag _entityBag;
+        private readonly IEntityProvider entityProvider;
 
-        private IDictionary<Type, EntityInfo> _cacheEntityInfos;
-
-        public Mapper(IOperationsProvider operationsProvider, IEntityProvider entityProvider, IEntityMapper entityMapper, SessionContext sessionContext)
+        public Mapper(IEntityBag entityBag, ITranslationConfiguration configuration, IEntityProvider entityProvider, IOperationsProvider operationsProvider, IEntityInfoCodeGeneratorFactory codeGeneratorFactory)
         {
+            this.entityProvider = entityProvider;
+            _configuration = configuration;
+            _codeGeneratorFactory = codeGeneratorFactory;
             _operationsProvider = operationsProvider;
-            _entityProvider = entityProvider;
-            _entityMapper = entityMapper;
-            _sessionContext = sessionContext;
-            _cacheEntityInfos = new Dictionary<Type, EntityInfo>();
+            _entityBag = entityBag;
         }
 
         #region IMapper Members
@@ -48,14 +39,33 @@ namespace VirtualObjects.Config
                 return null;
             }
 
-            EntityInfo entityInfo;
+            if ( entityType.IsProxy() )
+            {
+                return Map(entityType.BaseType);
+            }
 
-            if ( _cacheEntityInfos.TryGetValue(entityType, out entityInfo) )
+            return MapType(entityType);
+        }
+
+        private void MapRelatedEntities(IEntityInfo entityInfo)
+        {
+            foreach ( var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()) )
+            {
+                var entityType = property.PropertyType.GetGenericArguments().First();
+                Map(entityType);
+            }
+        }
+
+        private IEntityInfo MapType(Type entityType)
+        {
+            IEntityInfo entityInfo;
+
+            if ( _entityBag.TryGetValue(entityType, out entityInfo) )
             {
                 return entityInfo;
             }
 
-            _cacheEntityInfos[entityType] = entityInfo = new EntityInfo
+            _entityBag[entityType] = entityInfo = new EntityInfo
             {
                 EntityName = GetName(entityType),
                 EntityType = entityType
@@ -64,8 +74,10 @@ namespace VirtualObjects.Config
             entityInfo.Columns = MapColumns(entityType.Properties(), entityInfo).ToList();
             entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey).ToList();
 
+            int i = 0;
             foreach ( var column in entityInfo.Columns )
             {
+                column.Index = i++;
                 column.ForeignKey = GetForeignKey(column.Property);
             }
 
@@ -103,10 +115,17 @@ namespace VirtualObjects.Config
                 column.ForeignKeyLinks = GetForeignKeyLinks(column, column.ForeignKey, entityInfo).ToList();
             }
 
+            MapRelatedEntities(entityInfo);
+
             entityInfo.Operations = _operationsProvider.CreateOperations(entityInfo);
-            entityInfo.EntityProvider = _entityProvider.GetProviderForType(entityType);
-            entityInfo.EntityProvider.PrepareProvider(entityType, _sessionContext);
-            entityInfo.EntityMapper = _entityMapper;
+            var codeGenerator = _codeGeneratorFactory.Make(entityInfo);
+
+            codeGenerator.GenerateCode();
+
+            entityInfo.MapEntity = codeGenerator.GetEntityMapper();
+            entityInfo.EntityFactory = codeGenerator.GetEntityProvider();
+            entityInfo.EntityProxyFactory = codeGenerator.GetEntityProxyProvider();
+            entityInfo.EntityCast = codeGenerator.GetEntityCast();
 
             return entityInfo;
         }
@@ -169,7 +188,7 @@ namespace VirtualObjects.Config
 
         private string GetName(Type entityType)
         {
-            return EntityNameGetters
+            return _configuration.EntityNameGetters
                 .Select(nameGetter => nameGetter(entityType))
                 .FirstOrDefault(name => !String.IsNullOrEmpty(name));
         }
@@ -178,7 +197,7 @@ namespace VirtualObjects.Config
 
         #region Auxiliary column mapping methods
 
-        private IEnumerable<IEntityColumnInfo> MapColumns(IEnumerable<PropertyInfo> properties, EntityInfo entityInfo)
+        private IEnumerable<IEntityColumnInfo> MapColumns(IEnumerable<PropertyInfo> properties, IEntityInfo entityInfo)
         {
             return properties
                 .Where(e => !e.PropertyType.IsGenericType || !e.PropertyType.GetInterfaces().Contains(typeof(IEnumerable)))
@@ -186,7 +205,7 @@ namespace VirtualObjects.Config
                 .Select(e => MapColumn(e, entityInfo));
         }
 
-        private IEntityColumnInfo MapColumn(PropertyInfo propertyInfo, EntityInfo entityInfo)
+        private IEntityColumnInfo MapColumn(PropertyInfo propertyInfo, IEntityInfo entityInfo)
         {
             var columnName = GetName(propertyInfo);
             
@@ -196,8 +215,8 @@ namespace VirtualObjects.Config
                 ColumnName = columnName,
                 IsKey = GetIsKey(propertyInfo),
                 IsIdentity = GetIsIdentity(propertyInfo),
-                IsVersionControl = ColumnVersionField.Any(isVersion => isVersion(propertyInfo)),
-                IsComputed = ComputedColumnGetters.Any(isComputed => isComputed(propertyInfo)),
+                IsVersionControl = _configuration.ColumnVersionFieldGetters.Any(isVersion => isVersion(propertyInfo)),
+                IsComputed = _configuration.ComputedColumnGetters.Any(isComputed => isComputed(propertyInfo)),
                 Property = propertyInfo,
                 ValueGetter = MakeValueGetter(columnName, propertyInfo.DelegateForGetPropertyValue()),
                 ValueSetter = MakeValueSetter(columnName, propertyInfo.DelegateForSetPropertyValue())
@@ -215,7 +234,7 @@ namespace VirtualObjects.Config
 
             var entity = Map(propertyInfo.PropertyType);
 
-            var keyName = ColumnForeignKey
+            var keyName = _configuration.ColumnForeignKeyGetters
                 .Select(keyGetter => keyGetter(propertyInfo))
                 .FirstOrDefault();
 
@@ -223,7 +242,7 @@ namespace VirtualObjects.Config
                 entity.KeyColumns.FirstOrDefault() :
                 entity[keyName];
 
-            if ( foreignKey == null && ColumnForeignKey.Any() )
+            if ( foreignKey == null && _configuration.ColumnForeignKeyGetters.Any() )
             {
                 throw new ConfigException(Errors.Mapping_UnableToGetForeignKey, propertyInfo);
             }
@@ -235,7 +254,7 @@ namespace VirtualObjects.Config
         {
             if ( column.ForeignKey != null )
             {
-                var links = ColumnForeignKeyLinks
+                var links = _configuration.ColumnForeignKeyLinksGetters
                     .Select(keyGetter => keyGetter(column.Property))
                     .FirstOrDefault();
 
@@ -260,22 +279,22 @@ namespace VirtualObjects.Config
 
         private bool ShouldIgnore(PropertyInfo propertyInfo)
         {
-            return ColumnIgnoreGetters.Any(e => e(propertyInfo));
+            return _configuration.ColumnIgnoreGetters.Any(e => e(propertyInfo));
         }
 
         private bool GetIsIdentity(PropertyInfo propertyInfo)
         {
-            return ColumnIdentityGetters.Any(e => e(propertyInfo));
+            return _configuration.ColumnIdentityGetters.Any(e => e(propertyInfo));
         }
 
         private bool GetIsKey(PropertyInfo propertyInfo)
         {
-            return ColumnKeyGetters.Any(e => e(propertyInfo));
+            return _configuration.ColumnKeyGetters.Any(e => e(propertyInfo));
         }
 
         private string GetName(PropertyInfo propertyInfo)
         {
-            return ColumnNameGetters
+            return _configuration.ColumnNameGetters
                 .Select(nameGetter => nameGetter(propertyInfo))
                 .FirstOrDefault(name => !String.IsNullOrEmpty(name));
         }
@@ -325,7 +344,9 @@ namespace VirtualObjects.Config
 
         #region IDisposable Members
         private bool _disposed;
-        private readonly SessionContext _sessionContext;
+        
+        
+        
 
         public void Dispose()
         {
@@ -337,20 +358,7 @@ namespace VirtualObjects.Config
         protected virtual void Dispose(bool disposing)
         {
             if ( !_disposed )
-            {
-                if ( disposing )
-                {
-                    _cacheEntityInfos.Clear();
-                }
-
-                _cacheEntityInfos = null;
-                ColumnNameGetters = null;
-                ColumnKeyGetters = null;
-                ColumnIdentityGetters = null;
-                EntityNameGetters = null;
-                ColumnForeignKey = null;
-                ColumnVersionField = null;
-
+            {   
                 _disposed = true;
             }
         }

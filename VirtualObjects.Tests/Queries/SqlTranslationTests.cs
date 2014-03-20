@@ -15,17 +15,17 @@ namespace VirtualObjects.Tests.Queries
 
     class CachingTranslatorProvider : IQueryTranslatorProvider
     {
-        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper)
+        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag)
         {
-            return new CachingTranslator(formatter, mapper);
+            return new CachingTranslator(formatter, mapper, entityBag);
         }
     }
 
     class TranslatorProvider : IQueryTranslatorProvider
     {
-        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper)
+        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag)
         {
-            return new QueryTranslator(formatter, mapper);
+            return new QueryTranslator(formatter, mapper, entityBag);
         }
     }
 
@@ -35,39 +35,25 @@ namespace VirtualObjects.Tests.Queries
     /// 
     /// Author: Sérgio
     /// </summary>
-    [TestFixture(typeof(TranslatorProvider))]
-    [TestFixture(typeof(CachingTranslatorProvider))]
     [Category("Query Building")]
-    public class SqlTranslationTests<TTranslatorProvider> : UtilityBelt where TTranslatorProvider : IQueryTranslatorProvider, new()
+    public class SqlTranslationTests : UtilityBelt
     {
 
         private IQueryTranslator _translator;
 
         public SqlTranslationTests()
         {
-            _translator = new TTranslatorProvider()
-                .CreateQueryTranslator(new SqlFormatter(), Mapper);
+            _translator = Make<CachingTranslator>();
         }
 
         private String Translate(IQueryable query)
         {
-            if (typeof(TTranslatorProvider) != typeof(CachingTranslatorProvider))
-            {
-                _translator = new TTranslatorProvider()
-                    .CreateQueryTranslator(new SqlFormatter(), Mapper);
-            }
-
             var str = Diagnostic.Timed(() => _translator.TranslateQuery(query).CommandText);
 
             Trace.WriteLine(str);
 
             return str;
         }
-
-
-        
-
-
 
         /// <summary>
         /// 
@@ -791,6 +777,18 @@ namespace VirtualObjects.Tests.Queries
             Assert.That(
                 Translate(query),
                 Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where ([T0].[LastName] Is Null)")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Null_Compare_Predicate1()
+        {
+            string lastName = null;
+            var query = Query<Employee>().Where(e => e.LastName == lastName || lastName == null);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Employees] [T0] Where (([T0].[LastName] = @p0) Or (@p1 = @p2))")
             );
         }
 

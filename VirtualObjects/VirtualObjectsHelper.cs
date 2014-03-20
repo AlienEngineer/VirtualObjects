@@ -32,12 +32,12 @@ namespace VirtualObjects.Scaffold
             [Key]
             [Association(FieldName = "object_id", OtherKey = "Id")]
             public virtual Table Table { get; set; }
-                          
+
             [Key(FieldName = "column_Id")]
             public int Id { get; set; }
 
             public String Name { get; set; }
-                      
+
             [Column(FieldName = "is_identity")]
             public Boolean IsIdentity { get; set; }
 
@@ -131,15 +131,13 @@ namespace VirtualObjects.Scaffold
         /// <param name="databaseName">Name of the database.</param>
         /// <param name="serverName">Name of the server.</param>
         /// <returns></returns>
-        public static IEnumerable<MetaTable> GetTables(string databaseName, string serverName)
+        public static IEnumerable<MetaTable> GetTables(string databaseName, string serverName, String tableName = null)
         {
-            return GetTablesLazy(databaseName, serverName).ToList();
-
-            
+            return GetTablesLazy(databaseName, serverName, tableName).ToList();         
         }
 
 
-        private static IEnumerable<MetaTable> GetTablesLazy(string databaseName, string serverName)
+        private static IEnumerable<MetaTable> GetTablesLazy(string databaseName, string serverName, String tableName = null)
         {
             using ( var session = new Session(
                         configuration: new SessionConfiguration
@@ -149,14 +147,15 @@ namespace VirtualObjects.Scaffold
                         connectionProvider: new Connections.DbConnectionProvider("System.Data.SqlClient", String.Format("Data Source={0};Initial Catalog={1};Integrated Security=True", serverName, databaseName))) )
             {
 
-                foreach ( var table in session.Query<Table>().Where(e => e.Type == "U") )
-                {                                        
+                foreach ( var table in session.Query<Table>().Where(e => e.Type == "U" && (e.Name == tableName || tableName == null)) )
+                {
                     var metaTable = new MetaTable
                     {
-                        Name = table.Name                        
-                    };  
-            
-                    metaTable.Columns = table.Columns.ToList().Select(column =>  {
+                        Name = table.Name
+                    };
+
+                    metaTable.Columns = table.Columns.ToList().Select(column =>
+                    {
                         var metaColumn = new MetaField
                         {
                             Name = column.Name,
@@ -171,7 +170,7 @@ namespace VirtualObjects.Scaffold
 
                         return metaColumn;
                     }).ToList();
-               
+
                     yield return metaTable;
                 }
 

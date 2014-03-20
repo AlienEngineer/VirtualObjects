@@ -39,11 +39,6 @@ namespace VirtualObjects.Tests.Connection
             var provider = new NamedDbConnectionProvider("northwind1");
 
             var connection = provider.CreateConnection();
-
-            connection.Should().NotBeNull();
-
-            connection.Open();
-            connection.Close();
         }
     }
 }

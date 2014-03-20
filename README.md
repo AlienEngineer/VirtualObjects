@@ -2,8 +2,7 @@
 
 [Short demonstration video] (http://screencast.com/t/CghgJTdmx#mediaDisplayArea)
 
-```ps
-
+```
 # Creates the entity models based on data source and create a repository Layer.
 Scaffold Models .\Development Northwind -Repository
 
@@ -17,13 +16,11 @@ Scaffold Repository
 
 # Create a business Layer. (e.g. Scaffold Business Task)
 Scaffold Business <ModelType>
-
-
 ```
 
 ****
 
-### Getting Started (Manualy)
+### Getting Started (Manually)
 
 #### Create a Model
 ```C#
@@ -61,13 +58,13 @@ public class Employee
 ### Why
 To improve myself and create something really easy to use with the best performance possible. This project started in college with ORMFramework and later VODB.
 
+***
 
 ### Performance
-Verified on unit-tests using NUnit on a I7 intel 3.07Ghz 18Gb RAM.
+Verified on unit-tests using NUnit on a intel i7 3.07GHz 18Gb RAM and intel i7-3537U 2.0GHz 8Gb RAM.
 
-The unit tests should be executed one at a time. So the assembly load time is calculated correctly for each test.
-Tests are repeated 10x via NUnit RepeatAttribute. The timer ignores the very first result, since the first will be way bigger then the remaining executions.
 
+<<<<<<< HEAD
 VO Version 1.0.1-Beta  
 Dapper Version 1.13
 
@@ -88,18 +85,34 @@ Dapper Version 1.13
     
     // Dapper: Iterated the same Query 1000 times in ~429 ms
     Connection.Query<Suppliers>("Select * from Suppliers")
+=======
+* VO Version 1.1
+* Dapper Version 1.13
+* Entity Framework 6
+
+#### Under Northwind Database
+To obtain a fresh Graphic and more detail execute the unit-test _Performance Check_ the excel will be filled on Bin\Release\Session or Bin\Debug\Session directory.
+
+```MySQL
+Select Count(*) from Suppliers
+>>>>>>> 1.1.0
 ```
-```C#
-    // VO: Iterated Query in ~8 ms
-    Session.GetAll<Suppliers>()
-    
-    // Dapper: Iterated Query in ~16 ms
-    Connection.Query<Suppliers>("Select * from Suppliers")
+![Count Suppliers](Docs/CountSuppliers.png)
+> Results from Laptop and PC were iqual.
+
+```MySQL
+Select * from Suppliers
 ```
+![Mapping Suppliers] (Docs/SuppliersMapping.png) 
+> Results from intel i7-3537U 2.0GHz 8Gb RAM (4 core) Laptop
+
+![Mapping Suppliers] (Docs/SuppliersMapping_pc.png) 
+> Results from intel i7 3.07GHz 18Gb RAM (8 core) PC
+
+***
 
 ### For more info click [here] (http://alienengineer.github.com/VirtualObjects/)
 ### Get it as a NuGet Package [here] (http://www.nuget.org/packages/VirtualObjects/)
 ```
-   PM> Install-Package VirtualObjects -Pre
+   PM> Install-Package VirtualObjects
 ```
-

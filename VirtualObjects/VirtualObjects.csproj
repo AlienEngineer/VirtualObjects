@@ -2,7 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug 4.5</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">
+    </Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C1DC7907-F05A-476F-98B2-8B25DF440061}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -42,6 +43,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\net45\VirtualObjects.XML</DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug 4.0|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -68,6 +70,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Release\net45\VirtualObjects.XML</DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release 4.0|AnyCPU'">
     <DebugSymbols>false</DebugSymbols>
@@ -82,15 +85,22 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Release\net40\VirtualObjects.XML</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Performance|AnyCPU'">
+    <OutputPath>bin\Performance\</OutputPath>
+    <DefineConstants>NET45 PERFORMANCE</DefineConstants>
+    <DocumentationFile>bin\Release\net45\VirtualObjects.XML</DocumentationFile>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Castle.Core.3.2.2\lib\net45\Castle.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Ninject, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Ninject.3.0.1.10\lib\net45-full\Ninject.dll</HintPath>
@@ -108,11 +118,6 @@
     <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5' " />
     <When Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
       <ItemGroup>
-        <Reference Include="Castle.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\Castle.Core.3.2.2\lib\net40-client\Castle.Core.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
         <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
@@ -126,13 +131,26 @@
     </When>
   </Choose>
   <ItemGroup>
+    <Compile Include="CodeGenerators\CodeCompiler.cs" />
+    <Compile Include="CodeGenerators\DynamicModelCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\EntityCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\EntityInfoCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\EntityInfoCodeGeneratorFactory.cs" />
+    <Compile Include="CodeGenerators\IEntityCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\IEntityInfoCodeGeneratorFactory.cs" />
+    <Compile Include="CodeGenerators\IQueryInfo.cs" />
+    <Compile Include="CodeGenerators\TypeBuilder.cs" />
     <Compile Include="Config\EntityBoundColumnInfo.cs" />
     <Compile Include="Config\EntityColumnInfo.cs" />
     <Compile Include="Config\EntityDateTimeColumnInfo.cs" />
     <Compile Include="Config\EntityInfo.cs" />
     <Compile Include="Config\IMapper.cs" />
+    <Compile Include="Config\IEntityBag.cs" />
+    <Compile Include="Config\ITranslationConfiguration.cs" />
+    <Compile Include="Config\TranslationConfiguration.cs" />
+    <Compile Include="Config\ITranslationConfigurationBuilder.cs" />
     <Compile Include="Config\Mapper.cs" />
-    <Compile Include="Config\MappingBuilder.cs" />
+    <Compile Include="Config\TranslationConfigurationBuilder.cs" />
     <Compile Include="Connections\Connection.cs" />
     <Compile Include="Connections\DbConnectionProvider.cs" />
     <Compile Include="Connections\FirstConnectionDbConnectionProvider.cs" />
@@ -143,12 +161,14 @@
     <Compile Include="CRUD\OperationParameter.cs" />
     <Compile Include="CRUD\OperationsExecutor.cs" />
     <Compile Include="CRUD\OperationsProvider.cs" />
+    <Compile Include="CRUD\Operations\CountOperation.cs" />
     <Compile Include="CRUD\Operations\DeleteOperation.cs" />
     <Compile Include="CRUD\Operations\GetOperation.cs" />
     <Compile Include="CRUD\Operations\GetVersionOperation.cs" />
     <Compile Include="CRUD\Operations\InsertOperation.cs" />
     <Compile Include="CRUD\Operations\Operation.cs" />
     <Compile Include="CRUD\Operations\Operations.cs" />
+    <Compile Include="CRUD\Operations\ScalarOperationExecutor.cs" />
     <Compile Include="CRUD\Operations\UpdateOperation.cs" />
     <Compile Include="CRUD\Operations\VersionCheckOperation.cs" />
     <Compile Include="Diagnostic.cs" />
@@ -156,13 +176,13 @@
     <Compile Include="EntityProvider\DynamicTypeProvider.cs" />
     <Compile Include="EntityProvider\EntityModelProvider.cs" />
     <Compile Include="EntityProvider\EntityProviderComposite.cs" />
-    <Compile Include="EntityProvider\ProxyEntityProvider.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Errors.Designer.cs">
       <DependentUpon>Errors.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Exceptions\ArgumentNullException.cs" />
     <Compile Include="Exceptions\ConfigException.cs" />
     <Compile Include="Exceptions\ConnectionProviderException.cs" />
     <Compile Include="Exceptions\ExecutionException.cs" />
@@ -171,10 +191,12 @@
     <Compile Include="Exceptions\UnableToSetOrGetTheFieldValueException.cs" />
     <Compile Include="Exceptions\UnsupportedException.cs" />
     <Compile Include="Exceptions\VirtualObjectsException.cs" />
+    <Compile Include="Exceptions\CodeCompilerException.cs" />
     <Compile Include="IConnection.cs" />
     <Compile Include="IEntityColumnInfo.cs" />
     <Compile Include="IEntityInfo.cs" />
     <Compile Include="IEntityProvider.cs" />
+    <Compile Include="InternalExtensions.cs" />
     <Compile Include="InternalSession.cs" />
     <Compile Include="IOCContainer.cs" />
     <Compile Include="IOperation.cs" />
@@ -185,7 +207,6 @@
     <Compile Include="ITransaction.cs" />
     <Compile Include="Mappings\Annotations.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
-    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\Execution\CompositeExecutor.cs" />
     <Compile Include="Queries\Execution\CountQueryExecutor.cs" />
@@ -200,19 +221,16 @@
     <Compile Include="Queries\IEntityMapper.cs" />
     <Compile Include="Queries\IQueryInfo.cs" />
     <Compile Include="Queries\IQueryTranslator.cs" />
-    <Compile Include="Queries\Mapping\CollectionEntitiesMapper.cs" />
-    <Compile Include="Queries\Mapping\DynamicEntityMapper.cs" />
-    <Compile Include="Queries\Mapping\DynamicTypeEntityMapper.cs" />
-    <Compile Include="Queries\Mapping\DynamicWithMemberEntityMapper.cs" />
-    <Compile Include="Queries\Mapping\GroupedDynamicEntityMapper.cs" />
+    <Compile Include="Queries\Mapping\EntityInfoModelMapper.cs" />
+    <Compile Include="Queries\Mapping\EntityModelEntitiesMapper.cs" />
     <Compile Include="Queries\Mapping\IdentityMap.cs" />
-    <Compile Include="Queries\Mapping\MappingStatus.cs" />
+    <Compile Include="Queries\Mapping\MapResult.cs" />
     <Compile Include="Queries\Mapping\OffsetedReader.cs" />
-    <Compile Include="Queries\Mapping\OrderedEntityMapper.cs" />
     <Compile Include="Queries\Query.cs" />
     <Compile Include="Queries\QueryInfo.cs" />
     <Compile Include="Queries\QueryProvider.cs" />
     <Compile Include="Queries\Translation\CachingTranslator.cs" />
+    <Compile Include="Queries\Translation\OnClause.cs" />
     <Compile Include="Queries\Translation\QueryTranslator.cs" />
     <Compile Include="ReflectionExtensions.cs" />
     <Compile Include="Resources.Designer.cs">

@@ -184,7 +184,19 @@ namespace VirtualObjects.Queries.Mapping
 
         public int GetValues(object[] values)
         {
-            return _reader.GetValues(values);
+
+            var length = FieldCount - _offset;
+            _reader.GetValues(values);
+
+            if ( _offset > 0 )
+            {
+                for ( int i = 0; i < length; i++ )
+                {
+                    values[i] = values[_offset + i];
+                }
+            }
+
+            return length;
         }
 
         public bool IsDBNull(int i)

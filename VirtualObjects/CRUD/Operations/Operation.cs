@@ -48,22 +48,22 @@ namespace VirtualObjects.CRUD.Operations
             try
             {
                 _parameters = GetParameters(_entityInfo)
-                .Select(e => new
-                {
-                    Key = e.ColumnName,
-                    Value = e.GetFieldFinalValue(entityModel),
-                    e.Property,
-                    Column = e
-                })
-                .ToDictionary(
-                    e => e.Key,
-                    e => (IOperationParameter)new OperationParameter
+                    .Select(e => new
                     {
-                        Type = e.Property.PropertyType,
-                        Value = e.Value,
-                        Name = e.Key,
-                        Column = e.Column
-                    });
+                        Key = e.ColumnName,
+                        Value = e.GetFieldFinalValue(entityModel),
+                        e.Property,
+                        Column = e
+                    })
+                    .ToDictionary(
+                        e => e.Key,
+                        e => (IOperationParameter)new OperationParameter
+                        {
+                            Type = e.Property.PropertyType,
+                            Value = e.Value,
+                            Name = e.Key,
+                            Column = e.Column
+                        });
             }
             catch (Exception ex)
             {

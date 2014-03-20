@@ -10,6 +10,13 @@ namespace VirtualObjects
     public interface IEntityColumnInfo
     {
         /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        /// <value>
+        /// The index.
+        /// </value>
+        int Index { get; set; }
+        /// <summary>
         /// Gets the name of the column.
         /// </summary>
         /// <value>
@@ -97,6 +104,12 @@ namespace VirtualObjects
         /// </value>
         bool IsVersionControl { get; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [is computed].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [is computed]; otherwise, <c>false</c>.
+        /// </value>
         bool IsComputed { get; set; }
 
         /// <summary>

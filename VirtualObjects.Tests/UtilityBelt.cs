@@ -21,7 +21,7 @@ namespace VirtualObjects.Tests
 
     public class TimedTests : TestsBase
     {
-        public const int Repeat = 10;
+        public const int Repeat = 2;
 
         int _count;
 
@@ -53,22 +53,21 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
-            var ioc = new NinjectContainer(new SessionConfiguration
-            {
-                Logger = Console.Out
-            }, "northwind");
+            ioc = new NinjectContainer(new SessionConfiguration { }, "northwind");
 
             ConnectionManager = ioc.Get<IConnection>();
-            Mapper = ioc.Get<IMapper>();
             Translator = ioc.Get<IQueryTranslator>();
             QueryProvider = ioc.Get<IQueryProvider>();
             SessionContext = ioc.Get<SessionContext>();
 
             Session = new Session(ioc);
 
+            Mapper = ((InternalSession)(ISession)Session.InternalSession).Mapper;
+
             Connection = ConnectionManager.DbConnection;
         }
 
+        private IOcContainer ioc;
         ITransaction _dbTransaction;
 
         [SetUp]
@@ -116,6 +115,11 @@ namespace VirtualObjects.Tests
         public IQueryable<T> Query<T>() where T : class, new()
         {
             return Session.Query<T>();
+        }
+
+        public T Make<T>()
+        {
+            return ioc.Get<T>();
         }
 
         public Session Session { get; private set; }

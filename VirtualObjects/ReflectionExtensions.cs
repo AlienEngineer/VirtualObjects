@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace VirtualObjects
 {
@@ -18,6 +20,52 @@ namespace VirtualObjects
         public static Boolean IsDynamic(this Type type)
         {
             return type.Name.StartsWith("<>");
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is proxy.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        public static Boolean IsProxy(this Type type)
+        {
+            return type.Name.EndsWith("Proxy") && type.BaseType != null && type.Name.StartsWith(type.BaseType.Name);
+        }
+
+        /// <summary>
+        /// Determines whether the specified property information is virtual.
+        /// </summary>
+        /// <param name="propertyInfo">The property information.</param>
+        /// <returns></returns>
+        public static Boolean IsVirtual(this PropertyInfo propertyInfo)
+        {
+#if NET40
+            return propertyInfo.GetGetMethod().IsVirtual;
+#else
+            return propertyInfo.GetMethod.IsVirtual;
+#endif
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is collection.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        public static Boolean IsCollection(this Type type)
+        {
+            return type.GetInterfaces()
+                .Any(e => e == typeof(IEnumerable))
+                && type != typeof(String);
+        }
+
+        /// <summary>
+        /// Determines whether [the specified type] [is generic collection] .
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        public static Boolean IsGenericCollection(this Type type)
+        {
+            return type.IsCollection() && type.GetGenericArguments().Any();
         }
 
     }

@@ -29,7 +29,6 @@ namespace VirtualObjects.Tests.IOC
             types
                 .Append<IEntityProvider>()
                 .Append<ISession>()
-                .Append<IMapper>()
                 .Append<IOperationsProvider>()
                 .Append<IEntityProvider>()
                 .Append<IQueryTranslator>()
@@ -38,7 +37,8 @@ namespace VirtualObjects.Tests.IOC
                 .Append<IQueryExecutor>()
                 .Append<IQueryProvider>()
                 .Append<IConnection>()
-                .Append<SessionContext>();
+                .Append<SessionContext>()
+                ;
 
             foreach (var type in types)
             {

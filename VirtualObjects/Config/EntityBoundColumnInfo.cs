@@ -21,7 +21,7 @@ namespace VirtualObjects.Config
                     return null;
                 }
 
-                var instance = ForeignKey.EntityInfo.EntityType.CreateInstance();
+                var instance =  Activator.CreateInstance(ForeignKey.EntityInfo.EntityType);
                 SetValue(entity, instance);
 
                 ForeignKey.SetFieldFinalValue(instance, value);
