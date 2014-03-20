@@ -83,9 +83,6 @@ Select * from Suppliers
 ![Mapping Suppliers] (Docs/SuppliersMapping.png) 
 > Results from intel i7-3537U 2.0GHz 8Gb RAM (4 core) Laptop
 
-```MySQL
-Select * from Suppliers
-```
 ![Mapping Suppliers] (Docs/SuppliersMapping_pc.png) 
 > Results from intel i7 3.07GHz 18Gb RAM (8 core) PC
 
