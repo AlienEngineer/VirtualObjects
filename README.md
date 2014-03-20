@@ -75,17 +75,16 @@ To obtain a fresh Graphic and more detail execute the unit-test _Performance Che
 Select Count(*) from Suppliers
 ```
 ![Count Suppliers](Docs/CountSuppliers.png)
-> Results in milliseconds.  
-> The lower the better.  
-> The first execution is excluded. Including it results in a unreadable graphic.
+> Results from Laptop and PC were iqual.
 
 ```MySQL
 Select * from Suppliers
 ```
 ![Mapping Suppliers] (Docs/SuppliersMapping.png) 
-> Results in milliseconds.  
-> The lower the better.  
-> The first execution is excluded. Including it results in a unreadable graphic.
+> Results from intel i7-3537U 2.0GHz 8Gb RAM (4 core) Laptop
+
+![Mapping Suppliers] (Docs/SuppliersMapping_pc.png) 
+> Results from intel i7 3.07GHz 18Gb RAM (8 core) PC
 
 ***
 
