@@ -240,4 +240,15 @@ Method [{Name}] not yet supported on nested query.</value>
   <data name="EntitiesMapper_UnableToMapType">
     <value xml:space="preserve">Unable to map the query into [{Name}]</value>
   </data>
+  <data name="Mapping_UnableToGetColumnName" xml:space="preserve">
+    <value>
+Unable to get the column name for the [{Name}] property of type [{DeclaringType.Name}]</value>
+    <comment>Mapping_UnableToGetColumnName description</comment>
+  </data>
+  <data name="UnableToMapEntity" xml:space="preserve">
+    <value>
+Unable to map [{Name}] entity type.
+</value>
+    <comment>UnableToMapEntity description</comment>
+  </data>
 </root>

@@ -228,7 +228,7 @@ using VirtualObjects.Connections;
         /// Use this to configure custom Attributes or custom conventions.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public override void ConfigureMappingBuilder(IMappingBuilder builder)
+        public override void ConfigureMappingBuilder(ITranslationConfigurationBuilder builder)
         {
             //
             // Table Mapping

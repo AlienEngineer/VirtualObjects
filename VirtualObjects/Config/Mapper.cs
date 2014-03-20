@@ -6,7 +6,6 @@ using System.Linq;
 using Fasterflect;
 using VirtualObjects.Exceptions;
 using VirtualObjects.CodeGenerators;
-using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.Config
 {
@@ -44,7 +43,14 @@ namespace VirtualObjects.Config
                 return Map(entityType.BaseType);
             }
 
-            return MapType(entityType);
+            try
+            {
+                return MapType(entityType);
+            }
+            catch ( Exception ex)
+            {
+                throw new MappingException(VirtualObjects.Errors.UnableToMapEntity, entityType, ex);
+            }                                                
         }
 
         private void MapRelatedEntities(IEntityInfo entityInfo)
@@ -208,6 +214,11 @@ namespace VirtualObjects.Config
         private IEntityColumnInfo MapColumn(PropertyInfo propertyInfo, IEntityInfo entityInfo)
         {
             var columnName = GetName(propertyInfo);
+
+            if ( columnName == null )
+            {
+                throw new MappingException(VirtualObjects.Errors.Mapping_UnableToGetColumnName, propertyInfo);
+            }
             
             var column = new EntityColumnInfo
             {
