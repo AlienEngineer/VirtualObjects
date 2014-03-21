@@ -74,7 +74,7 @@ namespace VirtualObjects.CodeGenerators
 
         protected override string GenerateOtherMethodsCode()
         {
-            if ( !_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic )
+            if (!_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic)
             {
                 throw new CodeCompilerException("The entity type {Name} is not public.", _entityInfo.EntityType);
             }
@@ -138,7 +138,10 @@ namespace VirtualObjects.CodeGenerators
 
             var entityType = property.PropertyType.GetGenericArguments().First();
             var filterFields = configuration.CollectionFilterGetters
-                .Select(g => g(property).ToLower()).ToList();
+                .Select(g => g(property))
+                .Where(f => f != null)
+                .Select(f => f.ToLower())
+                .ToList();
 
             var foreignTable = entityBag[entityType];
 
@@ -146,7 +149,7 @@ namespace VirtualObjects.CodeGenerators
             {
                 if ( (foreignTable.ForeignKeys == null || !foreignTable.ForeignKeys.Any()) && !filterFields.Any() )
                 {
-                    throw new MappingException(VirtualObjects.Errors.Mapping_CollectionNeedsBindedField,
+                    throw new MappingException(Errors.Mapping_CollectionNeedsBindedField,
                       new
                       {
                           TargetName = foreignTable.EntityName,
@@ -163,6 +166,21 @@ namespace VirtualObjects.CodeGenerators
                         .FirstOrDefault(e => 
                             e.ColumnName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase) &&
                             filterFields.Contains(e.ColumnName.ToLower()));
+
+                    if (foreignField == null)
+                    {
+
+                        foreach (var filterField in filterFields.Where(filterField => !entityInfo.KeyColumns.Select(f => f.Property.Name).Contains(filterField)))
+                        {
+                            throw new MappingException(
+                                "\nUnable to find the field [{FilterFieldName}] in the key collection of [{EntityName}] model.",
+                                new
+                                {
+                                    FilterFieldName = filterField,
+                                    entityInfo.EntityName
+                                });
+                        }
+                    }
                 }
 
                 if (foreignField == null && foreignTable.ForeignKeys != null)
@@ -170,7 +188,6 @@ namespace VirtualObjects.CodeGenerators
                     foreignField = foreignTable.ForeignKeys
                         .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
                 }
-
 
                 if ( foreignField != null )
                 {
@@ -214,7 +231,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            foreach ( var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()) )
+            foreach (var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()))
             {
 
 
@@ -247,7 +264,7 @@ namespace VirtualObjects.CodeGenerators
 
             }
 
-            foreach ( var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()) )
+            foreach (var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()))
             {
                 var entityType = property.PropertyType.GetGenericArguments().First();
                 result += @"
@@ -283,7 +300,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            for ( int i = 0; i < entityInfo.Columns.Count; i++ )
+            for (int i = 0; i < entityInfo.Columns.Count; i++)
             {
                 var column = entityInfo.Columns[i];
 
@@ -327,7 +344,7 @@ namespace VirtualObjects.CodeGenerators
         private static StringBuffer GenerateFieldAssignment(int i, IEntityColumnInfo column)
         {
             StringBuffer result = " = ";
-            if ( column.Property.PropertyType.IsFrameworkType() )
+            if (column.Property.PropertyType.IsFrameworkType())
             {
                 result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = column.Property.PropertyType.Name });
             }

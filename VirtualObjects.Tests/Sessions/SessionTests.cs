@@ -800,6 +800,17 @@ namespace VirtualObjects.Tests.Sessions
         }
 
         [Test, Repeat(Repeat)]
+        public void Session_GetById_Territories_Collection()
+        {
+            var session = Session;
+            {
+                var employee = session.GetById(new Employee { EmployeeId = 1 });
+
+                Assert.That(employee.TerritoriesCollection.Count(), Is.EqualTo(2));
+            }
+        }
+
+        [Test, Repeat(Repeat)]
         public void Session_GetById_AnyTerritories()
         {
             var session = Session;

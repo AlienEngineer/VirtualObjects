@@ -94,6 +94,11 @@ namespace VirtualObjects
             builder.ColumnIgnore<IgnoreAttribute>();
 
             builder.ComputedColumn<ComputedAttribute>();
+
+            //
+            // Collections filters.
+            //
+            builder.CollectionFilter<FilterWith>(e => e.FieldName);
         }
 
     }

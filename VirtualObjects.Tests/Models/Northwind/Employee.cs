@@ -49,6 +49,7 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public virtual IQueryable<EmployeeTerritories> Territories { get; set; }
 
+        [FilterWith(FieldName = "EmployeeId")]
         public virtual ICollection<EmployeeTerritories> TerritoriesCollection { get; set; }
 
         [Ignore]
