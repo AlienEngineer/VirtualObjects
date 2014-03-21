@@ -143,6 +143,7 @@
     <Compile Include="Config\EntityBoundColumnInfo.cs" />
     <Compile Include="Config\EntityColumnInfo.cs" />
     <Compile Include="Config\EntityDateTimeColumnInfo.cs" />
+    <Compile Include="Config\EntityGuidColumnInfo.cs" />
     <Compile Include="Config\EntityInfo.cs" />
     <Compile Include="Config\IMapper.cs" />
     <Compile Include="Config\IEntityBag.cs" />

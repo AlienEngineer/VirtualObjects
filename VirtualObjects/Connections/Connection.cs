@@ -16,7 +16,7 @@ namespace VirtualObjects.Connections
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
         private bool _endedTransaction;
-        private IDictionary<String, IOperationParameter> _stub = new Dictionary<String, IOperationParameter>();
+        private readonly IDictionary<String, IOperationParameter> _stub = new Dictionary<String, IOperationParameter>();
 
         #region IDisposable Members
         private bool _disposed;

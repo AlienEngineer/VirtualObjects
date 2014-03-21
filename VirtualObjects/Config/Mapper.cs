@@ -18,11 +18,9 @@ namespace VirtualObjects.Config
         private readonly IEntityInfoCodeGeneratorFactory _codeGeneratorFactory;
         private readonly ITranslationConfiguration _configuration;
         private readonly IEntityBag _entityBag;
-        private readonly IEntityProvider entityProvider;
 
-        public Mapper(IEntityBag entityBag, ITranslationConfiguration configuration, IEntityProvider entityProvider, IOperationsProvider operationsProvider, IEntityInfoCodeGeneratorFactory codeGeneratorFactory)
+        public Mapper(IEntityBag entityBag, ITranslationConfiguration configuration, IOperationsProvider operationsProvider, IEntityInfoCodeGeneratorFactory codeGeneratorFactory)
         {
-            this.entityProvider = entityProvider;
             _configuration = configuration;
             _codeGeneratorFactory = codeGeneratorFactory;
             _operationsProvider = operationsProvider;
@@ -49,7 +47,7 @@ namespace VirtualObjects.Config
             }
             catch ( Exception ex)
             {
-                throw new MappingException(VirtualObjects.Errors.UnableToMapEntity, entityType, ex);
+                throw new MappingException(Errors.UnableToMapEntity, entityType, ex);
             }                                                
         }
 
@@ -152,8 +150,29 @@ namespace VirtualObjects.Config
             {
                 return WrapWithDatetimeColumn(column);
             }
+
+            if (column.Property.PropertyType == typeof (Guid))
+            {
+                return WrapWithGuidColumn(column);
+            }
             
             return column;
+        }
+
+        private static IEntityColumnInfo WrapWithGuidColumn(IEntityColumnInfo column)
+        {
+            return new EntityGuidColumnInfo
+            {
+                Property = column.Property,
+                ColumnName = column.ColumnName,
+                EntityInfo = column.EntityInfo,
+                ForeignKey = column.ForeignKey,
+                IsIdentity = column.IsIdentity,
+                IsKey = column.IsKey,
+                ValueGetter = column.ValueGetter,
+                ValueSetter = column.ValueSetter,
+                IsVersionControl = column.IsVersionControl
+            };
         }
 
         private static IEntityColumnInfo WrapWithDatetimeColumn(IEntityColumnInfo column)
@@ -217,7 +236,7 @@ namespace VirtualObjects.Config
 
             if ( columnName == null )
             {
-                throw new MappingException(VirtualObjects.Errors.Mapping_UnableToGetColumnName, propertyInfo);
+                throw new MappingException(Errors.Mapping_UnableToGetColumnName, propertyInfo);
             }
             
             var column = new EntityColumnInfo
