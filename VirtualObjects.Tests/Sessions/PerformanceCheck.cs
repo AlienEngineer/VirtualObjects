@@ -1,4 +1,5 @@
-﻿using VirtualObjects.Tests.Models.Northwind;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions
 {
@@ -44,6 +45,7 @@ namespace VirtualObjects.Tests.Sessions
         public class MappingDynamicSuppliers : PerfRecord { }
                   
         [VirtualObjects.Mappings.Table(TableName = "Order Details")]
+        [Table("Order Details")]
         public class OrderDetails
         {
             [System.ComponentModel.DataAnnotations.Key]
@@ -335,7 +337,6 @@ namespace VirtualObjects.Tests.Sessions
                         }
                     }, name: STR_Dapper);
 
-                    /*
                     Diagnostic.Timed(() =>
                     {
                         for (int i = 0; i < numberOfExecutions; i++)
@@ -343,7 +344,7 @@ namespace VirtualObjects.Tests.Sessions
                             ef.OrderDetails.ToList();
                         }
                     }, name: STR_EntityFramework);
-                */
+                
                     Diagnostic.Timed(() =>
                     {
                         for (int i = 0; i < numberOfExecutions; i++)
