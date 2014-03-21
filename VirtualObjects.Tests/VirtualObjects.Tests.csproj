@@ -127,6 +127,7 @@
     <Compile Include="Queries\QueryMappingTests.cs" />
     <Compile Include="Queries\SqlTranslationTests.cs" />
     <Compile Include="Sessions\PerformanceCheck.cs" />
+    <Compile Include="Sessions\RelatedFieldsTests.cs" />
     <Compile Include="Sessions\TransactionTests.cs" />
     <Compile Include="Sessions\EntitiesAsserts.cs" />
     <Compile Include="Sessions\SessionTests.cs" />
