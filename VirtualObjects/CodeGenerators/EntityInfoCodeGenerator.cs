@@ -11,17 +11,17 @@ namespace VirtualObjects.CodeGenerators
     class EntityInfoCodeGenerator : EntityCodeGenerator
     {
         private readonly IEntityInfo _entityInfo;
-        private readonly ITranslationConfiguration configuration;
-        private readonly IEntityBag entityBag;
-        private readonly String properName;
+        private readonly ITranslationConfiguration _configuration;
+        private readonly IEntityBag _entityBag;
+        private readonly String _properName;
 
         public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration)
             : base("Internal_Builder_" + info.EntityType.Name)
         {
-            this.configuration = configuration;
-            this.entityBag = entityBag;
+            _configuration = configuration;
+            _entityBag = entityBag;
             _entityInfo = info;
-            properName = _entityInfo.EntityType.FullName.Replace("+", ".");
+            _properName = _entityInfo.EntityType.FullName.Replace("+", ".");
 
 
             AddReference(_entityInfo.EntityType);
@@ -45,7 +45,7 @@ namespace VirtualObjects.CodeGenerators
     {{
         return Map(({TypeName})entity, reader);
     }}
-".FormatWith(new { TypeName = properName });
+".FormatWith(new { TypeName = _properName });
         }
 
         protected override string GenerateMakeCode()
@@ -55,7 +55,7 @@ namespace VirtualObjects.CodeGenerators
     {{
         return new {TypeName}();
     }}
-".FormatWith(new { TypeName = properName });
+".FormatWith(new { TypeName = _properName });
         }
 
         protected override string GenerateMakeProxyCode()
@@ -67,14 +67,14 @@ namespace VirtualObjects.CodeGenerators
     }}
 ".FormatWith(new
  {
-     TypeName = properName,
+     TypeName = _properName,
      Name = _entityInfo.EntityType.Name + "Proxy"
  });
         }
 
         protected override string GenerateOtherMethodsCode()
         {
-            if (!_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic)
+            if ( !_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic )
             {
                 throw new CodeCompilerException("The entity type {Name} is not public.", _entityInfo.EntityType);
             }
@@ -123,7 +123,7 @@ namespace VirtualObjects.CodeGenerators
     }}
 ".FormatWith(new
  {
-     TypeName = properName,
+     TypeName = _properName,
      Name = _entityInfo.EntityType.Name + "Proxy",
      OverridableMembers = GenerateOverridableMembers(_entityInfo),
      Body = GenerateBody(_entityInfo)
@@ -137,13 +137,13 @@ namespace VirtualObjects.CodeGenerators
             var result = new StringBuffer();
 
             var entityType = property.PropertyType.GetGenericArguments().First();
-            var filterFields = configuration.CollectionFilterGetters
+            var filterFields = _configuration.CollectionFilterGetters
                 .Select(g => g(property))
                 .Where(f => f != null)
                 .Select(f => f.ToLower())
                 .ToList();
 
-            var foreignTable = entityBag[entityType];
+            var foreignTable = _entityBag[entityType];
 
             foreach ( var key in entityInfo.KeyColumns )
             {
@@ -160,30 +160,16 @@ namespace VirtualObjects.CodeGenerators
 
                 IEntityColumnInfo foreignField = null;
 
-                if (filterFields.Any())
+                if ( filterFields.Any() )
                 {
-                    foreignField = foreignTable.Columns
-                        .FirstOrDefault(e => 
-                            e.ColumnName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase) &&
-                            filterFields.Contains(e.ColumnName.ToLower()));
-
-                    if (foreignField == null)
+                    foreach ( var filterField in filterFields )
                     {
-
-                        foreach (var filterField in filterFields.Where(filterField => !entityInfo.KeyColumns.Select(f => f.Property.Name).Contains(filterField)))
-                        {
-                            throw new MappingException(
-                                "\nUnable to find the field [{FilterFieldName}] in the key collection of [{EntityName}] model.",
-                                new
-                                {
-                                    FilterFieldName = filterField,
-                                    entityInfo.EntityName
-                                });
-                        }
+                        foreignField = foreignTable.KeyColumns
+                            .FirstOrDefault(e => e.Property.Name.ToLower() == filterField);
                     }
                 }
 
-                if (foreignField == null && foreignTable.ForeignKeys != null)
+                if ( foreignField == null && foreignTable.ForeignKeys != null )
                 {
                     foreignField = foreignTable.ForeignKeys
                         .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
@@ -221,7 +207,7 @@ namespace VirtualObjects.CodeGenerators
                 }
             }
 
-            
+
             result.RemoveLast(" && ");
 
             return result;
@@ -231,7 +217,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            foreach (var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()))
+            foreach ( var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()) )
             {
 
 
@@ -264,7 +250,7 @@ namespace VirtualObjects.CodeGenerators
 
             }
 
-            foreach (var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()))
+            foreach ( var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()) )
             {
                 var entityType = property.PropertyType.GetGenericArguments().First();
                 result += @"
@@ -300,7 +286,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            for (int i = 0; i < entityInfo.Columns.Count; i++)
+            for ( int i = 0; i < entityInfo.Columns.Count; i++ )
             {
                 var column = entityInfo.Columns[i];
 
@@ -344,7 +330,7 @@ namespace VirtualObjects.CodeGenerators
         private static StringBuffer GenerateFieldAssignment(int i, IEntityColumnInfo column)
         {
             StringBuffer result = " = ";
-            if (column.Property.PropertyType.IsFrameworkType())
+            if ( column.Property.PropertyType.IsFrameworkType() )
             {
                 result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = column.Property.PropertyType.Name });
             }
