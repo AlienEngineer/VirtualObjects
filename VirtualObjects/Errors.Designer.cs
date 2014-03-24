@@ -156,6 +156,16 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 
+        ///The model for [{TargetName}] needs a bind with the field [{FieldName}] in the [{CurrentName}] model..
+        /// </summary>
+        public static string Mapping_CollectionNeedsBindedField {
+            get {
+                return ResourceManager.GetString("Mapping_CollectionNeedsBindedField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Provider for type {Name} not yet implemented..
         /// </summary>
         public static string Mapping_EntityTypeNotSupported {
@@ -207,16 +217,6 @@ namespace VirtualObjects {
         public static string Mapping_UnableToSetValue {
             get {
                 return ResourceManager.GetString("Mapping_UnableToSetValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 
-        ///The model for [{TargetName}] needs a bind with the field [{FieldName}] in the [{CurrentName}] model..
-        /// </summary>
-        public static string Mapping_CollectionNeedsBindedField {
-            get {
-                return ResourceManager.GetString("Mapping_CollectionNeedsBindedField", resourceCulture);
             }
         }
         

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace VirtualObjects.CodeGenerators
 {
-    class TypeBuilder : CodeCompiler
+    class TypeBuilder : ReuseCompiledAssemblies
     {
         private CompilerResults results;
         private readonly String typeName;
@@ -24,6 +24,8 @@ namespace VirtualObjects.CodeGenerators
         }
 
         protected override string AssemblyName { get { return typeName; } }
+
+        public override bool IsDynamic { get; set; }
 
         protected override string GenerateCode()
         {
@@ -43,9 +45,9 @@ namespace VirtualObjects.CodeGenerators
         {
             var code = new StringBuffer();
 
-            foreach (var function in Body)
+            foreach (string s in Body)
             {
-                code += function;
+                code = code + s;
             }
 
             return code;

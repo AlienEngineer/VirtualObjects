@@ -5,6 +5,8 @@ using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Tests.Config
 {
+
+
     using NUnit.Framework;
     using VirtualObjects.Config;
     using FluentAssertions;

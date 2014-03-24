@@ -139,6 +139,7 @@
     <Compile Include="CodeGenerators\IEntityCodeGenerator.cs" />
     <Compile Include="CodeGenerators\IEntityInfoCodeGeneratorFactory.cs" />
     <Compile Include="CodeGenerators\IQueryInfo.cs" />
+    <Compile Include="CodeGenerators\ReuseCompiledAssemblies.cs" />
     <Compile Include="CodeGenerators\TypeBuilder.cs" />
     <Compile Include="Config\EntityBoundColumnInfo.cs" />
     <Compile Include="Config\EntityColumnInfo.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="ISession.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="Mappings\Annotations.cs" />
+    <Compile Include="Models\FAC_ICDO.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\Execution\CompositeExecutor.cs" />
@@ -239,13 +241,13 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Scaffold\VirtualObjectsHelper.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="SessionConfiguration.cs" />
     <Compile Include="SessionContext.cs" />
     <Compile Include="SessionExtensions.cs" />
     <Compile Include="StringBuffer.cs" />
     <Compile Include="TextWriterStub.cs" />
-    <Compile Include="VirtualObjectsHelper.cs" />
     <Compile Include="VirtualObjectsModule.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -288,7 +288,7 @@ namespace VirtualObjects.Config
         /// <summary>
         /// Appends a parser to find the association based on the property.
         /// </summary>
-        /// <param name="foreignKeyGetter">The foreign key getter.</param>
+        /// <param name="filterGetter">The filter getter.</param>
         public void CollectionFilter(Func<PropertyInfo, String> filterGetter)
         {
             configuration.CollectionFilterGetters.Insert(0, filterGetter);

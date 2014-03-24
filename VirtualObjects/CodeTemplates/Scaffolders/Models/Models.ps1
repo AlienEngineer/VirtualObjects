@@ -27,7 +27,6 @@ if (-not ($ToFolder -eq "-"))
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 
-
 function Load-PackageAssembly($packageName) 
 {
 	$assemblyPath = Get-NugetAssemblyPath($packageName)
@@ -91,107 +90,122 @@ function Get-NugetAssemblyPath($packageName)
 	}
 }
 
-
-$assemblyPath = $packagesPath
-
-# =============== LOADING DEPENDENCIES =========================
-
-Write-Verbose "Loading Ninject"
-Load-PackageAssembly('Ninject')
-
-Write-Verbose "Loading FasterFlect"
-Load-PackageAssembly('Fasterflect')
-
-Write-Verbose "Loading Castle.Core"
-Load-PackageAssembly('Castle.Core')
-
-Write-Verbose "Loading VirtualObjects"
-Load-PackageAssembly('VirtualObjects')
-
-
-if($Repository) {
-
-	if ($Force)
-	{
-		Invoke-Scaffolder Repository -Force `
-			-Project $Project `
-			-CodeLanguage $CodeLanguage `
-			-ModelFolder $ModelFolder `
-			-RepositoryFolder $RepositoryFolder `
-			-AnnotationsFolder $AnnotationsFolder
-	}
-	else 
-	{
-		Invoke-Scaffolder Repository -Project $Project -CodeLanguage $CodeLanguage -ModelFolder $ModelFolder -RepositoryFolder $RepositoryFolder -AnnotationsFolder $AnnotationsFolder
-	}
-}
-
-[VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName) | ForEach-Object { 
-	$table = $_
-
-	if ($TableName -eq "-" -or $TableName -eq $table.Name) {
-		$outputPath = "$ModelFolder\" + (Get-SingularizedWord $table.Name)
-		
-		$tableDynamic = @{
-			Name = $table.Name;
-			NameSingularized = (Get-SingularizedWord $table.Name);
-		}
-		
-		$tableDynamic.Columns = @()
-
-		$table.Columns | foreach {
-			$column = $_
-			
-			$columnDynamic = @{
-				Name = $column.Name;
-				NameSingularized = $column.Name;
-				Identity = $column.Identity;
-				InPrimaryKey = $column.InPrimaryKey;
-				IsForeignKey = $column.IsForeignKey;
-				DataType = $column.DataType;
-			}
-
-			$columnDynamic.ForeignKeys = @()
-
-			$column.ForeignKeys | foreach {
-				$foreignKey = $_
-
-				$columnDynamic.ForeignKeys += @{
-					ReferencedTableName = (Get-SingularizedWord $foreignKey.ReferencedTable.Name);
-					ReferencedColumnName = $foreignKey.ReferencedColumn.Name;
-					TableName = (Get-SingularizedWord $foreignKey.Table.Name);
-					ColumnName = $foreignKey.Column.Name;
-				}
-			}
-			
-			$tableDynamic.Columns += $columnDynamic
-		}
-
-		Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `
-			-Model @{ 
-				Namespace = $namespace; 
-				ServerName = $ServerName; 
-				DatabaseName = $DatabaseName; 
-				Table = $tableDynamic 
-				Path = $assemblyPath;
-				AnnotationsFolder = $AnnotationsFolder; 
-				RepositoryFolder = $RepositoryFolder;
-				ModelFolder = $ModelFolder;
-				ForceAnnotations = [System.Boolean]$WithAnnotations;
-				NoLazyLoad = [System.Boolean]$NoLazyLoad;
-				DefaultAttributes = [System.Boolean]($DefaultAttributes -and (-not $Repository)) ;
-			} `
-			-SuccessMessage "Added Models output at {0}" `
-			-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-	}
-}
-
-if (-not $DontConfig)
+try
 {
-	Invoke-Scaffolder Config $ServerName $DatabaseName `
-			-Force `
-			-Project $Project `
-			-CodeLanguage $CodeLanguage 
 
+	$assemblyPath = $packagesPath
+
+	# =============== LOADING DEPENDENCIES =========================
+
+	Write-Verbose "Loading Ninject"
+	Load-PackageAssembly('Ninject')
+
+	Write-Verbose "Loading FasterFlect"
+	Load-PackageAssembly('Fasterflect')
+
+	Write-Verbose "Loading VirtualObjects"
+	Load-PackageAssembly('VirtualObjects')
+
+
+	if($Repository) {
+
+		if ($Force)
+		{
+			Invoke-Scaffolder Repository -Force `
+				-Project $Project `
+				-CodeLanguage $CodeLanguage `
+				-ModelFolder $ModelFolder `
+				-RepositoryFolder $RepositoryFolder `
+				-AnnotationsFolder $AnnotationsFolder
+		}
+		else 
+		{
+			Invoke-Scaffolder Repository -Project $Project -CodeLanguage $CodeLanguage -ModelFolder $ModelFolder -RepositoryFolder $RepositoryFolder -AnnotationsFolder $AnnotationsFolder
+		}
+	}
+
+	Write-Verbose "Getting tables info..."
+
+	if ($TableName -eq "-")
+	{
+		$TableName = $null;
+	}
+
+
+	[VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName, $TableName) | ForEach-Object { 
+		$table = $_
+
+		Write-Verbose "Creating model for : $table"
+
+		if ($TableName -eq "-" -or $TableName -eq $table.Name) {
+			$outputPath = "$ModelFolder\" + (Get-SingularizedWord $table.Name)
+		
+			$tableDynamic = @{
+				Name = $table.Name;
+				NameSingularized = (Get-SingularizedWord $table.Name);
+			}
+		
+			$tableDynamic.Columns = @()
+
+			$table.Columns | foreach {
+				$column = $_
+			
+				$columnDynamic = @{
+					Name = $column.Name;
+					NameSingularized = $column.Name;
+					Identity = $column.Identity;
+					InPrimaryKey = $column.InPrimaryKey;
+					IsForeignKey = $column.IsForeignKey;
+					DataType = $column.DataType;
+				}
+
+				$columnDynamic.ForeignKeys = @()
+
+				$column.ForeignKeys | foreach {
+					$foreignKey = $_
+
+					$columnDynamic.ForeignKeys += @{
+						ReferencedTableName = (Get-SingularizedWord $foreignKey.ReferencedTable.Name);
+						ReferencedColumnName = $foreignKey.ReferencedColumn.Name;
+						TableName = (Get-SingularizedWord $foreignKey.Table.Name);
+						ColumnName = $foreignKey.Column.Name;
+					}
+				}
+			
+				$tableDynamic.Columns += $columnDynamic
+			}
+
+			Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `
+				-Model @{ 
+					Namespace = $namespace; 
+					ServerName = $ServerName; 
+					DatabaseName = $DatabaseName; 
+					Table = $tableDynamic 
+					Path = $assemblyPath;
+					AnnotationsFolder = $AnnotationsFolder; 
+					RepositoryFolder = $RepositoryFolder;
+					ModelFolder = $ModelFolder;
+					ForceAnnotations = [System.Boolean]$WithAnnotations;
+					NoLazyLoad = [System.Boolean]$NoLazyLoad;
+					DefaultAttributes = [System.Boolean]($DefaultAttributes -and (-not $Repository)) ;
+				} `
+				-SuccessMessage "Added Models output at {0}" `
+				-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
+		}
+	}
+
+	if (-not $DontConfig)
+	{
+		Invoke-Scaffolder Config $ServerName $DatabaseName `
+				-Force `
+				-Project $Project `
+				-CodeLanguage $CodeLanguage 
+
+
+	}
+
+} catch [System.Exception] {
+
+	Write-Error $Error[0];
 
 }

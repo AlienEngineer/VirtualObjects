@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Fasterflect;
 using System.Dynamic;
 using System.Collections.Generic;
@@ -19,7 +21,7 @@ namespace VirtualObjects.CodeGenerators
         private int projectionIndex = 0;
         
         public DynamicModelCodeGenerator(Type type, IEntityBag entityBag, IQueryInfo queryInfo)
-            : base("Internal_Builder_Dynamic_" + type.Name.Replace("<>", "").Replace('`', '_'))
+            : base("Internal_Builder_Dynamic_" + MakeDynamicSafeName(type), true)
         {
             this.queryInfo = queryInfo;
             this.entityBag = entityBag;
@@ -42,6 +44,21 @@ namespace VirtualObjects.CodeGenerators
             AddNamespace("System.Dynamic");
             AddNamespace("System.Collections.Generic");
             AddNamespace("System.Data");            
+        }
+
+        private static String MakeDynamicSafeName(Type type)
+        {
+            var result = new StringBuilder();
+            
+            for (int index = 0; index < type.Properties().Count; index++)
+            {
+                var property = type.Properties()[index];
+                result = result.Append(index).Append(property.PropertyType.FullName).Append(property.Name);
+            }
+
+            return result
+                .GetHashCode()
+                .ToString(CultureInfo.InvariantCulture).Replace('-','0');
         }
 
         protected override string GenerateMapObjectCode()

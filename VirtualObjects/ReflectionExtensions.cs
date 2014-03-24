@@ -59,6 +59,12 @@ namespace VirtualObjects
         }
 
 
+        /// <summary>
+        /// Determines whether the specified type is type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="target">The target.</param>
+        /// <returns></returns>
         public static Boolean IsType(this Type type, Type target)
         {
             return type.GetInterfaces()

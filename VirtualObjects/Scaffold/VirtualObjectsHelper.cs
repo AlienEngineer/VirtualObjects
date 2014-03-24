@@ -1,7 +1,7 @@
-﻿using VirtualObjects.Mappings;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Scaffold
 {
@@ -130,24 +130,22 @@ namespace VirtualObjects.Scaffold
         /// </summary>
         /// <param name="databaseName">Name of the database.</param>
         /// <param name="serverName">Name of the server.</param>
+        /// <param name="tableName">Name of the table.</param>
         /// <returns></returns>
         public static IEnumerable<MetaTable> GetTables(string databaseName, string serverName, String tableName = null)
         {
             return GetTablesLazy(databaseName, serverName, tableName).ToList();         
         }
 
-
         private static IEnumerable<MetaTable> GetTablesLazy(string databaseName, string serverName, String tableName = null)
         {
             using ( var session = new Session(
-                        configuration: new SessionConfiguration
-                        {
-                            //    Logger = Console.Out
-                        },
-                        connectionProvider: new Connections.DbConnectionProvider("System.Data.SqlClient", String.Format("Data Source={0};Initial Catalog={1};Integrated Security=True", serverName, databaseName))) )
+                    new SessionConfiguration{ Logger = Console.Out },
+                    new Connections.DbConnectionProvider("System.Data.SqlClient", String.Format("Data Source={0};Initial Catalog={1};Integrated Security=True", serverName, databaseName))) )
             {
 
-                foreach ( var table in session.Query<Table>().Where(e => e.Type == "U" && (e.Name == tableName || tableName == null)) )
+                foreach ( var table in session.Query<Table>()
+                    .Where(e => e.Type == "U" && (e.Name == tableName || tableName == null)) )
                 {
                     var metaTable = new MetaTable
                     {
@@ -163,10 +161,9 @@ namespace VirtualObjects.Scaffold
                             InPrimaryKey = IsPrimaryKey(table, column, session),
                             IsForeignKey = IsForeignKey(table, column, session),
                             DataType = column.Type,
-                            Table = metaTable
+                            Table = metaTable,
+                            ForeignKeys = GetForeignKeys(table, column, session)
                         };
-
-                        metaColumn.ForeignKeys = GetForeignKeys(table, column, session, metaTable, metaColumn);
 
                         return metaColumn;
                     }).ToList();
@@ -179,22 +176,22 @@ namespace VirtualObjects.Scaffold
 
         private static bool IsPrimaryKey(Table table, Column column, Session session)
         {
-            var indexInfo = session.Query<VirtualObjectsHelper.IndexColumn>().FirstOrDefault(e => e.Column == column && e.Table == table);
+            var indexInfo = session.Query<IndexColumn>().FirstOrDefault(e => e.Column == column && e.Table == table);
 
-            return (indexInfo != null && indexInfo.Index.IsPrimaryKey);
+            return (indexInfo != null && indexInfo.Index != null && indexInfo.Index.IsPrimaryKey);
         }
 
         private static bool IsForeignKey(Table table, Column column, Session session)
         {
-            return session.Query<ForeingKey>().Where(e => e.Column == column && e.Table == table).Any();
+            return session.Query<ForeingKey>().Any(e => e.Column == column && e.Table == table);
         }
 
-        private static ICollection<MetaForeignKey> GetForeignKeys(Table table, Column column, Session session, MetaTable metaTable, MetaField metaColumn)
+        private static ICollection<MetaForeignKey> GetForeignKeys(Table table, Column column, Session session)
         {
-            return GetForeignKeysLazy(table, column, session, metaTable, metaColumn).ToList();
+            return GetForeignKeysLazy(table, column, session).ToList();
         }
 
-        private static IEnumerable<MetaForeignKey> GetForeignKeysLazy(Table table, Column column, Session session, MetaTable metaTable, MetaField metaColumn)
+        private static IEnumerable<MetaForeignKey> GetForeignKeysLazy(Table table, Column column, Session session)
         {
             foreach ( var foreignKey in session.Query<ForeingKey>().Where(e => e.Column == column && e.Table == table) )
             {
