@@ -16,12 +16,12 @@ namespace VirtualObjects
         /// <param name="session">The session.</param>
         /// <param name="execute">The execute.</param>
         /// <returns></returns>
-        public static TResult WithinTransaction<TResult>(this ISession session, Func<TResult> execute)
+        public static TResult WithinTransaction<TResult>(this ISession session, Func<ITransaction, TResult> execute)
         {
             var transaction = session.BeginTransaction();
             try
             {
-                return execute();
+                return execute(transaction);
             }
             catch (Exception)
             {
@@ -39,9 +39,9 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="session">The session.</param>
         /// <param name="execute">The execute.</param>
-        public static void WithinTransaction(this ISession session, Action execute)
+        public static void WithinTransaction(this ISession session, Action<ITransaction> execute)
         {
-            session.WithinTransaction<Object>(() => { execute(); return null; });
+            session.WithinTransaction<Object>(transaction => { execute(transaction); return null; });
         }
 
         /// <summary>

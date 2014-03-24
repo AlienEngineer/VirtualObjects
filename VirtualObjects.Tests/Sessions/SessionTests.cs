@@ -54,7 +54,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             var session = Session;
             {
-                session.WithinTransaction(() => Diagnostic.Timed(() =>
+                session.WithinTransaction(transaction => Diagnostic.Timed(() =>
                 {
                     var employee = session.Insert(new Employee
                     {

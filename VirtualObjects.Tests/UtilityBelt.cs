@@ -14,9 +14,9 @@ namespace VirtualObjects.Tests
 
         public TestsBase()
         {
-            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(TestContext.CurrentContext.TestDirectory, "Data"));
+            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data"));
         }
- 
+
     }
 
     public class TimedTests : TestsBase
@@ -28,7 +28,7 @@ namespace VirtualObjects.Tests
         [TearDown]
         public void FlushTime()
         {
-            if ( !TestContext.CurrentContext.Test.Properties.Contains("Repeat") )
+            if (!TestContext.CurrentContext.Test.Properties.Contains("Repeat"))
             {
                 return;
             }
@@ -37,7 +37,7 @@ namespace VirtualObjects.Tests
 
             _count++;
 
-            if ( _count % times != 0 ) return;
+            if (_count % times != 0) return;
 
             Diagnostic.PrintTime(TestContext.CurrentContext.Test.Name + " => executed in time :   {1} ms");
 
@@ -93,7 +93,7 @@ namespace VirtualObjects.Tests
         {
             if (_dbTransaction == null)
             {
-                _dbTransaction = ConnectionManager.BeginTransaction();    
+                _dbTransaction = ConnectionManager.BeginTransaction();
             }
         }
 
@@ -106,7 +106,7 @@ namespace VirtualObjects.Tests
         {
             return ExecuteScalar(query.CommandText, query.Parameters);
         }
-        
+
         public IQueryInfo TranslateQuery(IQueryable query)
         {
             return Translator.TranslateQuery(query);

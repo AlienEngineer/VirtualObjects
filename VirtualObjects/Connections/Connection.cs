@@ -66,6 +66,10 @@ namespace VirtualObjects.Connections
             get { return _dbConnection; }
         }
 
+        public bool Rolledback {
+            get { return _rolledBack; }
+        }
+
         public bool KeepAlive { get; set; }
 
         private TResult AutoClose<TResult>(Func<TResult> execute)

@@ -15,6 +15,13 @@ namespace VirtualObjects
         /// The database connection.
         /// </value>
         IDbConnection DbConnection { get; }
+
+        /// <summary>
+        /// Indicates that a rollback has taken place.
+        /// </summary>
+        /// <value>Has rooledback?</value>
+        Boolean Rolledback { get; }
+
         /// <summary>
         /// Rollbacks the transaction.
         /// </summary>

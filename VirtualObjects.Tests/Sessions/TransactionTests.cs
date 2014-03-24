@@ -10,7 +10,7 @@ namespace VirtualObjects.Tests.Sessions
     {
         private static void ThrowExceptionWithinTransaction(ISession safeSession)
         {
-            safeSession.WithinTransaction(() =>
+            safeSession.WithinTransaction(transaction =>
             {
                 safeSession.Update(new Employee
                 {
@@ -90,7 +90,7 @@ namespace VirtualObjects.Tests.Sessions
 
             try
             {
-                session.WithinTransaction(() =>
+                session.WithinTransaction(transaction =>
                 {
                     session.Update(new Employee
                     {

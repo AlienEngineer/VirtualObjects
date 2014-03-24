@@ -16,8 +16,11 @@ namespace VirtualObjects.Connections
             get { return _transaction.DbConnection; }
         }
 
+        public bool Rolledback { get; private set; }
+
         public void Rollback()
         {
+            Rolledback = true;
             _transaction.Rollback();
         }
 
