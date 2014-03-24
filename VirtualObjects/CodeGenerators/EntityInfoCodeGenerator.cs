@@ -231,6 +231,7 @@ namespace VirtualObjects.CodeGenerators
             {{
                 if ( !_{Name}Loaded )
                 {{
+                    {FillLinks}
                     _{Name} = Session.GetById(_{Name});
                     _{Name}Loaded = _{Name} != null;
                 }}
@@ -245,7 +246,8 @@ namespace VirtualObjects.CodeGenerators
 ".FormatWith(new
  {
      Type = column.Property.PropertyType.FullName.Replace('+', '.'),
-     column.Property.Name
+     column.Property.Name,
+     FillLinks = GenerateCodeForLinks(column)
  });
 
             }
@@ -280,6 +282,11 @@ namespace VirtualObjects.CodeGenerators
             }
 
             return result;
+        }
+
+        private String GenerateCodeForLinks(IEntityColumnInfo column)
+        {
+            throw new NotImplementedException();
         }
 
         private static string GenerateBody(IEntityInfo entityInfo)

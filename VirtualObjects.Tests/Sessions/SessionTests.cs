@@ -371,7 +371,7 @@ namespace VirtualObjects.Tests.Sessions
                 var employees = session.GetAll<Employee>()
                     .Where(e => e.LastName == lastName || lastName == null);
 
-                Assert.AreEqual(0, employees.Count());
+                Assert.AreEqual(9, employees.Count());
             }
         }
 

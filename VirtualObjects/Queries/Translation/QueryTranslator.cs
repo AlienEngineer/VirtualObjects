@@ -132,11 +132,9 @@ namespace VirtualObjects.Queries.Translation
         #region Declaration Zone
 
         private readonly IEntityBag entityBag;
-        private Type outputType;
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
-        //private readonly IEntitiesMapper entitiesMapper;
         private Boolean hasJoinClause;
         private readonly IDictionary<String, IOperationParameter> _parameters;
         private int _depth;
@@ -183,17 +181,7 @@ namespace VirtualObjects.Queries.Translation
 
         public IEntityInfo EntityInfo { get; set; }
 
-        public Type OutputType
-        {
-            get
-            {
-                return outputType;
-            }
-            set
-            {
-                outputType = value;
-            }
-        }
+        public Type OutputType { get; set; }
 
         #endregion
 
@@ -887,7 +875,7 @@ namespace VirtualObjects.Queries.Translation
 
                             if ( ExtractAccessor(arg).Type.Name.Contains("IGrouping") && !tmpExp.Type.IsFrameworkType() && _EntitySources.FirstOrDefault(e => e.EntityType == tmpExp.Type) == null )
                             {
-                                throw new TranslationException(VirtualObjects.Errors.Translation_UnableToGroup);
+                                throw new TranslationException(Errors.Translation_UnableToGroup);
                             }
 
                             CompileCustomProjectionArgument(buffer, callExpression, tmpExp, member);
@@ -1063,7 +1051,7 @@ namespace VirtualObjects.Queries.Translation
             if ( !hasJoinClause && !String.IsNullOrEmpty(buffer.GroupBy) )
             {
                 throw new TranslationException(
-                    VirtualObjects.Errors.Translation_UnableToGroupByWithEntity);
+                    Errors.Translation_UnableToGroupByWithEntity);
             }
 
             return true;
@@ -1089,8 +1077,6 @@ namespace VirtualObjects.Queries.Translation
                         CompileBinaryExpression(expression.Arguments[1], buffer);
                     }
                     buffer.Take = 1;
-                    break;
-                default:
                     break;
             }
         }
@@ -1317,7 +1303,7 @@ namespace VirtualObjects.Queries.Translation
         {
             if ( expression.Method.Name != "Contains" )
             {
-                throw new TranslationException(VirtualObjects.Errors.Translation_MethodNotYetSupported, expression.Method);
+                throw new TranslationException(Errors.Translation_MethodNotYetSupported, expression.Method);
             }
 
             var newTranslator = CreateNewTranslator();
@@ -1518,7 +1504,7 @@ namespace VirtualObjects.Queries.Translation
                 if ( parsedMember == null ) break;
             }
 
-            if ( memberInfo == null )
+            if ( memberInfo == null && member != null )
             {
                 memberInfo = member.Member;
             }
@@ -1530,7 +1516,7 @@ namespace VirtualObjects.Queries.Translation
                 //
                 // Validation for the group by clause.
                 //
-                if ( _compileStack.Peek() == "GroupBy" && !member.Type.IsFrameworkType() && parameter == null )
+                if ( member != null && (_compileStack.Peek() == "GroupBy" && !member.Type.IsFrameworkType() && parameter == null) )
                 {
                     throw new TranslationException(@"
 Group by error reasons:
@@ -1542,7 +1528,7 @@ Group by error reasons:
                 //
                 // Group by clause is ok.
                 //
-                if ( _compileStack.Peek() == "GroupBy" && !member.Type.IsFrameworkType() && parameter != null )
+                if ( member != null && (_compileStack.Peek() == "GroupBy" && !member.Type.IsFrameworkType() && parameter != null) )
                 {
                     QueryTranslator translator = null;
 
@@ -1558,38 +1544,41 @@ Group by error reasons:
             //
             // If the member is from the current entity.
             //
-            var parameterExpression = member.Expression as ParameterExpression;
-            if ( parameterExpression != null )
+            if (member != null)
             {
-                var translator = Indexer[parameterExpression];
-                var entityInfo = translator.EntityInfo;
-
-                var column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
-
-                if ( column == null )
+                var parameterExpression = member.Expression as ParameterExpression;
+                if ( parameterExpression != null )
                 {
-                    translator = Indexer.FirstOrDefault(e => e.Value.EntityInfo.EntityType == parameterExpression.Type).Value;
+                    var translator = Indexer[parameterExpression];
+                    var entityInfo = translator.EntityInfo;
 
-                    if ( translator != null )
+                    var column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
+
+                    if ( column == null )
                     {
-                        entityInfo = translator.EntityInfo;
-                        column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
+                        translator = Indexer.FirstOrDefault(e => e.Value.EntityInfo.EntityType == parameterExpression.Type).Value;
+
+                        if ( translator != null )
+                        {
+                            entityInfo = translator.EntityInfo;
+                            column = entityInfo[memberInfo.Name] ?? entityInfo[member.Member.Name];
+                        }
+                        else
+                        {
+                            buffer.Predicates += _formatter.FormatField(memberInfo.Name);
+                            return;
+                        }
                     }
-                    else
-                    {
-                        buffer.Predicates += _formatter.FormatField(memberInfo.Name);
-                        return;
-                    }
+
+                    _memberAccessStack.Push(column);
+                    buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, translator._index);
+
+                    buffer.AddPredicatedColumn(column);
                 }
-
-                _memberAccessStack.Push(column);
-                buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, translator._index);
-
-                buffer.AddPredicatedColumn(column);
-            }
-            else
-            {
-                CompileMemberAccess(member, member.Expression, buffer);
+                else
+                {
+                    CompileMemberAccess(member, member.Expression, buffer);
+                }
             }
         }
 
@@ -1604,7 +1593,7 @@ Group by error reasons:
 
             var nextMember = nextExpression as MemberExpression;
 
-            Debug.Assert(nextMember != null, "CompileMemberAccess : nextMember != null");
+            Debug.Assert(nextMember != null, "nextMember != null");
 
             var translator = CompileMemberAccess(nextMember, nextMember.Expression, buffer);
 
@@ -1867,7 +1856,7 @@ Group by error reasons:
                 // Not very used but still...
                 // e => 1 == e.EmployeeId
                 //
-                if ( IsConstant(left) )
+                if ( IsConstant(left) && right.ToString() != "null" )
                 {
                     left = binary.Right;
                     right = binary.Left;
@@ -2421,8 +2410,6 @@ Group by error reasons:
 
                         Indexer[lambda.Parameters.First()] = this;
                         return new QueryableStub(lambda.Parameters.First().Type, queryable.Expression);
-                    default:
-                        break;
                 }
             }
 
@@ -2439,14 +2426,7 @@ Group by error reasons:
 
         private void RestorePredicate(CompilerBuffer buffer)
         {
-            if ( _predicates.Count > 0 )
-            {
-                buffer.Predicates = _predicates.Pop();
-            }
-            else
-            {
-                buffer.Predicates = null;
-            }
+            buffer.Predicates = _predicates.Count > 0 ? _predicates.Pop() : null;
         }
 
         #endregion

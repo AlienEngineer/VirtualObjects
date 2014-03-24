@@ -69,7 +69,7 @@ namespace VirtualObjects.Scaffold
             public virtual Table Table { get; set; }
 
             [Key]
-            [Association(FieldName = "parent_column_id", OtherKey = "Id")]
+            [Association(FieldName = "parent_column_id", OtherKey = "Id", OtherKeys = "Table")]
             public virtual Column Column { get; set; }
 
             [Association(FieldName = "Referenced_column_id", OtherKey = "Id", OtherKeys = "ReferencedTable")]
@@ -193,10 +193,9 @@ namespace VirtualObjects.Scaffold
 
         private static IEnumerable<MetaForeignKey> GetForeignKeysLazy(Table table, Column column, Session session)
         {
-            foreach ( var foreignKey in session.Query<ForeingKey>().Where(e => e.Column == column && e.Table == table) )
+            foreach ( var foreignKey in session.Query<ForeingKey>()
+                .Where(e => e.Column == column && e.Table == table && e.ReferencedColumn != null) )
             {
-
-
                 string foreignKeyReferencedColumnName = foreignKey.ReferencedColumn.Name;
 
                 if ( foreignKey.ReferencedTable.Name != foreignKey.ReferencedColumn.Table.Name )
