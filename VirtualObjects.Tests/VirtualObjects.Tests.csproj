@@ -110,7 +110,7 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="Config\MappingTests.cs" />
-    <Compile Include="Config\When_mapping_a_dll.cs" />
+    <Compile Include="Config\MappingSpecs.cs" />
     <Compile Include="DataBaseSchemaInformationTests.cs" />
     <Compile Include="MockReader.cs" />
     <Compile Include="PerformanceTests.cs" />
@@ -141,6 +141,7 @@
     <Compile Include="Sessions\TransactionTests.cs" />
     <Compile Include="Sessions\EntitiesAsserts.cs" />
     <Compile Include="Sessions\SessionTests.cs" />
+    <Compile Include="SpecsUtilityBelt.cs" />
     <Compile Include="UtilityBelt.cs" />
   </ItemGroup>
   <ItemGroup>

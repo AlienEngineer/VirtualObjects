@@ -74,7 +74,7 @@ namespace VirtualObjects.CodeGenerators
 
         protected override string GenerateOtherMethodsCode()
         {
-            if ( !_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic )
+            if (!_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic)
             {
                 throw new CodeCompilerException("The entity type {Name} is not public.", _entityInfo.EntityType);
             }
@@ -145,9 +145,9 @@ namespace VirtualObjects.CodeGenerators
 
             var foreignTable = _entityBag[entityType];
 
-            foreach ( var key in entityInfo.KeyColumns )
+            foreach (var key in entityInfo.KeyColumns)
             {
-                if ( (foreignTable.ForeignKeys == null || !foreignTable.ForeignKeys.Any()) && !filterFields.Any() )
+                if ((foreignTable.ForeignKeys == null || !foreignTable.ForeignKeys.Any()) && !filterFields.Any())
                 {
                     throw new MappingException(Errors.Mapping_CollectionNeedsBindedField,
                       new
@@ -160,25 +160,25 @@ namespace VirtualObjects.CodeGenerators
 
                 IEntityColumnInfo foreignField = null;
 
-                if ( filterFields.Any() )
+                if (filterFields.Any())
                 {
-                    foreach ( var filterField in filterFields )
+                    foreach (var filterField in filterFields)
                     {
                         foreignField = foreignTable.KeyColumns
                             .FirstOrDefault(e => e.Property.Name.ToLower() == filterField);
                     }
                 }
 
-                if ( foreignField == null && foreignTable.ForeignKeys != null )
+                if (foreignField == null && foreignTable.ForeignKeys != null)
                 {
                     foreignField = foreignTable.ForeignKeys
                         .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
                 }
 
-                if ( foreignField != null )
+                if (foreignField != null)
                 {
 
-                    if ( foreignField.Property.PropertyType == entityInfo.EntityType )
+                    if (foreignField.Property.PropertyType == entityInfo.EntityType)
                     {
 
                         result += "e.{Field} == this && ".FormatWith(new { Field = foreignField.Property.Name });
@@ -217,7 +217,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            foreach ( var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()) )
+            foreach (var column in entityInfo.ForeignKeys.Where(e => e.Property.IsVirtual()))
             {
 
 
@@ -252,7 +252,7 @@ namespace VirtualObjects.CodeGenerators
 
             }
 
-            foreach ( var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()) )
+            foreach (var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()))
             {
                 var entityType = property.PropertyType.GetGenericArguments().First();
                 result += @"
@@ -286,14 +286,41 @@ namespace VirtualObjects.CodeGenerators
 
         private String GenerateCodeForLinks(IEntityColumnInfo column)
         {
-            throw new NotImplementedException();
+            var result = new StringBuffer();
+
+            foreach (var foreignKeyLink in column.ForeignKeyLinks)
+            {
+                result += "_{Name}.{Dependency} = {Value};"
+                    .FormatWith(new
+                                {
+                                    column.Property.Name,
+                                    Dependency = foreignKeyLink.Property.Name,
+                                    Value = GenerateDependencyValue(column, foreignKeyLink)
+                                });
+            }
+
+            return result;
+        }
+
+        private String GenerateDependencyValue(IEntityColumnInfo column, IEntityColumnInfo foreignKeyLink)
+        {
+            if (foreignKeyLink.Property.PropertyType.IsFrameworkType())
+            {
+                return "this." + foreignKeyLink.Property.Name;
+            }
+
+            return "new {Type}()"
+                .FormatWith(new
+                            {
+                                Type = foreignKeyLink.Property.PropertyType.FullName.Replace('+', '.')
+                            });
         }
 
         private static string GenerateBody(IEntityInfo entityInfo)
         {
             var result = new StringBuffer();
 
-            for ( int i = 0; i < entityInfo.Columns.Count; i++ )
+            for (int i = 0; i < entityInfo.Columns.Count; i++)
             {
                 var column = entityInfo.Columns[i];
 
@@ -337,7 +364,7 @@ namespace VirtualObjects.CodeGenerators
         private static StringBuffer GenerateFieldAssignment(int i, IEntityColumnInfo column)
         {
             StringBuffer result = " = ";
-            if ( column.Property.PropertyType.IsFrameworkType() )
+            if (column.Property.PropertyType.IsFrameworkType())
             {
                 result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = column.Property.PropertyType.Name });
             }
