@@ -60,7 +60,8 @@ namespace VirtualObjects.Mappings
     {
         /// <summary>
         /// Gets or sets the other keys.
-        /// Use ; to separate fields.
+        /// <para>Use ; to separate fields.</para>
+        /// <para>A bind should look like [Property1]:[Property2]</para>
         /// </summary>
         /// <value>
         /// The other keys.
