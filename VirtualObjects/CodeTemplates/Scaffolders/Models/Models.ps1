@@ -128,54 +128,56 @@ try
 
 	if ($TableName -eq "-")
 	{
-		$TableName = $null;
+		$TableName = [NullString]::Value;
 	}
 
 
 	[VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName, $TableName) | ForEach-Object { 
 		$table = $_
-
-		Write-Verbose "Creating model for : $table"
-
-		if ($TableName -eq "-" -or $TableName -eq $table.Name) {
-			$outputPath = "$ModelFolder\" + (Get-SingularizedWord $table.Name)
 		
-			$tableDynamic = @{
-				Name = $table.Name;
-				NameSingularized = (Get-SingularizedWord $table.Name);
-			}
+		$TableName = $table.Name;
+
+		Write-Verbose "Creating model for : $TableName"
+
 		
-			$tableDynamic.Columns = @()
+		$outputPath = "$ModelFolder\" + (Get-SingularizedWord $table.Name)
+		
+		$tableDynamic = @{
+			Name = $table.Name;
+			NameSingularized = (Get-SingularizedWord $table.Name);
+		}
+		
+		$tableDynamic.Columns = @()
 
-			$table.Columns | foreach {
-				$column = $_
+		$table.Columns | foreach {
+			$column = $_
 			
-				$columnDynamic = @{
-					Name = $column.Name;
-					NameSingularized = $column.Name;
-					Identity = $column.Identity;
-					InPrimaryKey = $column.InPrimaryKey;
-					IsForeignKey = $column.IsForeignKey;
-					DataType = $column.DataType;
-				}
-
-				$columnDynamic.ForeignKeys = @()
-
-				$column.ForeignKeys | foreach {
-					$foreignKey = $_
-
-					$columnDynamic.ForeignKeys += @{
-						ReferencedTableName = (Get-SingularizedWord $foreignKey.ReferencedTable.Name);
-						ReferencedColumnName = $foreignKey.ReferencedColumn.Name;
-						TableName = (Get-SingularizedWord $foreignKey.Table.Name);
-						ColumnName = $foreignKey.Column.Name;
-					}
-				}
-			
-				$tableDynamic.Columns += $columnDynamic
+			$columnDynamic = @{
+				Name = $column.Name;
+				NameSingularized = $column.Name;
+				Identity = $column.Identity;
+				InPrimaryKey = $column.InPrimaryKey;
+				IsForeignKey = $column.IsForeignKey;
+				DataType = $column.DataType;
 			}
 
-			Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `
+			$columnDynamic.ForeignKeys = @()
+
+			$column.ForeignKeys | foreach {
+				$foreignKey = $_
+
+				$columnDynamic.ForeignKeys += @{
+					ReferencedTableName = (Get-SingularizedWord $foreignKey.ReferencedTable.Name);
+					ReferencedColumnName = $foreignKey.ReferencedColumn.Name;
+					TableName = (Get-SingularizedWord $foreignKey.Table.Name);
+					ColumnName = $foreignKey.Column.Name;
+				}
+			}
+		
+			$tableDynamic.Columns += $columnDynamic
+		}
+		
+		Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `
 				-Model @{ 
 					Namespace = $namespace; 
 					ServerName = $ServerName; 
@@ -191,7 +193,7 @@ try
 				} `
 				-SuccessMessage "Added Models output at {0}" `
 				-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-		}
+		
 	}
 
 	if (-not $DontConfig)

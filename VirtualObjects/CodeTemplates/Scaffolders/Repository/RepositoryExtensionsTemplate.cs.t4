@@ -21,7 +21,7 @@ namespace <#= Model.Namespace #>
                 throw new VirtualObjectsException("WithinTransaction only supports Repository instances.");
             }
 
-            return repo.Session.WithinTransaction(execute);
+            return repo.Session.WithinTransaction(trans => execute());
         }
 
         public static void WithinTransaction(this IRepository repository, Action execute)

@@ -134,6 +134,11 @@ namespace VirtualObjects.Scaffold
         /// <returns></returns>
         public static IEnumerable<MetaTable> GetTables(string databaseName, string serverName, String tableName = null)
         {
+            if (String.IsNullOrEmpty(tableName))
+            {
+                tableName = null;
+            }
+
             return GetTablesLazy(databaseName, serverName, tableName).ToList();         
         }
 
