@@ -47,6 +47,13 @@ namespace VirtualObjects.Tests.Config
         It should_not_be_null =
             () => ForeignKeyEntityInfo.Should().NotBeNull();
 
+
+        It should_have_a_table_field = 
+            () => ForeignKeyEntityInfo["Table"].Should().NotBeNull();
+
+        It should_not_have_any_foreignkeys_on_table_field = 
+            () => ForeignKeyEntityInfo["Table"].ForeignKeyLinks.Count.Should().Be(0);
+
         It should_have_a_column_field =
             () => ColumnField.Should().NotBeNull();
 

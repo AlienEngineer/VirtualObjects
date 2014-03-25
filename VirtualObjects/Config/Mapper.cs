@@ -45,10 +45,10 @@ namespace VirtualObjects.Config
             {
                 return MapType(entityType);
             }
-            catch ( Exception ex)
+            catch ( Exception ex )
             {
                 throw new MappingException(Errors.UnableToMapEntity, entityType, ex);
-            }                                                
+            }
         }
 
         private void MapRelatedEntities(IEntityInfo entityInfo)
@@ -145,17 +145,17 @@ namespace VirtualObjects.Config
             {
                 return WrapWithBoundColumn(column);
             }
-            
+
             if ( column.Property.PropertyType == typeof(DateTime) )
             {
                 return WrapWithDatetimeColumn(column);
             }
 
-            if (column.Property.PropertyType == typeof (Guid))
+            if ( column.Property.PropertyType == typeof(Guid) )
             {
                 return WrapWithGuidColumn(column);
             }
-            
+
             return column;
         }
 
@@ -238,7 +238,7 @@ namespace VirtualObjects.Config
             {
                 throw new MappingException(Errors.Mapping_UnableToGetColumnName, propertyInfo);
             }
-            
+
             var column = new EntityColumnInfo
             {
                 EntityInfo = entityInfo,
@@ -280,7 +280,7 @@ namespace VirtualObjects.Config
             return foreignKey;
         }
 
-        private IEnumerable<IEntityColumnInfo> GetForeignKeyLinks(IEntityColumnInfo column, IEntityColumnInfo foreignKey, IEntityInfo currentEntity) 
+        private IEnumerable<IEntityColumnInfo> GetForeignKeyLinks(IEntityColumnInfo column, IEntityColumnInfo foreignKey, IEntityInfo currentEntity)
         {
             if ( column.ForeignKey != null )
             {
@@ -288,32 +288,24 @@ namespace VirtualObjects.Config
                     .Select(keyGetter => keyGetter(column.Property))
                     .FirstOrDefault();
 
-                if ( String.IsNullOrEmpty(links) )
-                {
-                    foreach ( var item in foreignKey.EntityInfo.KeyColumns )
-                    {
-                        yield return item;
-                    } 
-                }
-                else
-                {
-                    foreach ( var link in links.Split(';') )
-                    {
-                        var columnLink = currentEntity[link];
+                if (links == null) yield break;
 
-                        if (columnLink == null)
-                        {
-                            throw new MappingException(
-                                "\nThe field [{Name}] does not exist in the entity Type [{EntityName}].",
-                                new
-                                {
-                                    Name = link,
-                                    currentEntity.EntityName
-                                });
-                        }
+                foreach ( var link in links.Split(';') )
+                {
+                    var columnLink = currentEntity[link];
 
-                        yield return columnLink;
+                    if ( columnLink == null )
+                    {
+                        throw new MappingException(
+                            "\nThe field [{Name}] does not exist in the entity Type [{EntityName}].",
+                            new
+                            {
+                                Name = link,
+                                currentEntity.EntityName
+                            });
                     }
+
+                    yield return columnLink;
                 }
             }
         }
@@ -385,9 +377,9 @@ namespace VirtualObjects.Config
 
         #region IDisposable Members
         private bool _disposed;
-        
-        
-        
+
+
+
 
         public void Dispose()
         {
@@ -399,7 +391,7 @@ namespace VirtualObjects.Config
         protected virtual void Dispose(bool disposing)
         {
             if ( !_disposed )
-            {   
+            {
                 _disposed = true;
             }
         }
