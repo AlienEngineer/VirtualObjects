@@ -288,7 +288,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            foreach (var foreignKeyLink in column.ForeignKeyLinks)
+            foreach (var foreignKeyLink in column.ForeignKeyLinks.Skip(1))
             {
                 result += "_{Name}.{Dependency} = {Value};"
                     .FormatWith(new
@@ -304,9 +304,12 @@ namespace VirtualObjects.CodeGenerators
 
         private String GenerateDependencyValue(IEntityColumnInfo column, IEntityColumnInfo foreignKeyLink)
         {
-            if (foreignKeyLink.Property.PropertyType.IsFrameworkType())
+            if (foreignKeyLink.Property.PropertyType.IsFrameworkType() || true)
             {
-                return "this." + foreignKeyLink.Property.Name;
+                return "this." + column.EntityInfo
+                                        .Columns
+                                        .First(e => e.Property.Name == foreignKeyLink.Property.Name)
+                                        .Property.Name;
             }
 
             return "new {Type}()"

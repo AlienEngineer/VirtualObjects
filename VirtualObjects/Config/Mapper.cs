@@ -300,7 +300,18 @@ namespace VirtualObjects.Config
                     foreach ( var link in links.Split(';') )
                     {
                         var columnLink = currentEntity[link];
-                        
+
+                        if (columnLink == null)
+                        {
+                            throw new MappingException(
+                                "\nThe field [{Name}] does not exist in the entity Type [{EntityName}].",
+                                new
+                                {
+                                    Name = link,
+                                    currentEntity.EntityName
+                                });
+                        }
+
                         yield return columnLink;
                     }
                 }
