@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using VirtualObjects.Exceptions;
 using Fasterflect;
@@ -288,35 +289,24 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            foreach (var foreignKeyLink in column.ForeignKeyLinks.Skip(1))
+            foreach (var foreignKeyLink in column.ForeignKeyLinks)
             {
                 result += "_{Name}.{Dependency} = {Value};"
                     .FormatWith(new
                                 {
                                     column.Property.Name,
-                                    Dependency = foreignKeyLink.Property.Name,
+                                    Dependency = foreignKeyLink.Value.Property.Name,
                                     Value = GenerateDependencyValue(column, foreignKeyLink)
                                 });
             }
 
             return result;
         }
-
-        private String GenerateDependencyValue(IEntityColumnInfo column, IEntityColumnInfo foreignKeyLink)
+                                   
+        private String GenerateDependencyValue(IEntityColumnInfo column, KeyValuePair<IEntityColumnInfo, IEntityColumnInfo> foreignKeyLink)
         {
-            if (foreignKeyLink.Property.PropertyType.IsFrameworkType() || true)
-            {
-                return "this." + column.EntityInfo
-                                        .Columns
-                                        .First(e => e.Property.Name == foreignKeyLink.Property.Name)
-                                        .Property.Name;
-            }
+            return "this." + foreignKeyLink.Key.Property.Name;
 
-            return "new {Type}()"
-                .FormatWith(new
-                            {
-                                Type = foreignKeyLink.Property.PropertyType.FullName.Replace('+', '.')
-                            });
         }
 
         private static string GenerateBody(IEntityInfo entityInfo)

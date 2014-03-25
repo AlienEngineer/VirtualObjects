@@ -116,7 +116,7 @@ namespace VirtualObjects.Config
 
             foreach ( var column in entityInfo.Columns )
             {
-                column.ForeignKeyLinks = GetForeignKeyLinks(column, column.ForeignKey, entityInfo).ToList();
+                column.ForeignKeyLinks = GetForeignKeyLinks(column, entityInfo).ToList();
             }
 
             MapRelatedEntities(entityInfo);
@@ -280,7 +280,7 @@ namespace VirtualObjects.Config
             return foreignKey;
         }
 
-        private IEnumerable<IEntityColumnInfo> GetForeignKeyLinks(IEntityColumnInfo column, IEntityColumnInfo foreignKey, IEntityInfo currentEntity)
+        private IEnumerable<KeyValuePair<IEntityColumnInfo, IEntityColumnInfo>> GetForeignKeyLinks(IEntityColumnInfo column, IEntityInfo currentEntity)
         {
             if ( column.ForeignKey != null )
             {
@@ -292,20 +292,45 @@ namespace VirtualObjects.Config
 
                 foreach ( var link in links.Split(';') )
                 {
-                    var columnLink = currentEntity[link];
+                    var properties = link.Split(':');
 
-                    if ( columnLink == null )
+                    if (!link.Contains(':') && properties.Length != 2)
                     {
                         throw new MappingException(
-                            "\nThe field [{Name}] does not exist in the entity Type [{EntityName}].",
+                            "\nThe Bind was not properly set:\n" +
+                            "Please use: [Property1]:[Property1]\n" +
+                            "Where\n" +
+                            " - Property1 is the property in the current entity.\n" +
+                            " - Property2 is the property in the referenced entity.");
+                    }
+
+                    var firstField = currentEntity[properties[0]];
+
+                    if ( firstField == null )
+                    {
+                        throw new MappingException(
+                            Errors.Mapping_FieldNotFoundOnEntity,
                             new
                             {
-                                Name = link,
+                                Name = properties[0],
                                 currentEntity.EntityName
                             });
                     }
 
-                    yield return columnLink;
+                    var columnLink = column.ForeignKey.EntityInfo[properties[1]];
+
+                    if ( columnLink == null )
+                    {
+                        throw new MappingException(
+                            Errors.Mapping_FieldNotFoundOnEntity,
+                            new
+                            {
+                                Name = properties[1],
+                                column.ForeignKey.EntityInfo.EntityName
+                            });
+                    }
+
+                    yield return new KeyValuePair<IEntityColumnInfo, IEntityColumnInfo>(firstField, columnLink);
                 }
             }
         }

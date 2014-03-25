@@ -69,10 +69,10 @@ namespace VirtualObjects.Scaffold
             public virtual Table Table { get; set; }
 
             [Key]
-            [Association(FieldName = "parent_column_id", OtherKey = "Id", DependesOn = "Table")]
+            [Association(FieldName = "parent_column_id", OtherKey = "Id", Bind = "Table:Table")]
             public virtual Column Column { get; set; }
 
-            [Association(FieldName = "Referenced_column_id", OtherKey = "Id", DependesOn = "ReferencedTable")]
+            [Association(FieldName = "Referenced_column_id", OtherKey = "Id", Bind = "ReferencedTable:Table")]
             public virtual Column ReferencedColumn { get; set; }
 
             [Association(FieldName = "Referenced_object_id", OtherKey = "Id")]

@@ -85,7 +85,7 @@ namespace VirtualObjects
             builder.ColumnIdentity<IdentityAttribute>();
 
             builder.ForeignKey<AssociationAttribute>(e => e.OtherKey);
-            builder.ForeignKeyLinks<AssociationAttribute>(e => e.DependesOn);
+            builder.ForeignKeyLinks<AssociationAttribute>(e => e.Bind);
 
             builder.ColumnVersion(e => e.Name == "Version");
             builder.ColumnVersion<VersionAttribute>();

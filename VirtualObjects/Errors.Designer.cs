@@ -175,6 +175,16 @@ namespace VirtualObjects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 
+        ///The field [{Name}] does not exist in the entity Type [{EntityName}]..
+        /// </summary>
+        public static string Mapping_FieldNotFoundOnEntity {
+            get {
+                return ResourceManager.GetString("Mapping_FieldNotFoundOnEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type {OutputType} is not yet supported..
         /// </summary>
         public static string Mapping_OutputTypeNotSupported {

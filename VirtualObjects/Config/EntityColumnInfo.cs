@@ -37,7 +37,7 @@ namespace VirtualObjects.Config
 
         public IEntityColumnInfo ForeignKey { get; set; }
 
-        public IList<IEntityColumnInfo> ForeignKeyLinks { get; set; }
+        public List<KeyValuePair<IEntityColumnInfo, IEntityColumnInfo>> ForeignKeyLinks { get; set; }
 
         public Func<Object, Object> ValueGetter { get; set; }
 

@@ -65,7 +65,7 @@ namespace VirtualObjects.Mappings
         /// <value>
         /// The other keys.
         /// </value>
-        public string DependesOn { get; set; }
+        public string Bind { get; set; }
 
         /// <summary>
         /// Gets or sets the other key.

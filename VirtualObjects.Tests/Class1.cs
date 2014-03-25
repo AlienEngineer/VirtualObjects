@@ -1,134 +1,203 @@
-﻿using VirtualObjects;
+﻿using VirtualObjects.Scaffold;
+using VirtualObjects;
 using VirtualObjects.Queries.Mapping;
 using System;
 using System.Linq;
-using System.Dynamic;
-using System.Collections.Generic;
 using System.Data;
 
-public class Internal_Builder_Dynamic_f__AnonymousType1d_5
+public class Internal_Builder_ForeingKey
 {
 
     public static MapResult MapObject(Object entity, IDataReader reader)
     {
-        return Map(entity, reader);
+        return Map((VirtualObjects.Scaffold.VirtualObjectsHelper.ForeingKey)entity, reader);
     }
 
     public static Object Make()
     {
-        return new ExpandoObject();
+        return new VirtualObjects.Scaffold.VirtualObjectsHelper.ForeingKey();
     }
 
-    public static Object MakeProxy(ISession session)
+    public static VirtualObjects.Scaffold.VirtualObjectsHelper.ForeingKey MakeProxy(ISession session)
     {
-        return new ExpandoObject();
+        return new ForeingKeyProxy(session);
     }
 
-    private static System.Reflection.ConstructorInfo ctor;
-    private static System.Reflection.ParameterInfo[] parameters;
+    public class ForeingKeyProxy : VirtualObjects.Scaffold.VirtualObjectsHelper.ForeingKey
+    {
+        private ISession Session { get; set; }
+
+        public ForeingKeyProxy(ISession session)
+        {
+            Session = session;
+        }
+
+
+        VirtualObjects.Scaffold.VirtualObjectsHelper.Table _Table;
+        Boolean _TableLoaded;
+
+        public override VirtualObjects.Scaffold.VirtualObjectsHelper.Table Table
+        {
+            get
+            {
+                if ( !_TableLoaded )
+                {
+
+                    _Table = Session.GetById(_Table);
+                    _TableLoaded = _Table != null;
+                }
+
+                return _Table;
+            }
+            set
+            {
+                _Table = value;
+            }
+        }
+
+        VirtualObjects.Scaffold.VirtualObjectsHelper.Column _Column;
+        Boolean _ColumnLoaded;
+
+        public override VirtualObjects.Scaffold.VirtualObjectsHelper.Column Column
+        {
+            get
+            {
+                if ( !_ColumnLoaded )
+                {
+                    _Column.Table = this.Table;
+                    _Column = Session.GetById(_Column);
+                    _ColumnLoaded = _Column != null;
+                }
+
+                return _Column;
+            }
+            set
+            {
+                _Column = value;
+            }
+        }
+
+        VirtualObjects.Scaffold.VirtualObjectsHelper.Column _ReferencedColumn;
+        Boolean _ReferencedColumnLoaded;
+
+        public override VirtualObjects.Scaffold.VirtualObjectsHelper.Column ReferencedColumn
+        {
+            get
+            {
+                if ( !_ReferencedColumnLoaded )
+                {
+                    _ReferencedColumn.Table = _ReferencedTable;
+                    _ReferencedColumn = Session.GetById(_ReferencedColumn);
+                    _ReferencedColumnLoaded = _ReferencedColumn != null;
+                }
+
+                return _ReferencedColumn;
+            }
+            set
+            {
+                _ReferencedColumn = value;
+            }
+        }
+
+        VirtualObjects.Scaffold.VirtualObjectsHelper.Table _ReferencedTable;
+        Boolean _ReferencedTableLoaded;
+
+        public override VirtualObjects.Scaffold.VirtualObjectsHelper.Table ReferencedTable
+        {
+            get
+            {
+                if ( !_ReferencedTableLoaded )
+                {
+
+                    _ReferencedTable = Session.GetById(_ReferencedTable);
+                    _ReferencedTableLoaded = _ReferencedTable != null;
+                }
+
+                return _ReferencedTable;
+            }
+            set
+            {
+                _ReferencedTable = value;
+            }
+        }
+
+    }
 
     public static void Init(Type type)
     {
-        ctor = type.GetConstructors().Single();
-        parameters = ctor.GetParameters();
     }
 
-    public static Object EntityCast(Object source)
+    public static MapResult Map(VirtualObjects.Scaffold.VirtualObjectsHelper.ForeingKey entity, IDataReader reader)
     {
-        IDictionary<string, object> dict = (ExpandoObject)source;
-
-        var parameterValues = parameters.Select(p => dict[p.Name]).ToArray();
-
-        return ctor.Invoke(parameterValues);
-    }
-
-    public static MapResult Map(dynamic entity, IDataReader reader)
-    {
-        int i = 0;
         var data = reader.GetValues();
-        var hasMoreData = false;
+
 
         try
         {
-            //if (data[0] != DBNull.Value)
-            entity.OrderId = (Int32)(Parse(data[i]) ?? default(Int32));
+            if ( data[0] != DBNull.Value )
+                entity.Table = new VirtualObjects.Scaffold.VirtualObjectsHelper.Table { Id = (Int32)(Parse(data[0]) ?? default(Int32)) };
         }
         catch ( InvalidCastException )
         {
-            entity.OrderId = (Int32)Convert.ChangeType((Parse(data[i]) ?? default(Int32)), typeof(Int32));
+            //entity.Table = (Table)Convert.ChangeType(new VirtualObjects.Scaffold.VirtualObjectsHelper.Table { Id  = (Int32)(Parse(data[0]) ?? default(Table)(Int32)) }, typeof(Table));
         }
         catch ( Exception ex )
         {
-            throw new Exception("Error setting value to [OrderId] with [" + data[0] + "] value.", ex);
+            throw new Exception("Error setting value to [Table] with [" + data[0] + "] value.", ex);
         }
-        ++i;
 
         try
         {
-            //if (data[1] != DBNull.Value)
-            entity.UnitPrice = (Decimal)(Parse(data[i]) ?? default(Decimal));
+            if ( data[1] != DBNull.Value )
+                entity.Column = new VirtualObjects.Scaffold.VirtualObjectsHelper.Column { Id = (Int32)(Parse(data[1]) ?? default(Int32)) };
         }
         catch ( InvalidCastException )
         {
-            entity.UnitPrice = (Decimal)Convert.ChangeType((Parse(data[i]) ?? default(Decimal)), typeof(Decimal));
+            //entity.Column = (Column)Convert.ChangeType(new VirtualObjects.Scaffold.VirtualObjectsHelper.Column { Id  = (Int32)(Parse(data[1]) ?? default(Column)(Int32)) }, typeof(Column));
         }
         catch ( Exception ex )
         {
-            throw new Exception("Error setting value to [UnitPrice] with [" + data[1] + "] value.", ex);
+            throw new Exception("Error setting value to [Column] with [" + data[1] + "] value.", ex);
         }
-        ++i;
 
         try
         {
-            //if (data[2] != DBNull.Value)
-            entity.Quantity = (Int16)(Parse(data[i]) ?? default(Int16));
+            if ( data[2] != DBNull.Value )
+                entity.ReferencedColumn = new VirtualObjects.Scaffold.VirtualObjectsHelper.Column { Id = (Int32)(Parse(data[2]) ?? default(Int32)) };
         }
         catch ( InvalidCastException )
         {
-            entity.Quantity = (Int16)Convert.ChangeType((Parse(data[i]) ?? default(Int16)), typeof(Int16));
+            //entity.ReferencedColumn = (Column)Convert.ChangeType(new VirtualObjects.Scaffold.VirtualObjectsHelper.Column { Id  = (Int32)(Parse(data[2]) ?? default(Column)(Int32)) }, typeof(Column));
         }
         catch ( Exception ex )
         {
-            throw new Exception("Error setting value to [Quantity] with [" + data[2] + "] value.", ex);
+            throw new Exception("Error setting value to [ReferencedColumn] with [" + data[2] + "] value.", ex);
         }
-        ++i;
 
         try
         {
-            //if (data[3] != DBNull.Value)
-            entity.ShipName = Parse(data[i]);
+            if ( data[3] != DBNull.Value )
+                entity.ReferencedTable = new VirtualObjects.Scaffold.VirtualObjectsHelper.Table { Id = (Int32)(Parse(data[3]) ?? default(Int32)) };
         }
         catch ( InvalidCastException )
         {
-            entity.ShipName = Convert.ChangeType((Parse(data[i])), typeof(String));
+            //entity.ReferencedTable = (Table)Convert.ChangeType(new VirtualObjects.Scaffold.VirtualObjectsHelper.Table { Id  = (Int32)(Parse(data[3]) ?? default(Table)(Int32)) }, typeof(Table));
         }
         catch ( Exception ex )
         {
-            throw new Exception("Error setting value to [ShipName] with [" + data[3] + "] value.", ex);
+            throw new Exception("Error setting value to [ReferencedTable] with [" + data[3] + "] value.", ex);
         }
-        ++i;
-
-        try
-        {
-            //if (data[4] != DBNull.Value)
-            entity.Employee = Parse(data[i]);
-        }
-        catch ( InvalidCastException )
-        {
-            entity.Employee = Convert.ChangeType((Parse(data[i])), typeof(String));
-        }
-        catch ( Exception ex )
-        {
-            throw new Exception("Error setting value to [Employee] with [" + data[4] + "] value.", ex);
-        }
-        ++i;
 
 
         return new MapResult
         {
-            Entity = entity,
-            HasMore = hasMoreData
+            Entity = entity
         };
+    }
+
+    public static Object EntityCast(Object source)
+    {
+        return source;
     }
 
     private static Object Parse(Object value)
@@ -140,8 +209,4 @@ public class Internal_Builder_Dynamic_f__AnonymousType1d_5
 
         return value;
     }
-
-
-
-
 }

@@ -30,7 +30,7 @@ namespace VirtualObjects
         /// <value>
         /// The foreign key links.
         /// </value>
-        IList<IEntityColumnInfo> ForeignKeyLinks { get; set; }
+        List<KeyValuePair<IEntityColumnInfo, IEntityColumnInfo>> ForeignKeyLinks { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether [is key].

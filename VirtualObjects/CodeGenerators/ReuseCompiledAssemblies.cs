@@ -8,11 +8,11 @@ namespace VirtualObjects.CodeGenerators
     {
         protected override CompilerResults Compile(string[] References)
         {
-            if (!IsDynamic && File.Exists(AssemblyName + ".dll"))
+            if (!IsDynamic && File.Exists(Path.GetTempPath() + "VirtualObjects\\" + AssemblyName + ".dll"))
             {
                 return new CompilerResults(new TempFileCollection())
                 {
-                    CompiledAssembly = AppDomain.CurrentDomain.Load(File.ReadAllBytes(AssemblyName + ".dll"))
+                    CompiledAssembly = AppDomain.CurrentDomain.Load(File.ReadAllBytes(Path.GetTempPath() + "VirtualObjects\\" + AssemblyName + ".dll"))
                 };
             }
 

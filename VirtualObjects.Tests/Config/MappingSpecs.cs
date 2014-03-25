@@ -61,8 +61,9 @@ namespace VirtualObjects.Tests.Config
             () =>
             {
                 ColumnField.ForeignKeyLinks.Count.Should().Be(1);
-                ColumnField.ForeignKeyLinks.First().Should().Be(ForeignKeyEntityInfo["Table"]);
-                ColumnField.ForeignKeyLinks.First().Property.Name.Should().Be("Table");
+                ColumnField.ForeignKeyLinks.First().Key.Should().Be(ForeignKeyEntityInfo["Table"]);
+                ColumnField.ForeignKeyLinks.First().Key.Property.Name.Should().Be("Table");
+                ColumnField.ForeignKeyLinks.First().Value.Property.Name.Should().Be("Table");
             };
 
         It should_have_a_refereced_column_field = 
@@ -72,8 +73,9 @@ namespace VirtualObjects.Tests.Config
             () =>
             {
                 ReferecedField.ForeignKeyLinks.Count.Should().Be(1);
-                ReferecedField.ForeignKeyLinks.First().Should().Be(ForeignKeyEntityInfo["ReferencedTable"]);
-                ReferecedField.ForeignKeyLinks.First().Property.Name.Should().Be("ReferencedTable");
+                ReferecedField.ForeignKeyLinks.First().Key.Should().Be(ForeignKeyEntityInfo["ReferencedTable"]);
+                ReferecedField.ForeignKeyLinks.First().Key.Property.Name.Should().Be("ReferencedTable");
+                ReferecedField.ForeignKeyLinks.First().Value.Property.Name.Should().Be("Table");
             };
 
         It should_have_a_matching_dll =
