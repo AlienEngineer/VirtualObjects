@@ -28,7 +28,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Should_Be_Created_And_Disposed()
         {
-            using (CreateSession())
+            using ( CreateSession() )
             {
 
             }
@@ -40,7 +40,7 @@ namespace VirtualObjects.Tests.Sessions
 
             using ( var session = CreateSession() )
             {
-                using (session.BeginTransaction())
+                using ( session.BeginTransaction() )
                 {
 
 
@@ -117,7 +117,7 @@ namespace VirtualObjects.Tests.Sessions
                 var employees = session.GetAll<Employee>();
                 var i = 0;
 
-                foreach (Employee employee in employees)
+                foreach ( Employee employee in employees )
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     ++i;
@@ -135,7 +135,7 @@ namespace VirtualObjects.Tests.Sessions
                 var employees = session.GetAll<Employee>();
                 var i = 0;
 
-                foreach (Employee employee in employees)
+                foreach ( Employee employee in employees )
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     ++i;
@@ -155,7 +155,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 var i = 0;
 
-                foreach (var employee in employees)
+                foreach ( var employee in employees )
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     Assert.That(employee.City, Is.Not.Null);
@@ -177,7 +177,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 var i = 0;
 
-                foreach (var employee in employees)
+                foreach ( var employee in employees )
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     Assert.That(employee.City, Is.Not.Null);
@@ -694,7 +694,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             var session = Session;
             {
-                using (var s = CreateSession())
+                using ( var s = CreateSession() )
                 {
                     var employee1 = s.GetById(new Employee { EmployeeId = 1 });
 
@@ -724,7 +724,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Insert_Employee()
         {
-            using(var session = CreateSession())
+            using ( var session = CreateSession() )
             {
                 session.WithRollback(() =>
                 {
@@ -765,99 +765,98 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat), ExpectedException(typeof(ExecutionException))]
         public void Session_Update_Old_Employee()
         {
-            using ( var session = CreateSession() )
+            var session = Session;
+
+            session.WithRollback(() =>
             {
-                session.WithRollback(() =>
+                var sergio = session.Insert(new Employee
                 {
-                    var sergio = session.Insert(new Employee
-                    {
-                        FirstName = "Sérgio",
-                        LastName = "Ferreira"
-                    });
-
-                    //
-                    // Gets the current version of the entity.
-                    //
-                    // sergio = session.GetById(sergio);
-
-                    var oldVersion = sergio.Version;
-
-                    //
-                    // Update to create a new version of Employee.
-                    //
-                    sergio = session.Update(new Employee
-                    {
-                        EmployeeId = sergio.EmployeeId,
-                        FirstName = "Alien",
-                        LastName = sergio.LastName,
-                        Version = sergio.Version
-                    });
-
-                    //
-                    // Try to update with the old version.
-                    //
-                    session.Update(new Employee
-                    {
-                        EmployeeId = sergio.EmployeeId,
-                        FirstName = "Alien",
-                        LastName = sergio.LastName,
-                        Version = oldVersion
-                    });
-
+                    FirstName = "Sérgio",
+                    LastName = "Ferreira"
                 });
-            }
+
+                //
+                // Gets the current version of the entity.
+                //
+                // sergio = session.GetById(sergio);
+
+                var oldVersion = sergio.Version;
+
+                //
+                // Update to create a new version of Employee.
+                //
+                sergio = session.Update(new Employee
+                {
+                    EmployeeId = sergio.EmployeeId,
+                    FirstName = "Alien",
+                    LastName = sergio.LastName,
+                    Version = sergio.Version
+                });
+
+                //
+                // Try to update with the old version.
+                //
+                session.Update(new Employee
+                {
+                    EmployeeId = sergio.EmployeeId,
+                    FirstName = "Alien",
+                    LastName = sergio.LastName,
+                    Version = oldVersion
+                });
+
+            });
         }
 
 
         [Test, Repeat(Repeat), ExpectedException(typeof(ExecutionException))]
         public void Session_Update_Employee_Unversioned()
         {
-            using ( var session = CreateSession() )
-            {
-                session.WithRollback(() =>
-                {
-                    var sergio = session.Insert(new Employee
-                    {
-                        FirstName = "Sérgio",
-                        LastName = "Ferreira"
-                    });
-                    
-                    session.Update(new Employee
-                    {
-                        EmployeeId = sergio.EmployeeId,
-                        FirstName = "Alien",
-                        LastName = sergio.LastName
-                    });
+            var session = Session;
 
+            session.WithRollback(() =>
+            {
+                var sergio = session.Insert(new Employee
+                {
+                    FirstName = "Sérgio",
+                    LastName = "Ferreira"
                 });
-            }
+
+                session.Update(new Employee
+                {
+                    EmployeeId = sergio.EmployeeId,
+                    FirstName = "Alien",
+                    LastName = sergio.LastName
+                });
+
+            });
+
         }
 
         [Test, Repeat(Repeat)]
         public void Session_Update_Employee()
         {
-            using ( var session = CreateSession() )
+            var session = Session;
+
+            session.WithRollback(() =>
             {
-                session.WithRollback(() =>
+                var sergio = session.Insert(new Employee
                 {
-                    var sergio = session.Insert(new Employee
-                    {
-                        FirstName = "Sérgio",
-                        LastName = "Ferreira"
-                    });
-
-                    // gets the version control
-                    // sergio = session.GetById(sergio);
-                    sergio.FirstName = "Alien";
-
-                    session.Update(sergio);
-
-                    var alien = session.GetById(sergio);
-
-                    Assert.That(alien, Is.Not.Null);
-                    Assert.AreEqual("Alien", alien.FirstName);
+                    FirstName = "Sérgio",
+                    LastName = "Ferreira"
                 });
-            }
+
+                // gets the version control
+                // sergio = session.GetById(sergio);
+                sergio.FirstName = "Alien";
+
+                session.Update(sergio);
+
+                var alien = session.GetById(sergio);
+
+                Assert.That(alien, Is.Not.Null);
+                Assert.AreEqual("Alien", alien.FirstName);
+            });
+
         }
 
         [Test]
@@ -869,7 +868,7 @@ namespace VirtualObjects.Tests.Sessions
                              join od in session.GetAll<OrderDetails>() on o equals od.Order
                              select new { Order = o, OrderDetail = od };
 
-                foreach (var order in orders)
+                foreach ( var order in orders )
                 {
                     Assert.That(order, Is.Not.Null);
                     Assert.That(order.Order, Is.Not.Null);
@@ -900,7 +899,7 @@ namespace VirtualObjects.Tests.Sessions
                              join e in session.GetAll<Employee>() on o.Employee equals e
                              select new { Order = o, OrderDetail = od, Employee = e };
 
-                foreach (var order in orders)
+                foreach ( var order in orders )
                 {
                     Assert.That(order, Is.Not.Null);
                     Assert.That(order.Order, Is.Not.Null);
@@ -924,7 +923,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 int i = 0;
 
-                foreach (var order in orders)
+                foreach ( var order in orders )
                 {
                     Assert.That(order, Is.Not.Null);
                     Assert.That(order.Order, Is.Not.Null);
@@ -951,7 +950,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 var i = 0;
 
-                foreach (var order in orders)
+                foreach ( var order in orders )
                 {
                     Assert.That(order.OrderId, Is.GreaterThan(0));
                     Assert.That(order.Quantity, Is.GreaterThan(0));

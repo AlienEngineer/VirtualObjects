@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Machine.Specifications;
 using NUnit.Framework;
-using VirtualObjects.Connections;
 
 namespace VirtualObjects.Tests.Sessions
 {
@@ -41,5 +40,9 @@ namespace VirtualObjects.Tests.Sessions
         It should_rollback =
             () => transaction.Rolledback.Should().BeTrue();
     }
+
+
+
+
 
 }

@@ -13,7 +13,7 @@ namespace VirtualObjects.Connections
         /// </summary>
         public FirstConnectionDbConnectionProvider()
             : base(GetFirstConnectionString())
-        {
+        {                                                      
 
         }
 

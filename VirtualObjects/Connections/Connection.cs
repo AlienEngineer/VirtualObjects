@@ -66,9 +66,7 @@ namespace VirtualObjects.Connections
             get { return _dbConnection; }
         }
 
-        public bool Rolledback {
-            get { return _rolledBack; }
-        }
+        public bool Rolledback { get; private set; }
 
         public bool KeepAlive { get; set; }
 
@@ -240,7 +238,7 @@ namespace VirtualObjects.Connections
                 return;
             }
 
-            _rolledBack = true;
+            Rolledback = _rolledBack = true;
             _endedTransaction = true;
 
             // Makes a safe rollback.
