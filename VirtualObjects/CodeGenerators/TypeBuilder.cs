@@ -15,7 +15,8 @@ namespace VirtualObjects.CodeGenerators
         public ICollection<String> References { get; private set; }
         public ICollection<String> Namespaces { get; private set; }
 
-        public TypeBuilder(String typeName)
+        public TypeBuilder(String typeName, Type baseType)
+            : base(baseType)
         {
             this.typeName = typeName;
             Namespaces = new Collection<String>();
@@ -45,7 +46,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var code = new StringBuffer();
 
-            foreach (string s in Body)
+            foreach ( string s in Body )
             {
                 code = code + s;
             }
@@ -73,7 +74,7 @@ namespace VirtualObjects.CodeGenerators
         {
             var code = new StringBuffer();
 
-            foreach (var name in Namespaces)
+            foreach ( var name in Namespaces )
             {
                 code += "using ";
                 code += name;

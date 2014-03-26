@@ -13,7 +13,14 @@ namespace VirtualObjects.CodeGenerators
     /// </summary>
     public abstract class CodeCompiler
     {
-        private string assemblyPath;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CodeCompiler"/> class.
+        /// </summary>
+        /// <param name="baseType">Type of the base.</param>
+        protected CodeCompiler(Type baseType)
+        {
+            BaseType = baseType;
+        }
 
         /// <summary>
         /// Gets the code.
@@ -38,6 +45,11 @@ namespace VirtualObjects.CodeGenerators
         ///   <c>true</c> if [is dynamic]; otherwise, <c>false</c>.
         /// </value>
         public abstract Boolean IsDynamic { get; set; }
+
+        /// <summary>
+        /// The base type
+        /// </summary>
+        public Type BaseType { get; private set; }
 
         /// <summary>
         /// Compiles the specified references.
@@ -66,7 +78,7 @@ namespace VirtualObjects.CodeGenerators
 
                 if (!IsDynamic)
                 {
-                    assemblyPath = System.IO.Path.GetTempPath() + "VirtualObjects\\";
+                    var assemblyPath = Path.GetTempPath() + "VirtualObjects\\";
                     cp.OutputAssembly = assemblyPath + AssemblyName + ".dll";
 
                     if ( !Directory.Exists(assemblyPath) )
@@ -84,11 +96,11 @@ namespace VirtualObjects.CodeGenerators
                 {
                     Console.WriteLine(Code);
 
-                    Console.WriteLine("Errors building of {0}", cr.PathToAssembly);
+                    Console.WriteLine(@"Errors building of {0}", cr.PathToAssembly);
 
                     foreach ( CompilerError ce in cr.Errors )
                     {
-                        Console.WriteLine("  {0}", ce.ToString());
+                        Console.WriteLine(@"  {0}", ce);
                         Console.WriteLine();
                     }
 

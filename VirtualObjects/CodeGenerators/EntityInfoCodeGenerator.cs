@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using VirtualObjects.Exceptions;
 using Fasterflect;
@@ -17,7 +18,7 @@ namespace VirtualObjects.CodeGenerators
         private readonly String _properName;
 
         public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration)
-            : base("Internal_Builder_" + info.EntityType.Name)
+            : base("Internal_Builder_" + info.EntityType.Name, info.EntityType)
         {
             _configuration = configuration;
             _entityBag = entityBag;
@@ -37,6 +38,7 @@ namespace VirtualObjects.CodeGenerators
             AddNamespace("System");
             AddNamespace("System.Linq");
             AddNamespace("System.Data");
+            AddNamespace("System.Reflection");
         }
 
         protected override string GenerateMapObjectCode()
@@ -81,6 +83,9 @@ namespace VirtualObjects.CodeGenerators
             }
 
             return @"
+    [assembly: AssemblyVersion(""{Version}"")]
+    [assembly: AssemblyFileVersion(""{Version}"")]
+    
     public class {Name} : {TypeName}
     {{
         private ISession Session {{ get; set; }}
@@ -127,7 +132,8 @@ namespace VirtualObjects.CodeGenerators
      TypeName = _properName,
      Name = _entityInfo.EntityType.Name + "Proxy",
      OverridableMembers = GenerateOverridableMembers(_entityInfo),
-     Body = GenerateBody(_entityInfo)
+     Body = GenerateBody(_entityInfo),
+     Version = FileVersionInfo.GetVersionInfo(_entityInfo.EntityType.Assembly.Location).FileVersion
  });
 
         }
