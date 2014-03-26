@@ -2,6 +2,7 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 
 namespace VirtualObjects.CodeGenerators
@@ -54,9 +55,17 @@ namespace VirtualObjects.CodeGenerators
             return code;
         }
 
-        private static String BeginClass(string className)
+        private String BeginClass(string className)
         {
             var code = new StringBuffer();
+
+            code += @"
+    [assembly: AssemblyVersion(""{Version}"")]
+    [assembly: AssemblyFileVersion(""{Version}"")]"
+                .FormatWith(new
+                {
+                    Version = FileVersionInfo.GetVersionInfo(BaseType.Assembly.Location).FileVersion
+                });
 
             code += "public class ";
             code += className;

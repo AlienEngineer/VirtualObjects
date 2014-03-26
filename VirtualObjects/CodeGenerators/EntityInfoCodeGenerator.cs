@@ -83,9 +83,6 @@ namespace VirtualObjects.CodeGenerators
             }
 
             return @"
-    [assembly: AssemblyVersion(""{Version}"")]
-    [assembly: AssemblyFileVersion(""{Version}"")]
-    
     public class {Name} : {TypeName}
     {{
         private ISession Session {{ get; set; }}
@@ -132,8 +129,7 @@ namespace VirtualObjects.CodeGenerators
      TypeName = _properName,
      Name = _entityInfo.EntityType.Name + "Proxy",
      OverridableMembers = GenerateOverridableMembers(_entityInfo),
-     Body = GenerateBody(_entityInfo),
-     Version = FileVersionInfo.GetVersionInfo(_entityInfo.EntityType.Assembly.Location).FileVersion
+     Body = GenerateBody(_entityInfo)
  });
 
         }
