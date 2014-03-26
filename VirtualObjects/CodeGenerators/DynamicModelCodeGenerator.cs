@@ -43,7 +43,8 @@ namespace VirtualObjects.CodeGenerators
             AddNamespace("System.Linq");
             AddNamespace("System.Dynamic");
             AddNamespace("System.Collections.Generic");
-            AddNamespace("System.Data");            
+            AddNamespace("System.Data");
+            AddNamespace("System.Reflection");
         }
 
         private static String MakeDynamicSafeName(Type type)
