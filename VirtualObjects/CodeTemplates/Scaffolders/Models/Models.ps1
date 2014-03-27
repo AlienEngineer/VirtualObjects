@@ -68,16 +68,18 @@ function Get-NugetAssemblyPath($packageName)
 	$targetFramework = [System.String](Get-Project $Project).Properties.Item("TargetFrameworkMoniker").Value
 	
 	$backupfolder = "..\";
+	$recursiveCountDown = 10;
 
 	$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\$packageName." + (Get-Package -Filter $packageName -Skip ((Get-Package -Filter $packageName).Count-1)).Version.ToString() + "\lib\" 
 	
 	Write-Verbose "Searching assembly in: $packagesPath"
 
-	while (-not [System.IO.Directory]::Exists($packagesPath)) 
+	while (-not [System.IO.Directory]::Exists($packagesPath) -and $recursiveCountDown -gt 0) 
 	{
 		$backupfolder = $backupfolder + "..\";
 		$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\$packageName." + (Get-Package -Filter $packageName -Skip ((Get-Package -Filter $packageName).Count-1)).Version.ToString() + "\lib\" 
 		Write-Verbose "Searching assembly in: $packagesPath"
+		--$recursiveCountDown;
 	}
 
 	if ($targetFramework.EndsWith("v4.0"))

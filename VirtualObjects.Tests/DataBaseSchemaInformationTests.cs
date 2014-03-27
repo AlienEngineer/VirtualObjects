@@ -2,8 +2,6 @@
 using System.Linq;
 using FluentAssertions;
 using Machine.Specifications;
-using Machine.Specifications.Model;
-using NUnit.Framework;
 using VirtualObjects.Scaffold;
 
 namespace VirtualObjects.Tests
@@ -13,22 +11,24 @@ namespace VirtualObjects.Tests
     {
         Establish context = () => {  };
 
-        Because of = () => { Table = VirtualObjectsHelper.GetTables("gidw01", ".\\development", "FAC_ICDO").FirstOrDefault(); };
+        Because of = () => { Table = VirtualObjectsHelper.GetTables("Northwind", "(LocalDB)\\v11.0", "Employees").FirstOrDefault(); };
 
         It should_not_be_null = () => Table.Should().NotBeNull();
         It should_have_a_name = () => Table.Name.Should().NotBeNullOrEmpty();
         It should_have_columns = () => Table.Columns.Count.Should().BeGreaterThan(0);
-        It should_have_7_columns = () => Table.Columns.Count.Should().Be(7);
+        It should_have_18_columns = () => Table.Columns.Count.Should().Be(18);
+        It should_have_1_identity = () => Table.Columns.Count(e => e.Identity).Should().Be(1);
+        It should_have_a_key_named_employeeid = () => Table.Columns.First(e => e.Identity).Name.Should().Be("EmployeeID");
 
         static VirtualObjectsHelper.MetaTable Table;
     }
 
     [Subject("Scaffolding"), Tags("Database Schema")]
-    public class When_Context
+    public class When_getting_all_tables
     {
         Establish context = () => {  };
 
-        Because of = () => { Tables = VirtualObjectsHelper.GetTables("gidw01", ".\\development"); };
+        Because of = () => { Tables = VirtualObjectsHelper.GetTables("Northwind", "(LocalDB)\\v11.0"); };
 
         It should_not_be_empty = () => Tables.Any().Should().BeTrue();
         
