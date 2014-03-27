@@ -58,7 +58,7 @@ namespace VirtualObjects.Tests.Sessions
                 {
                     var employee = session.Insert(new Employee
                     {
-                        FirstName = "Sérgio",
+                        FirstName = "S_C_O",
                         LastName = "Ferreira"
                     });
 
@@ -731,7 +731,7 @@ namespace VirtualObjects.Tests.Sessions
                     var count = session.GetAll<Employee>().Count();
                     var employee = session.Insert(new Employee
                     {
-                        FirstName = "Sérgio",
+                        FirstName = "S_I_E",
                         LastName = "Ferreira"
                     });
 
@@ -751,7 +751,7 @@ namespace VirtualObjects.Tests.Sessions
                     var count = session.GetAll<Employee>().Count();
                     var sergio = session.Insert(new Employee
                     {
-                        FirstName = "Sérgio",
+                        FirstName = "S_D_E",
                         LastName = "Ferreira"
                     });
 
@@ -771,7 +771,7 @@ namespace VirtualObjects.Tests.Sessions
             {
                 var sergio = session.Insert(new Employee
                 {
-                    FirstName = "Sérgio",
+                    FirstName = "S_U_O_E",
                     LastName = "Ferreira"
                 });
 
@@ -788,7 +788,7 @@ namespace VirtualObjects.Tests.Sessions
                 sergio = session.Update(new Employee
                 {
                     EmployeeId = sergio.EmployeeId,
-                    FirstName = "Alien",
+                    FirstName = "S_U_O_E",
                     LastName = sergio.LastName,
                     Version = sergio.Version
                 });
@@ -799,7 +799,7 @@ namespace VirtualObjects.Tests.Sessions
                 session.Update(new Employee
                 {
                     EmployeeId = sergio.EmployeeId,
-                    FirstName = "Alien",
+                    FirstName = "S_U_O_E",
                     LastName = sergio.LastName,
                     Version = oldVersion
                 });
@@ -817,14 +817,14 @@ namespace VirtualObjects.Tests.Sessions
             {
                 var sergio = session.Insert(new Employee
                 {
-                    FirstName = "Sérgio",
+                    FirstName = "S_U_E_U",
                     LastName = "Ferreira"
                 });
 
                 session.Update(new Employee
                 {
                     EmployeeId = sergio.EmployeeId,
-                    FirstName = "Alien",
+                    FirstName = "S_U_E_U",
                     LastName = sergio.LastName
                 });
 
@@ -841,20 +841,20 @@ namespace VirtualObjects.Tests.Sessions
             {
                 var sergio = session.Insert(new Employee
                 {
-                    FirstName = "Sérgio",
+                    FirstName = "S_U_E",
                     LastName = "Ferreira"
                 });
 
                 // gets the version control
                 // sergio = session.GetById(sergio);
-                sergio.FirstName = "Alien";
+                sergio.FirstName = "S_U_E_A";
 
                 session.Update(sergio);
 
                 var alien = session.GetById(sergio);
 
                 Assert.That(alien, Is.Not.Null);
-                Assert.AreEqual("Alien", alien.FirstName);
+                Assert.AreEqual("S_U_E_A", alien.FirstName);
             });
 
         }

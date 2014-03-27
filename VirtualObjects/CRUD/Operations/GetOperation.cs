@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using VirtualObjects.Queries;
 
 namespace VirtualObjects.CRUD.Operations
@@ -26,16 +27,18 @@ namespace VirtualObjects.CRUD.Operations
         {
             var keepAlive = connection.KeepAlive;
             connection.KeepAlive = true;
-            var reader = connection.ExecuteReader(commandText, parameters);
-
-            if (!reader.Read())
-            {
-                reader.Close();
-                return null;
-            }
+            IDataReader reader = null;
 
             try
             {
+                reader = connection.ExecuteReader(commandText, parameters);
+
+                if ( !reader.Read() )
+                {
+                    reader.Close();
+                    return null;
+                }
+
                 _entityProvider.PrepareProvider(entityInfo.EntityType, sessionContext);
 
                 _mapper.PrepareMapper(_context);
@@ -45,7 +48,8 @@ namespace VirtualObjects.CRUD.Operations
             }
             finally
             {
-                reader.Close();
+                if (reader != null) reader.Close();
+
                 //
                 // Restore keep alive flag;
                 connection.KeepAlive = keepAlive;

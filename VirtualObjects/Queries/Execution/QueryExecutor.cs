@@ -34,6 +34,8 @@ namespace VirtualObjects.Queries.Execution
 
         private object MapEntities(IQueryInfo queryInfo, SessionContext context)
         {
+            var keepAlive = context.Connection.KeepAlive;
+            context.Connection.KeepAlive = true;
             try
             {
                 var reader = context.Connection.ExecuteReader(queryInfo.CommandText, queryInfo.Parameters);
@@ -44,6 +46,7 @@ namespace VirtualObjects.Queries.Execution
             }
             finally
             {
+                context.Connection.KeepAlive = keepAlive;
                 context.Connection.Close();
             }
         }

@@ -139,7 +139,6 @@ namespace VirtualObjects.Connections
         public void Close()
         {
             if ( KeepAlive )
-
             {
                 return;
             }
@@ -233,7 +232,7 @@ namespace VirtualObjects.Connections
 
         public void Rollback()
         {
-            if ( _rolledBack )
+            if ( _rolledBack || _endedTransaction || DbConnection.State != ConnectionState.Open )
             {
                 return;
             }
@@ -241,21 +240,8 @@ namespace VirtualObjects.Connections
             Rolledback = _rolledBack = true;
             _endedTransaction = true;
 
-            // Makes a safe rollback.
-            //
-            // When the transaction is aborted by a trigger the transaction is 
-            // automaticaly rolledback. Therefore it's no longer possible to rollback again.
-            //
-            try
-            {
-                _dbTransaction.Rollback();
-                Close();
-            }
-            catch ( Exception ex )
-            {
-                Trace.WriteLine(ex.Message);
-            }
-
+            _dbTransaction.Rollback();
+            Close();
         }
 
         public void Commit()
