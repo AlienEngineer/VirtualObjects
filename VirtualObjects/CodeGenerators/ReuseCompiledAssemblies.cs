@@ -15,12 +15,14 @@ namespace VirtualObjects.CodeGenerators
 
         protected override CompilerResults Compile(string[] References)
         {
-            var assemblyPath = Path.GetTempPath() + "VirtualObjects\\" + AssemblyName + ".dll";
+            string fileName = BaseType.Assembly.CodeBase.Replace("file:///", "");
+            var assemblyPath = Directory.GetParent(fileName).FullName + "\\VirtualObjects\\" + AssemblyName + ".dll";
 
             if ( !IsDynamic && File.Exists(assemblyPath) )
             {
+
                 var assemblyVersion = new Version(FileVersionInfo.GetVersionInfo(assemblyPath).FileVersion);
-                var currentVersion = new Version(FileVersionInfo.GetVersionInfo(BaseType.Assembly.Location).FileVersion);
+                var currentVersion = new Version(FileVersionInfo.GetVersionInfo(fileName).FileVersion);
 
                 if (assemblyVersion == currentVersion)
                 {

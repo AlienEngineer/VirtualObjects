@@ -14,14 +14,15 @@
       Version 1.1.0
       * Fix: In some cases the keep alive was not enabling the rollback.
       * Improvement: Dynamic generated assemblies are cached using the base assembly version.
+      * Improvement: Dynamic generated assemblies are cached near execution.
       * Scaffold Fix: Limit the number of recursive tries to find the VirtualObjects package folder.
-      
+
       Version 1.1.0-rc
       * Mapping performance improved.
       * Lazy load of related fields, and related collection improved.
       * Improved Bind of Related fields.
       * Small bug fixes.
-      
+
       Version 1.0.7-Beta:
       * Improved Scaffolders.
       * Feature: Enable computed columns to be read.

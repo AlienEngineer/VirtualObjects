@@ -78,7 +78,9 @@ namespace VirtualObjects.CodeGenerators
 
                 if (!IsDynamic)
                 {
-                    var assemblyPath = Path.GetTempPath() + "VirtualObjects\\";
+                    string fileName = BaseType.Assembly.CodeBase.Replace("file:///", "");
+
+                    var assemblyPath = Directory.GetParent(fileName).FullName + "\\VirtualObjects\\" ;
                     cp.OutputAssembly = assemblyPath + AssemblyName + ".dll";
 
                     if ( !Directory.Exists(assemblyPath) )

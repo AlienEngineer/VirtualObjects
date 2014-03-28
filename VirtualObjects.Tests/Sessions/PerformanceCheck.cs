@@ -25,7 +25,7 @@ namespace VirtualObjects.Tests.Sessions
         private const string STR_Dapper = "Dapper";
         private const string STR_EntityFramework = "EntityFramework";
         private const string STR_VirtualObjects = "VirtualObjects";
-        private const string STR_HardCoded = "HardCoded";
+        private const string STR_HardCoded = "HandCoded";
 
         public class PerfRecord
         {
@@ -33,7 +33,7 @@ namespace VirtualObjects.Tests.Sessions
             public float VirtualObjects { get; set; }
             public float EntityFramework { get; set; }
             public float Dapper { get; set; }
-            public float HardCoded { get; set; }
+            public float HandCoded { get; set; }
         }
 
         public class CountSuppliers : PerfRecord { }
@@ -203,7 +203,7 @@ namespace VirtualObjects.Tests.Sessions
                         EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
                         VirtualObjects = (float)Diagnostic.GetMilliseconds(STR_VirtualObjects),
                         Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
-                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
+                        HandCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
                     });
 
                 } while (numberOfExecutions < 500);
@@ -310,7 +310,7 @@ namespace VirtualObjects.Tests.Sessions
                         EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
                         VirtualObjects = (float)Diagnostic.GetMilliseconds(STR_VirtualObjects),
                         Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
-                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
+                        HandCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
                     });
 
                 } while (numberOfExecutions < 500);
@@ -377,7 +377,7 @@ namespace VirtualObjects.Tests.Sessions
                         EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
                         VirtualObjects = (float)Diagnostic.GetMilliseconds(STR_VirtualObjects),
                         Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
-                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
+                        HandCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
                     });
 
                 } while (numberOfExecutions < 500);
@@ -440,7 +440,7 @@ namespace VirtualObjects.Tests.Sessions
                         EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
                         VirtualObjects = (float)Diagnostic.GetMilliseconds(STR_VirtualObjects),
                         Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
-                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
+                        HandCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
                     });
 
                 } while (numberOfExecutions < 500);

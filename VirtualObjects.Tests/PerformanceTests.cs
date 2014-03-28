@@ -25,7 +25,7 @@ namespace VirtualObjects.Tests
         private const string STR_EntityProxyProvider = "EntityProxyProvider";
         private const string STR_SetFieldFinalValue = "SetFieldFinalValue";
         private const string STR_SetValue = "SetValue";
-        private const string STR_HardCoded = "HardCoded";
+        private const string STR_HardCoded = "HandCoded";
         private const string STR_Parallel = "Parallel";
         private const string STR_Compiled = "Compiled";
 
@@ -42,7 +42,7 @@ namespace VirtualObjects.Tests
         public class EntitiesMapping
         {
             public float Compiled { get; set; }
-            public float HardCoded { get; set; }
+            public float HandCoded { get; set; }
             public int NumberOfEntities { get; set; }
             public float Parallel { get; set; }
             public float SetFieldFinalValue { get; set; }
@@ -231,7 +231,7 @@ namespace VirtualObjects.Tests
                         NumberOfEntities = numberOfEntities,
                         SetFieldFinalValue = (float)Diagnostic.GetMilliseconds(STR_SetFieldFinalValue),
                         SetValue = (float)Diagnostic.GetMilliseconds(STR_SetValue),
-                        HardCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded),
+                        HandCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded),
                         Parallel = (float)Diagnostic.GetMilliseconds(STR_Parallel),
                         Compiled = (float)Diagnostic.GetMilliseconds(STR_Compiled)
                     });
