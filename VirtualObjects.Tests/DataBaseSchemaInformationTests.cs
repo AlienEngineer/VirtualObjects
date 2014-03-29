@@ -16,7 +16,7 @@ namespace VirtualObjects.Tests
         It should_not_be_null = () => Table.Should().NotBeNull();
         It should_have_a_name = () => Table.Name.Should().NotBeNullOrEmpty();
         It should_have_columns = () => Table.Columns.Count.Should().BeGreaterThan(0);
-        It should_have_18_columns = () => Table.Columns.Count.Should().Be(18);
+        It should_have_19_columns = () => Table.Columns.Count.Should().Be(19);
         It should_have_1_identity = () => Table.Columns.Count(e => e.Identity).Should().Be(1);
         It should_have_a_key_named_employeeid = () => Table.Columns.First(e => e.Identity).Name.Should().Be("EmployeeID");
 
