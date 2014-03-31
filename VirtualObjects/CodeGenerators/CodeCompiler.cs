@@ -58,6 +58,19 @@ namespace VirtualObjects.CodeGenerators
         /// <returns></returns>
         protected virtual CompilerResults Compile(string[] References)
         {
+            try
+            {
+                // Scaffold Models "(LocalDB)\v11.0" Northwind -V
+                return InternalCompile(References);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message + "\n" + e.StackTrace, e);
+            }
+        }
+
+        private CompilerResults InternalCompile(string[] References)
+        {
             using (var provider = new CSharpCodeProvider())
             {
                 var cp = new CompilerParameters();
@@ -78,7 +91,6 @@ namespace VirtualObjects.CodeGenerators
 
                 if (!IsDynamic)
                 {
-
                     try
                     {
                         string fileName = BaseType.Assembly.CodeBase.Replace("file:///", "");
@@ -87,9 +99,8 @@ namespace VirtualObjects.CodeGenerators
 
                         cp.OutputAssembly = GetAssemblyPath(path);
                         cp.GenerateInMemory = !IsDynamic;
-
                     }
-                    catch (UnauthorizedAccessException ex)
+                    catch (UnauthorizedAccessException)
                     {
                         //
                         // If the path doesn't have access to write use %TMP%\VirtualObjects\
@@ -97,7 +108,6 @@ namespace VirtualObjects.CodeGenerators
                         cp.OutputAssembly = GetAssemblyPath(Path.GetTempPath());
                         cp.GenerateInMemory = true;
                     }
-
                 }
 
 

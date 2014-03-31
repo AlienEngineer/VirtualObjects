@@ -59,14 +59,14 @@ namespace VirtualObjects.CodeGenerators
         {
             var code = new StringBuffer();
 
-            code += @"
-[assembly: AssemblyVersion(""{Version}"")]
-[assembly: AssemblyFileVersion(""{Version}"")]
-"
-                .FormatWith(new
-                {
-                    Version = FileVersionInfo.GetVersionInfo(BaseType.Assembly.Location).FileVersion
-                });
+//            code += @"
+//[assembly: AssemblyVersion(""{Version}"")]
+//[assembly: AssemblyFileVersion(""{Version}"")]
+//"
+//                .FormatWith(new
+//                {
+//                    Version = FileVersionInfo.GetVersionInfo(BaseType.Assembly.Location).FileVersion
+//                });
 
             code += "public class ";
             code += className;
