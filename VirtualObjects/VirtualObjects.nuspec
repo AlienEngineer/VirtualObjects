@@ -13,6 +13,7 @@
     <releaseNotes>
       Version 1.1.1
       * Package update to the latest versions.
+      * Fix: Scaffold Models invalid path error resolved.
       
       Version 1.1.0
       * Fix: In some cases the keep alive was not enabling the rollback.
