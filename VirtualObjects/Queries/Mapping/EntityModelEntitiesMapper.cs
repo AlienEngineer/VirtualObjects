@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Dynamic;
 using System.Linq;
-using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Queries.Mapping
 {
@@ -15,13 +13,15 @@ namespace VirtualObjects.Queries.Mapping
             return MapEntities(reader, queryInfo, typeof(TEntity), sessionContext).Cast<TEntity>();
         }
 
-        public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType, SessionContext sessionContext)
+        public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType, SessionContext context)
         {
             var hasMore = false;
+            var keepAlive = context.Connection.KeepAlive;
+            context.Connection.KeepAlive = true;
 
             while ( hasMore || reader.Read() )
             {
-                var entity = queryInfo.MakeEntity(sessionContext.Session);
+                var entity = queryInfo.MakeEntity(context.Session);
                 var mapped = queryInfo.MapEntity(entity, reader);
                 var casted = queryInfo.EntityCast(mapped.Entity);
 
@@ -30,6 +30,8 @@ namespace VirtualObjects.Queries.Mapping
                 hasMore = mapped.HasMore;
             }
 
+            context.Connection.KeepAlive = keepAlive;
+            context.Connection.Close();
         }
     }
 }
