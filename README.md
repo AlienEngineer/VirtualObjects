@@ -94,6 +94,6 @@ Select * from Suppliers
 ```
    PM> Install-Package VirtualObjects
 ```
-> The version 1.1.0 is not yet published on Nuget.
+
 
 [![PoweredBy](http://www.jetbrains.com/resharper/img/rs179x67.gif)](www.jetbrains.com)
