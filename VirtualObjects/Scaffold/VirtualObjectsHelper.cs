@@ -146,7 +146,7 @@ namespace VirtualObjects.Scaffold
         {
             using ( var session = new Session(
                     new SessionConfiguration{ Logger = Console.Out },
-                    new Connections.DbConnectionProvider("System.Data.SqlClient", String.Format("Data Source={0};Initial Catalog={1};Integrated Security=True", serverName, databaseName))) )
+                    new Connections.DbConnectionProvider("System.Data.SqlClient", String.Format("Data Source={0};Initial Catalog={1};Integrated Security=True; MultipleActiveResultSets=True;", serverName, databaseName))) )
             {
 
                 foreach ( var table in session.Query<Table>()
