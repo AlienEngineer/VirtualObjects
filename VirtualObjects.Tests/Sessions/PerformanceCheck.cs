@@ -3,7 +3,7 @@ using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions
 {
-#if !PERFORMANCE
+#if PERFORMANCE
     using NUnit.Framework;
     using Dapper;
     using System;

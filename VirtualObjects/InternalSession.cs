@@ -20,20 +20,21 @@ namespace VirtualObjects
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalSession" /> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="connection">The connection</param>
         /// <param name="mapper">The mapper.</param>
+        /// <param name="connection">The connection</param>
         /// <param name="queryProvider">The QueryProvider</param>
-        public InternalSession(SessionContext context, IMapper mapper, IConnection connection, IQueryProvider queryProvider)
+        public InternalSession(IMapper mapper, IConnection connection, IQueryProvider queryProvider)
         {
             this.connection = connection;
             this.queryProvider = queryProvider;
             this.mapper = mapper;
-            Context = context;
-            context.Session = this;
-            context.Map = mapper.Map;
-            context.QueryProvider = queryProvider;
-            context.Connection = connection;
+            Context = new SessionContext
+            {
+                Session = this,
+                Map = mapper.Map,
+                QueryProvider = queryProvider,
+                Connection = connection
+            };
         }
 
         /// <summary>

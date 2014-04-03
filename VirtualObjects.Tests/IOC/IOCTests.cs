@@ -19,11 +19,13 @@ namespace VirtualObjects.Tests.IOC
     [TestFixture, Category("IOC Tests")]
     public class IOCTests
     {
-        readonly IOcContainer _container = new NinjectContainer(null, new FirstConnectionDbConnectionProvider());
+        
 
         [Test]
         public void IOC_GetResult_Should_NotBeNull()
         {
+            var _container = new DryiocContainer(null, new FirstConnectionDbConnectionProvider());
+
             var types = new List<Type>();
 
             types

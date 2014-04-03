@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using VirtualObjects.Config;
 using VirtualObjects.Connections;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Queries.Formatters;
@@ -29,7 +30,7 @@ namespace VirtualObjects
         /// <param name="configuration">The configuration.</param>
         /// <param name="connectionProvider">The connection provider.</param>
         public Session(SessionConfiguration configuration = null, IDbConnectionProvider connectionProvider = null)
-            : this(new NinjectContainer(configuration, connectionProvider)) { }
+            : this(new LightInjectContainer(configuration, connectionProvider)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
@@ -37,14 +38,14 @@ namespace VirtualObjects
         /// <param name="configuration">The configuration.</param>
         /// <param name="connectionName">Name of the connection.</param>
         public Session(SessionConfiguration configuration = null, String connectionName = null)
-            : this(new NinjectContainer(configuration, connectionName)) { }
+            : this(new LightInjectContainer(configuration, connectionName)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         public Session(SessionConfiguration configuration)
-            : this(new NinjectContainer(configuration)) { }
+            : this(new LightInjectContainer(configuration)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
