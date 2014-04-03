@@ -26,6 +26,21 @@ namespace VirtualObjects
         }
 
         /// <summary>
+        /// Determines whether [has multiple active result sets] [the specified connection].
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <returns></returns>
+        public static Boolean HasMultipleActiveResultSets(this IDbConnection connection)
+        {
+            return connection.ConnectionString
+                .Split(';')
+                .Reverse() // this usually is set at the end of the connection string.
+                .Any(e => 
+                    e.StartsWith("MultipleActiveResultSets", StringComparison.InvariantCultureIgnoreCase) && 
+                    e.EndsWith("true", StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        /// <summary>
         /// Gets the values.
         /// </summary>
         /// <param name="reader">The reader.</param>

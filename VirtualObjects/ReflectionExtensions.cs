@@ -9,7 +9,7 @@ namespace VirtualObjects
     /// <summary>
     /// 
     /// </summary>
-    public static class ReflectionExtensions
+    static class ReflectionExtensions
     {
 
         /// <summary>

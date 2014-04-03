@@ -11,6 +11,14 @@ namespace VirtualObjects
     {
 
         /// <summary>
+        /// Gets a value indicating whether this instance is mars enabled.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is mars enabled; otherwise, <c>false</c>.
+        /// </value>
+        Boolean IsMARSenabled { get; }
+
+        /// <summary>
         /// Creates the command.
         /// </summary>
         /// <param name="commandText">The command text.</param>

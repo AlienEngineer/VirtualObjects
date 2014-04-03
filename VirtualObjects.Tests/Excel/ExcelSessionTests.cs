@@ -85,7 +85,7 @@ namespace VirtualObjects.Tests.Excel
         {
             using ( var session = new ExcelSession("Excel\\NewPeople.xlsx") )
             {
-                for ( int i = 0; i < 1000; i++ )
+                for ( int i = 0; i < 10; i++ )
                 {
                     session.Insert(new Person
                     {

@@ -38,7 +38,9 @@ namespace VirtualObjects.Queries.Execution
 
             var mapper = queryInfo.EntitiesMapper ?? _mapper;
 
-            return mapper.MapEntities(reader, queryInfo, queryInfo.OutputType, context);
+            var result = mapper.MapEntities(reader, queryInfo, queryInfo.OutputType, context);
+
+            return (context.Connection.IsMARSenabled) ? result : result.ToList();
         }
 
         public virtual TResult ExecuteQuery<TResult>(Expression expression, SessionContext context)
@@ -48,7 +50,7 @@ namespace VirtualObjects.Queries.Execution
             var methodIterator = ProxyGenericIteratorMethod.MakeGenericMethod(queryInfo.OutputType);
             var result = MapEntities(queryInfo, context);
 
-            return (TResult)methodIterator.Invoke(null, new[] { result });
+            return (TResult)methodIterator.Invoke(null, new[] { result, context });
         }
 
         public virtual bool CanExecute(MethodInfo method)
@@ -60,9 +62,11 @@ namespace VirtualObjects.Queries.Execution
                 method.Name == "Distinct";
         }
 
-        private static IEnumerable<T> ProxyGenericIterator<T>(IEnumerable enumerable)
+        private static IEnumerable<T> ProxyGenericIterator<T>(IEnumerable enumerable, SessionContext context)
         {
-            return ProxyNonGenericIterator(enumerable).Cast<T>();
+            return (context.Connection.IsMARSenabled) ? 
+                ProxyNonGenericIterator(enumerable).Cast<T>() :
+                ProxyNonGenericIterator(enumerable).Cast<T>().ToList();
         }
 
         private static IEnumerable ProxyNonGenericIterator(IEnumerable enumerable)

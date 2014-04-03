@@ -53,12 +53,12 @@ namespace VirtualObjects.Connections
 
         #endregion
 
-
         public Connection(IDbConnectionProvider provider, TextWriter log)
         {
             _provider = provider;
             _log = log;
             _dbConnection = provider.CreateConnection();
+            IsMARSenabled = _dbConnection.HasMultipleActiveResultSets();
         }
 
         public IDbConnection DbConnection
@@ -137,6 +137,7 @@ namespace VirtualObjects.Connections
             }
 
             _dbConnection.Open();
+            _endedTransaction = true;
             _log.WriteLine(Resources.Connection_Opened);
         }
 
@@ -158,6 +159,8 @@ namespace VirtualObjects.Connections
             _endedTransaction = true;
             _log.WriteLine(Resources.Connection_Closed);
         }
+
+        public bool IsMARSenabled { get; private set; }
 
         public IDbCommand CreateCommand(string commandText)
         {
