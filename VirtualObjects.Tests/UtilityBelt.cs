@@ -70,6 +70,14 @@ namespace VirtualObjects.Tests
         private IOcContainer ioc;
         ITransaction _dbTransaction;
 
+        private readonly Stack<String> testStack = new Stack<string>();
+
+        [SetUp]
+        public void PushTestToStack()
+        {
+            testStack.Push(TestContext.CurrentContext.Test.Name);
+        }
+
         [SetUp]
         public void SetUpConnection()
         {

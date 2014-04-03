@@ -21,7 +21,17 @@ namespace VirtualObjects.Queries.Execution
 
         public override TResult ExecuteQuery<TResult>(Expression expression, SessionContext context)
         {
-            return base.ExecuteQuery<IEnumerable<TResult>>(expression, context).FirstOrDefault();
+            var keepAlive = context.Connection.KeepAlive;
+            context.Connection.KeepAlive = true;
+            try
+            {
+                return base.ExecuteQuery<IEnumerable<TResult>>(expression, context).FirstOrDefault();
+            }
+            finally
+            {
+                context.Connection.KeepAlive = keepAlive;    
+                context.Connection.Close();
+            }
         }
         
         public override bool CanExecute(MethodInfo method)

@@ -963,6 +963,21 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
+        [Test, Repeat(Repeat)]
+        public void Session_GetOrders_and_OrderDetails_MARS()
+        {
+            foreach (var order in Session.GetAll<Orders>())
+            {
+                var current = order;
+                foreach (var details in Session.GetAll<OrderDetails>().Where(e => e.Order == current))
+                {
+                    
+                    Assert.That(current.OrderId, Is.EqualTo(details.Order.OrderId));
+
+                }
+            }
+        }
+
     }
 
 

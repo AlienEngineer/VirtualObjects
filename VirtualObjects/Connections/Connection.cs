@@ -97,6 +97,10 @@ namespace VirtualObjects.Connections
 
         public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
+            //
+            // This is not closed because the reader has to be closed by who ever is using it.
+            // e.g. after mapping...
+            //
             return CreateCommand(commandText, parameters).ExecuteReader();
         }
 
