@@ -46,7 +46,7 @@ namespace VirtualObjects.Tests.Sessions
                   
         [VirtualObjects.Mappings.Table(TableName = "Order Details")]
         [Table("Order Details")]
-        public class OrderDetails
+        public class OrderDetails1
         {
             [System.ComponentModel.DataAnnotations.Key]
             public int OrderId { get; set; }
@@ -68,7 +68,7 @@ namespace VirtualObjects.Tests.Sessions
             }
             
             public DbSet<Suppliers> Suppliers { get; set; }
-            public DbSet<OrderDetails> OrderDetails { get; set; }
+            public DbSet<OrderDetails1> OrderDetails { get; set; }
 
         }
 
@@ -128,11 +128,11 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        private static IEnumerable<OrderDetails> MapOrderDetail(IDataReader reader)
+        private static IEnumerable<OrderDetails1> MapOrderDetail(IDataReader reader)
         {
             while (reader.Read())
             {
-                yield return new OrderDetails
+                yield return new OrderDetails1
                 {
                     OrderId = (int)reader["OrderId"],
                     Discount = (float)reader["Discount"],
@@ -173,10 +173,13 @@ namespace VirtualObjects.Tests.Sessions
 
                     Diagnostic.Timed(() =>
                     {
-                        for (int i = 0; i < numberOfExecutions; i++)
+                        session.KeepAlive(() =>
                         {
-                            Session.GetAll<Suppliers>().ToList();
-                        }
+                            for (int i = 0; i < numberOfExecutions; i++)
+                            {
+                                Session.GetAll<Suppliers>().ToList();
+                            }
+                        });
                     }, name: STR_VirtualObjects);
 
                     Diagnostic.Timed(() =>
@@ -269,20 +272,24 @@ namespace VirtualObjects.Tests.Sessions
                     {
                         for (int i = 0; i < numberOfExecutions; i++)
                         {
-                            Session.GetAll<Suppliers>().Select(e => new { 
-                                e.Address,
-                                e.City,
-                                e.CompanyName,
-                                e.ContactName,
-                                e.ContactTitle,
-                                e.Country,
-                                e.Fax,
-                                e.HomePage,
-                                e.Phone,
-                                e.PostalCode,
-                                e.Region,
-                                e.SupplierId
-                            }).ToList();
+                            Session.KeepAlive(() =>
+                            {
+                                Session.GetAll<Suppliers>().Select(e => new
+                                {
+                                    e.Address,
+                                    e.City,
+                                    e.CompanyName,
+                                    e.ContactName,
+                                    e.ContactTitle,
+                                    e.Country,
+                                    e.Fax,
+                                    e.HomePage,
+                                    e.Phone,
+                                    e.PostalCode,
+                                    e.Region,
+                                    e.SupplierId
+                                }).ToList();
+                            });
                         }
                     }, name: STR_VirtualObjects);
 
@@ -333,7 +340,7 @@ namespace VirtualObjects.Tests.Sessions
                     {
                         for (int i = 0; i < numberOfExecutions; i++)
                         {
-                            Connection.Query<OrderDetails>("Select * from [Order Details]").ToList();
+                            Connection.Query<OrderDetails1>("Select * from [Order Details]").ToList();
                         }
                     }, name: STR_Dapper);
 
@@ -347,10 +354,13 @@ namespace VirtualObjects.Tests.Sessions
                 
                     Diagnostic.Timed(() =>
                     {
-                        for (int i = 0; i < numberOfExecutions; i++)
+                        Session.KeepAlive(() =>
                         {
-                            Session.GetAll<OrderDetails>().ToList();
-                        }
+                            for (int i = 0; i < numberOfExecutions; i++)
+                            {
+                                Session.GetAll<OrderDetails1>().ToList();
+                            }
+                        });
                     }, name: STR_VirtualObjects);
 
                     Diagnostic.Timed(() =>

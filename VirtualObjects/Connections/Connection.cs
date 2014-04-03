@@ -59,6 +59,7 @@ namespace VirtualObjects.Connections
             _provider = provider;
             _log = log;
             _dbConnection = provider.CreateConnection();
+            
         }
 
         public IDbConnection DbConnection
@@ -133,6 +134,7 @@ namespace VirtualObjects.Connections
             }
 
             _dbConnection.Open();
+            _endedTransaction = true;
             _log.WriteLine(Resources.Connection_Opened);
         }
 
