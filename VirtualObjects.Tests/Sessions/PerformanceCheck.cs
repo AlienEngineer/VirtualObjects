@@ -3,7 +3,7 @@ using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions
 {
-#if PERFORMANCE
+#if !PERFORMANCE
     using NUnit.Framework;
     using Dapper;
     using System;
@@ -147,7 +147,6 @@ namespace VirtualObjects.Tests.Sessions
         public void Performance_Check_SuppliersMapping()
         {
             var ef = new EFContext((DbConnection)Connection);
-
             using (var session = new ExcelSession("Sessions\\Performance.xlsx"))
             {
                 int numberOfExecutions = 0;
@@ -173,7 +172,7 @@ namespace VirtualObjects.Tests.Sessions
 
                     Diagnostic.Timed(() =>
                     {
-                        session.KeepAlive(() =>
+                        Session.KeepAlive(() =>
                         {
                             for (int i = 0; i < numberOfExecutions; i++)
                             {

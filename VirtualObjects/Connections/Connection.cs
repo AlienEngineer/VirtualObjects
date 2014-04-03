@@ -10,6 +10,8 @@ namespace VirtualObjects.Connections
 {
     class Connection : IConnection, ITransaction
     {
+        private static int count = 0;
+        
         private readonly IDbConnectionProvider _provider;
         private readonly TextWriter _log;
         private IDbConnection _dbConnection;
@@ -59,7 +61,7 @@ namespace VirtualObjects.Connections
             _provider = provider;
             _log = log;
             _dbConnection = provider.CreateConnection();
-            
+            ++count;
         }
 
         public IDbConnection DbConnection
@@ -69,7 +71,10 @@ namespace VirtualObjects.Connections
 
         public bool Rolledback { get; private set; }
 
-        public bool KeepAlive { get; set; }
+        public bool KeepAlive { 
+            get; 
+            set; 
+        }
 
         private TResult AutoClose<TResult>(Func<TResult> execute)
         {
