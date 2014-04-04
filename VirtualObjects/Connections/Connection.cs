@@ -103,7 +103,7 @@ namespace VirtualObjects.Connections
 
         public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
-            return AutoClose(() => CreateCommand(commandText, parameters).ExecuteReader());
+            return CreateCommand(commandText, parameters).ExecuteReader();
         }
 
         public int ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters)
