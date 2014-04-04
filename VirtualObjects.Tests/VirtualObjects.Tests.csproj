@@ -121,7 +121,6 @@
     <Compile Include="Connection\ConnectionProviderTests.cs" />
     <Compile Include="Crud\CrudTests.cs" />
     <Compile Include="Excel\ExcelSessionTests.cs" />
-    <Compile Include="IOC\IOCTests.cs" />
     <Compile Include="Models\Northwind\Categories.cs" />
     <Compile Include="Models\Northwind\CustomerCustomerDemo.cs" />
     <Compile Include="Models\Northwind\CustomerDemographics.cs" />

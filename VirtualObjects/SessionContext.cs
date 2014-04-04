@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Ninject;
 using VirtualObjects.Config;
 
 namespace VirtualObjects
@@ -43,6 +42,14 @@ namespace VirtualObjects
         /// The map.
         /// </value>
         public Func<Type, IEntityInfo> Map { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mapper.
+        /// </summary>
+        /// <value>
+        /// The mapper.
+        /// </value>
+        public IMapper Mapper { get; set; }
 
         #region IDisposable Members
         private bool _disposed;

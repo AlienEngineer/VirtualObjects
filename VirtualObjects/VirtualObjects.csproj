@@ -101,10 +101,6 @@
       <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Ninject.3.2.0.0\lib\net45-full\Ninject.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -174,10 +170,6 @@
     <Compile Include="CRUD\Operations\UpdateOperation.cs" />
     <Compile Include="CRUD\Operations\VersionCheckOperation.cs" />
     <Compile Include="Diagnostic.cs" />
-    <Compile Include="DryiocContainer.cs" />
-    <Compile Include="DryIoc\Container.cs" />
-    <Compile Include="DryIoc\FactoryCompiler.cs" />
-    <Compile Include="DryIoc\InternalsVisibleToFactoryCompilerDynamicAssembly.cs" />
     <Compile Include="EntityProvider\CollectionTypeEntityProvider.cs" />
     <Compile Include="EntityProvider\DynamicTypeProvider.cs" />
     <Compile Include="EntityProvider\EntityModelProvider.cs" />
@@ -204,15 +196,12 @@
     <Compile Include="IEntityProvider.cs" />
     <Compile Include="InternalExtensions.cs" />
     <Compile Include="InternalSession.cs" />
-    <Compile Include="IOCContainer.cs" />
     <Compile Include="IOperation.cs" />
     <Compile Include="IOperationParameter.cs" />
     <Compile Include="IOperations.cs" />
     <Compile Include="IOperationsProvider.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ITransaction.cs" />
-    <Compile Include="LightInjectContainer.cs" />
-    <Compile Include="LightInject\LightInject.cs" />
     <Compile Include="Mappings\Annotations.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -253,7 +242,6 @@
     <Compile Include="SessionExtensions.cs" />
     <Compile Include="StringBuffer.cs" />
     <Compile Include="TextWriterStub.cs" />
-    <Compile Include="VirtualObjectsModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeTemplates\Scaffolders\Business\Business.ps1" />

@@ -24,7 +24,7 @@ namespace VirtualObjects.Tests.Queries
 
         public QueryMappingTests()
         {
-            _entitiesMapper = Make<IEntitiesMapper>();
+            _entitiesMapper = EntitiesMapper;
         }
 
 
