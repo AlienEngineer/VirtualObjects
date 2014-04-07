@@ -39,11 +39,11 @@ namespace VirtualObjects.Tests.Queries
     public class SqlTranslationTests : UtilityBelt
     {
 
-        private IQueryTranslator _translator;
+        private readonly IQueryTranslator _translator;
 
         public SqlTranslationTests()
         {
-            _translator = Make<CachingTranslator>();
+            _translator = Translator;
         }
 
         private String Translate(IQueryable query)

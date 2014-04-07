@@ -17,23 +17,18 @@ namespace VirtualObjects
 
         internal IMapper Mapper { get { return mapper; } }
 
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="InternalSession" /> class.
+        /// Initializes a new instance of the <see cref="InternalSession"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="connection">The connection</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="queryProvider">The QueryProvider</param>
-        public InternalSession(SessionContext context, IMapper mapper, IConnection connection, IQueryProvider queryProvider)
+        /// <param name="sessionContext">The session context.</param>
+        public InternalSession(SessionContext sessionContext)
         {
-            this.connection = connection;
-            this.queryProvider = queryProvider;
-            this.mapper = mapper;
-            Context = context;
-            context.Session = this;
-            context.Map = mapper.Map;
-            context.QueryProvider = queryProvider;
-            context.Connection = connection;
+            connection = sessionContext.Connection;
+            queryProvider = sessionContext.QueryProvider;
+            mapper = sessionContext.Mapper;
+            sessionContext.Session = this;
+            Context = sessionContext;
         }
 
         /// <summary>
@@ -130,9 +125,9 @@ namespace VirtualObjects
 
         #region IDisposable Members
         private bool _disposed;
-        
-        
-        
+
+
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

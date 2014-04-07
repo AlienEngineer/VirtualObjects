@@ -10,6 +10,8 @@ namespace VirtualObjects.Connections
 {
     class Connection : IConnection, ITransaction
     {
+        private static int count = 0;
+        
         private readonly IDbConnectionProvider _provider;
         private readonly TextWriter _log;
         private IDbConnection _dbConnection;
@@ -58,7 +60,11 @@ namespace VirtualObjects.Connections
             _provider = provider;
             _log = log;
             _dbConnection = provider.CreateConnection();
+<<<<<<< HEAD
             IsMARSenabled = _dbConnection.HasMultipleActiveResultSets();
+=======
+            ++count;
+>>>>>>> master
         }
 
         public IDbConnection DbConnection
@@ -68,7 +74,10 @@ namespace VirtualObjects.Connections
 
         public bool Rolledback { get; private set; }
 
-        public bool KeepAlive { get; set; }
+        public bool KeepAlive { 
+            get; 
+            set; 
+        }
 
         private TResult AutoClose<TResult>(Func<TResult> execute)
         {
@@ -97,10 +106,13 @@ namespace VirtualObjects.Connections
 
         public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
+<<<<<<< HEAD
             //
             // This is not closed because the reader has to be closed by who ever is using it.
             // e.g. after mapping...
             //
+=======
+>>>>>>> master
             return CreateCommand(commandText, parameters).ExecuteReader();
         }
 

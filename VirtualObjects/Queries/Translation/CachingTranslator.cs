@@ -13,6 +13,7 @@ namespace VirtualObjects.Queries.Translation
         private readonly IMapper _mapper;
         private readonly IEntityBag _entityBag;
         private readonly IDictionary<int, IQueryInfo> _cachedQueries;
+        private readonly IDictionary<Expression, IQueryInfo> _cachedExpressionQueries;
 
         public CachingTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag)
         {
@@ -21,12 +22,23 @@ namespace VirtualObjects.Queries.Translation
             _entityBag = entityBag;
 
             _cachedQueries = new Dictionary<int, IQueryInfo>();
+            _cachedExpressionQueries = new Dictionary<Expression, IQueryInfo>();
         }
 
 
         public IQueryInfo TranslateQuery(Expression expression)
         {
             IQueryInfo result;
+
+            if (_cachedExpressionQueries.TryGetValue(expression, out result))
+            {
+                if (result.Parameters.Count > 0)
+                {
+                    result.Parameters = TranslateParametersOnly(expression, result.Parameters.Count).Parameters;
+                }
+
+                return result;
+            }
 
             var hashCode = expression.ToString().GetHashCode();
 
@@ -40,7 +52,7 @@ namespace VirtualObjects.Queries.Translation
                 return result;
             }
 
-            return _cachedQueries[hashCode] = new QueryTranslator(_formatter, _mapper, _entityBag).TranslateQuery(expression);
+            return _cachedExpressionQueries[expression] = _cachedQueries[hashCode] = new QueryTranslator(_formatter, _mapper, _entityBag).TranslateQuery(expression);
         }
 
         public IQueryInfo TranslateQuery(IQueryable queryable)

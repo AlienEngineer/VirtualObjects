@@ -85,15 +85,22 @@ namespace VirtualObjects.Tests.Excel
         {
             using ( var session = new ExcelSession("Excel\\NewPeople.xlsx") )
             {
+<<<<<<< HEAD
                 for ( int i = 0; i < 10; i++ )
+=======
+                session.KeepAlive(() =>
+>>>>>>> master
                 {
-                    session.Insert(new Person
+                    for (int i = 0; i < 1000; i++)
                     {
-                        Name = "Sérgio",
-                        Age = 23,
-                        Address = "Sérgio Address"
-                    });
-                }
+                        session.Insert(new Person
+                        {
+                            Name = "Sérgio",
+                            Age = 23,
+                            Address = "Sérgio Address"
+                        });
+                    }
+                });
             }
         }
     }

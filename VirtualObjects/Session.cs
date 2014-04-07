@@ -1,13 +1,135 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.IO;
 using System.Linq;
+using System.Text;
+using VirtualObjects.CodeGenerators;
+using VirtualObjects.Config;
 using VirtualObjects.Connections;
+using VirtualObjects.Core;
+using VirtualObjects.CRUD;
+using VirtualObjects.EntityProvider;
 using VirtualObjects.Exceptions;
+using VirtualObjects.Queries;
+using VirtualObjects.Queries.Execution;
 using VirtualObjects.Queries.Formatters;
+using VirtualObjects.Queries.Mapping;
+using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects
 {
+
+    class ModulesConfiguration : IModulesConfiguration
+    {
+        private SessionConfiguration _configuration;
+
+        public ModulesConfiguration(SessionConfiguration configuration, IDbConnectionProvider connectionProvider)
+        {
+            configuration = configuration ?? new SessionConfiguration();
+            configuration.ConnectionProvider = connectionProvider;
+
+            Initialize(configuration);
+        }
+
+        public ModulesConfiguration(SessionConfiguration configuration, string connectionProvider)
+        {
+            configuration = configuration ?? new SessionConfiguration();
+            configuration.ConnectionProvider = new NamedDbConnectionProvider(connectionProvider);
+            
+            Initialize(configuration);
+        }
+
+        public ModulesConfiguration(SessionConfiguration configuration)
+        {
+            Initialize(configuration ?? new SessionConfiguration());
+        }
+
+        private void Initialize(SessionConfiguration configuration)
+        {
+            _configuration = configuration;
+
+            ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
+            Logger = configuration.Logger ?? new TextWriterStub();
+            Formmater = configuration.Formatter ?? new SqlFormatter();
+
+            ConnectionManager = new Connection(ConnectionProvider, Logger);
+
+            EntityBag = new HybridEntityBag(new EntityBag());
+
+            EntityProvider = new EntityProviderComposite(
+                new IEntityProvider[]
+                {
+                    new EntityModelProvider(),
+                    new DynamicTypeProvider(), 
+                    new CollectionTypeEntityProvider()
+                });
+
+            EntityMapper = new EntityInfoModelMapper();
+            EntitiesMapper = new EntityModelEntitiesMapper();
+            
+            
+            OperationsProvider = new OperationsProvider(Formmater, EntityMapper, EntityProvider);
+            
+            TranslationConfiguration = configuration.TranslationConfigurationBuilder.Build();
+
+            EntityInfoCodeGeneratorFactory = new EntityInfoCodeGeneratorFactory(EntityBag, TranslationConfiguration);
+
+            Mapper = new Mapper(EntityBag, TranslationConfiguration, OperationsProvider, EntityInfoCodeGeneratorFactory);
+
+
+            SessionContext = new SessionContext
+            {
+                Connection = ConnectionManager,
+                Map = Mapper.Map,
+                Mapper = Mapper
+            };
+
+
+            Translator = new CachingTranslator(Formmater, Mapper, EntityBag);
+
+            QueryExecutor = new CompositeExecutor(
+                new IQueryExecutor[]
+                {
+                    new CountQueryExecutor(Translator),
+                    new SingleQueryExecutor(EntitiesMapper, Translator), 
+                    new QueryExecutor(EntitiesMapper, Translator)
+                });
+
+            QueryProvider = new QueryProvider(QueryExecutor, SessionContext, Translator);
+            
+            SessionContext.QueryProvider = QueryProvider;
+
+            Session = new InternalSession(SessionContext);
+        }
+
+        public IQueryExecutor QueryExecutor { get; set; }
+        public EntityInfoCodeGeneratorFactory EntityInfoCodeGeneratorFactory { get; set; }
+        public ITranslationConfiguration TranslationConfiguration { get; set; }
+        public IEntityProvider EntityProvider { get; set; }
+        public EntityInfoModelMapper EntityMapper { get; set; }
+        public IFormatter Formmater { get; set; }
+        public OperationsProvider OperationsProvider { get; set; }
+        public HybridEntityBag EntityBag { get; set; }
+        public Mapper Mapper { get; set; }
+        public TextWriter Logger { get; set; }
+        public IDbConnectionProvider ConnectionProvider { get; set; }
+        public ISession Session { get; private set; }
+        public IConnection ConnectionManager { get; private set; }
+        public IQueryTranslator Translator { get; private set; }
+        public IQueryProvider QueryProvider { get; private set; }
+        public SessionContext SessionContext { get; private set; }
+        public IEntitiesMapper EntitiesMapper { get; private set; }
+    }
+
+    interface IModulesConfiguration
+    {
+        ISession Session { get; }
+        IConnection ConnectionManager { get; }
+        IQueryTranslator Translator { get; }
+        IQueryProvider QueryProvider { get; }
+        SessionContext SessionContext { get; }
+        IEntitiesMapper EntitiesMapper { get; }
+    }
 
     /// <summary>
     /// 
@@ -29,7 +151,7 @@ namespace VirtualObjects
         /// <param name="configuration">The configuration.</param>
         /// <param name="connectionProvider">The connection provider.</param>
         public Session(SessionConfiguration configuration = null, IDbConnectionProvider connectionProvider = null)
-            : this(new NinjectContainer(configuration, connectionProvider)) { }
+            : this(new ModulesConfiguration(configuration, connectionProvider)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
@@ -37,22 +159,22 @@ namespace VirtualObjects
         /// <param name="configuration">The configuration.</param>
         /// <param name="connectionName">Name of the connection.</param>
         public Session(SessionConfiguration configuration = null, String connectionName = null)
-            : this(new NinjectContainer(configuration, connectionName)) { }
+            : this(new ModulesConfiguration(configuration, connectionName)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         public Session(SessionConfiguration configuration)
-            : this(new NinjectContainer(configuration)) { }
+            : this(new ModulesConfiguration(configuration)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
         /// <param name="container">The container.</param>
-        public Session(IOcContainer container)
+        internal Session(IModulesConfiguration container)
         {
-            InternalSession = container.Get<ISession>();
+            InternalSession = container.Session;
         }
 
         /// <summary>

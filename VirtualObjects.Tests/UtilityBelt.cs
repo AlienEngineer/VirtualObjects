@@ -53,22 +53,23 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
-            ioc = new NinjectContainer(new SessionConfiguration { }, "northwind");
+            modules = new ModulesConfiguration(new SessionConfiguration(), "northwind");
 
-            ConnectionManager = ioc.Get<IConnection>();
-            Translator = ioc.Get<IQueryTranslator>();
-            QueryProvider = ioc.Get<IQueryProvider>();
-            SessionContext = ioc.Get<SessionContext>();
+            ConnectionManager = modules.ConnectionManager;
+            Translator = modules.Translator;
+            QueryProvider = modules.QueryProvider;
+            SessionContext = modules.SessionContext;
+            EntitiesMapper = modules.EntitiesMapper;
 
-            Session = new Session(ioc);
+            Session = new Session(modules);
 
-            Mapper = ((InternalSession)(ISession)Session.InternalSession).Mapper;
+            Mapper = ((InternalSession)Session.InternalSession).Mapper;
 
             Connection = ConnectionManager.DbConnection;
         }
 
-        private IOcContainer ioc;
         ITransaction _dbTransaction;
+        private IModulesConfiguration modules;
 
         private readonly Stack<String> testStack = new Stack<string>();
 
@@ -124,12 +125,7 @@ namespace VirtualObjects.Tests
         {
             return Session.Query<T>();
         }
-
-        public T Make<T>()
-        {
-            return ioc.Get<T>();
-        }
-
+        
         public Session Session { get; private set; }
         public IDbConnection Connection { get; private set; }
         public IMapper Mapper { get; private set; }
@@ -137,6 +133,7 @@ namespace VirtualObjects.Tests
         public IQueryTranslator Translator { get; private set; }
         public IConnection ConnectionManager { get; private set; }
         public SessionContext SessionContext { get; private set; }
+        public IEntitiesMapper EntitiesMapper { get; private set; }
 
         public object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
