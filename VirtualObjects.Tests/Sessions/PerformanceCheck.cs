@@ -436,10 +436,13 @@ namespace VirtualObjects.Tests.Sessions
 
                         Diagnostic.Timed(() =>
                         {
-                            for (int i = 0; i < numberOfExecutions; i++)
+                            Session.KeepAlive(() =>
                             {
-                                Session.Count<Suppliers>();
-                            }
+                                for (int i = 0; i < numberOfExecutions; i++)
+                                {
+                                    Session.Count<Suppliers>();
+                                }
+                            });
                         }, name: STR_VirtualObjects);
 
                         Diagnostic.Timed(() =>

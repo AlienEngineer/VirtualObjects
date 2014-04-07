@@ -106,6 +106,8 @@ namespace VirtualObjects.Connections
         Stack<IDataReader> readers = new Stack<IDataReader>();
 #endif
 
+        private IDataReader currentReader;
+
         public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
 
@@ -117,11 +119,11 @@ namespace VirtualObjects.Connections
              // This is not closed because the reader has to be closed by who ever is using it.
              // e.g. after mapping...
              //
-            var reader = CreateCommand(commandText, parameters).ExecuteReader();
+            currentReader = CreateCommand(commandText, parameters).ExecuteReader();
 #if DEBUG
-            readers.Push(reader);
+            readers.Push(currentReader);
 #endif
-            return reader;
+            return currentReader;
         }
 
         public int ExecuteNonQuery(string commandText, IDictionary<string, IOperationParameter> parameters)
@@ -163,6 +165,11 @@ namespace VirtualObjects.Connections
 
         public void Close()
         {
+            if (currentReader != null && !currentReader.IsClosed)
+            {
+                currentReader.Close();
+            }
+
             if ( KeepAlive )
             {
                 return;
