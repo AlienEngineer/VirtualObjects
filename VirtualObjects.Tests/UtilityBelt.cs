@@ -71,6 +71,14 @@ namespace VirtualObjects.Tests
         ITransaction _dbTransaction;
         private IModulesConfiguration modules;
 
+        private readonly Stack<String> testStack = new Stack<string>();
+
+        [SetUp]
+        public void PushTestToStack()
+        {
+            testStack.Push(TestContext.CurrentContext.Test.Name);
+        }
+
         [SetUp]
         public void SetUpConnection()
         {
