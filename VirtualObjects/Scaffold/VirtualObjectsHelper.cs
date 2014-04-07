@@ -150,7 +150,7 @@ namespace VirtualObjects.Scaffold
             {
 
                 foreach ( var table in session.Query<Table>()
-                    .Where(e => e.Type == "U" && (e.Name == tableName || tableName == null)) )
+                    .Where(e => e.Type == "U" && (e.Name == tableName || tableName == null)).ToList() )
                 {
                     var metaTable = new MetaTable
                     {
@@ -199,7 +199,7 @@ namespace VirtualObjects.Scaffold
         private static IEnumerable<MetaForeignKey> GetForeignKeysLazy(Table table, Column column, Session session)
         {
             foreach ( var foreignKey in session.Query<ForeingKey>()
-                .Where(e => e.Column == column && e.Table == table && e.ReferencedColumn != null) )
+                .Where(e => e.Column == column && e.Table == table && e.ReferencedColumn != null).ToList() )
             {
                 string foreignKeyReferencedColumnName = foreignKey.ReferencedColumn.Name;
 

@@ -34,27 +34,17 @@ namespace VirtualObjects.Queries.Execution
 
         private object MapEntities(IQueryInfo queryInfo, SessionContext context)
         {
-            var keepAlive = context.Connection.KeepAlive;
-            context.Connection.KeepAlive = true;
-            try
-            {
-                var reader = context.Connection.ExecuteReader(queryInfo.CommandText, queryInfo.Parameters);
+            var reader = context.Connection.ExecuteReader(queryInfo.CommandText, queryInfo.Parameters);
 
-                var mapper = queryInfo.EntitiesMapper ?? _mapper;
+            var mapper = queryInfo.EntitiesMapper ?? _mapper;
 
-                return mapper.MapEntities(reader, queryInfo, queryInfo.OutputType, context);
-            }
-            finally
-            {
-                context.Connection.KeepAlive = keepAlive;
-                context.Connection.Close();
-            }
+            return mapper.MapEntities(reader, queryInfo, queryInfo.OutputType, context);
         }
 
         public virtual TResult ExecuteQuery<TResult>(Expression expression, SessionContext context)
         {
             var queryInfo = _translator.TranslateQuery(expression);
-            
+
             var methodIterator = ProxyGenericIteratorMethod.MakeGenericMethod(queryInfo.OutputType);
             var result = MapEntities(queryInfo, context);
 
