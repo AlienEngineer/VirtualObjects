@@ -41,27 +41,52 @@ function Get-Data($query) {
 function Get-Tables {
     return Get-Data ("Select * From sys.tables") | foreach {
         @{
-            Name = $_.name
+            Name = $_.name;
+            Columns = Get-Columns($_.Object_Id);
         }
     }
 }
 
-function Get-Columns($tableName) {
+function Get-Columns($tableId) {
     $columns = @()
+
+    Get-Data ("Select * From sys.columns Where Object_Id = $tableId")| foreach {
+        $column = $_
+		
+        $columns += @{
+            Id = $column.column_id;
+            TableId = $tableId
+		    Name = $column.Name;
+			NameSingularized = $column.Name;
+			Identity = $column.Identity;
+			InPrimaryKey = $column.is_identity;
+			IsForeignKey = Get-IsForeignKey $tableId $column.column_id;
+		    DataType = $column.system_type_id;
+		}
+
+		# $columns.ForeignKeys = @()
+
+	}
 
     return $columns
 }
 
+function Get-IsForeignKey($tableId, $columnsId) {
+    return $false
+}
+
 function Print-Table($table) {
     Write-Host "------------------------------------------------"
-    Write-Host "TableName : " $table.Name
-    Write-Host "Columns : "
+    Write-Host "TableName   : " $table.Name
+    Write-Host "Columns     : " $table.Columns.Count
     Print-Columns ($table.Columns)
     Write-Host ""
 }
 
 function Print-Columns($columns) {
-    
+    $columns | foreach {
+        Write-Host "Column Name : " $_.Name
+    }
 }
 
 if (Begin-Query ".\Development" "Northwind")
