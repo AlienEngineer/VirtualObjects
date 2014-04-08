@@ -19,7 +19,7 @@ namespace VirtualObjects.Tests.Config
             () => EmployeeEntityInfo.Should().NotBeNull();
 
         It should_have_a_matching_dll =
-            () => File.Exists(System.IO.Path.GetTempPath() + "VirtualObjects\\Internal_Builder_Employee.dll").Should().BeTrue();
+            () => File.Exists("VirtualObjects\\Internal_Builder_Employee.dll").Should().BeTrue();
 
         It should_be_able_to_create_entities =
             () => EmployeeEntityInfo.EntityFactory().Should().NotBeNull();
@@ -79,7 +79,7 @@ namespace VirtualObjects.Tests.Config
             };
 
         It should_have_a_matching_dll =
-            () => File.Exists(System.IO.Path.GetTempPath() + "VirtualObjects\\Internal_Builder_ForeingKey.dll").Should().BeTrue();
+            () => File.Exists("VirtualObjects\\Internal_Builder_ForeingKey.dll").Should().BeTrue();
 
         It should_be_able_to_create_entities =
             () => ForeignKeyEntityInfo.EntityFactory().Should().NotBeNull();
