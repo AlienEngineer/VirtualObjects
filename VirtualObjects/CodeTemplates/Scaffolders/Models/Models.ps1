@@ -99,8 +99,8 @@ try
 
 	# =============== LOADING DEPENDENCIES =========================
 
-	Write-Verbose "Loading Ninject"
-	Load-PackageAssembly('Ninject')
+	#Write-Verbose "Loading Ninject"
+	#Load-PackageAssembly('Ninject')
 
 	Write-Verbose "Loading FasterFlect"
 	Load-PackageAssembly('Fasterflect')

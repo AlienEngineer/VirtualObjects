@@ -113,6 +113,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Config\DomainHandlerSpecs.cs" />
     <Compile Include="Config\MappingTests.cs" />
     <Compile Include="Config\MappingSpecs.cs" />
     <Compile Include="DataBaseSchemaInformationTests.cs" />
@@ -167,6 +168,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\VirtualObjects.Domains\VirtualObjects.Domains.csproj">
+      <Project>{AFE00A9E-AA91-4784-BE5C-E560D8C51534}</Project>
+      <Name>VirtualObjects.Domains</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VirtualObjects\VirtualObjects.csproj">
       <Project>{c1dc7907-f05a-476f-98b2-8b25df440061}</Project>
       <Name>VirtualObjects</Name>
