@@ -24,7 +24,8 @@ function End-Query() {
     $connection.Close()
 }
 
-function Get-Data($query) {
+function Get-Data {
+    
     
     $command = $connection.CreateCommand();
 
@@ -38,8 +39,10 @@ function Get-Data($query) {
     return $table
 }
 
-function Get-Tables {
-    return Get-Data ("Select * From sys.tables") | foreach {
+function Get-Tables($tableName) {
+    $query = [string]"Select * From sys.tables where Name = '$tableName' or $tableName = '-'"
+
+    return Get-Data ($query) | foreach {
         @{
             Name = $_.name;
             Columns = Get-Columns($_.Object_Id);
@@ -58,8 +61,8 @@ function Get-Columns($tableId) {
             TableId = $tableId
 		    Name = $column.Name;
 			NameSingularized = $column.Name;
-			Identity = $column.Identity;
-			InPrimaryKey = $column.is_identity;
+			Identity = $column.is_identity;
+			InPrimaryKey = Get-IsPrimaryKey $tableId $column.column_id;
 			IsForeignKey = Get-IsForeignKey $tableId $column.column_id;
 		    DataType = $column.system_type_id;
 		}
@@ -71,7 +74,17 @@ function Get-Columns($tableId) {
     return $columns
 }
 
-function Get-IsForeignKey($tableId, $columnsId) {
+function Get-IsPrimaryKey($tableId, $columnId) {
+    
+    $query = [string]"Select I.is_primary_key From sys.Index_Columns C Inner Join sys.indexes I On (I.index_id = C.index_id and C.Object_Id = I.Object_Id)  Where C.Object_Id = $tableId and C.Column_Id = $columnId and I.is_primary_key = 1"
+
+    Write-Host $query
+    $result = (Get-Data $query )
+
+    return $result.is_primary_key -eq $true
+}
+
+function Get-IsForeignKey($tableId, $columnId) {
     return $false
 }
 
@@ -85,13 +98,13 @@ function Print-Table($table) {
 
 function Print-Columns($columns) {
     $columns | foreach {
-        Write-Host "Column Name : " $_.Name
+        Write-Host "Column Name : " $_.Name " Is Key : " $_.InPrimaryKey
     }
 }
 
 if (Begin-Query ".\Development" "Northwind")
 {
-    Get-Tables | foreach {
+    Get-Tables "Employees" | foreach {
         Print-Table $_
     }
     

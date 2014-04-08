@@ -2,17 +2,12 @@
 <#@ output extension=".cs" #>
 <#@ assembly name="System.Xml" #>
 <#@ assembly name="System.Linq" #>
-
 using System;
 <#
-
 	if (Model.DefaultAttributes) 
 	{
 		this.WriteLine("using VirtualObjects.Mappings;");
     }
-
-	this.WriteLine("");
-
 	if (!String.IsNullOrEmpty(Model.ModelFolder))
     {
 		this.Write("namespace " + Model.Namespace + "." + Model.ModelFolder.Replace("\\","."));
@@ -21,22 +16,18 @@ using System;
 	{
 		this.Write("namespace " + Model.Namespace);
     }
-	this.WriteLine("");
 #>
 {
 	#pragma warning disable 1591
 <#
-{	
-				
+{		
 	if (Model.ForceAnnotations || Model.Table.Name.Contains(" ") || Model.Table.Name != Model.Table.NameSingularized) {
 		this.Write("	[Table(TableName=\"" + Model.Table.Name + "\")]");
-		this.WriteLine("");
 	}		
 }
 #>
 	public class <#= Model.Table.NameSingularized.Replace(" ", "") #>
 	{
-	
 <# 
 		var table = Model.Table;
 		var isKey = false;
@@ -192,12 +183,10 @@ using System;
             }
 			
 			this.Write(" { get; set; }");
-			this.WriteLine("");
 		}
 		this.PopIndent();
 		this.WriteLine("    ");
 #>
-
 	}	
 	#pragma warning restore 1591
 }

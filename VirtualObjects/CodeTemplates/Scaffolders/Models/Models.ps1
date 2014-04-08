@@ -27,87 +27,96 @@ if (-not ($ToFolder -eq "-"))
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 
-function Load-PackageAssembly($packageName) 
-{
-	$assemblyPath = Get-NugetAssemblyPath($packageName)
+#region Connection
 
-	Write-Verbose "Assembly found at: $assemblyPath"
+	$connection = New-Object System.Data.SqlClient.SqlConnection
 
-	$virtualObjects = [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath + "$packageName.dll"))
-}
-
-function AppendNet45Folder($path)
-{
-	$net45Folders = (Get-ChildItem $path -Filter net45*)
-
-	if ($net45Folders.Count -eq 0)
+	function Begin-Query($server,$database)
 	{
-		return AppendNet40Folder($path);
+		Write-Verbose "Server: $server"
+		Write-Verbose "Database: $database" 
+
+		try {
+			$connectionString = "Data Source=${server};Initial Catalog=${database};Integrated Security=True"
+
+			Write-Verbose $connectionString        
+
+			$connection.ConnectionString = $connectionString
+			$connection.Open()
+		} catch [System.Exception] {
+			Write-Error $Error[0];
+			return $false
+		}    
+    
+		return $true
 	}
 
-	$net45Folder = $net45Folders[0].Name;
-	return ($path + "$net45Folder\")
-}
-
-function AppendNet40Folder($path)
-{
-	$net40Folders = (Get-ChildItem $path -Filter net40*)
-	$net40Folder = $net40Folders[0].Name;
-	return ($path + "$net40Folder\")
-}
-
-function Get-NugetAssemblyPath($packageName)
-{
-	$package = (Get-Package -Filter $packageName)
-
-	if (-not $package)
-	{
-		throw "Unable to find the package $package."
+	function End-Query() {
+		$connection.Close()
 	}
 
-	$targetFramework = [System.String](Get-Project $Project).Properties.Item("TargetFrameworkMoniker").Value
+	function Get-Data($query) {
+    
+		$command = $connection.CreateCommand();
+
+		$command.CommandText = $query
+
+		$reader = $command.ExecuteReader();
+		$table = New-Object System.Data.DataTable
+		$table.Load($reader)
+		$reader.Close()
+
+		return $table
+	}
+
+	function Get-Tables {
+		return Get-Data ("Select * From sys.tables") | foreach {
+			@{
+				Name = $_.name;
+				NameSingularized = (Get-SingularizedWord $_.name);
+				Columns = Get-Columns($_.Object_Id);
+			}
+		}
+	}
 	
-	$backupfolder = "..\";
-	$recursiveCountDown = 10;
+	function Get-Columns($tableId) {
+		$columns = @()
 
-	$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\$packageName." + (Get-Package -Filter $packageName -Skip ((Get-Package -Filter $packageName).Count-1)).Version.ToString() + "\lib\" 
-	
-	Write-Verbose "Searching assembly in: $packagesPath"
+		Get-Data ("Select * From sys.columns Where Object_Id = $tableId")| foreach {
+			$column = $_
+		
+			$columns += @{
+				Id = $column.column_id;
+				TableId = $tableId
+				Name = $column.Name;
+				NameSingularized = $column.Name;
+				Identity = $column.is_identity;
+				InPrimaryKey = Get-IsPrimaryKey $tableId $column.column_id;
+				IsForeignKey = Get-IsForeignKey $tableId $column.column_id;
+				DataType = $column.system_type_id;
+			}
 
-	while (-not [System.IO.Directory]::Exists($packagesPath) -and $recursiveCountDown -gt 0) 
-	{
-		$backupfolder = $backupfolder + "..\";
-		$packagesPath = (Get-Project).Properties.Item("LocalPath").Value + $backupfolder + "packages\$packageName." + (Get-Package -Filter $packageName -Skip ((Get-Package -Filter $packageName).Count-1)).Version.ToString() + "\lib\" 
-		Write-Verbose "Searching assembly in: $packagesPath"
-		--$recursiveCountDown;
+			# $columns.ForeignKeys = @()
+
+		}
+
+		return $columns
 	}
 
-	if ($targetFramework.EndsWith("v4.0"))
-	{
-		return AppendNet40Folder($packagesPath)
+	function Get-IsPrimaryKey($tableId, $columnId) {    
+		$query = [string]"Select I.is_primary_key From sys.Index_Columns C Inner Join sys.indexes I On (I.index_id = C.index_id and C.Object_Id = I.Object_Id)  Where C.Object_Id = $tableId and C.Column_Id = $columnId and I.is_primary_key = 1"
+		$result = (Get-Data $query )
+		return $result.is_primary_key -eq $true
 	}
-	else
-	{
-		return AppendNet45Folder($packagesPath)
+
+	function Get-IsForeignKey($tableId, $columnId) {
+		return $false
 	}
-}
+
+#endregion
 
 try
 {
-
-	$assemblyPath = $packagesPath
-
-	# =============== LOADING DEPENDENCIES =========================
-
-	#Write-Verbose "Loading Ninject"
-	#Load-PackageAssembly('Ninject')
-
-	Write-Verbose "Loading FasterFlect"
-	Load-PackageAssembly('Fasterflect')
-
-	Write-Verbose "Loading VirtualObjects"
-	Load-PackageAssembly('VirtualObjects')
-
 
 	if($Repository) {
 
@@ -133,58 +142,21 @@ try
 		$TableName = [NullString]::Value;
 	}
 
-
-	[VirtualObjects.Scaffold.VirtualObjectsHelper]::GetTables($DatabaseName, $ServerName, $TableName) | ForEach-Object { 
-		$table = $_
-		
-		$TableName = $table.Name;
-
-		Write-Verbose "Creating model for : $TableName"
-
-		
-		$outputPath = "$ModelFolder\" + (Get-SingularizedWord $table.Name)
-		
-		$tableDynamic = @{
-			Name = $table.Name;
-			NameSingularized = (Get-SingularizedWord $table.Name);
-		}
-		
-		$tableDynamic.Columns = @()
-
-		$table.Columns | foreach {
-			$column = $_
+	if (Begin-Query $ServerName $DatabaseName)
+	{
+		Get-Tables | where {$_.Name -eq $TableName -or $TableName -eq "-"} | foreach {
+			$table = $_
+			$TableName = $table.Name;
+			Write-Verbose "Creating model for : $TableName"
 			
-			$columnDynamic = @{
-				Name = $column.Name;
-				NameSingularized = $column.Name;
-				Identity = $column.Identity;
-				InPrimaryKey = $column.InPrimaryKey;
-				IsForeignKey = $column.IsForeignKey;
-				DataType = $column.DataType;
-			}
+			$outputPath = "$ModelFolder\" + (Get-SingularizedWord $table.Name)
 
-			$columnDynamic.ForeignKeys = @()
-
-			$column.ForeignKeys | foreach {
-				$foreignKey = $_
-
-				$columnDynamic.ForeignKeys += @{
-					ReferencedTableName = (Get-SingularizedWord $foreignKey.ReferencedTable.Name);
-					ReferencedColumnName = $foreignKey.ReferencedColumn.Name;
-					TableName = (Get-SingularizedWord $foreignKey.Table.Name);
-					ColumnName = $foreignKey.Column.Name;
-				}
-			}
-		
-			$tableDynamic.Columns += $columnDynamic
-		}
-		
-		Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `
+			Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `
 				-Model @{ 
 					Namespace = $namespace; 
 					ServerName = $ServerName; 
 					DatabaseName = $DatabaseName; 
-					Table = $tableDynamic 
+					Table = $table 
 					Path = $assemblyPath;
 					AnnotationsFolder = $AnnotationsFolder; 
 					RepositoryFolder = $RepositoryFolder;
@@ -195,7 +167,9 @@ try
 				} `
 				-SuccessMessage "Added Models output at {0}" `
 				-TemplateFolders $TemplateFolders -Project $Project -CodeLanguage $CodeLanguage -Force:$Force
-		
+		}
+    
+		End-Query
 	}
 
 	if (-not $DontConfig)
