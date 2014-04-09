@@ -235,7 +235,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Scaffold\VirtualObjectsHelper.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="SessionConfiguration.cs" />
     <Compile Include="SessionContext.cs" />

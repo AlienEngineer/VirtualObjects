@@ -113,10 +113,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Config\DomainHandlerSpecs.cs" />
     <Compile Include="Config\MappingTests.cs" />
-    <Compile Include="Config\MappingSpecs.cs" />
-    <Compile Include="DataBaseSchemaInformationTests.cs" />
     <Compile Include="MockReader.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="Connection\ConnectionProviderTests.cs" />
