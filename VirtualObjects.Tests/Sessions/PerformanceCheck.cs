@@ -46,7 +46,7 @@ namespace VirtualObjects.Tests.Sessions
                   
         [VirtualObjects.Mappings.Table(TableName = "Order Details")]
         [Table("Order Details")]
-        public class OrderDetails1
+        public class OrderDetails
         {
             [System.ComponentModel.DataAnnotations.Key]
             public int OrderId { get; set; }
@@ -68,7 +68,7 @@ namespace VirtualObjects.Tests.Sessions
             }
             
             public DbSet<Suppliers> Suppliers { get; set; }
-            public DbSet<OrderDetails1> OrderDetails { get; set; }
+            public DbSet<OrderDetails> OrderDetails { get; set; }
 
         }
 
@@ -128,11 +128,11 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        private static IEnumerable<OrderDetails1> MapOrderDetail(IDataReader reader)
+        private static IEnumerable<OrderDetails> MapOrderDetail(IDataReader reader)
         {
             while (reader.Read())
             {
-                yield return new OrderDetails1
+                yield return new OrderDetails
                 {
                     OrderId = (int)reader["OrderId"],
                     Discount = (float)reader["Discount"],
@@ -349,7 +349,7 @@ namespace VirtualObjects.Tests.Sessions
                         {
                             for (int i = 0; i < numberOfExecutions; i++)
                             {
-                                Connection.Query<OrderDetails1>("Select * from [Order Details]").ToList();
+                                Connection.Query<OrderDetails>("Select * from [Order Details]").ToList();
                             }
                         }, name: STR_Dapper);
 
@@ -367,7 +367,7 @@ namespace VirtualObjects.Tests.Sessions
                             {
                                 for (int i = 0; i < numberOfExecutions; i++)
                                 {
-                                    Session.GetAll<OrderDetails1>().ToList();
+                                    Session.GetAll<OrderDetails>().ToList();
                                 }
                             });
                         }, name: STR_VirtualObjects);

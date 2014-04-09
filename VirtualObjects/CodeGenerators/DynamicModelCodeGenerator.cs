@@ -21,7 +21,7 @@ namespace VirtualObjects.CodeGenerators
         private int projectionIndex = 0;
         
         public DynamicModelCodeGenerator(Type type, IEntityBag entityBag, IQueryInfo queryInfo)
-            : base("Internal_Builder_Dynamic_" + MakeDynamicSafeName(type), type, IsDynamic: true)
+            : base(type.Namespace + "_Internal_Builder_Dynamic_" + MakeDynamicSafeName(type), type, IsDynamic: true)
         {
             this.queryInfo = queryInfo;
             this.entityBag = entityBag;

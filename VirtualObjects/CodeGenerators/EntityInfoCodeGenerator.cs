@@ -18,7 +18,7 @@ namespace VirtualObjects.CodeGenerators
         private readonly String _properName;
 
         public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration)
-            : base("Internal_Builder_" + info.EntityType.Name, info.EntityType)
+            : base(info.EntityType.Namespace.Replace(".", "_") + "_Internal_Builder_" + info.EntityType.Name, info.EntityType)
         {
             _configuration = configuration;
             _entityBag = entityBag;
@@ -304,7 +304,7 @@ namespace VirtualObjects.CodeGenerators
 
             return result;
         }
-                                   
+
         private String GenerateDependencyValue(IEntityColumnInfo column, KeyValuePair<IEntityColumnInfo, IEntityColumnInfo> foreignKeyLink)
         {
             return "this." + foreignKeyLink.Key.Property.Name;
