@@ -4,12 +4,12 @@
 
 ```
 # Creates the entity models based on data source and create a repository Layer.
-Scaffold Models .\Development Northwind -Repository
+Scaffold Models <server> <database> -Repository
 
 or...
 
 # Creates the entity models based on data source.
-Scaffold Models .\Development Northwind
+Scaffold Models <server> <database>
 
 # Create a repository Layer.
 Scaffold Repository
