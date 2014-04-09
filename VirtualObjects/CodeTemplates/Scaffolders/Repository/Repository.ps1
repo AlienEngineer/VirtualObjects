@@ -4,6 +4,7 @@ param(
 	[string]$CodeLanguage,
 	[string[]]$TemplateFolders,
 	[switch]$Force = $false,
+	[switch]$UsingCustomAnnotations = $false,
 	[string]$ModelFolder = "Models",
 	[string]$RepositoryFolder = "Repositories",
 	[string]$AnnotationsFolder = "Annotations",

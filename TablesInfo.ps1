@@ -26,6 +26,9 @@ function End-Query() {
 
 function Get-Data {
     
+    Param(
+        [string]$query
+    )
     
     $command = $connection.CreateCommand();
 
@@ -40,9 +43,15 @@ function Get-Data {
 }
 
 function Get-Tables($tableName) {
-    $query = [string]"Select * From sys.tables where Name = '$tableName' or $tableName = '-'"
+    #Write-Host $tableName
 
-    return Get-Data ($query) | foreach {
+    $query = [string]"Select * From sys.tables where Name = '$tableName' or '$tableName' = '-'"
+
+    #Write-Host $query
+
+    return (Get-Data $query) | foreach {
+        #Write-Host "Runnig " $_.name;
+
         @{
             Name = $_.name;
             Columns = Get-Columns($_.Object_Id);
@@ -53,7 +62,7 @@ function Get-Tables($tableName) {
 function Get-Columns($tableId) {
     $columns = @()
 
-    Get-Data ("Select * From sys.columns Where Object_Id = $tableId")| foreach {
+    (Get-Data "Select * From sys.columns Where Object_Id = $tableId")| foreach {
         $column = $_
 		
         $columns += @{
@@ -76,9 +85,13 @@ function Get-Columns($tableId) {
 
 function Get-IsPrimaryKey($tableId, $columnId) {
     
+    # Write-Host "TableId  : " $tableId
+    # Write-Host "ColumnId : " $columnId
+
     $query = [string]"Select I.is_primary_key From sys.Index_Columns C Inner Join sys.indexes I On (I.index_id = C.index_id and C.Object_Id = I.Object_Id)  Where C.Object_Id = $tableId and C.Column_Id = $columnId and I.is_primary_key = 1"
 
-    Write-Host $query
+    #Write-Host $query
+
     $result = (Get-Data $query )
 
     return $result.is_primary_key -eq $true
@@ -90,21 +103,21 @@ function Get-IsForeignKey($tableId, $columnId) {
 
 function Print-Table($table) {
     Write-Host "------------------------------------------------"
-    Write-Host "TableName   : " $table.Name
-    Write-Host "Columns     : " $table.Columns.Count
+    Write-Host ("TableName   : " + $table.Name)
+    Write-Host ("Columns     : " + $table.Columns.Count)
     Print-Columns ($table.Columns)
     Write-Host ""
 }
 
 function Print-Columns($columns) {
     $columns | foreach {
-        Write-Host "Column Name : " $_.Name " Is Key : " $_.InPrimaryKey
+        Write-Host ("Column Name : " + $_.Name + " Is Key : " + $_.InPrimaryKey)
     }
 }
 
 if (Begin-Query ".\Development" "Northwind")
 {
-    Get-Tables "Employees" | foreach {
+    (Get-Tables "Employees") | foreach {
         Print-Table $_
     }
     

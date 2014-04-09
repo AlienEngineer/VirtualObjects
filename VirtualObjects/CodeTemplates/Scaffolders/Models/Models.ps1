@@ -11,6 +11,7 @@ param(
 	[System.Management.Automation.SwitchParameter]$WithAnnotations = $false,
 	[System.Management.Automation.SwitchParameter]$DontConfig = $false,
 	[System.Management.Automation.SwitchParameter]$DefaultAttributes = $false,
+	[System.Management.Automation.SwitchParameter]$UsingCustomAnnotations = $false,
 	[System.String]$TableName = "-",
 	[System.String]$ModelFolder = "Models",
 	[System.String]$RepositoryFolder = "Repositories",
@@ -20,15 +21,21 @@ param(
 
 if (-not ($ToFolder -eq "-"))
 {
-	$ModelFolder =  "$ToFolder\$ModelFolder"
-	$RepositoryFolder =  "$ToFolder\$RepositoryFolder"
-	$AnnotationsFolder =  "$ToFolder\$AnnotationsFolder"
+	if ($Repository)
+	{
+		$ModelFolder =  "$ToFolder\$ModelFolder"
+		$RepositoryFolder =  "$ToFolder\$RepositoryFolder"
+		$AnnotationsFolder =  "$ToFolder\$AnnotationsFolder"
+	}
+	else 
+	{
+		$ModelFolder =  "$ToFolder"
+	}
 }
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 
 #region Connection
-
 	$connection = New-Object System.Data.SqlClient.SqlConnection
 
 	function Begin-Query($server,$database)
@@ -69,8 +76,16 @@ $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 		return $table
 	}
 
-	function Get-Tables {
-		return Get-Data ("Select * From sys.tables") | foreach {
+	function Get-Tables($tableName) {
+		#Write-Host $tableName
+
+		$query = [string]"Select * From sys.tables where Name = '$tableName' or '$tableName' = '-'"
+
+		#Write-Host $query
+
+		return (Get-Data $query) | foreach {
+			#Write-Host "Runnig " $_.name;
+
 			@{
 				Name = $_.name;
 				NameSingularized = (Get-SingularizedWord $_.name);
@@ -78,11 +93,11 @@ $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 			}
 		}
 	}
-	
+
 	function Get-Columns($tableId) {
 		$columns = @()
 
-		Get-Data ("Select * From sys.columns Where Object_Id = $tableId")| foreach {
+		(Get-Data "Select * From sys.columns Where Object_Id = $tableId")| foreach {
 			$column = $_
 		
 			$columns += @{
@@ -103,9 +118,17 @@ $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 		return $columns
 	}
 
-	function Get-IsPrimaryKey($tableId, $columnId) {    
+	function Get-IsPrimaryKey($tableId, $columnId) {
+    
+		# Write-Host "TableId  : " $tableId
+		# Write-Host "ColumnId : " $columnId
+
 		$query = [string]"Select I.is_primary_key From sys.Index_Columns C Inner Join sys.indexes I On (I.index_id = C.index_id and C.Object_Id = I.Object_Id)  Where C.Object_Id = $tableId and C.Column_Id = $columnId and I.is_primary_key = 1"
+
+		#Write-Host $query
+
 		$result = (Get-Data $query )
+
 		return $result.is_primary_key -eq $true
 	}
 
@@ -113,6 +136,19 @@ $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 		return $false
 	}
 
+	function Print-Table($table) {
+		Write-Verbose "------------------------------------------------"
+		Write-Verbose ("TableName   : " + $table.Name)
+		Write-Verbose ("Columns     : " + $table.Columns.Count)
+		Print-Columns ($table.Columns)
+		Write-Verbose ""
+	}
+
+	function Print-Columns($columns) {
+		$columns | foreach {
+			Write-Verbose ("Column Name : " + $_.Name + " Is Key : " + $_.InPrimaryKey)
+		}
+	}
 #endregion
 
 try
@@ -131,33 +167,28 @@ try
 		}
 		else 
 		{
-			Invoke-Scaffolder Repository -Project $Project -CodeLanguage $CodeLanguage -ModelFolder $ModelFolder -RepositoryFolder $RepositoryFolder -AnnotationsFolder $AnnotationsFolder
+			Invoke-Scaffolder Repository -Project $Project -CodeLanguage $CodeLanguage -ModelFolder $ModelFolder -RepositoryFolder $RepositoryFolder -AnnotationsFolder $AnnotationsFolder -UsingCustomAnnotations $UsingCustomAnnotations
 		}
 	}
 
 	Write-Verbose "Getting tables info..."
 
-	if ($TableName -eq "-")
-	{
-		$TableName = [NullString]::Value;
-	}
 
 	if (Begin-Query $ServerName $DatabaseName)
 	{
-		Get-Tables | where {$_.Name -eq $TableName -or $TableName -eq "-"} | foreach {
+		Get-Tables $TableName  | foreach {
 			$table = $_
 			$TableName = $table.Name;
-			Write-Verbose "Creating model for : $TableName"
+			Write-Verbose ("Creating model for : " + $table.Name)
 			
-			$outputPath = "$ModelFolder\" + (Get-SingularizedWord $table.Name)
+			Print-Table $table
+
+			$outputPath = ("$ModelFolder\" + (Get-SingularizedWord $table.Name))
 
 			Add-ProjectItemViaTemplate $outputPath -Template EntityTemplate `
 				-Model @{ 
 					Namespace = $namespace; 
-					ServerName = $ServerName; 
-					DatabaseName = $DatabaseName; 
 					Table = $table 
-					Path = $assemblyPath;
 					AnnotationsFolder = $AnnotationsFolder; 
 					RepositoryFolder = $RepositoryFolder;
 					ModelFolder = $ModelFolder;
@@ -183,7 +214,5 @@ try
 	}
 
 } catch [System.Exception] {
-
 	Write-Error $Error[0];
-
 }
