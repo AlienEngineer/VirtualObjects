@@ -97,3 +97,4 @@ Select * from Suppliers
 
 
 [![PoweredBy](http://www.jetbrains.com/resharper/img/rs179x67.gif)](www.jetbrains.com)
+[![endorse](https://api.coderwall.com/alienengineer/endorsecount.png)](https://coderwall.com/alienengineer)
