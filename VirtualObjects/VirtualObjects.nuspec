@@ -13,6 +13,7 @@
     <releaseNotes>
       Version 1.3.1
       * Fix: Runtime Generated assemblies use the fullname to avoid collisions.
+      * Improvement: Scaffold business lets you choose the target folder.
       
       Version 1.3.0
       * MARS (Multiple Active Result Sets) support.

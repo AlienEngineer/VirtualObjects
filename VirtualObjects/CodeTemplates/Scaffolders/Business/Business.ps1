@@ -23,7 +23,7 @@ if ($ReadOnly)
 
 if (-not ($ToFolder -eq "-"))
 {
-	$BusinessFolder =  "$ToFolder\$BusinessFolder"
+	$BusinessFolder =  "$ToFolder"
 }
 
 $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
