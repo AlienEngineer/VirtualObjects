@@ -7,7 +7,6 @@ namespace VirtualObjects.Config
 {
     class EntityColumnInfo : IEntityColumnInfo
     {
-        private Object _defaultValue;
         private PropertyInfo _property;
 
         public int Index { get; set; }
@@ -18,8 +17,6 @@ namespace VirtualObjects.Config
 
         public bool IsIdentity { get; set; }
 
-        
-
         public PropertyInfo Property
         {
             get { return _property; }
@@ -28,7 +25,7 @@ namespace VirtualObjects.Config
                 _property = value;
                 if ( _property.PropertyType.IsValueType )
                 {
-                    _defaultValue = _property.PropertyType.CreateInstance();
+                    DefaultValue = _property.PropertyType.CreateInstance();
                 }
             }
         }
@@ -51,7 +48,7 @@ namespace VirtualObjects.Config
 
                 if ( Property.PropertyType.IsValueType )
                 {
-                    value = _defaultValue;
+                    value = DefaultValue;
                 }
             }
 
@@ -77,6 +74,8 @@ namespace VirtualObjects.Config
         public virtual string BindOrName { get { return ColumnName; } }
         public bool IsVersionControl { get; set; }
         public bool IsComputed { get; set; }
+
+        public object DefaultValue { get; private set; }
 
         public virtual IEntityColumnInfo GetLastBind() { return this; }
 

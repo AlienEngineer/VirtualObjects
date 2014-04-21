@@ -102,8 +102,8 @@ namespace VirtualObjects.Connections
         }
 
 #if DEBUG
-        Stack<String> commands = new Stack<String>();
-        Stack<IDataReader> readers = new Stack<IDataReader>();
+        readonly Stack<String> commands = new Stack<String>();
+        readonly Stack<IDataReader> readers = new Stack<IDataReader>();
 #endif
 
         private IDataReader currentReader;

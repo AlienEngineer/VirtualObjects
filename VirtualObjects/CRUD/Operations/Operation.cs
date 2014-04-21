@@ -51,7 +51,7 @@ namespace VirtualObjects.CRUD.Operations
                     .Select(e => new
                     {
                         Key = e.ColumnName,
-                        Value = e.GetFieldFinalValue(entityModel),
+                        Value = GetValue(entityModel, e),
                         e.Property,
                         Column = e
                     })
@@ -72,6 +72,13 @@ namespace VirtualObjects.CRUD.Operations
             
 
             return this;
+        }
+
+        private static object GetValue(object entityModel, IEntityColumnInfo e)
+        {
+            var finalValue = e.GetFieldFinalValue(entityModel);
+
+            return finalValue == e.DefaultValue ? null : finalValue;
         }
 
         protected abstract object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters, SessionContext sessionContext);

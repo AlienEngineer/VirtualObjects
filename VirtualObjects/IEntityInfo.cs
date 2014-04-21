@@ -11,7 +11,7 @@ namespace VirtualObjects
     /// </summary>
     public interface IEntityInfo
     {
-
+        
         /// <summary>
         /// Gets or sets the key hash code.
         /// </summary>
