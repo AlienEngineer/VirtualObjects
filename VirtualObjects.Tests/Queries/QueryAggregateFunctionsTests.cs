@@ -26,11 +26,21 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(Repeat)]
-        public void Aggregate_Query_PredicatedCount()
+        public void Aggregate_Query_Predicated_EmployeeCount()
         {
             var count = Diagnostic.Timed(() => Query<Employee>().Count(e => e.EmployeeId > 5));
 
             count.Should().Be(4);
+        }
+
+
+        // Issue #17
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_PredicatedCount()
+        {
+            var count = Diagnostic.Timed(() => Query<Products>().Count(e => e.ProductId > 5 && e.Discontinued));
+
+            count.Should().Be(7);
         }
 
 
