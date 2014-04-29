@@ -242,15 +242,13 @@ using VirtualObjects.Connections;
             builder.ColumnName(e => e.Name);
             builder.ColumnName<ColumnAttribute>(e => e.FieldName);
 
-			// (e.g.) A key is a property that ends with 'Id'
-            // builder.ColumnKey(e => e.Name.EndsWith("Id"));
             builder.ColumnKey<KeyAttribute>();
             builder.ColumnKey<IdentityAttribute>();
 
             builder.ColumnIdentity<IdentityAttribute>();
-			
+
             builder.ForeignKey<AssociationAttribute>(e => e.OtherKey);
-            builder.ForeignKeyLinks<AssociationAttribute>(e => e.OtherKeys);
+            builder.ForeignKeyLinks<AssociationAttribute>(e => e.Bind);
 
             builder.ColumnVersion(e => e.Name == "Version");
             builder.ColumnVersion<VersionAttribute>();
@@ -258,8 +256,8 @@ using VirtualObjects.Connections;
             builder.ColumnIgnore(e => e.Name.StartsWith("Ignore"));
             builder.ColumnIgnore<IgnoreAttribute>();
 
-			builder.ComputedColumn<ComputedAttribute>();
-			
+            builder.ComputedColumn<ComputedAttribute>();
+
             //
             // Collections filters.
             //
