@@ -1,4 +1,5 @@
-﻿using Machine.Specifications;
+﻿using System;
+using Machine.Specifications;
 using VirtualObjects.Config;
 
 namespace VirtualObjects.Tests
@@ -11,8 +12,10 @@ namespace VirtualObjects.Tests
                 Session = new Session(new SessionConfiguration(), "northwind");
 
                 Mapper = ((InternalSession)Session.InternalSession).Mapper;
+                
+                Console.WriteLine("This is the first context.");
             };
-
+        
         protected static IMapper Mapper;
         protected static Session Session;
     }

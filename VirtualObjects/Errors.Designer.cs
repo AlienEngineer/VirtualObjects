@@ -157,7 +157,7 @@ namespace VirtualObjects {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///The model for [{TargetName}] needs a bind with the field [{FieldName}] in the [{CurrentName}] model..
+        ///The model for [{TargetName}] needs a bind to the field [{FieldName}] in the [{CurrentName}] model..
         /// </summary>
         public static string Mapping_CollectionNeedsBindedField {
             get {
