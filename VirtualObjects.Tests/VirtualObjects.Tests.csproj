@@ -115,6 +115,7 @@
   <ItemGroup>
     <Compile Include="Config\MappingTests.cs" />
     <Compile Include="MockReader.cs" />
+    <Compile Include="Models\ModelsSpecs.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="Connection\ConnectionProviderTests.cs" />
     <Compile Include="Crud\CrudTests.cs" />
@@ -170,7 +171,6 @@
       <Name>VirtualObjects</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="Data\northwnd.ldf">
       <DependentUpon>northwnd.mdf</DependentUpon>

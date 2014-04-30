@@ -14,4 +14,14 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Association(OtherKey = "TerritoryId")]
         public virtual Territories Territories { get; set; }
     }
+
+    [Table(TableName = "EmployeeTerritories")]
+    public class EmployeeTerritoriesSimplified
+    {
+        [Key]
+        public int EmployeeId { get; set; }
+
+        [Key]
+        public int TerritoryID { get; set; }
+    }
 }

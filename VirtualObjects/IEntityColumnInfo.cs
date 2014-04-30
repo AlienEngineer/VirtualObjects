@@ -112,6 +112,12 @@ namespace VirtualObjects
         /// </value>
         bool IsComputed { get; set; }
 
+        /// <summary>
+        /// Gets the default value.
+        /// </summary>
+        /// <value>
+        /// The default value.
+        /// </value>
         object DefaultValue { get; }
 
         /// <summary>

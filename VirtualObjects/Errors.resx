@@ -253,7 +253,7 @@ Unable to map [{Name}] entity type.
   </data>
   <data name="Mapping_CollectionNeedsBindedField" xml:space="preserve">
     <value>
-The model for [{TargetName}] needs a bind with the field [{FieldName}] in the [{CurrentName}] model.</value>
+The model for [{TargetName}] needs a bind to the field [{FieldName}] in the [{CurrentName}] model.</value>
     <comment>Mapping_CollectionNeedsBindedField description</comment>
   </data>
   <data name="Mapping_FieldNotFoundOnEntity" xml:space="preserve">

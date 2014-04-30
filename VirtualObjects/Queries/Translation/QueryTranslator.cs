@@ -1897,6 +1897,12 @@ Group by error reasons:
                             throw new TranslationException(Errors.SQL_UnableToFormatNode, binary);
                     }
                 }
+                else if (IsMemberAccess(right) && right.Type == typeof(Boolean))
+                {
+                    var parameter = ExtractAccessor(right) as ParameterExpression;
+                    CompileNodeType(binary.NodeType, buffer);
+                    CompileBinaryExpression(Expression.Lambda(right, parameter), buffer);
+                }
                 else
                 {
                     if ( methodCalled != String.Empty )
@@ -2215,6 +2221,11 @@ Group by error reasons:
         private static bool IsMemberAccess(MethodCallExpression expression)
         {
             return expression.Object is MemberExpression;
+        }
+
+        private static bool IsMemberAccess(Expression expression)
+        {
+            return expression is MemberExpression;
         }
 
         private static Expression ExtractConstant(Expression expression)

@@ -59,7 +59,6 @@ namespace VirtualObjects
             ConnectionProvider = new NamedDbConnectionProvider();              
         }
 
-
         /// <summary>
         /// Configures the mapping builder. Override this method to define the rules how entities are mapped.
         /// Use this to configure custom Attributes or custom conventions.

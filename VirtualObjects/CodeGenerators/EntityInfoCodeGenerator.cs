@@ -150,6 +150,14 @@ namespace VirtualObjects.CodeGenerators
 
             foreach (var key in entityInfo.KeyColumns)
             {
+                //
+                // If there's no filter set use the key as convention.
+                //
+                if (!filterFields.Any())
+                {
+                    filterFields.Add(key.ColumnName.ToLower());
+                }
+
                 if ((foreignTable.ForeignKeys == null || !foreignTable.ForeignKeys.Any()) && !filterFields.Any())
                 {
                     throw new MappingException(Errors.Mapping_CollectionNeedsBindedField,
@@ -200,7 +208,7 @@ namespace VirtualObjects.CodeGenerators
                 }
                 else
                 {
-                    throw new MappingException("\nThe model for [{TargetName}] needs a bind with the field [{FieldName}] in the [{CurrentName}] model.",
+                    throw new MappingException("\nThe model for [{TargetName}] needs a bind to the field [{FieldName}] in the [{CurrentName}] model.",
                         new
                         {
                             TargetName = foreignTable.EntityName,
