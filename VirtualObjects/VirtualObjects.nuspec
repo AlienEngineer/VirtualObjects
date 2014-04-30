@@ -15,6 +15,7 @@
       * Fix: Runtime Generated assemblies use the fullname to avoid collisions.
       * Fix: Values need to be set to null when injected into db.
       * Fix: Issue #17 (Count with boolean field and other predicates miss a ')').
+      * Fix: Issue #18 (When loading a collection field it should use the matching key fields to filter the collection.)
       * Improvement: Scaffold business lets you choose the target folder.
 
       Version 1.3.0

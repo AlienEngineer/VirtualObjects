@@ -30,6 +30,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <OutputPath>bin\Debug\net45\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug 4.5|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -88,7 +89,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Performance|AnyCPU'">
     <OutputPath>bin\Performance\</OutputPath>
     <DefineConstants>NET45 PERFORMANCE</DefineConstants>
-    <DocumentationFile>bin\Release\net45\VirtualObjects.XML</DocumentationFile>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -265,6 +265,7 @@
     </None>
     <None Include="CodeTemplates\Scaffolders\Repository\Repository.ps1" />
     <None Include="packages.config" />
+    <None Include="VirtualObjects.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Errors.resx">
@@ -282,16 +283,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <!--<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>-->
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
