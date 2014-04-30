@@ -12,7 +12,7 @@ namespace VirtualObjects.Tests.Models
     {
         Establish context = () =>
         {
-            Console.WriteLine("This is the second context.");
+
         };
     }
 
@@ -21,7 +21,6 @@ namespace VirtualObjects.Tests.Models
     {
         Establish context = () =>
         {
-            Console.WriteLine("This is the third context.");
             employee = Session.GetById(new Employee { EmployeeId = 1 });
         };
 

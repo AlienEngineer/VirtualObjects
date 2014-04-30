@@ -155,7 +155,7 @@ namespace VirtualObjects.CodeGenerators
                 //
                 if (!filterFields.Any())
                 {
-                    filterFields.Add(key.ColumnName);
+                    filterFields.Add(key.ColumnName.ToLower());
                 }
 
                 if ((foreignTable.ForeignKeys == null || !foreignTable.ForeignKeys.Any()) && !filterFields.Any())

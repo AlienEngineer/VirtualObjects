@@ -15,6 +15,7 @@ namespace VirtualObjects.Tests.Models.Northwind
         public virtual Territories Territories { get; set; }
     }
 
+    [Table(TableName = "EmployeeTerritories")]
     public class EmployeeTerritoriesSimplified
     {
         [Key]
