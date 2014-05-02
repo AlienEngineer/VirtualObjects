@@ -1002,16 +1002,18 @@ namespace VirtualObjects.Tests.Queries
         public void SqlTranslation_Translate_InnerQueries_On_Projection()
         {
 
-            var query = Query<Employee>()
+            var query = Session.GetAll<Employee>()
                 .Select(e => new
                 {
                     EmployeeId = e.EmployeeId,
-                    Count1 = Query<Employee>().Count(e1 => e1.EmployeeId > e.EmployeeId)
+                    Count1 = Query<Employee>().Count(e1 => e1.EmployeeId > e.EmployeeId),
+                    Count2 = Query<Employee>().Count(e1 => e1.EmployeeId >= e.EmployeeId),
+                    Count3 = Query<Employee>().Count(e1 => e1.EmployeeId <= e.EmployeeId)
                 });
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], (Select Count(*) From [Employees] [T1] Where ([T1].[EmployeeId] > [T0].[EmployeeId])) [Count1] From [Employees] [T0]")
+                Is.EqualTo("Select [T0].[EmployeeId], (Select Count(*) From [Employees] [T1] Where ([T1].[EmployeeId] > [T0].[EmployeeId])) [Count1], (Select Count(*) From [Employees] [T2] Where ([T2].[EmployeeId] >= [T0].[EmployeeId])) [Count2], (Select Count(*) From [Employees] [T3] Where ([T3].[EmployeeId] <= [T0].[EmployeeId])) [Count3] From [Employees] [T0]")
             );
         }
     }
