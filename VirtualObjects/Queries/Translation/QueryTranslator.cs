@@ -844,11 +844,7 @@ namespace VirtualObjects.Queries.Translation
 
             if ( lambda.Body is MemberExpression )
             {
-#if NET35
-                OutputType = lambda.Body.Type;
-#else
                 OutputType = lambda.ReturnType;
-#endif
 
                 buffer.Projection = CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
             }
@@ -892,7 +888,8 @@ namespace VirtualObjects.Queries.Translation
         private void CompileCustomProjectionArgument(CompilerBuffer buffer, MethodCallExpression callExpression, Expression tmpExp, MemberInfo member, bool finalize = true)
         {
 
-            if ( CompileCustomProjectionParameter(buffer, callExpression, tmpExp) ||
+            if ( CompileCustomProjectionNestedQuery(buffer, callExpression, tmpExp, member) ||
+                   CompileCustomProjectionParameter(buffer, callExpression, tmpExp) ||
                    CompileCustomProjectionMemberAccess(buffer, tmpExp, member) ||
                    CompileCustomProjectionMethodCall(buffer, tmpExp, member, finalize) ||
                    CompileCustomProjectionBinary(buffer, callExpression, tmpExp, member, finalize) ||
@@ -909,6 +906,27 @@ namespace VirtualObjects.Queries.Translation
             {
                 throw new TranslationException("\nThe translation of {NodeType} is not yet supported on projections.", tmpExp);
             }
+        }
+
+        private bool CompileCustomProjectionNestedQuery(CompilerBuffer buffer, MethodCallExpression callExpression, Expression tmpExp, MemberInfo member)
+        {
+            if (!IsNestedQuery(tmpExp))
+            {
+                return false;
+            }
+
+            var newTranslator = CreateNewTranslator();
+            var result = newTranslator.TranslateQuery(tmpExp);
+
+            var text = result.CommandText;
+
+            buffer.Predicates += _formatter.BeginWrap();
+            buffer.Predicates += result.CommandText;
+            buffer.Predicates += _formatter.EndWrap();
+            buffer.Predicates += " ";
+            buffer.Predicates += _formatter.FormatFieldWithTable(member.Name, _index);
+
+            return true;
         }
 
         private bool CompileCustomProjectionConvert(CompilerBuffer buffer, MethodCallExpression callExpression, Expression tmpExp, MemberInfo member, bool finalize)
@@ -1970,7 +1988,31 @@ Group by error reasons:
 
         #endregion
 
+
         #region Auxiliary Methods
+
+
+        private bool IsNestedQuery(Expression expression)
+        {
+            var callExpression = expression as MethodCallExpression;
+            if (callExpression != null)
+            {
+                if (callExpression.Method.Name == "Query")
+                {
+                    return true;
+                }
+
+                return IsNestedQuery(callExpression.Arguments.First());
+            }
+
+            var constant = ExtractConstant(expression) as ConstantExpression;
+            if (constant != null)
+            {
+                return ParseValue(constant) is IQueryable;
+            }
+
+            return false;
+        }
 
         private static void InitBinaryExpressionCall(CompilerBuffer buffer)
         {
@@ -1989,11 +2031,9 @@ Group by error reasons:
             if ( call.Arguments.Count == 2 )
             {
                 var tmpLambda = ExtractLambda(call.Arguments[1], false);
-#if NET35
-                var outputType = tmpLambda.Body.Type;
-#else
+
                 var outputType = tmpLambda.ReturnType;
-#endif
+
                 if ( outputType == typeof(Boolean) )
                 {
                     throw new TranslationException(Errors.Translation_PredicateOnProjection);
