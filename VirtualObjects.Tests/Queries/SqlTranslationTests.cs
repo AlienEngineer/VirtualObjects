@@ -1011,7 +1011,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], (Select Count(*) From [Employees] [T1] Where ([T1].[EmployeeId] > [T0].[EmployeeId])) [T0].[Count1] From [Employees] [T0]")
+                Is.EqualTo("Select [T0].[EmployeeId], (Select Count(*) From [Employees] [T1] Where ([T1].[EmployeeId] > [T0].[EmployeeId])) [Count1] From [Employees] [T0]")
             );
         }
     }

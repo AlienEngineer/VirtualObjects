@@ -924,7 +924,7 @@ namespace VirtualObjects.Queries.Translation
             buffer.Predicates += result.CommandText;
             buffer.Predicates += _formatter.EndWrap();
             buffer.Predicates += " ";
-            buffer.Predicates += _formatter.FormatFieldWithTable(member.Name, _index);
+            buffer.Predicates += _formatter.FormatField(member.Name);
 
             return true;
         }
