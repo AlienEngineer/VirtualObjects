@@ -97,7 +97,7 @@ namespace VirtualObjects.Queries.Translation
 
             public int GetHashCode(ParameterExpression obj)
             {
-                return obj.Name.GetHashCode() + obj.Type.GetHashCode();
+                return obj.Name.GetHashCode() ^ 13 + obj.Type.GetHashCode();
             }
         }
 
@@ -168,6 +168,28 @@ namespace VirtualObjects.Queries.Translation
         private IDictionary<string, IOperationParameter> Parameters { get { return _rootTranslator._parameters; } }
 
         public IDictionary<ParameterExpression, QueryTranslator> Indexer { get { return _rootTranslator._indexer; } }
+
+        public QueryTranslator this[ParameterExpression parameter]
+        {
+            get
+            {
+                return Indexer[parameter];
+            }
+            set
+            {
+                QueryTranslator translator;
+                if (Indexer.TryGetValue(parameter, out translator))
+                {
+                    if (value.EntityInfo.EntityType != translator.EntityInfo.EntityType)
+                    {
+                        return;
+                    }
+                }
+
+                Indexer[parameter] = value;
+
+            }
+        }
 
         public int ParameterCount { get { return _parameterCount; } }
 
@@ -844,7 +866,7 @@ namespace VirtualObjects.Queries.Translation
             var body = RemoveDynamicFromMemberAccess(lambda.Body);
             var parameter = body as ParameterExpression;
 
-            Indexer[parameter ?? lambda.Parameters.First()] = this;
+            this[parameter ?? lambda.Parameters.First()] = this;
 
             if (body is MemberExpression)
             {
@@ -1060,9 +1082,16 @@ namespace VirtualObjects.Queries.Translation
 
             translator = translator ?? Indexer[parameterExpression];
 
-            buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns, translator._index);
+            var entityInfo = translator.EntityInfo;
 
-            buffer.AddPredicatedColumns(translator.EntityInfo.Columns);
+            if (entityInfo.EntityType != parameterExpression.Type)
+            {
+                entityInfo = _mapper.Map(parameterExpression.Type) ?? translator.EntityInfo;
+            }
+
+            buffer.Predicates += _formatter.FormatFields(entityInfo.Columns, translator._index);
+
+            buffer.AddPredicatedColumns(entityInfo.Columns);
 
             //
             // If the whole entity is used we need to ungroup.
