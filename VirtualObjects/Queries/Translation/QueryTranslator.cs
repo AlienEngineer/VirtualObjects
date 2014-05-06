@@ -226,6 +226,12 @@ namespace VirtualObjects.Queries.Translation
 
             var entityInfo = OutputType == null || OutputType.IsDynamic() ? null : EntityInfo;
 
+
+            if (entityInfo != null && !OutputType.IsDynamic() && entityInfo.EntityType != OutputType)
+            {
+                entityInfo = null;
+            }
+
             Func<Object, IDataReader, MapResult> mapEntity = null;
             Func<ISession, Object> makeEntity = null;
             Func<Object, Object> entityCast = null;

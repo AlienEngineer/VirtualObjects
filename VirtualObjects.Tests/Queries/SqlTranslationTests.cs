@@ -905,12 +905,12 @@ namespace VirtualObjects.Tests.Queries
         {
             var query = from o in Query<OrderSimplified>()
                         join od in Query<OrderDetailsSimplified>() on o.OrderId equals od.OrderId
-                        where o.OrderId > 10
+                        where od.OrderId > 10
                         select od;
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T0].[OrderId] > @p0)")
+                Is.EqualTo("Select [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T1].[OrderId] > @p0)")
             );
         }
 

@@ -240,6 +240,20 @@ namespace VirtualObjects.Tests.Queries
             entities.Count().Should().Be(830);
         }
 
+        [Test, Repeat(Repeat)]
+        public void Mapper_GetAllOrders_InnerJoin_EntityProjection()
+        {
+            var query = from o in Query<OrderSimplified>()
+                        join od in Query<OrderDetailsSimplified>() on o.OrderId equals od.OrderId
+                        where od.OrderId > 10
+                        select od;
+
+            var entities = MapEntities(query);
+
+            entities.Should().NotBeNull();
+            entities.Should().NotBeEmpty();
+            entities.Count().Should().Be(2155);
+        }
 
     }
 
