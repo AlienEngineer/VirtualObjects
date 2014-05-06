@@ -903,13 +903,14 @@ namespace VirtualObjects.Tests.Queries
         [Test, Repeat(Repeat)]
         public void SqlTranslation_Simple_EntityProjection_Join()
         {
-            var query = from o in Query<Orders>()
-                        join od in Query<OrderDetails>() on o equals od.Order
+            var query = from o in Query<OrderSimplified>()
+                        join od in Query<OrderDetailsSimplified>() on o.OrderId equals od.OrderId
+                        where o.OrderId > 10
                         select o;
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
+                Is.EqualTo("Select [T0].[OrderId], [T0].[EmployeeId], [T0].[CustomerId] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T0].[OrderId] > @p0)")
             );
         }
 
