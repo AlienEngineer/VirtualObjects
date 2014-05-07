@@ -335,7 +335,14 @@ namespace VirtualObjects.CodeGenerators
                 }}
                 catch (InvalidCastException) 
                 {{ 
-                     {NotComment}entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
+                     try
+                     {{
+                        {NotComment}entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
+                     }}
+                     catch ( Exception ex)
+                     {{
+                        throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value."", ex);
+                     }}
                 }}
                 catch ( Exception ex)
                 {{

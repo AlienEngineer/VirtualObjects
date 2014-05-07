@@ -930,13 +930,13 @@ namespace VirtualObjects.Tests.Queries
                         select new Projection
                                {
                                    OrderId = od.OrderId,
-                                   PrecUnit = od.UnitPrice,
-                                   EmployeeId = o.EmployeeId
+                                   EmployeeId = o.EmployeeId,
+                                   PrecUnit = od.UnitPrice
                                };
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T1].[OrderId], [T1].[UnitPrice], [T0].[EmployeeId] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T1].[OrderId] > @p0)")
+                Is.EqualTo("Select [T1].[OrderId], [T0].[EmployeeId], [T1].[UnitPrice] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T1].[OrderId] > @p0)")
             );
         }
 
