@@ -922,17 +922,58 @@ namespace VirtualObjects.Queries.Translation
                             buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
                         }, buffer);
 
+                    return;
                 }
-                else
-                {
-                    if (body is ParameterExpression)
-                    {
-                        OutputType = body.Type;
 
-                        buffer.Projection = CompileAndGetBuffer(
-                            () => CompileCustomProjectionParameter(buffer, callExpression, body), buffer);
+                //
+                // The projection is a member initialization expression
+                var initMember = lambda.Body as MemberInitExpression;
+                if (initMember != null)
+                {
+                    if (!String.IsNullOrEmpty(buffer.Projection))
+                    {
+                        return;
                     }
+
+                    OutputType = initMember.Type;
+
+                    buffer.Projection = CompileAndGetBuffer(
+                        () =>
+                        {
+                            int memberIndex = 0;
+                            foreach (MemberAssignment arg in initMember.Bindings)
+                            {
+                                var member = arg.Member;
+                                var tmpExp = RemoveDynamicFromMemberAccess(arg.Expression);
+
+                                if (
+                                    ExtractAccessor(arg.Expression).Type.Name.Contains("IGrouping") &&
+                                    !tmpExp.Type.IsFrameworkType() &&
+                                    _EntitySources.FirstOrDefault(e => e.EntityType == tmpExp.Type) == null)
+                                {
+                                    throw new TranslationException(
+                                        Errors.Translation_UnableToGroup);
+                                }
+
+                                CompileCustomProjectionArgument(buffer, callExpression, tmpExp, member);
+
+                            }
+
+                            buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
+                        }, buffer);
+                    return;
                 }
+
+                //
+                // The projection is a parameter.
+                if (body is ParameterExpression)
+                {
+                    OutputType = body.Type;
+
+                    buffer.Projection = CompileAndGetBuffer(
+                        () => CompileCustomProjectionParameter(buffer, callExpression, body), buffer);
+                }
+
             }
         }
 
