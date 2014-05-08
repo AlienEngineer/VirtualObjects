@@ -176,7 +176,7 @@ namespace VirtualObjects.CodeGenerators
                     foreach (var filterField in filterFields)
                     {
                         foreignField = foreignTable.KeyColumns
-                            .FirstOrDefault(e => e.Property.Name.ToLower() == filterField);
+                            .FirstOrDefault(e => e.ColumnName.ToLower() == filterField);
                     }
                 }
 

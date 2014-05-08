@@ -83,5 +83,4 @@ namespace VirtualObjects.Tests.Sessions
 
         static Employee sergio;
     }
-
 }
