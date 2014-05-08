@@ -267,8 +267,10 @@ namespace VirtualObjects.Tests.Queries
                         select new SqlTranslationTests.Projection
                         {
                             OrderId = od.OrderId,
-                            EmployeeId = o.EmployeeId,
-                            PrecUnit = od.UnitPrice
+                            PrecUnit = od.UnitPrice,
+                            OrderDate = o.OrderDate,
+                            ShipName = o.ShipName,
+                            EmployeeId = o.EmployeeId
                         };
 
             var entities = MapEntities(query);

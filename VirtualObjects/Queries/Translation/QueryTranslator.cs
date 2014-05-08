@@ -48,7 +48,6 @@ namespace VirtualObjects.Queries.Translation
             public StringBuffer OrderBy { get; set; }
             public StringBuffer GroupBy { get; set; }
             public CompilerBuffer Union { get; set; }
-
             public IEntityInfo EntityInfo { get; set; }
             public IList<IEntityColumnInfo> PredicatedColumns { get; set; }
 
@@ -73,6 +72,7 @@ namespace VirtualObjects.Queries.Translation
             public int Skip { get; set; }
             public bool Distinct { get; set; }
             public bool WasAggregated { get; set; }
+            public bool CustomProjection { get; set; }
 
 
             public void ActAsStub()
@@ -240,7 +240,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 entityInfo = _mapper.Map(OutputType);
             }
-
+            
             var queryinfo = new QueryInfo
             {
                 CommandText = Merge(buffer),
@@ -901,6 +901,7 @@ namespace VirtualObjects.Queries.Translation
                         () =>
                         {
                             int memberIndex = 0;
+
                             foreach (var arg in newExpression.Arguments)
                             {
                                 var member = newExpression.Members[memberIndex++];
@@ -935,15 +936,36 @@ namespace VirtualObjects.Queries.Translation
                         return;
                     }
 
+                    buffer.CustomProjection = true;
                     OutputType = initMember.Type;
+
+                    EntityInfo = _mapper.Map(OutputType);
+
+                    if (EntityInfo.Columns.Count > initMember.Bindings.Count)
+                    {
+                        throw new TranslationException("\nEntityType: {EntityName}\nWhen projecting with a custom type all fields should be used on Select.", EntityInfo);
+                    }
 
                     buffer.Projection = CompileAndGetBuffer(
                         () =>
                         {
                             int memberIndex = 0;
-                            foreach (MemberAssignment arg in initMember.Bindings)
+
+                            foreach (var arg in initMember.Bindings.Cast<MemberAssignment>())
                             {
+                                var column = EntityInfo.Columns[memberIndex++];
                                 var member = arg.Member;
+
+                                if (column.Property != arg.Member)
+                                {
+                                    throw new TranslationException("Expected [{ColumnName}] but [{MemberName}] was found on custom projection.", 
+                                        new
+                                        {
+                                            ColumnName = column.Property.Name,
+                                            MemberName = arg.Member.Name
+                                        });
+                                }
+
                                 var tmpExp = RemoveDynamicFromMemberAccess(arg.Expression);
 
                                 if (
@@ -951,8 +973,7 @@ namespace VirtualObjects.Queries.Translation
                                     !tmpExp.Type.IsFrameworkType() &&
                                     _EntitySources.FirstOrDefault(e => e.EntityType == tmpExp.Type) == null)
                                 {
-                                    throw new TranslationException(
-                                        Errors.Translation_UnableToGroup);
+                                    throw new TranslationException(Errors.Translation_UnableToGroup);
                                 }
 
                                 CompileCustomProjectionArgument(buffer, callExpression, tmpExp, member);

@@ -918,7 +918,10 @@ namespace VirtualObjects.Tests.Queries
         {
             public int OrderId { get; set; }
             public decimal PrecUnit { get; set; }
+            public DateTime OrderDate { get; set; }
+            public string ShipName { get; set; }
             public int EmployeeId { get; set; }
+            
         }
 
         [Test, Repeat(Repeat)]
@@ -930,13 +933,15 @@ namespace VirtualObjects.Tests.Queries
                         select new Projection
                                {
                                    OrderId = od.OrderId,
-                                   EmployeeId = o.EmployeeId,
-                                   PrecUnit = od.UnitPrice
+                                   PrecUnit = od.UnitPrice,
+                                   OrderDate = o.OrderDate,
+                                   ShipName = o.ShipName,
+                                   EmployeeId = o.EmployeeId
                                };
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T1].[OrderId], [T0].[EmployeeId], [T1].[UnitPrice] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T1].[OrderId] > @p0)")
+                Is.EqualTo("Select [T1].[OrderId], [T1].[UnitPrice], [T0].[OrderDate], [T0].[ShipName], [T0].[EmployeeId] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T1].[OrderId] > @p0)")
             );
         }
 

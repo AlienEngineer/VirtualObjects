@@ -134,7 +134,6 @@ namespace VirtualObjects.CodeGenerators
 
         }
 
-
         private String GenerateWhereClause(IEntityInfo entityInfo, PropertyInfo property)
         {
             var result = new StringBuffer();
