@@ -81,14 +81,16 @@ namespace VirtualObjects.CodeGenerators
                 }
 
                 cp.WarningLevel = 3;
-
-#if !DEBUG
-                cp.CompilerOptions = "/optimize";    
-#endif
                 cp.IncludeDebugInformation = true;
                 cp.GenerateExecutable = false;
                 cp.GenerateInMemory = false;
 
+#if !DEBUG
+                cp.CompilerOptions = "/optimize";    
+                cp.GenerateInMemory = true;
+#endif
+                
+#if DEBUG
                 if (!IsDynamic)
                 {
                     try
@@ -109,7 +111,7 @@ namespace VirtualObjects.CodeGenerators
                         cp.GenerateInMemory = true;
                     }
                 }
-
+#endif
 
                 Code = GenerateCode();
 
@@ -130,8 +132,6 @@ namespace VirtualObjects.CodeGenerators
 #if !DEBUG
 
                     File.WriteAllText(cp.OutputAssembly + ".cs", Code);
-
-                    
 #endif
                 }
 #if DEBUG

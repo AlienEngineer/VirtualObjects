@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace VirtualObjects.CodeGenerators
 {
-    class TypeBuilder : ReuseCompiledAssemblies
+    class TypeBuilder : CodeCompiler
     {
         private CompilerResults results;
         private readonly String typeName;

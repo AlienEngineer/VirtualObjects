@@ -86,7 +86,7 @@ namespace VirtualObjects
             builder.ForeignKey<AssociationAttribute>(e => e.OtherKey);
             builder.ForeignKeyLinks<AssociationAttribute>(e => e.Bind);
 
-            builder.ColumnVersion(e => e.Name == "Version");
+            builder.ColumnVersion(e => e.Name == "Version" && e.PropertyType == typeof(byte[]));
             builder.ColumnVersion<VersionAttribute>();
 
             builder.ColumnIgnore(e => e.Name.StartsWith("Ignore"));
