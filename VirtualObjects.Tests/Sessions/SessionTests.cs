@@ -28,8 +28,10 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Should_Be_Created_And_Disposed()
         {
-            using ( CreateSession() )
+            using (var session = CreateSession() )
             {
+
+                
 
             }
         }
@@ -46,7 +48,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 }
             }
-
+            
         }
 
         [Test, Repeat(Repeat)]

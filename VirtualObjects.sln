@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8CCF2938-C4DE-4F54-A63D-2C5402C96F1F}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,6 +13,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualObjects.Tests", "VirtualObjects.Tests\VirtualObjects.Tests.csproj", "{836BD9AD-6775-47B1-9996-9D6E55D6E6E4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualObjects", "VirtualObjects\VirtualObjects.csproj", "{C1DC7907-F05A-476F-98B2-8B25DF440061}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualObjects.Page", "VirtualObjects.Page\VirtualObjects.Page.csproj", "{AADCBC29-C871-49B6-A197-C6752E6897FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,12 @@ Global
 		{C1DC7907-F05A-476F-98B2-8B25DF440061}.Performance|Any CPU.Build.0 = Performance|Any CPU
 		{C1DC7907-F05A-476F-98B2-8B25DF440061}.Release|Any CPU.ActiveCfg = Release 4.5|Any CPU
 		{C1DC7907-F05A-476F-98B2-8B25DF440061}.Release|Any CPU.Build.0 = Release 4.5|Any CPU
+		{AADCBC29-C871-49B6-A197-C6752E6897FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AADCBC29-C871-49B6-A197-C6752E6897FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AADCBC29-C871-49B6-A197-C6752E6897FD}.Performance|Any CPU.ActiveCfg = Release|Any CPU
+		{AADCBC29-C871-49B6-A197-C6752E6897FD}.Performance|Any CPU.Build.0 = Release|Any CPU
+		{AADCBC29-C871-49B6-A197-C6752E6897FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AADCBC29-C871-49B6-A197-C6752E6897FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
