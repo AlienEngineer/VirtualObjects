@@ -101,8 +101,15 @@ namespace VirtualObjects.CodeGenerators
 
     public static MapResult Map({TypeName} entity, IDataReader reader)
     {{
-        var data = reader.GetValues();
-
+        object[] data;
+        try 
+        {{
+            data = reader.GetValues();
+        }}
+        catch (Exception ex)
+        {{
+            throw new Exception(""Unable to fetch data from data source."", ex);
+        }}
         {Body}
 
         return new MapResult {{
