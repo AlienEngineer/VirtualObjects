@@ -78,7 +78,12 @@ namespace VirtualObjects.CRUD.Operations
         {
             var finalValue = e.GetFieldFinalValue(entityModel);
 
-            return finalValue == e.DefaultValue ? null : finalValue;
+            if (finalValue == null)
+            {
+                return null;
+            }
+
+            return finalValue.Equals(e.DefaultValue) ? null : finalValue;
         }
 
         protected abstract object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters, SessionContext sessionContext);

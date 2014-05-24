@@ -285,6 +285,7 @@ namespace VirtualObjects.Connections
 
             _endedTransaction = true;
             _dbTransaction.Commit();
+            Close();
         }
 
 
