@@ -17,7 +17,7 @@ namespace VirtualObjects.Tests.Sessions
                     EmployeeId = 1,
                     LastName = "Ferreira",
                     FirstName = "Sérgio",
-                    Version = new byte[] { 9, 9, 9, 9, 9, 9, 9, 9 }
+                    Version = BitConverter.GetBytes(Int64.MaxValue)
                 });
 
                 safeSession.Insert(new Employee
@@ -63,7 +63,7 @@ namespace VirtualObjects.Tests.Sessions
                     EmployeeId = 1,
                     LastName = "Ferreira",
                     FirstName = "Sérgio",
-                    Version = new byte[] { 9, 9, 9, 9, 9, 9, 9, 9 }
+                    Version = BitConverter.GetBytes(Int64.MaxValue)
                 });
 
                 transaction.Rollback();
@@ -97,7 +97,7 @@ namespace VirtualObjects.Tests.Sessions
                         EmployeeId = 1,
                         LastName = "Ferreira",
                         FirstName = "Sérgio",
-                        Version = new byte[] { 9, 9, 9, 9, 9, 9, 9, 9 }
+                        Version = BitConverter.GetBytes(Int64.MaxValue)
                     });
 
                     throw new Exception("Forced Exception");

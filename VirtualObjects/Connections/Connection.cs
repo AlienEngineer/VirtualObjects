@@ -40,7 +40,6 @@ namespace VirtualObjects.Connections
                     if ( _dbTransaction != null )
                     {
                         Commit();
-                        _dbTransaction.Dispose();
                     }
 
                     _dbConnection.Dispose();
