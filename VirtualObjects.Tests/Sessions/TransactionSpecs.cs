@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -92,7 +90,7 @@ namespace VirtualObjects.Tests.Sessions
     [Subject(typeof(ITransaction))]
     public class When_insert_record_within_transaction : TransactionSpecs
     {
-        private const int NumberOfThreads = 1000;
+        private const int NumberOfThreads = 100;
         private Because of = () =>
         {
 
