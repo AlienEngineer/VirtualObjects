@@ -116,6 +116,7 @@
     <Compile Include="Config\MappingTests.cs" />
     <Compile Include="MockReader.cs" />
     <Compile Include="Models\ModelsSpecs.cs" />
+    <Compile Include="Models\Northwind\DataLock.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="Connection\ConnectionProviderTests.cs" />
     <Compile Include="Crud\CrudTests.cs" />
@@ -140,7 +141,7 @@
     <Compile Include="Sessions\PerformanceCheck.cs" />
     <Compile Include="Sessions\RelatedFieldsTests.cs" />
     <Compile Include="Sessions\SessionSpecs.cs" />
-    <Compile Include="Sessions\TransactionsTests.cs" />
+    <Compile Include="Sessions\TransactionSpecs.cs" />
     <Compile Include="Sessions\TransactionTests.cs" />
     <Compile Include="Sessions\EntitiesAsserts.cs" />
     <Compile Include="Sessions\SessionTests.cs" />
@@ -173,6 +174,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\NorthwindChanges.sql" />
     <Content Include="Data\northwnd.ldf">
       <DependentUpon>northwnd.mdf</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

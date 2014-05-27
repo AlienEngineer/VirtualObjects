@@ -14,7 +14,7 @@ namespace VirtualObjects.CodeGenerators
 
         }
 
-        protected override CompilerResults Compile(string[] References)
+        protected override CompilerResults Compile(string[] references)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace VirtualObjects.CodeGenerators
                 throw new MappingException("\nUnable to get the generated assembly for type {Name}.", BaseType);
             }
 
-            return base.Compile(References);
+            return base.Compile(references);
         }
 
         private static bool LoadAssembly(string assemblyPath, string fileName, out CompilerResults compile)

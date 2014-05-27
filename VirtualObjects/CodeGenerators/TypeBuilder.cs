@@ -59,24 +59,6 @@ namespace VirtualObjects.CodeGenerators
         {
             var code = new StringBuffer();
 
-            try
-            {
-                code += @"
-[assembly: AssemblyVersion(""{Version}"")]
-[assembly: AssemblyFileVersion(""{Version}"")]
-"
-                    .FormatWith(new
-                    {
-                        Version = FileVersionInfo.GetVersionInfo(BaseType.Assembly.Location.Replace("file:///", "")).FileVersion
-                    });
-            }
-            catch ( Exception e )
-            {
-                Console.WriteLine("Unable to add the assembly version.");
-                Console.WriteLine(e.Message);
-            }
-
-
             code += "public class ";
             code += className;
             code += "\n{\n";
