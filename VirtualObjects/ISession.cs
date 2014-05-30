@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace VirtualObjects
@@ -60,5 +61,13 @@ namespace VirtualObjects
         /// </summary>
         /// <returns></returns>
         ITransaction BeginTransaction();
+
+        /// <summary>
+        /// Executes the store procedure.
+        /// </summary>
+        /// <param name="storeProcedure">The store procedure.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns></returns>
+        int ExecuteStoreProcedure(String storeProcedure, IEnumerable<KeyValuePair<String, Object>> args);
     }
 }

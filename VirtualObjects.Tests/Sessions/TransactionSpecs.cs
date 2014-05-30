@@ -102,31 +102,33 @@ namespace VirtualObjects.Tests.Sessions
 
             for (int i = 0; i < NumberOfThreads; i++)
             {
-                var j = i+1;
+                var j = i + 1;
                 tasks[i] = Task.Factory.StartNew(() =>
                 {
                     try
                     {
                         using (var session = new Session(connectionName: "northwind"))
                         {
-                           // cdEvent.Signal(); // Signal threads ready.
-                            mrEventS.Wait();  // Wait for all threads to be ready.
+                            //cdEvent.Signal(); // Signal threads ready.
+                            //mrEventS.Wait();  // Wait for all threads to be ready.
                             session.WithinTransaction(
                                 transaction =>
                                 {
+                                    var stamp = DateTime.Now.ToString("ss.fff");
+
                                     // Acquire lock.
-                                    session.Insert(new DataLock { Id = 100 });
+                                    transaction.AcquireLock("My Resource Name");
+
+                                    Trace.WriteLine("Open " + j + " ID: " + Thread.CurrentThread.ManagedThreadId + " Stamp: " + stamp);
                                     locked.Should().BeFalse("Haven't acquired the lock, so it should be locked.");
 
                                     locked = true;
 
                                     unsafeCount++;
-                                    Thread.Sleep(100);
+                                    Thread.Sleep(10);
 
                                     locked = false;
-                                    // Release lock.
-                                    session.Delete(new DataLock { Id = 100 });
-                                    
+                                    Trace.WriteLine("Close " + j + " ID: " + Thread.CurrentThread.ManagedThreadId);
                                 });
                         }
                     }
@@ -136,11 +138,12 @@ namespace VirtualObjects.Tests.Sessions
                         exceptions.Add(ex);
                     }
 
-                });
+                }, TaskCreationOptions.LongRunning);
             }
 
             //cdEvent.Wait(); // Wait until all threads are in the same position.
-            mrEventS.Set(); // Signal all threads to execute.
+            //mrEventS.Set(); // Signal all threads to execute.
+            //mrEventS.Set(); // Signal all threads to execute.
             Task.WaitAll(tasks);
 
         };

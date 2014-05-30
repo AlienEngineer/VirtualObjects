@@ -29,6 +29,11 @@ namespace VirtualObjects.Connections
 
         }
 
+        public void AcquireLock(string resouceName)
+        {
+            _transaction.AcquireLock(resouceName);
+        }
+
         public void Dispose()
         {
             Commit();

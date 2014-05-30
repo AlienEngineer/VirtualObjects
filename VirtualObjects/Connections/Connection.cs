@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using VirtualObjects.Programability;
 
 namespace VirtualObjects.Connections
 {
@@ -12,8 +13,10 @@ namespace VirtualObjects.Connections
     {
         private static int count = 0;
         
+        
         private readonly IDbConnectionProvider _provider;
         private readonly TextWriter _log;
+        private readonly IProgramability _programability;
         private IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
@@ -55,10 +58,11 @@ namespace VirtualObjects.Connections
         #endregion
 
 
-        public Connection(IDbConnectionProvider provider, TextWriter log)
+        public Connection(IDbConnectionProvider provider, TextWriter log, IProgramability programability)
         {
             _provider = provider;
             _log = log;
+            _programability = programability;
             _dbConnection = provider.CreateConnection();
             ++count;
         }
@@ -186,6 +190,13 @@ namespace VirtualObjects.Connections
             _log.WriteLine(Resources.Connection_Closed);
         }
 
+        public int ExecuteProcedure(string storeProcedure, IEnumerable<KeyValuePair<string, object>> args)
+        {
+            var cmd = CreateCommand(storeProcedure);
+            cmd.CommandType = CommandType.StoredProcedure;
+            return cmd.ExecuteNonQuery();
+        }
+
         public IDbCommand CreateCommand(string commandText)
         {
             Open();
@@ -283,11 +294,15 @@ namespace VirtualObjects.Connections
             }
 
             _endedTransaction = true;
+            _programability.ReleaseLock(this);
             _dbTransaction.Commit();
             Close();
         }
 
-
+        public void AcquireLock(string resouceName)
+        {
+            _programability.AcquireLock(this, resouceName);
+        }
     }
 
 }

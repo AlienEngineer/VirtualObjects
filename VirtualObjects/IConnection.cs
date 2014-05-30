@@ -71,5 +71,13 @@ namespace VirtualObjects
         /// Closes this instance.
         /// </summary>
         void Close();
+
+        /// <summary>
+        /// Executes the procedure.
+        /// </summary>
+        /// <param name="storeProcedure">The store procedure.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns></returns>
+        int ExecuteProcedure(string storeProcedure, IEnumerable<KeyValuePair<string, object>> args);
     }
 }
