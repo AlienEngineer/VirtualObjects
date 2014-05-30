@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using VirtualObjects.CRUD;
 using VirtualObjects.Programability;
 
 namespace VirtualObjects.Connections
@@ -194,6 +195,17 @@ namespace VirtualObjects.Connections
         {
             var cmd = CreateCommand(storeProcedure);
             cmd.CommandType = CommandType.StoredProcedure;
+
+            RefreshParameters(cmd, args
+                .Select(e => new KeyValuePair<string, IOperationParameter>(
+                    e.Key,
+                    new OperationParameter
+                    {
+                        Name = e.Key,
+                        Value = e.Value
+                    }
+                )));
+
             return cmd.ExecuteNonQuery();
         }
 
@@ -201,6 +213,7 @@ namespace VirtualObjects.Connections
         {
             Open();
             var cmd =  DbConnection.CreateCommand();
+            cmd.Transaction = _dbTransaction;
             cmd.CommandText = commandText;
 
             return cmd;
@@ -209,9 +222,7 @@ namespace VirtualObjects.Connections
         public IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
         {
             var cmd =  CreateCommand(commandText);
-
-            cmd.Transaction = _dbTransaction;
-
+            
             RefreshParameters(cmd, parameters);
 
             _log.WriteLine(commandText);

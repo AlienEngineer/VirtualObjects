@@ -109,26 +109,16 @@ namespace VirtualObjects.Tests.Sessions
                     {
                         using (var session = new Session(connectionName: "northwind"))
                         {
-                            //cdEvent.Signal(); // Signal threads ready.
-                            //mrEventS.Wait();  // Wait for all threads to be ready.
                             session.WithinTransaction(
                                 transaction =>
                                 {
-                                    var stamp = DateTime.Now.ToString("ss.fff");
-
                                     // Acquire lock.
                                     transaction.AcquireLock("My Resource Name");
-
-                                    Trace.WriteLine("Open " + j + " ID: " + Thread.CurrentThread.ManagedThreadId + " Stamp: " + stamp);
-                                    locked.Should().BeFalse("Haven't acquired the lock, so it should be locked.");
-
-                                    locked = true;
-
-                                    unsafeCount++;
-                                    Thread.Sleep(10);
-
-                                    locked = false;
-                                    Trace.WriteLine("Close " + j + " ID: " + Thread.CurrentThread.ManagedThreadId);
+                                    var value = unsafeCount;
+                                    
+                                    Thread.Sleep(1);
+                                    
+                                    unsafeCount = value +1;
                                 });
                         }
                     }
@@ -141,9 +131,6 @@ namespace VirtualObjects.Tests.Sessions
                 }, TaskCreationOptions.LongRunning);
             }
 
-            //cdEvent.Wait(); // Wait until all threads are in the same position.
-            //mrEventS.Set(); // Signal all threads to execute.
-            //mrEventS.Set(); // Signal all threads to execute.
             Task.WaitAll(tasks);
 
         };
