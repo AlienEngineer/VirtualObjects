@@ -101,3 +101,4 @@ Select * from Suppliers
 
 [Release notes] (https://github.com/AlienEngineer/VirtualObjects/releases)  
 [What the future holds] (https://github.com/AlienEngineer/VirtualObjects/issues?milestone=1)
+[Known Bugs](https://github.com/AlienEngineer/VirtualObjects/issues?labels=bug&milestone=&page=1&state=open)
