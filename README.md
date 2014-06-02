@@ -76,7 +76,7 @@ More graphics will be provided on /docs folder.
 Select Count(*) from Suppliers
 ```
 ![Count Suppliers](Docs/CountSuppliers.png)
-> Results from Laptop and PC were iqual.
+> Results from Laptop and PC were equal.
 
 ```MySQL
 Select * from Suppliers
