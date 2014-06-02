@@ -350,12 +350,8 @@ Our POCO classes should be defined with properties with R/W (get/set). </p>
 
 <p>To make entity mapping as fast as possible the framework creates an assembly specific for that entity. This assembly contains helper methods that are used by VirtualObjects to Create instances of that entity without using reflection, enables VO to Map properties given a datareader, and so on.</p>
 
-<p>An important piece of information is that this assemblies are compiled at runtime which can bring a big overhead. To avoid this, the assembly is stored locally on the current execution path under VirtualObject folder. If the write access is limited on that folder it will be generated to %tmp%\VirtualObjects folder.</p>
-
-<p>Why is this important? Well if you change the entity model then the generated assembly will not reflect those changes. It will only discard the generated assembly if you change the version of your entity model assembly. You can always delete this assemblies manually or even add a task on MSBuild to delete these files on compile time.</p>
-
-<h3>
-<a name="data-type-mappings" class="anchor" href="#data-type-mappings"><span class="octicon octicon-link"></span></a>Data Type Mappings</h3>
+<h4>
+<a name="data-type-mappings" class="anchor" href="#data-type-mappings"><span class="octicon octicon-link"></span></a>Data Type Mappings</h4>
 
 <p>Checkout the microsoft table at <a href="http://msdn.microsoft.com/en-us/library/cc716729.aspx">ADO.Net</a></p>
 
