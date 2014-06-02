@@ -195,18 +195,26 @@ namespace VirtualObjects.Connections
         {
             var cmd = CreateCommand(storeProcedure);
             cmd.CommandType = CommandType.StoredProcedure;
+            
+            
 
             RefreshParameters(cmd, args
-                .Select(e => new KeyValuePair<string, IOperationParameter>(
-                    e.Key,
-                    new OperationParameter
-                    {
-                        Name = e.Key,
-                        Value = e.Value
-                    }
-                )));
+               .Select(e => new KeyValuePair<string, IOperationParameter>(
+                   e.Key,
+                   new OperationParameter
+                   {
+                       Name = e.Key,
+                       Value = e.Value
+                   }
+               )));
 
-            return cmd.ExecuteNonQuery();
+            var param = cmd.CreateParameter();
+            param.Direction = ParameterDirection.ReturnValue;
+            cmd.Parameters.Add(param);
+
+            cmd.ExecuteNonQuery();
+
+            return (int) param.Value;
         }
 
         public IDbCommand CreateCommand(string commandText)
@@ -293,6 +301,7 @@ namespace VirtualObjects.Connections
             Rolledback = _rolledBack = true;
             _endedTransaction = true;
 
+            _programability.ReleaseLock(this);
             _dbTransaction.Rollback();
             Close();
         }
@@ -310,9 +319,9 @@ namespace VirtualObjects.Connections
             Close();
         }
 
-        public void AcquireLock(string resouceName)
+        public bool AcquireLock(string resourceName, int timeout = 30000)
         {
-            _programability.AcquireLock(this, resouceName);
+            return _programability.AcquireLock(this, resourceName, timeout);
         }
     }
 

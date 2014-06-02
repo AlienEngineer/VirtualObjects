@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Machine.Specifications;
+using VirtualObjects.Connections;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions
@@ -110,16 +112,24 @@ namespace VirtualObjects.Tests.Sessions
                         using (var session = new Session(connectionName: "northwind"))
                         {
                             session.WithinTransaction(
-                                transaction =>
+                                trans =>
                                 {
-                                    // Acquire lock.
-                                    transaction.AcquireLock("My Resource Name");
+                                    var stopwatch = new Stopwatch();
+                                    stopwatch.Start();
+
+                                    trans.AcquireLock("MyResourceName").Should().BeTrue("The lock should be acquired");
+
+                                    stopwatch.Stop();
+                                    Console.WriteLine("Locked for {0} ms", stopwatch.ElapsedMilliseconds);
+                                    
                                     var value = unsafeCount;
 
-                                    Thread.Sleep(1);
+                                    Thread.Sleep(20);
 
                                     unsafeCount = value + 1;
                                 });
+
+
                         }
                     }
                     catch (Exception ex)
