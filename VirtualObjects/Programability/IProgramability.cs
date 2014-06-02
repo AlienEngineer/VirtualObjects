@@ -48,6 +48,7 @@ namespace VirtualObjects.Programability
                 });
             }
 
+            _locks.Clear();
         }
     }
 }

@@ -115,10 +115,10 @@ namespace VirtualObjects.Tests.Sessions
                                     // Acquire lock.
                                     transaction.AcquireLock("My Resource Name");
                                     var value = unsafeCount;
-                                    
+
                                     Thread.Sleep(1);
-                                    
-                                    unsafeCount = value +1;
+
+                                    unsafeCount = value + 1;
                                 });
                         }
                     }

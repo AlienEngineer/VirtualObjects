@@ -266,7 +266,9 @@
     </None>
     <None Include="CodeTemplates\Scaffolders\Repository\Repository.ps1" />
     <None Include="packages.config" />
-    <None Include="VirtualObjects.nuspec" />
+    <None Include="VirtualObjects.nuspec">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Errors.resx">
