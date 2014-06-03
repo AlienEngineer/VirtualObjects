@@ -32,6 +32,34 @@ namespace <#= Model.Namespace #>
                 return null;
             });
         }
+		
+
+        public static TResult WithinTransaction<TResult>(this IRepository repository, Func<ITransaction, TResult> execute)
+        {
+            var repo = repository as Repository;
+
+            if (repo == null)
+            {
+                throw new PrimaveraException("WithinTransaction only supports Repository instances.");
+            }
+
+            return repo.Session.WithinTransaction(execute);
+        }
+
+
+        /// <summary>
+        /// Withins the transaction.
+        /// </summary>
+        /// <param name="repository">The repository.</param>
+        /// <param name="execute">The execute.</param>
+        public static void WithinTransaction(this IRepository repository, Action<ITransaction> execute)
+        {
+            repository.WithinTransaction<Object>(trans =>
+            {
+                execute(trans);
+                return null;
+            });
+        }
 
         /// <summary>
         /// Keeps the session alive. Doesn't close the connection to the database after each operation is complete.

@@ -1,4 +1,5 @@
-using System.IO;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
@@ -54,14 +55,13 @@ namespace VirtualObjects.CodeGenerators
         /// <summary>
         /// Compiles the specified references.
         /// </summary>
-        /// <param name="References">The references.</param>
+        /// <param name="references">The references.</param>
         /// <returns></returns>
-        protected virtual CompilerResults Compile(string[] References)
+        protected virtual CompilerResults Compile(string[] references)
         {
             try
             {
-                // Scaffold Models "(LocalDB)\v11.0" Northwind -V
-                return InternalCompile(References);
+                return InternalCompile(references);
             }
             catch (Exception e)
             {
@@ -69,46 +69,22 @@ namespace VirtualObjects.CodeGenerators
             }
         }
 
-        private CompilerResults InternalCompile(string[] References)
+        private CompilerResults InternalCompile(IEnumerable<string> references)
         {
             using (var provider = new CSharpCodeProvider())
             {
                 var cp = new CompilerParameters();
 
-                foreach (var reference in References)
+                foreach (var reference in references)
                 {
                     cp.ReferencedAssemblies.Add(reference);
                 }
 
                 cp.WarningLevel = 3;
-
-#if !DEBUG
-                cp.CompilerOptions = "/optimize";    
-#endif
-                cp.IncludeDebugInformation = true;
+                cp.IncludeDebugInformation = false;
                 cp.GenerateExecutable = false;
-                cp.GenerateInMemory = false;
-
-                if (!IsDynamic)
-                {
-                    try
-                    {
-                        string fileName = BaseType.Assembly.CodeBase.Replace("file:///", "");
-
-                        var path = Directory.GetParent(fileName).FullName;
-
-                        cp.OutputAssembly = GetAssemblyPath(path);
-                        cp.GenerateInMemory = !IsDynamic;
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        //
-                        // If the path doesn't have access to write use %TMP%\VirtualObjects\
-                        // 
-                        cp.OutputAssembly = GetAssemblyPath(Path.GetTempPath());
-                        cp.GenerateInMemory = true;
-                    }
-                }
+                cp.CompilerOptions = "/optimize";    
+                cp.GenerateInMemory = true;
 
 
                 Code = GenerateCode();
@@ -117,40 +93,20 @@ namespace VirtualObjects.CodeGenerators
 
                 if (cr.Errors.Count > 0)
                 {
-                    Console.WriteLine(Code);
+                    Trace.WriteLine(Code);
 
-                    Console.WriteLine(@"Errors building of {0}", cr.PathToAssembly);
+                    Trace.WriteLine(string.Format(@"Errors building of {0}", cr.PathToAssembly));
 
                     foreach (CompilerError ce in cr.Errors)
                     {
-                        Console.WriteLine(@"  {0}", ce);
-                        Console.WriteLine();
+                        Trace.WriteLine(string.Format(@"  {0}", ce));
+                        Trace.WriteLine("");
                     }
 
-#if !DEBUG
-
-                    File.WriteAllText(cp.OutputAssembly + ".cs", Code);
-
-                    
-#endif
                 }
-#if DEBUG
-                File.WriteAllText(cp.OutputAssembly + ".cs", Code);
-#endif
+
                 return cr;
             }
-        }
-
-        private string GetAssemblyPath(string path)
-        {
-            
-            var assemblyPath = Path.Combine(path, "VirtualObjects");
-
-            if (!Directory.Exists(assemblyPath))
-            {
-                Directory.CreateDirectory(assemblyPath);
-            }
-            return Path.Combine(assemblyPath, AssemblyName + ".dll");
         }
 
         /// <summary>

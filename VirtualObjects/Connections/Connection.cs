@@ -5,6 +5,8 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using VirtualObjects.CRUD;
+using VirtualObjects.Programability;
 
 namespace VirtualObjects.Connections
 {
@@ -12,8 +14,10 @@ namespace VirtualObjects.Connections
     {
         private static int count = 0;
         
+        
         private readonly IDbConnectionProvider _provider;
         private readonly TextWriter _log;
+        private readonly IProgramability _programability;
         private IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
@@ -40,7 +44,6 @@ namespace VirtualObjects.Connections
                     if ( _dbTransaction != null )
                     {
                         Commit();
-                        _dbTransaction.Dispose();
                     }
 
                     _dbConnection.Dispose();
@@ -56,10 +59,11 @@ namespace VirtualObjects.Connections
         #endregion
 
 
-        public Connection(IDbConnectionProvider provider, TextWriter log)
+        public Connection(IDbConnectionProvider provider, TextWriter log, IProgramability programability)
         {
             _provider = provider;
             _log = log;
+            _programability = programability;
             _dbConnection = provider.CreateConnection();
             ++count;
         }
@@ -187,10 +191,37 @@ namespace VirtualObjects.Connections
             _log.WriteLine(Resources.Connection_Closed);
         }
 
+        public int ExecuteProcedure(string storeProcedure, IEnumerable<KeyValuePair<string, object>> args)
+        {
+            var cmd = CreateCommand(storeProcedure);
+            cmd.CommandType = CommandType.StoredProcedure;
+            
+            
+
+            RefreshParameters(cmd, args
+               .Select(e => new KeyValuePair<string, IOperationParameter>(
+                   e.Key,
+                   new OperationParameter
+                   {
+                       Name = e.Key,
+                       Value = e.Value
+                   }
+               )));
+
+            var param = cmd.CreateParameter();
+            param.Direction = ParameterDirection.ReturnValue;
+            cmd.Parameters.Add(param);
+
+            cmd.ExecuteNonQuery();
+
+            return (int) param.Value;
+        }
+
         public IDbCommand CreateCommand(string commandText)
         {
             Open();
             var cmd =  DbConnection.CreateCommand();
+            cmd.Transaction = _dbTransaction;
             cmd.CommandText = commandText;
 
             return cmd;
@@ -199,9 +230,7 @@ namespace VirtualObjects.Connections
         public IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
         {
             var cmd =  CreateCommand(commandText);
-
-            cmd.Transaction = _dbTransaction;
-
+            
             RefreshParameters(cmd, parameters);
 
             _log.WriteLine(commandText);
@@ -272,6 +301,7 @@ namespace VirtualObjects.Connections
             Rolledback = _rolledBack = true;
             _endedTransaction = true;
 
+            _programability.ReleaseLock(this);
             _dbTransaction.Rollback();
             Close();
         }
@@ -284,10 +314,15 @@ namespace VirtualObjects.Connections
             }
 
             _endedTransaction = true;
+            _programability.ReleaseLock(this);
             _dbTransaction.Commit();
+            Close();
         }
 
-
+        public bool AcquireLock(string resourceName, int timeout = 30000)
+        {
+            return _programability.AcquireLock(this, resourceName, timeout);
+        }
     }
 
 }

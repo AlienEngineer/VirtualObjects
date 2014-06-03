@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using VirtualObjects.Config;
+using VirtualObjects.Programability;
 
 namespace VirtualObjects
 {
@@ -18,6 +19,14 @@ namespace VirtualObjects
         /// The query provider.
         /// </value>
         public IQueryProvider QueryProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets the programability.
+        /// </summary>
+        /// <value>
+        /// The programability.
+        /// </value>
+        public IProgramability Programability { get; set; }
 
         /// <summary>
         /// Gets or sets the connection.

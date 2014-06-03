@@ -10,6 +10,7 @@ using VirtualObjects.Core;
 using VirtualObjects.CRUD;
 using VirtualObjects.EntityProvider;
 using VirtualObjects.Exceptions;
+using VirtualObjects.Programability;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Execution;
 using VirtualObjects.Queries.Formatters;
@@ -52,7 +53,7 @@ namespace VirtualObjects
             Logger = configuration.Logger ?? new TextWriterStub();
             Formmater = configuration.Formatter ?? new SqlFormatter();
 
-            ConnectionManager = new Connection(ConnectionProvider, Logger);
+            ConnectionManager = new Connection(ConnectionProvider, Logger, new SqlProgramability());
 
             EntityBag = new HybridEntityBag(new EntityBag());
 
@@ -98,7 +99,7 @@ namespace VirtualObjects
             QueryProvider = new QueryProvider(QueryExecutor, SessionContext, Translator);
             
             SessionContext.QueryProvider = QueryProvider;
-
+            
             Session = new InternalSession(SessionContext);
         }
 
@@ -249,6 +250,17 @@ namespace VirtualObjects
         public ITransaction BeginTransaction()
         {
             return InternalSession.BeginTransaction();
+        }
+
+        /// <summary>
+        /// Executes the store procedure.
+        /// </summary>
+        /// <param name="storeProcedure">The store procedure.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns></returns>
+        public int ExecuteStoreProcedure(string storeProcedure, IEnumerable<KeyValuePair<string, object>> args)
+        {
+            return InternalSession.ExecuteStoreProcedure(storeProcedure, args);
         }
 
         #region IDisposable Members

@@ -5,6 +5,25 @@ using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
+    [Table(TableName = "Orders")]
+    public class OrderSimplified
+    {
+        [Identity]
+        public int OrderId { get; set; }
+
+        public int EmployeeId { get; set; }
+
+        public String ShipName { get; set; }
+        
+        public int CustomerId { get; set; }
+
+        public DateTime OrderDate { get; set; }
+
+        public DateTime RequiredDate { get; set; }
+
+        public DateTime ShippedDate { get; set; }
+    }
+
     public class Orders
     {
         [Identity]

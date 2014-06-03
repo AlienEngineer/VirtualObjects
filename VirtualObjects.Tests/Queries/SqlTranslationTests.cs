@@ -899,6 +899,52 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Simple_EntityProjection_Join()
+        {
+            var query = from o in Query<OrderSimplified>()
+                        join od in Query<OrderDetailsSimplified>() on o.OrderId equals od.OrderId
+                        where od.OrderId > 10
+                        select od;
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T1].[OrderId] > @p0)")
+            );
+        }
+
+        public class Projection
+        {
+            public int OrderId { get; set; }
+            public decimal PrecUnit { get; set; }
+            public DateTime OrderDate { get; set; }
+            public string ShipName { get; set; }
+            public int EmployeeId { get; set; }
+            
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Simple_CustomEntityProjection_Join()
+        {
+            var query = from o in Query<OrderSimplified>()
+                        join od in Query<OrderDetailsSimplified>() on o.OrderId equals od.OrderId
+                        where od.OrderId > 10
+                        select new Projection
+                               {
+                                   OrderId = od.OrderId,
+                                   PrecUnit = od.UnitPrice,
+                                   OrderDate = o.OrderDate,
+                                   ShipName = o.ShipName,
+                                   EmployeeId = o.EmployeeId
+                               };
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T1].[OrderId], [T1].[UnitPrice], [T0].[OrderDate], [T0].[ShipName], [T0].[EmployeeId] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T1].[OrderId] > @p0)")
+            );
+        }
+
         [Test, Repeat(Repeat)]
         public void SqlTranslation_Simple_NonKey_Join()
         {

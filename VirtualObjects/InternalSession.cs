@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using VirtualObjects.Config;
 using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
@@ -116,6 +117,17 @@ namespace VirtualObjects
         public ITransaction BeginTransaction()
         {
             return Context.Connection.BeginTransaction();
+        }
+
+        /// <summary>
+        /// Executes the store procedure.
+        /// </summary>
+        /// <param name="storeProcedure">The store procedure.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns></returns>
+        public int ExecuteStoreProcedure(string storeProcedure, IEnumerable<KeyValuePair<String, Object>> args)
+        {
+            return Context.Connection.ExecuteProcedure(storeProcedure, args);
         }
 
         private TEntity ExecuteOperation<TEntity>(IOperation operation, TEntity entityModel)

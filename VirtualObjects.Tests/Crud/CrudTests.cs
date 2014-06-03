@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using FluentAssertions;
 using NUnit.Framework;
 using VirtualObjects.Tests.Models.Northwind;
@@ -114,7 +115,7 @@ namespace VirtualObjects.Tests.Crud
                 EmployeeId = 1,
                 FirstName = "Sérgio",
                 LastName = "Ferreira",
-                Version = new byte[] { 9, 9, 9, 9, 9, 9, 9, 9 }
+                Version = BitConverter.GetBytes(Int64.MaxValue)
             });
 
             employee.Should().NotBeNull();

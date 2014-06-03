@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Data;
+using System.Linq;
 using FluentAssertions;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Tests.Models.Northwind;
@@ -179,7 +180,7 @@ namespace VirtualObjects.Tests.Queries
         public void Aggregate_Query_FirstOrDefault()
         {
             var employee = Diagnostic.Timed(() => Query<Employee>().FirstOrDefault());
-
+            Connection.State.Should().Be(ConnectionState.Closed);
             employee.Should().NotBeNull();
             employee.EmployeeId.Should().Be(1);
         }

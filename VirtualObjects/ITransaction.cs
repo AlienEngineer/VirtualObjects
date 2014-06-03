@@ -26,9 +26,18 @@ namespace VirtualObjects
         /// Rollbacks the transaction.
         /// </summary>
         void Rollback();
+
         /// <summary>
         /// Commits the transaction.
         /// </summary>
         void Commit();
+
+        /// <summary>
+        /// Acquires the lock.
+        /// </summary>
+        /// <param name="resouceName">Name of the resouce.</param>
+        /// <param name="timeout"></param>
+        /// <returns>[True] if lock acquired.</returns>
+        bool AcquireLock(string resouceName, int timeout = 30000);
     }
 }

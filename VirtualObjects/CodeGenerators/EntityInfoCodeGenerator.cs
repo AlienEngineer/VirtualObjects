@@ -101,8 +101,15 @@ namespace VirtualObjects.CodeGenerators
 
     public static MapResult Map({TypeName} entity, IDataReader reader)
     {{
-        var data = reader.GetValues();
-
+        object[] data;
+        try 
+        {{
+            data = reader.GetValues();
+        }}
+        catch (Exception ex)
+        {{
+            throw new Exception(""Unable to fetch data from data source."", ex);
+        }}
         {Body}
 
         return new MapResult {{
@@ -133,7 +140,6 @@ namespace VirtualObjects.CodeGenerators
  });
 
         }
-
 
         private String GenerateWhereClause(IEntityInfo entityInfo, PropertyInfo property)
         {
@@ -176,7 +182,7 @@ namespace VirtualObjects.CodeGenerators
                     foreach (var filterField in filterFields)
                     {
                         foreignField = foreignTable.KeyColumns
-                            .FirstOrDefault(e => e.Property.Name.ToLower() == filterField);
+                            .FirstOrDefault(e => e.ColumnName.ToLower() == filterField);
                     }
                 }
 
@@ -335,7 +341,14 @@ namespace VirtualObjects.CodeGenerators
                 }}
                 catch (InvalidCastException) 
                 {{ 
-                     {NotComment}entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
+                     try
+                     {{
+                        {NotComment}entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
+                     }}
+                     catch ( Exception ex)
+                     {{
+                        throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value."", ex);
+                     }}
                 }}
                 catch ( Exception ex)
                 {{

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 namespace VirtualObjects.Connections
 {
@@ -27,6 +28,11 @@ namespace VirtualObjects.Connections
         public void Commit()
         {
 
+        }
+
+        public bool AcquireLock(string resouceName, int timeout)
+        {
+            return _transaction.AcquireLock(resouceName, timeout);
         }
 
         public void Dispose()

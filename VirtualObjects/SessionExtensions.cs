@@ -62,6 +62,7 @@ namespace VirtualObjects
             finally
             {
                 internalSession.Context.Connection.KeepAlive = false;
+                internalSession.Context.Connection.Close();
             }
         }
 

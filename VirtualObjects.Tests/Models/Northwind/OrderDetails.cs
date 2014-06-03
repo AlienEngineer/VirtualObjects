@@ -4,6 +4,18 @@ using VirtualObjects.Mappings;
 namespace VirtualObjects.Tests.Models.Northwind
 {
     [Table(TableName = "Order Details")]
+    public class OrderDetailsSimplified
+    {
+        public int OrderId { get; set; }
+
+        public int ProductId { get; set; }
+
+        public Decimal UnitPrice { get; set; }
+
+        public Int16 Quantity { get; set; }
+    }
+
+    [Table(TableName = "Order Details")]
     public class OrderDetails
     {
         [Key(FieldName = "OrderId")]
