@@ -90,7 +90,7 @@ namespace VirtualObjects.Tests.Sessions
     }
 
     [Subject(typeof(ITransaction))]
-    public class When_insert_record_within_transaction : TransactionSpecs
+    public class When_concurrently_couting_using_a_Mutex_lock : TransactionSpecs
     {
         private const int NumberOfThreads = 100;
         private Because of = () =>
