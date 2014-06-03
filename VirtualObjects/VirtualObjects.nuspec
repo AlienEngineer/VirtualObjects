@@ -6,7 +6,7 @@
     <authors>Sérgio aka AlienEnginner</authors>
     <owners />
     <licenseUrl>https://raw2.github.com/AlienEngineer/VirtualObjects/master/LICENSE</licenseUrl>
-    <projectUrl>http://alienengineer.github.io/VirtualObjects/</projectUrl>
+    <projectUrl>https://github.com/AlienEngineer/VirtualObjects/wiki</projectUrl>
     <iconUrl>https://raw2.github.com/AlienEngineer/VirtualObjects/master/ico/1391724652_40096.ico</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Easy and Fast ORM Framework</description>
