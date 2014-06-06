@@ -233,9 +233,9 @@ namespace VirtualObjects.Connections
             
             RefreshParameters(cmd, parameters);
 
-            _log.WriteLine(commandText);
+            //_log.WriteLine(commandText);
             // Debug use only.
-            // PrintCommand(cmd);
+            PrintCommand(cmd, _log);
 
             return cmd;
         }
@@ -261,34 +261,34 @@ namespace VirtualObjects.Connections
                 });
         }
 
-        [Conditional("DEBUG")]
-        private void PrintCommand(IDbCommand cmd)
+        //[Conditional("DEBUG")]
+        private void PrintCommand(IDbCommand cmd, TextWriter log)
         {
-            Trace.WriteLine("Command executed :\n");
-            Trace.WriteLine("");
+            log.WriteLine("Command executed :\n");
+            log.WriteLine("");
 
             foreach ( SqlParameter parameter in cmd.Parameters )
             {
-                Trace.Write("Declare @" + parameter.ParameterName + " as " + parameter.SqlDbType);
+                log.Write("Declare @" + parameter.ParameterName + " as " + parameter.SqlDbType);
                 if ( parameter.Size > 0 )
                 {
-                    Trace.Write("(" + parameter.Size + ")");
+                    log.Write("(" + parameter.Size + ")");
                 }
 
-                Trace.WriteLine("");
+                log.WriteLine("");
 
-                Trace.Write("Set @" + parameter.ParameterName + " = " + parameter.Value + "");
+                log.Write("Set @" + parameter.ParameterName + " = " + parameter.Value + "");
 
                 if ( parameter.Value == DBNull.Value )
                 {
-                    Trace.Write("NULL");
+                    log.Write("NULL");
                 }
 
-                Trace.WriteLine("");
+                log.WriteLine("");
             }
 
-            Trace.WriteLine("");
-            Trace.WriteLine(cmd.CommandText);
+            log.WriteLine("");
+            log.WriteLine(cmd.CommandText);
         }
 
         public void Rollback()
