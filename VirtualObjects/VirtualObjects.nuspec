@@ -14,6 +14,7 @@
       Version 1.3.13
       * Scaffold Feature: IRepository extension method to access transation and acquire the lock.
       * Fix: Lock release must clear cached lock.
+      * Fix: Boolean should never be stored as null.
       * Fix: StoreProcedure result was not captured.
 
       Version 1.3.12
