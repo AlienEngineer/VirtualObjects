@@ -2356,7 +2356,7 @@ Group by error reasons:
             {
                 case ExpressionType.MemberAccess:
                     var member = (MemberExpression)expression;
-                    return ExtractConstant(member.Expression);
+                    return ExtractConstant(member.Expression) ?? ExtractConstant(member.Member);
                 case ExpressionType.Constant:
                     return expression;
                 case ExpressionType.Call:
