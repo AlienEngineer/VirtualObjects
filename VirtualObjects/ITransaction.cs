@@ -36,6 +36,8 @@ namespace VirtualObjects
         /// Acquires the lock.
         /// </summary>
         /// <param name="resouceName">Name of the resouce.</param>
-        void AcquireLock(string resouceName);
+        /// <param name="timeout"></param>
+        /// <returns>[True] if lock acquired.</returns>
+        bool AcquireLock(string resouceName, int timeout = 30000);
     }
 }

@@ -151,6 +151,8 @@
     <Compile Include="Config\TranslationConfigurationBuilder.cs" />
     <Compile Include="Connections\Connection.cs" />
     <Compile Include="Connections\DbConnectionProvider.cs" />
+    <Compile Include="Connections\DBMutex.cs" />
+    <Compile Include="Connections\SqlMutex.cs" />
     <Compile Include="Connections\FirstConnectionDbConnectionProvider.cs" />
     <Compile Include="Connections\IDbConnectionProvider.cs" />
     <Compile Include="Connections\InnerTransaction.cs" />
@@ -205,6 +207,7 @@
     <Compile Include="Mappings\Annotations.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
     <Compile Include="Programability\IProgramability.cs" />
+    <Compile Include="Programability\SqlProgramability.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\Execution\CompositeExecutor.cs" />
     <Compile Include="Queries\Execution\CountQueryExecutor.cs" />
@@ -266,7 +269,9 @@
     </None>
     <None Include="CodeTemplates\Scaffolders\Repository\Repository.ps1" />
     <None Include="packages.config" />
-    <None Include="VirtualObjects.nuspec" />
+    <None Include="VirtualObjects.nuspec">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Errors.resx">
