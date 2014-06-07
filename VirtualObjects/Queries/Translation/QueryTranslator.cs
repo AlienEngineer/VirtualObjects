@@ -2014,7 +2014,7 @@ Group by error reasons:
                             throw new TranslationException(Errors.SQL_UnableToFormatNode, binary);
                     }
                 }
-                else if (IsMemberAccess(right) && right.Type == typeof(Boolean))
+                else if (IsMemberAccess(right) && right.Type == typeof(Boolean) && !IsConstant(right))
                 {
                     var parameter = ExtractAccessor(right) as ParameterExpression;
                     CompileNodeType(binary.NodeType, buffer);
@@ -2356,7 +2356,7 @@ Group by error reasons:
             {
                 case ExpressionType.MemberAccess:
                     var member = (MemberExpression)expression;
-                    return ExtractConstant(member.Expression) ?? ExtractConstant(member.Member);
+                    return ExtractConstant(member.Expression);
                 case ExpressionType.Constant:
                     return expression;
                 case ExpressionType.Call:

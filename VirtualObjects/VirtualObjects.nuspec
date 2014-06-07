@@ -14,10 +14,12 @@
       Version 1.3.13
       * Scaffold Feature: IRepository extension method to access transation and acquire the lock.
       * Fix: Lock release must clear cached lock.
+      * Fix: Boolean should never be stored as null.
+      * Fix: StoreProcedure result was not captured.
 
       Version 1.3.12
-      * Feature: Enable the transaction to create a lock.
-      * Feature: Enable the session to execute stored procedures.
+      * Feature #28: Enable the transaction to create a lock.
+      * Feature #27: Enable the session to execute stored procedures.
 
       Version 1.3.11
       * Fix: After commit a close must be done.
