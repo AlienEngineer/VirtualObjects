@@ -13,6 +13,7 @@
     <releaseNotes>
       Version 1.3.15
       * Fix: DerivedTypes didn't map at all.
+      * Feature: Generate code to files.
       * -1: Removed scaffolders from this project. See VirtualObjects.Scaffolders nuget package.
       
       Version 1.3.14
