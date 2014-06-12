@@ -88,7 +88,7 @@ namespace VirtualObjects.CodeGenerators
             {
                 var cp = new CompilerParameters();
 
-                foreach (var reference in references)
+                foreach (var reference in references.Distinct())
                 {
                     cp.ReferencedAssemblies.Add(reference);
                 }
@@ -111,9 +111,9 @@ namespace VirtualObjects.CodeGenerators
                     var sb = new StringBuffer();
 
                     sb += "Unable to compile generated code.\n";
-                    sb += "See " + BaseType.Name + ".cs for more information.\n";
+                    sb += "See " + BaseType.Name + ".cs for more information.\n\n";
 
-                    sb += Code;
+                    // sb += Code;
 
                     sb = cr.Errors.Cast<CompilerError>().Aggregate(sb, (current, ce) => current + string.Format(@"  {0}\n", ce));
 
