@@ -132,6 +132,7 @@ namespace VirtualObjects.Queries.Translation
         #region Declaration Zone
 
         private readonly IEntityBag entityBag;
+        private readonly SessionConfiguration _configuration;
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
@@ -146,9 +147,10 @@ namespace VirtualObjects.Queries.Translation
         private readonly Stack<IEntityInfo> _EntitySources = new Stack<IEntityInfo>();
         private readonly IList<OnClause> _OnClauses = new List<OnClause>();
 
-        public QueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag)
+        public QueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, SessionConfiguration configuration)
         {
             this.entityBag = entityBag;
+            _configuration = configuration;
             _formatter = formatter;
             _mapper = mapper;
             _index = _depth = 0;
@@ -157,12 +159,13 @@ namespace VirtualObjects.Queries.Translation
             _rootTranslator = this;
         }
 
-        public QueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, int index)
+        public QueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, int index, SessionConfiguration configuration)
         {
             this.entityBag = entityBag;
             _formatter = formatter;
             _mapper = mapper;
             _index = index;
+            _configuration = configuration;
         }
 
         private IDictionary<string, IOperationParameter> Parameters { get { return _rootTranslator._parameters; } }
@@ -257,7 +260,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 if (OutputType.IsDynamic())
                 {
-                    var dynCodeGen = new DynamicModelCodeGenerator(OutputType, entityBag, queryinfo);
+                    var dynCodeGen = new DynamicModelCodeGenerator(OutputType, entityBag, queryinfo, _configuration);
 
                     //
                     // Generates the code to be compiled.
@@ -2032,7 +2035,7 @@ Group by error reasons:
                             throw new TranslationException(Errors.SQL_UnableToFormatNode, binary);
                     }
                 }
-                else if (IsMemberAccess(right) && right.Type == typeof(Boolean))
+                else if (IsMemberAccess(right) && right.Type == typeof(Boolean) && !IsConstant(right))
                 {
                     var parameter = ExtractAccessor(right) as ParameterExpression;
                     CompileNodeType(binary.NodeType, buffer);
@@ -2289,7 +2292,7 @@ Group by error reasons:
 
         private QueryTranslator CreateNewTranslator()
         {
-            return new QueryTranslator(_formatter, _mapper, entityBag, ++_rootTranslator._depth)
+            return new QueryTranslator(_formatter, _mapper, entityBag, ++_rootTranslator._depth, _configuration)
             {
                 //
                 // Bind the new compile to the root.

@@ -8,9 +8,9 @@ namespace VirtualObjects.CodeGenerators
     {
         readonly TypeBuilder builder;
 
-        protected EntityCodeGenerator(string typeName, Type baseType, bool IsDynamic = false)
+        protected EntityCodeGenerator(string typeName, Type baseType, SessionConfiguration configuration, bool IsDynamic = false)
         {
-            builder = new TypeBuilder(typeName, baseType)
+            builder = new TypeBuilder(typeName, baseType, configuration)
             {
                 IsDynamic = IsDynamic
             };
@@ -35,7 +35,13 @@ namespace VirtualObjects.CodeGenerators
 
         protected void AddReference(Type type)
         {
+            if (type == null || type == typeof(Object))
+            {
+                return;
+            }
+
             builder.References.Add(type.Assembly.CodeBase.Remove(0, "file:///".Length));
+            AddReference(type.BaseType);
         }
 
         protected void AddNamespace(String nameSpace)

@@ -83,7 +83,17 @@ namespace VirtualObjects.CRUD.Operations
                 return null;
             }
 
-            return finalValue.Equals(e.DefaultValue) ? null : finalValue;
+            if (!finalValue.Equals(e.DefaultValue))
+            {
+                return finalValue;
+            }
+
+            if (e.Property.PropertyType == typeof (Boolean))
+            {
+                return finalValue;
+            }
+
+            return null;
         }
 
         protected abstract object Execute(IConnection connection, object entityModel, IEntityInfo entityInfo, string commandText, IDictionary<string, IOperationParameter> parameters, SessionContext sessionContext);

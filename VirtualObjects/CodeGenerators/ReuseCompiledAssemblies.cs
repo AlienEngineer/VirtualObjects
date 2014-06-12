@@ -8,8 +8,8 @@ namespace VirtualObjects.CodeGenerators
 {
     abstract class ReuseCompiledAssemblies : CodeCompiler
     {
-        protected ReuseCompiledAssemblies(Type baseType)
-            : base(baseType)
+        protected ReuseCompiledAssemblies(Type baseType, SessionConfiguration configuration)
+            : base(baseType, configuration)
         {
 
         }

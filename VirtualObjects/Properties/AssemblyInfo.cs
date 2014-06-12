@@ -35,10 +35,9 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("1.4.0")]
 [assembly: AssemblyFileVersion("1.4.0")]
+
 [assembly: InternalsVisibleTo("VirtualObjects.Tests")]
 
-//In brief, these correspond to: 
-//  * Major: Breaking changes. 
-//  * Minor: New features, but backwards compatible. 
-//  * Patch: Backwards compatible bug fixes only.
+
 [assembly: AssemblyInformationalVersion("1.4.0")]
+

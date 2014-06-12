@@ -15,17 +15,17 @@ namespace VirtualObjects.Tests.Queries
 
     class CachingTranslatorProvider : IQueryTranslatorProvider
     {
-        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag)
+        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, SessionConfiguration configuration)
         {
-            return new CachingTranslator(formatter, mapper, entityBag);
+            return new CachingTranslator(formatter, mapper, entityBag, configuration);
         }
     }
 
     class TranslatorProvider : IQueryTranslatorProvider
     {
-        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag)
+        public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, SessionConfiguration configuration)
         {
-            return new QueryTranslator(formatter, mapper, entityBag);
+            return new QueryTranslator(formatter, mapper, entityBag, configuration);
         }
     }
 

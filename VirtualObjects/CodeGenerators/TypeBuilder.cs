@@ -2,7 +2,6 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 
 namespace VirtualObjects.CodeGenerators
@@ -16,8 +15,8 @@ namespace VirtualObjects.CodeGenerators
         public ICollection<String> References { get; private set; }
         public ICollection<String> Namespaces { get; private set; }
 
-        public TypeBuilder(String typeName, Type baseType)
-            : base(baseType)
+        public TypeBuilder(String typeName, Type baseType, SessionConfiguration configuration)
+            : base(baseType, configuration)
         {
             this.typeName = typeName;
             Namespaces = new Collection<String>();

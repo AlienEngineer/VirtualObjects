@@ -73,7 +73,7 @@ namespace VirtualObjects
             
             TranslationConfiguration = configuration.TranslationConfigurationBuilder.Build();
 
-            EntityInfoCodeGeneratorFactory = new EntityInfoCodeGeneratorFactory(EntityBag, TranslationConfiguration);
+            EntityInfoCodeGeneratorFactory = new EntityInfoCodeGeneratorFactory(EntityBag, TranslationConfiguration, configuration);
 
             Mapper = new Mapper(EntityBag, TranslationConfiguration, OperationsProvider, EntityInfoCodeGeneratorFactory);
 
@@ -86,7 +86,7 @@ namespace VirtualObjects
             };
 
 
-            Translator = new CachingTranslator(Formmater, Mapper, EntityBag);
+            Translator = new CachingTranslator(Formmater, Mapper, EntityBag, configuration);
 
             QueryExecutor = new CompositeExecutor(
                 new IQueryExecutor[]
