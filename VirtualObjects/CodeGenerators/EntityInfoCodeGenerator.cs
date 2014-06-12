@@ -195,7 +195,7 @@ namespace VirtualObjects.CodeGenerators
                 if (foreignField != null)
                 {
 
-                    if (foreignField.Property.PropertyType == entityInfo.EntityType)
+                    if (foreignField.Property.PropertyType.IsAssignableFrom(entityInfo.EntityType))
                     {
 
                         result += "e.{Field} == this && ".FormatWith(new { Field = foreignField.Property.Name });
