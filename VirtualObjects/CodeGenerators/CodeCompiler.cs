@@ -93,6 +93,7 @@ namespace VirtualObjects.CodeGenerators
 
                 if (cr.Errors.Count > 0)
                 {
+
                     Trace.WriteLine(Code);
 
                     Trace.WriteLine(string.Format(@"Errors building of {0}", cr.PathToAssembly));

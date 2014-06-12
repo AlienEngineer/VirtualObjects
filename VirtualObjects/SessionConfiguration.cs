@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
@@ -50,6 +51,14 @@ namespace VirtualObjects
         /// The formatter.
         /// </value>
         public IFormatter Formatter { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [save generated code].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [save generated code]; otherwise, <c>false</c>.
+        /// </value>
+        public Boolean SaveGeneratedCode { get; set; }
 
         /// <summary>
         /// Initializes this instance.
