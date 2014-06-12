@@ -220,10 +220,13 @@ using VirtualObjects.Connections;
             // usefull for debug purposes only.
             Logger = Logger ?? Console.Out;
 
+			
+#endif
+
 			//
 			// Outputs generated code to files.
-			SaveGeneratedCode = true;
-#endif
+			// Enable this for debug purposes.
+			SaveGeneratedCode = false;
         }
 
 

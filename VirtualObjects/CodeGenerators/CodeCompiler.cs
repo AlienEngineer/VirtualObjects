@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
@@ -15,12 +16,14 @@ namespace VirtualObjects.CodeGenerators
     public abstract class CodeCompiler
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CodeCompiler"/> class.
+        /// Initializes a new instance of the <see cref="CodeCompiler" /> class.
         /// </summary>
         /// <param name="baseType">Type of the base.</param>
-        protected CodeCompiler(Type baseType)
+        /// <param name="configuration">The configuration.</param>
+        protected CodeCompiler(Type baseType, SessionConfiguration configuration)
         {
             BaseType = baseType;
+            Configuration = configuration;
         }
 
         /// <summary>
@@ -53,6 +56,14 @@ namespace VirtualObjects.CodeGenerators
         public Type BaseType { get; private set; }
 
         /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
+        public SessionConfiguration Configuration { get; private set; }
+
+        /// <summary>
         /// Compiles the specified references.
         /// </summary>
         /// <param name="references">The references.</param>
@@ -83,30 +94,48 @@ namespace VirtualObjects.CodeGenerators
                 cp.WarningLevel = 3;
                 cp.IncludeDebugInformation = false;
                 cp.GenerateExecutable = false;
-                cp.CompilerOptions = "/optimize";    
+                cp.CompilerOptions = "/optimize";
                 cp.GenerateInMemory = true;
 
 
                 Code = GenerateCode();
 
+                SaveCodeToFile();
+
                 var cr = provider.CompileAssemblyFromSource(cp, Code);
 
                 if (cr.Errors.Count > 0)
                 {
+                    var sb = new StringBuffer();
 
-                    Trace.WriteLine(Code);
+                    sb += "Unable to compile generated code.\n";
+                    sb += "See " + BaseType.Name + ".cs for more information.\n";
 
-                    Trace.WriteLine(string.Format(@"Errors building of {0}", cr.PathToAssembly));
-
+                    sb += Code;
+                    
                     foreach (CompilerError ce in cr.Errors)
                     {
-                        Trace.WriteLine(string.Format(@"  {0}", ce));
-                        Trace.WriteLine("");
+                        sb += string.Format(@"  {0}", ce);
+                        sb += "\n";
                     }
 
                 }
 
                 return cr;
+            }
+        }
+
+        private void SaveCodeToFile()
+        {
+            if (Configuration.SaveGeneratedCode)
+            {
+                try
+                {
+                    File.WriteAllText(BaseType.Name + ".cs", Code);
+                }
+                // This is not an important output for the framework to run.
+                // ReSharper disable once EmptyGeneralCatchClause
+                catch (Exception) { /* Ignore exceptions. */ }
             }
         }
 

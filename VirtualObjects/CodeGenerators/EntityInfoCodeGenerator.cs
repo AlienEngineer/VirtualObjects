@@ -17,8 +17,8 @@ namespace VirtualObjects.CodeGenerators
         private readonly IEntityBag _entityBag;
         private readonly String _properName;
 
-        public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration)
-            : base(info.EntityType.Namespace.Replace(".", "_") + "_Internal_Builder_" + info.EntityType.Name, info.EntityType)
+        public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration, SessionConfiguration sessionConfiguration)
+            : base(info.EntityType.Namespace.Replace(".", "_") + "_Internal_Builder_" + info.EntityType.Name, info.EntityType, sessionConfiguration)
         {
             _configuration = configuration;
             _entityBag = entityBag;

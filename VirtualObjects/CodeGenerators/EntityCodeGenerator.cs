@@ -8,9 +8,9 @@ namespace VirtualObjects.CodeGenerators
     {
         readonly TypeBuilder builder;
 
-        protected EntityCodeGenerator(string typeName, Type baseType, bool IsDynamic = false)
+        protected EntityCodeGenerator(string typeName, Type baseType, SessionConfiguration configuration, bool IsDynamic = false)
         {
-            builder = new TypeBuilder(typeName, baseType)
+            builder = new TypeBuilder(typeName, baseType, configuration)
             {
                 IsDynamic = IsDynamic
             };
