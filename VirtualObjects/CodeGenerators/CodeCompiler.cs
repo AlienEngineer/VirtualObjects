@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -112,13 +114,10 @@ namespace VirtualObjects.CodeGenerators
                     sb += "See " + BaseType.Name + ".cs for more information.\n";
 
                     sb += Code;
-                    
-                    foreach (CompilerError ce in cr.Errors)
-                    {
-                        sb += string.Format(@"  {0}", ce);
-                        sb += "\n";
-                    }
 
+                    sb = cr.Errors.Cast<CompilerError>().Aggregate(sb, (current, ce) => current + string.Format(@"  {0}\n", ce));
+
+                    throw new MappingException(sb);
                 }
 
                 return cr;
