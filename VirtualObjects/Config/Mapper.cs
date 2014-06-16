@@ -75,7 +75,8 @@ namespace VirtualObjects.Config
             {
                 EntityName = GetName(entityType),
                 EntitySchema = GetSchema(entityType),
-                EntityType = entityType
+                EntityType = entityType,
+                Connection = _context.Connection
             };
 
             entityInfo.Columns = MapColumns(entityType.Properties(), entityInfo).ToList();

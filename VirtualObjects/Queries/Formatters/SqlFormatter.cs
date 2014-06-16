@@ -159,7 +159,17 @@ namespace VirtualObjects.Queries.Formatters
 
         public virtual string FormatTableName(IEntityInfo entityInfo, int index)
         {
-            return FormatTableName(entityInfo.EntitySchema) + "." + FormatTableName(entityInfo.EntityName, index);
+            var buffer = new StringBuffer();
+
+            if (entityInfo.DataBase != null)
+            {
+                buffer += FormatTableName(entityInfo.DataBase) + ".";
+            }
+
+            buffer += FormatTableName(entityInfo.EntitySchema) + ".";
+            buffer += FormatTableName(entityInfo.EntityName, index);
+
+            return buffer;
         }
 
         public string FormatFields(IEnumerable<IEntityColumnInfo> columns, int index)

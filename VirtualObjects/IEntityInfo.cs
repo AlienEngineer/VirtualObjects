@@ -160,5 +160,13 @@ namespace VirtualObjects
         /// </value>
         ///   <returns></returns>
         Func<Object, Object> EntityCast { get; set; }
+
+        /// <summary>
+        /// Gets the data base.
+        /// </summary>
+        /// <value>
+        /// The data base.
+        /// </value>
+        String DataBase { get; }
     }
 }

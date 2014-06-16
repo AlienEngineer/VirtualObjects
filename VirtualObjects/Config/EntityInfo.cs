@@ -12,8 +12,6 @@ namespace VirtualObjects.Config
         private IList<IEntityColumnInfo> _columns;
         private IDictionary<string, IEntityColumnInfo> _columnsDictionary;
 
-        
-
         public string EntityName { get; set; }
         public string EntitySchema { get; set; }
 
@@ -27,11 +25,19 @@ namespace VirtualObjects.Config
             }
         }
 
+        public IConnection Connection { get; set; }
+
         public IList<IEntityColumnInfo> KeyColumns { get; set; }
         public IEntityColumnInfo Identity { get; set; }
         public Func<Object, IDataReader, MapResult> MapEntity { get; set; }
         public Func<object> EntityFactory { get; set; }
         public Func<Object, Object> EntityCast { get; set; }
+        public string DataBase {
+            get {
+                return Connection != null && !String.IsNullOrEmpty(Connection.DbConnection.Database) ? 
+                Connection.DbConnection.Database : 
+                null; }
+        }
         public Func<ISession, object> EntityProxyFactory { get; set; }
         public IEntityColumnInfo VersionControl { get; set; }
 
