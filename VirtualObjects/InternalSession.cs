@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using VirtualObjects.Config;
+using VirtualObjects.NonQueries;
 using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
 
 namespace VirtualObjects
@@ -94,6 +95,17 @@ namespace VirtualObjects
             if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
             var entityInfo = Mapper.Map<TEntity>();
             return ExecuteOperation(entityInfo.Operations.UpdateOperation, entity);
+        }
+
+        /// <summary>
+        /// Starts the building of an Update operation.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public IUpdate<TEntity> Update<TEntity>()
+        {
+            return new Update<TEntity>(Context.QueryProvider, null, Context);
         }
 
         /// <summary>

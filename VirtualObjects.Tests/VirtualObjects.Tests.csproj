@@ -117,6 +117,7 @@
     <Compile Include="Config\MappingTests.cs" />
     <Compile Include="Models\ModelsSpecs.cs" />
     <Compile Include="Models\Northwind\DataLock.cs" />
+    <Compile Include="NonQueries\NonQueriesSpecs.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="Connection\ConnectionProviderTests.cs" />
     <Compile Include="Crud\CrudTests.cs" />

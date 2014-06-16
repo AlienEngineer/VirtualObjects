@@ -96,9 +96,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Fasterflect">
       <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -187,6 +187,7 @@
     <Compile Include="Exceptions\ConnectionProviderException.cs" />
     <Compile Include="Exceptions\ExecutionException.cs" />
     <Compile Include="Exceptions\MappingException.cs" />
+    <Compile Include="Exceptions\NonQueryOperationException.cs" />
     <Compile Include="Exceptions\TranslationException.cs" />
     <Compile Include="Exceptions\UnableToSetOrGetTheFieldValueException.cs" />
     <Compile Include="Exceptions\UnsupportedException.cs" />
@@ -206,6 +207,9 @@
     <Compile Include="ITransaction.cs" />
     <Compile Include="Mappings\Annotations.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
+    <Compile Include="NonQueries\INonQuery.cs" />
+    <Compile Include="NonQueries\IUpdate.cs" />
+    <Compile Include="NonQueries\Update.cs" />
     <Compile Include="Programability\IProgramability.cs" />
     <Compile Include="Programability\SqlProgramability.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -247,27 +251,7 @@
     <Compile Include="TextWriterStub.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CodeTemplates\Scaffolders\Business\Business.ps1" />
-    <None Include="CodeTemplates\Scaffolders\Business\BusinessTemplate.cs.t4" />
-    <None Include="CodeTemplates\Scaffolders\Business\EntityBusinessInterfaceTemplate.cs.t4" />
-    <None Include="CodeTemplates\Scaffolders\Business\EntityBusinessTemplate.cs.t4" />
-    <None Include="CodeTemplates\Scaffolders\Config\Config.ps1" />
-    <None Include="CodeTemplates\Scaffolders\Models\EntityTemplate.cs.t4" />
-    <None Include="CodeTemplates\Scaffolders\Models\Models.ps1" />
     <None Include="CodeTemplates\Scaffolders\Pack\Pack.ps1" />
-    <None Include="CodeTemplates\Scaffolders\Repository\AnnotationsTemplate.cs.t4">
-      <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
-    </None>
-    <None Include="CodeTemplates\Scaffolders\Repository\IRepositoryTemplate.cs.t4">
-      <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
-    </None>
-    <None Include="CodeTemplates\Scaffolders\Repository\Repository.ps1" />
-    <None Include="CodeTemplates\Scaffolders\Repository\RepositoryExtensionsTemplate.cs.t4">
-      <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
-    </None>
-    <None Include="CodeTemplates\Scaffolders\Repository\RepositoryTemplate.cs.t4">
-      <LastGenOutput>AnnotationsTemplate.cs.cs</LastGenOutput>
-    </None>
     <None Include="packages.config" />
     <None Include="VirtualObjects.nuspec">
       <SubType>Designer</SubType>

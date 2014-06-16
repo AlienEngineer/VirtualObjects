@@ -2,6 +2,7 @@
 using System.Linq;
 using VirtualObjects.Config;
 using VirtualObjects.Programability;
+using VirtualObjects.Queries;
 
 namespace VirtualObjects
 {
@@ -59,6 +60,14 @@ namespace VirtualObjects
         /// The mapper.
         /// </value>
         public IMapper Mapper { get; set; }
+
+        /// <summary>
+        /// Gets or sets the translator.
+        /// </summary>
+        /// <value>
+        /// The translator.
+        /// </value>
+        public IQueryTranslator Translator { get; set; }
 
         #region IDisposable Members
         private bool _disposed;

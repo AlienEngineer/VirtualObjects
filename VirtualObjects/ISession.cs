@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtualObjects.NonQueries;
 
 namespace VirtualObjects
 {
@@ -47,6 +48,13 @@ namespace VirtualObjects
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
         TEntity Update<TEntity>(TEntity entity) where TEntity : class, new();
+
+        /// <summary>
+        /// Starts the building of an Update operation.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <returns></returns>
+        IUpdate<TEntity> Update<TEntity>();
 
         /// <summary>
         /// Deletes the specified entity.

@@ -62,7 +62,6 @@ namespace VirtualObjects.Tests
             EntitiesMapper = modules.EntitiesMapper;
 
             Session = new Session(modules);
-
             Mapper = ((InternalSession)Session.InternalSession).Mapper;
 
             Connection = ConnectionManager.DbConnection;

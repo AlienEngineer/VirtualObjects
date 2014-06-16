@@ -10,6 +10,7 @@ using VirtualObjects.Core;
 using VirtualObjects.CRUD;
 using VirtualObjects.EntityProvider;
 using VirtualObjects.Exceptions;
+using VirtualObjects.NonQueries;
 using VirtualObjects.Programability;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Execution;
@@ -84,6 +85,8 @@ namespace VirtualObjects
             SessionContext.Mapper = Mapper;
 
             Translator = new CachingTranslator(Formmater, Mapper, EntityBag, configuration);
+
+            SessionContext.Translator = Translator;
 
             QueryExecutor = new CompositeExecutor(
                 new IQueryExecutor[]
@@ -227,6 +230,16 @@ namespace VirtualObjects
         public TEntity Update<TEntity>(TEntity entity) where TEntity : class, new()
         {
             return InternalSession.Update(entity);
+        }
+
+        /// <summary>
+        /// Starts the building of an Update operation.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <returns></returns>
+        public IUpdate<TEntity> Update<TEntity>()
+        {
+            return InternalSession.Update<TEntity>();
         }
 
         /// <summary>
