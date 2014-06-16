@@ -48,6 +48,8 @@ namespace VirtualObjects
         private void Initialize(SessionConfiguration configuration)
         {
             _configuration = configuration;
+            _configuration.Initialize();
+            _configuration.ConfigureMappingBuilder(_configuration.ConfigurationTranslationBuilder);
 
             ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
             Logger = configuration.Logger ?? new TextWriterStub();
@@ -71,20 +73,16 @@ namespace VirtualObjects
             
             OperationsProvider = new OperationsProvider(Formmater, EntityMapper, EntityProvider);
             
-            TranslationConfiguration = configuration.TranslationConfigurationBuilder.Build();
+            ConfigurationTranslator = configuration.ConfigurationTranslationBuilder.Build();
 
-            EntityInfoCodeGeneratorFactory = new EntityInfoCodeGeneratorFactory(EntityBag, TranslationConfiguration, configuration);
+            EntityInfoCodeGeneratorFactory = new EntityInfoCodeGeneratorFactory(EntityBag, ConfigurationTranslator, configuration);
 
-            Mapper = new Mapper(EntityBag, TranslationConfiguration, OperationsProvider, EntityInfoCodeGeneratorFactory);
+            SessionContext = new SessionContext { Connection = ConnectionManager };
 
+            Mapper = new Mapper(EntityBag, ConfigurationTranslator, OperationsProvider, EntityInfoCodeGeneratorFactory, SessionContext);
 
-            SessionContext = new SessionContext
-            {
-                Connection = ConnectionManager,
-                Map = Mapper.Map,
-                Mapper = Mapper
-            };
-
+            SessionContext.Map = Mapper.Map;
+            SessionContext.Mapper = Mapper;
 
             Translator = new CachingTranslator(Formmater, Mapper, EntityBag, configuration);
 
@@ -105,7 +103,7 @@ namespace VirtualObjects
 
         public IQueryExecutor QueryExecutor { get; set; }
         public EntityInfoCodeGeneratorFactory EntityInfoCodeGeneratorFactory { get; set; }
-        public ITranslationConfiguration TranslationConfiguration { get; set; }
+        public IConfigurationTranslator ConfigurationTranslator { get; set; }
         public IEntityProvider EntityProvider { get; set; }
         public EntityInfoModelMapper EntityMapper { get; set; }
         public IFormatter Formmater { get; set; }

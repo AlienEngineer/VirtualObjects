@@ -144,11 +144,11 @@
     <Compile Include="Config\EntityInfo.cs" />
     <Compile Include="Config\IMapper.cs" />
     <Compile Include="Config\IEntityBag.cs" />
-    <Compile Include="Config\ITranslationConfiguration.cs" />
-    <Compile Include="Config\TranslationConfiguration.cs" />
-    <Compile Include="Config\ITranslationConfigurationBuilder.cs" />
+    <Compile Include="Config\IConfigurationTranslator.cs" />
+    <Compile Include="Config\ConfigurationTranslator.cs" />
+    <Compile Include="Config\IConfigurationTranslationBuilder.cs" />
     <Compile Include="Config\Mapper.cs" />
-    <Compile Include="Config\TranslationConfigurationBuilder.cs" />
+    <Compile Include="Config\ConfigurationTranslationBuilder.cs" />
     <Compile Include="Connections\Connection.cs" />
     <Compile Include="Connections\DbConnectionProvider.cs" />
     <Compile Include="Connections\DBMutex.cs" />

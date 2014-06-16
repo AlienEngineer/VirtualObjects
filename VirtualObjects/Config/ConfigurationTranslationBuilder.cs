@@ -10,18 +10,18 @@ namespace VirtualObjects.Config
     /// <summary>
     /// 
     /// </summary>
-    class TranslationConfigurationBuilder : ITranslationConfigurationBuilder
+    class ConfigurationTranslationBuilder : IConfigurationTranslationBuilder
     {
         private readonly Func<Attribute, Boolean> _defaultBooleanGetter;
-        private readonly ITranslationConfiguration configuration;
+        private readonly IConfigurationTranslator configuration;
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TranslationConfigurationBuilder"/> class.
+        /// Initializes a new instance of the <see cref="ConfigurationTranslationBuilder"/> class.
         /// </summary>
-        public TranslationConfigurationBuilder()
+        public ConfigurationTranslationBuilder()
         {
-            configuration = new TranslationConfiguration
+            configuration = new ConfigurationTranslator
             {
                 ColumnNameGetters = new List<Func<PropertyInfo, String>>(),
                 ColumnKeyGetters = new List<Func<PropertyInfo, Boolean>>(),
@@ -30,6 +30,7 @@ namespace VirtualObjects.Config
                 ColumnIgnoreGetters = new List<Func<PropertyInfo, Boolean>>(),
                 ComputedColumnGetters = new List<Func<PropertyInfo, Boolean>>(),
                 EntityNameGetters = new List<Func<Type, String>>(),
+                EntitySchemaGetters = new List<Func<Type, String>>(),
                 ColumnForeignKeyGetters = new List<Func<PropertyInfo, String>>(),
                 ColumnForeignKeyLinksGetters = new List<Func<PropertyInfo, String>>(),
                 CollectionFilterGetters = new List<Func<PropertyInfo, String>>()
@@ -64,6 +65,23 @@ namespace VirtualObjects.Config
         public void EntityName(Func<Type, String> nameGetter)
         {
             configuration.EntityNameGetters.Insert(0, nameGetter);
+        }
+
+        public void EntitySchema<TAttribute>(Func<TAttribute, String> nameGetter) where TAttribute : Attribute
+        {
+            EntitySchema(type =>
+            {
+                var attributes = type.Attributes<TAttribute>();
+
+                return attributes != null ?
+                    attributes.Select(nameGetter).FirstOrDefault(e => !String.IsNullOrEmpty(e))
+                    : null;
+            });
+        }
+
+        public void EntitySchema(Func<Type, String> nameGetter)
+        {
+            configuration.EntitySchemaGetters.Insert(0, nameGetter);
         }
 
         /// <summary>
@@ -313,7 +331,7 @@ namespace VirtualObjects.Config
         /// Builds the mapper.
         /// </summary>
         /// <returns></returns>
-        public ITranslationConfiguration Build()
+        public IConfigurationTranslator Build()
         {
             return configuration;
         }

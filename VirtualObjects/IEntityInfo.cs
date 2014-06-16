@@ -62,6 +62,14 @@ namespace VirtualObjects
         String EntityName { get; set; }
 
         /// <summary>
+        /// Gets or sets the entity schema.
+        /// </summary>
+        /// <value>
+        /// The entity schema.
+        /// </value>
+        String EntitySchema { get; set; }
+        
+        /// <summary>
         /// Gets the columns.
         /// </summary>
         /// <value>

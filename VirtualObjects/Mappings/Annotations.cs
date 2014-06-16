@@ -50,6 +50,14 @@ namespace VirtualObjects.Mappings
         /// The name of the table.
         /// </value>
         public String TableName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the schema.
+        /// </summary>
+        /// <value>
+        /// The schema.
+        /// </value>
+        public String Schema { get; set; }
     }
 
     /// <summary>
@@ -120,4 +128,5 @@ namespace VirtualObjects.Mappings
         public String FieldName { get; set; }
 
     }
+    
 }

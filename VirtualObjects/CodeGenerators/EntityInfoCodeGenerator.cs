@@ -13,11 +13,11 @@ namespace VirtualObjects.CodeGenerators
     class EntityInfoCodeGenerator : EntityCodeGenerator
     {
         private readonly IEntityInfo _entityInfo;
-        private readonly ITranslationConfiguration _configuration;
+        private readonly IConfigurationTranslator _configuration;
         private readonly IEntityBag _entityBag;
         private readonly String _properName;
 
-        public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration, SessionConfiguration sessionConfiguration)
+        public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, IConfigurationTranslator configuration, SessionConfiguration sessionConfiguration)
             : base(info.EntityType.Namespace.Replace(".", "_") + "_Internal_Builder_" + info.EntityType.Name, info.EntityType, sessionConfiguration)
         {
             _configuration = configuration;

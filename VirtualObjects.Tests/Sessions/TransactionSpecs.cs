@@ -154,6 +154,6 @@ namespace VirtualObjects.Tests.Sessions
         private static List<Exception> exceptions;
         private static CountdownEvent cdEvent;
         private static int unsafeCount;
-        private static volatile Boolean locked;
+        //private static volatile Boolean locked;
     }
 }

@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace VirtualObjects.Connections
 {
-    public class DBMutex : WaitHandle
+    internal class DBMutex : WaitHandle
     {
         private const int defaultTimeout = 40000;
         public string Name { get; private set; }

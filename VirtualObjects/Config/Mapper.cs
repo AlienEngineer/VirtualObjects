@@ -16,13 +16,15 @@ namespace VirtualObjects.Config
     {
         private readonly IOperationsProvider _operationsProvider;
         private readonly IEntityInfoCodeGeneratorFactory _codeGeneratorFactory;
-        private readonly ITranslationConfiguration _configuration;
+        private readonly SessionContext _context;
+        private readonly IConfigurationTranslator _configuration;
         private readonly IEntityBag _entityBag;
 
-        public Mapper(IEntityBag entityBag, ITranslationConfiguration configuration, IOperationsProvider operationsProvider, IEntityInfoCodeGeneratorFactory codeGeneratorFactory)
+        public Mapper(IEntityBag entityBag, IConfigurationTranslator configuration, IOperationsProvider operationsProvider, IEntityInfoCodeGeneratorFactory codeGeneratorFactory, SessionContext context)
         {
             _configuration = configuration;
             _codeGeneratorFactory = codeGeneratorFactory;
+            _context = context;
             _operationsProvider = operationsProvider;
             _entityBag = entityBag;
         }
@@ -72,6 +74,7 @@ namespace VirtualObjects.Config
             _entityBag[entityType] = entityInfo = new EntityInfo
             {
                 EntityName = GetName(entityType),
+                EntitySchema = GetSchema(entityType),
                 EntityType = entityType
             };
 
@@ -215,6 +218,13 @@ namespace VirtualObjects.Config
         {
             return _configuration.EntityNameGetters
                 .Select(nameGetter => nameGetter(entityType))
+                .FirstOrDefault(name => !String.IsNullOrEmpty(name));
+        }
+
+        private string GetSchema(Type entityType)
+        {
+            return _configuration.EntitySchemaGetters
+                .Select(schemaGetter => schemaGetter(entityType))
                 .FirstOrDefault(name => !String.IsNullOrEmpty(name));
         }
 

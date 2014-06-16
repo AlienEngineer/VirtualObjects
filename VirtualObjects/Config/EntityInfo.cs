@@ -15,6 +15,7 @@ namespace VirtualObjects.Config
         
 
         public string EntityName { get; set; }
+        public string EntitySchema { get; set; }
 
         public IList<IEntityColumnInfo> Columns
         {

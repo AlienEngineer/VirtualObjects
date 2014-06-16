@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace VirtualObjects.Config
 {
     /// <summary>
+    /// Translates the configurations into collections of metadata.
     /// 
+    /// This metadata reflects key information about the entity models. POCO classes.
     /// </summary>
-    public interface ITranslationConfiguration
+    public interface IConfigurationTranslator
     {
         /// <summary>
         /// Gets the column ignore getters.
@@ -45,6 +46,13 @@ namespace VirtualObjects.Config
         /// The entity name getters.
         /// </value>
         IList<Func<Type, String>> EntityNameGetters { get; }
+        /// <summary>
+        /// Gets the entity schema getters.
+        /// </summary>
+        /// <value>
+        /// The entity schema getters.
+        /// </value>
+        IList<Func<Type, String>> EntitySchemaGetters { get; }
         /// <summary>
         /// Gets the column foreign key getters.
         /// </summary>

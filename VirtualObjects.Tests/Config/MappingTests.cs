@@ -8,7 +8,6 @@ namespace VirtualObjects.Tests.Config
 
 
     using NUnit.Framework;
-    using VirtualObjects.Config;
     using FluentAssertions;
 
     /// <summary>

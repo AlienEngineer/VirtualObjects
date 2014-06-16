@@ -7,7 +7,7 @@ namespace VirtualObjects.Connections
     /// <summary>
     /// 
     /// </summary>
-    public class SqlMutex : WaitHandle
+    internal class SqlMutex : WaitHandle
     {
         private const int defaultTimeout = 40000;
         /// <summary>

@@ -1,20 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Linq;
 
 namespace VirtualObjects.Config
 {
     /// <summary>
+    /// Builder to create a ConfigurationTranslator.
     /// 
+    /// It should work as a helper. Instead of instantiate and create some rules on the spot.
     /// </summary>
-    public interface ITranslationConfigurationBuilder
+    public interface IConfigurationTranslationBuilder
     {
         /// <summary>
         /// Builds the mapper configuration.
         /// </summary>
         /// <returns></returns>
-        ITranslationConfiguration Build();
+        IConfigurationTranslator Build();
 
         /// <summary>
         /// Appends a parser to get the name of the entity attribute based.
@@ -28,6 +28,19 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <param name="nameGetter">The name getter.</param>
         void EntityName(Func<Type, String> nameGetter);
+
+        /// <summary>
+        /// Appends a parser to get the schema of the entity attribute based.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="nameGetter">The name getter.</param>
+        void EntitySchema<TAttribute>(Func<TAttribute, String> nameGetter) where TAttribute : Attribute;
+
+        /// <summary>
+        /// Appends a parser to get the schema of the entity based on the type.
+        /// </summary>
+        /// <param name="nameGetter">The name getter.</param>
+        void EntitySchema(Func<Type, String> nameGetter);
 
         /// <summary>
         /// Appends a parser to get the name of the column attribute based.

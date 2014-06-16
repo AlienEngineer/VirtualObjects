@@ -1062,5 +1062,6 @@ namespace VirtualObjects.Tests.Queries
                 Is.EqualTo("Select [T0].[EmployeeId], (Select Count(*) From [Employees] [T1] Where ([T1].[EmployeeId] > [T0].[EmployeeId])) [Count1], (Select Count(*) From [Employees] [T2] Where ([T2].[EmployeeId] >= [T0].[EmployeeId])) [Count2], (Select Count(*) From [Employees] [T3] Where ([T3].[EmployeeId] <= [T0].[EmployeeId])) [Count3] From [Employees] [T0]")
             );
         }
+
     }
 }

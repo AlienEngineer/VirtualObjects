@@ -115,7 +115,6 @@
   <ItemGroup>
     <Compile Include="Config\MappingSpecs.cs" />
     <Compile Include="Config\MappingTests.cs" />
-    <Compile Include="MockReader.cs" />
     <Compile Include="Models\ModelsSpecs.cs" />
     <Compile Include="Models\Northwind\DataLock.cs" />
     <Compile Include="PerformanceTests.cs" />

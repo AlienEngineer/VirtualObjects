@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Web.UI.WebControls;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
 using VirtualObjects.Mappings;
@@ -20,13 +21,13 @@ namespace VirtualObjects
         /// </summary>
         public SessionConfiguration()
         {
-            TranslationConfigurationBuilder = new TranslationConfigurationBuilder();
+            ConfigurationTranslationBuilder = new ConfigurationTranslationBuilder();
 
-            Initialize();
-            ConfigureMappingBuilder(TranslationConfigurationBuilder);
+            // Initialize();
+            // ConfigureMappingBuilder(ConfigurationTranslationBuilder);
         }
 
-        internal ITranslationConfigurationBuilder TranslationConfigurationBuilder { get; set; }
+        internal IConfigurationTranslationBuilder ConfigurationTranslationBuilder { get; set; }
 
         /// <summary>
         /// Gets or sets the connection provider.
@@ -61,11 +62,19 @@ namespace VirtualObjects
         public Boolean SaveGeneratedCode { get; set; }
 
         /// <summary>
+        /// Gets or sets the default schema.
+        /// </summary>
+        /// <value>
+        /// The default schema.
+        /// </value>
+        public String DefaultSchema { get; set; }
+
+        /// <summary>
         /// Initializes this instance.
         /// </summary>
         public virtual void Initialize()
         {
-            ConnectionProvider = new NamedDbConnectionProvider();              
+            ConnectionProvider = ConnectionProvider ?? new NamedDbConnectionProvider();              
         }
 
         /// <summary>
@@ -73,13 +82,15 @@ namespace VirtualObjects
         /// Use this to configure custom Attributes or custom conventions.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public virtual void ConfigureMappingBuilder(ITranslationConfigurationBuilder builder)
+        public virtual void ConfigureMappingBuilder(IConfigurationTranslationBuilder builder)
         {
             //
             // Table Mapping
             //
             builder.EntityName(e => e.Name);
             builder.EntityName<TableAttribute>(e => e.TableName);
+
+            builder.EntitySchema<TableAttribute>(e => e.Schema);
 
             //
             // Column Mapping
