@@ -36,7 +36,7 @@ namespace VirtualObjects.Tests.Connection
         public void NamedDbConnectionProvider_NonExisting_Test()
         {
 
-            var provider = new NamedDbConnectionProvider("northwind1");
+            var provider = new NamedDbConnectionProvider("northwind2");
 
             var connection = provider.CreateConnection();
         }

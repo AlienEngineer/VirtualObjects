@@ -407,8 +407,9 @@ namespace VirtualObjects.Queries.Formatters
         /// </summary>
         /// <param name="entityInfo">The entity information.</param>
         /// <param name="index">The index.</param>
+        /// <param name="context"></param>
         /// <returns></returns>
-        String FormatTableName(IEntityInfo entityInfo, int index);
+        string FormatTableName(IEntityInfo entityInfo, int index, SessionContext context);
 
     }
 }

@@ -27,7 +27,7 @@ namespace VirtualObjects.Queries.Execution
 
         public virtual object ExecuteQuery(Expression expression, SessionContext context)
         {
-            var queryInfo = _translator.TranslateQuery(expression);
+            var queryInfo = _translator.TranslateQuery(expression, context);
 
             return MapEntities(queryInfo, context);
         }
@@ -43,7 +43,7 @@ namespace VirtualObjects.Queries.Execution
 
         public virtual TResult ExecuteQuery<TResult>(Expression expression, SessionContext context)
         {
-            var queryInfo = _translator.TranslateQuery(expression);
+            var queryInfo = _translator.TranslateQuery(expression, context);
 
             var methodIterator = ProxyGenericIteratorMethod.MakeGenericMethod(queryInfo.OutputType);
             var result = MapEntities(queryInfo, context);

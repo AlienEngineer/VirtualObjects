@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using VirtualObjects.Config;
 using VirtualObjects.Queries.Formatters;
@@ -16,12 +17,14 @@ namespace VirtualObjects.Queries
         /// <param name="queryable">The queryable.</param>
         /// <returns></returns>
         IQueryInfo TranslateQuery(IQueryable queryable);
+
         /// <summary>
         /// Translates the query.
         /// </summary>
         /// <param name="expression">The expression.</param>
+        /// <param name="context"></param>
         /// <returns></returns>
-        IQueryInfo TranslateQuery(Expression expression);
+        IQueryInfo TranslateQuery(Expression expression, SessionContext context);
         /// <summary>
         /// Translates the parameters only.
         /// </summary>
@@ -29,13 +32,15 @@ namespace VirtualObjects.Queries
         /// <param name="howMany">The how many.</param>
         /// <returns></returns>
         IQueryInfo TranslateParametersOnly(IQueryable queryable, int howMany);
+
         /// <summary>
         /// Translates the parameters only.
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <param name="howMany">The how many.</param>
+        /// <param name="context"></param>
         /// <returns></returns>
-        IQueryInfo TranslateParametersOnly(Expression expression, int howMany);
+        IQueryInfo TranslateParametersOnly(Expression expression, int howMany, SessionContext context);
     }
 
     /// <summary>

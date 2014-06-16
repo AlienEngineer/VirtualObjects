@@ -28,7 +28,7 @@ namespace VirtualObjects.Queries.Translation
         }
 
 
-        public IQueryInfo TranslateQuery(Expression expression)
+        public IQueryInfo TranslateQuery(Expression expression, SessionContext context)
         {
             IQueryInfo result;
 
@@ -36,7 +36,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 if (result.Parameters.Count > 0)
                 {
-                    result.Parameters = TranslateParametersOnly(expression, result.Parameters.Count).Parameters;
+                    result.Parameters = TranslateParametersOnly(expression, result.Parameters.Count, context).Parameters;
                 }
 
                 return result;
@@ -48,18 +48,18 @@ namespace VirtualObjects.Queries.Translation
             {
                 if (result.Parameters.Count > 0)
                 {
-                    result.Parameters = TranslateParametersOnly(expression, result.Parameters.Count).Parameters;
+                    result.Parameters = TranslateParametersOnly(expression, result.Parameters.Count, context).Parameters;
                 }
 
                 return result;
             }
 
-            return _cachedExpressionQueries[expression] = _cachedQueries[hashCode] = new QueryTranslator(_formatter, _mapper, _entityBag, _configuration).TranslateQuery(expression);
+            return _cachedExpressionQueries[expression] = _cachedQueries[hashCode] = new QueryTranslator(_formatter, _mapper, _entityBag, _configuration).TranslateQuery(expression, context);
         }
 
         public IQueryInfo TranslateQuery(IQueryable queryable)
         {
-            return TranslateQuery(queryable.Expression);
+            return TranslateQuery(queryable.Expression, ((Query) queryable).Context);
         }
 
         public IQueryInfo TranslateParametersOnly(IQueryable queryable, int howMany)
@@ -67,9 +67,9 @@ namespace VirtualObjects.Queries.Translation
             return new QueryTranslator(_formatter, _mapper, _entityBag, _configuration).TranslateParametersOnly(queryable, howMany);
         }
 
-        public IQueryInfo TranslateParametersOnly(Expression expression, int howMany)
+        public IQueryInfo TranslateParametersOnly(Expression expression, int howMany, SessionContext context)
         {
-            return new QueryTranslator(_formatter, _mapper, _entityBag, _configuration).TranslateParametersOnly(expression, howMany);
+            return new QueryTranslator(_formatter, _mapper, _entityBag, _configuration).TranslateParametersOnly(expression, howMany, context);
         }
     }
 }

@@ -157,13 +157,13 @@ namespace VirtualObjects.Queries.Formatters
                 .ToString();
         }
 
-        public virtual string FormatTableName(IEntityInfo entityInfo, int index)
+        public virtual string FormatTableName(IEntityInfo entityInfo, int index, SessionContext context)
         {
             var buffer = new StringBuffer();
 
-            if (entityInfo.DataBase != null)
+            if (context.Connection.DbConnection.Database != null)
             {
-                buffer += FormatTableName(entityInfo.DataBase) + ".";
+                buffer += FormatTableName(context.Connection.DbConnection.Database) + ".";
             }
 
             buffer += FormatTableName(entityInfo.EntitySchema) + ".";

@@ -22,8 +22,8 @@ namespace VirtualObjects.Queries
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             return expression != null
-                       ? new Query<TElement>(this, expression)
-                       : new Query<TElement>(this);
+                       ? new Query<TElement>(this, expression, _context)
+                       : new Query<TElement>(this, _context);
         }
 
         public IQueryable CreateQuery(Expression expression)

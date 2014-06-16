@@ -43,6 +43,7 @@ namespace VirtualObjects.Queries.Translation
                 }
             }
 
+            public SessionContext SessionContext { get; set; }
             public StringBuffer From { get; set; }
             public StringBuffer Predicates { get; set; }
             public StringBuffer OrderBy { get; set; }
@@ -117,6 +118,8 @@ namespace VirtualObjects.Queries.Translation
             public Expression Expression { get; private set; }
             public Type ElementType { get; private set; }
             public IQueryProvider Provider { get; private set; }
+
+            public SessionContext Context { get; set; }
         }
 
         class QueryParameter : IOperationParameter
@@ -130,6 +133,7 @@ namespace VirtualObjects.Queries.Translation
         #endregion
 
         #region Declaration Zone
+
 
         private readonly IEntityBag entityBag;
         private readonly SessionConfiguration _configuration;
@@ -224,6 +228,8 @@ namespace VirtualObjects.Queries.Translation
 
             var buffer = CreateBuffer(queryable);
 
+
+
             Compile(queryable.Expression, buffer);
 
 
@@ -243,7 +249,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 entityInfo = _mapper.Map(OutputType);
             }
-            
+
             var queryinfo = new QueryInfo
             {
                 CommandText = Merge(buffer),
@@ -421,7 +427,7 @@ namespace VirtualObjects.Queries.Translation
             };
         }
 
-        public IQueryInfo TranslateParametersOnly(Expression expression, int howMany)
+        public IQueryInfo TranslateParametersOnly(Expression expression, int howMany, SessionContext context)
         {
             _parameterCount = howMany;
 
@@ -435,10 +441,13 @@ namespace VirtualObjects.Queries.Translation
 
             var queryable = ExtractQueryable(expression);
 
-            return TranslateParametersOnly(new QueryableStub(queryable.ElementType, expression), howMany);
+            return TranslateParametersOnly(new QueryableStub(queryable.ElementType, expression)
+            {
+                Context = context
+            }, howMany);
         }
 
-        public IQueryInfo TranslateQuery(Expression expression)
+        public IQueryInfo TranslateQuery(Expression expression, SessionContext context)
         {
             var queryable = ExtractQueryable(expression);
 
@@ -447,7 +456,10 @@ namespace VirtualObjects.Queries.Translation
                 throw new TranslationException("\nUnable to extract the query from expression.");
             }
 
-            return TranslateQuery(new QueryableStub(queryable.ElementType, expression));
+            return TranslateQuery(new QueryableStub(queryable.ElementType, expression)
+            {
+                Context = context
+            });
         }
 
         #endregion
@@ -600,13 +612,13 @@ namespace VirtualObjects.Queries.Translation
 
             if (parametersOnly)
             {
-                translator.TranslateParametersOnly(expression, _parameterCount);
+                translator.TranslateParametersOnly(expression, _parameterCount, buffer.SessionContext);
                 return;
             }
 
             buffer = GetLastUnionBuffer(buffer);
 
-            buffer.Union = ((QueryInfo)translator.TranslateQuery(expression)).Buffer;
+            buffer.Union = ((QueryInfo)translator.TranslateQuery(expression, buffer.SessionContext)).Buffer;
         }
 
         private static CompilerBuffer GetLastUnionBuffer(CompilerBuffer buffer)
@@ -625,11 +637,8 @@ namespace VirtualObjects.Queries.Translation
                 .Methods(Flags.Static | Flags.StaticPublic, "First").First(e => e.Parameters().Count == expression.Arguments.Count)
                 .MakeGenericMethod(EntityInfo.EntityType);
 
-#if NET35
-            CompileMethodCall(Expression.Call(firstMethod, expression.Arguments.ToArray()), buffer, false);
-#else
+
             CompileMethodCall(Expression.Call(firstMethod, expression.Arguments), buffer, false);
-#endif
 
             foreach (var column in EntityInfo.KeyColumns)
             {
@@ -812,13 +821,13 @@ namespace VirtualObjects.Queries.Translation
             // The first table will only be added in the first call.
             if (String.IsNullOrEmpty(buffer.From))
             {
-                buffer.From += _formatter.FormatTableName(entityInfo1, _index);
+                buffer.From += _formatter.FormatTableName(entityInfo1, _index, buffer.SessionContext);
             }
 
             buffer.From += " ";
             buffer.From += _formatter.InnerJoin;
             buffer.From += " ";
-            buffer.From += _formatter.FormatTableName(entityInfo2, newTranlator._index);
+            buffer.From += _formatter.FormatTableName(entityInfo2, newTranlator._index, buffer.SessionContext);
             buffer.From += " ";
             buffer.From += _formatter.On;
             buffer.From += " ";
@@ -957,7 +966,7 @@ namespace VirtualObjects.Queries.Translation
 
                                 if (column.Property != arg.Member)
                                 {
-                                    throw new TranslationException("Expected [{ColumnName}] but [{MemberName}] was found on custom projection.", 
+                                    throw new TranslationException("Expected [{ColumnName}] but [{MemberName}] was found on custom projection.",
                                         new
                                         {
                                             ColumnName = column.Property.Name,
@@ -1000,7 +1009,7 @@ namespace VirtualObjects.Queries.Translation
         private void CompileCustomProjectionArgument(CompilerBuffer buffer, MethodCallExpression callExpression, Expression tmpExp, MemberInfo member, bool finalize = true)
         {
 
-            if ( CompileCustomProjectionNestedQuery(buffer, callExpression, tmpExp, member) ||
+            if (CompileCustomProjectionNestedQuery(buffer, callExpression, tmpExp, member) ||
                    CompileCustomProjectionParameter(buffer, callExpression, tmpExp) ||
                    CompileCustomProjectionMemberAccess(buffer, tmpExp, member) ||
                    CompileCustomProjectionMethodCall(buffer, tmpExp, member, finalize) ||
@@ -1028,7 +1037,9 @@ namespace VirtualObjects.Queries.Translation
             }
 
             var newTranslator = CreateNewTranslator();
-            var result = newTranslator.TranslateQuery(tmpExp);
+            var sessionContext = ExtractSessionContext(tmpExp) ?? buffer.SessionContext;
+
+            var result = newTranslator.TranslateQuery(tmpExp, sessionContext);
 
             var text = result.CommandText;
 
@@ -1267,7 +1278,7 @@ namespace VirtualObjects.Queries.Translation
                     buffer.From += " ";
                     buffer.From += _formatter.From;
                     buffer.From += " ";
-                    buffer.From += _formatter.FormatTableName(buffer.EntityInfo, 100 + _index);
+                    buffer.From += _formatter.FormatTableName(buffer.EntityInfo, 100 + _index, buffer.SessionContext);
 
                     //
                     // Here the problem is the [T0] must be [T100].
@@ -1320,7 +1331,7 @@ namespace VirtualObjects.Queries.Translation
 
 
             _EntitySources.Push(buffer.EntityInfo);
-            buffer.From += _formatter.FormatTableName(buffer.EntityInfo, _index);
+            buffer.From += _formatter.FormatTableName(buffer.EntityInfo, _index, buffer.SessionContext);
         }
 
         private void CompilePredicateExpression(Expression expression, CompilerBuffer buffer)
@@ -1454,7 +1465,7 @@ namespace VirtualObjects.Queries.Translation
 
                 nestedExpression = JoinExpressions(nestedExpression, queryable.Expression);
 
-                result = newTranslator.TranslateQuery(nestedExpression);
+                result = newTranslator.TranslateQuery(nestedExpression, buffer.SessionContext);
             }
             catch (TranslationException ex)
             {
@@ -1773,7 +1784,7 @@ Group by error reasons:
             buffer.Predicates += " ";
             buffer.Predicates += _formatter.From;
             buffer.Predicates += " ";
-            buffer.Predicates += _formatter.FormatTableName(foreignKey.EntityInfo, queryCompiler._index);
+            buffer.Predicates += _formatter.FormatTableName(foreignKey.EntityInfo, queryCompiler._index, buffer.SessionContext);
             buffer.Predicates += " ";
             buffer.Predicates += _formatter.Where;
             buffer.Predicates += " ";
@@ -1870,7 +1881,6 @@ Group by error reasons:
             {
                 return false;
             }
-
 
             switch (expression.NodeType)
             {
@@ -2116,7 +2126,7 @@ Group by error reasons:
             var callExpression = expression as MethodCallExpression;
             if (callExpression != null)
             {
-                if (callExpression.Method.Name == "Query")
+                if (callExpression.Method.Name == "Query" || callExpression.Method.Name == "GetAll")
                 {
                     return true;
                 }
@@ -2153,8 +2163,7 @@ Group by error reasons:
 
                 var outputType = tmpLambda.ReturnType;
 
-                if ( outputType == typeof(Boolean) )
-
+                if (outputType == typeof(Boolean))
                 {
                     throw new TranslationException(Errors.Translation_PredicateOnProjection);
                 }
@@ -2335,27 +2344,9 @@ Group by error reasons:
             Expression body = unary != null ?
                 Expression.NotEqual(unary.Operand, Expression.Constant(true)) : // This is a NOT
                 Expression.Equal(lambda.Body, Expression.Constant(true));       // This is a Member Access
-#if NET35
-            return Expression.Lambda(body, parameters.ToArray());
-#else
+
             return Expression.Lambda(body, parameters);
-#endif
-
         }
-
-        /*
-                private static Type ExtractType(Expression expression)
-                {
-                    switch ( expression.NodeType )
-                    {
-                        case ExpressionType.New:
-                        case ExpressionType.Parameter:
-                            return expression.Type;
-                        default:
-                            throw new UnsupportedException(Errors.UnableToGetType, expression);
-                    }
-                }
-        */
 
         private static Expression ExtractAccessor(Expression expression)
         {
@@ -2437,18 +2428,6 @@ Group by error reasons:
         {
             return expression.Arguments.Select(ParseValue).ToArray();
         }
-
-        /*
-                private string ExtractName(Expression expression, IEntityInfo entityInfo)
-                {
-                    if ( expression is MemberExpression )
-                        return ((MemberExpression)expression).Member.Name;
-                    if ( expression is ParameterExpression )
-                        return entityInfo.KeyColumns.First().ColumnName;
-
-                    return null;
-                }
-        */
 
         private string Merge(CompilerBuffer buffer)
         {
@@ -2536,7 +2515,8 @@ Group by error reasons:
             var buffer = new CompilerBuffer
             {
                 EntityInfo = _mapper.Map(queryable.ElementType),
-                PredicatedColumns = new Collection<IEntityColumnInfo>()
+                PredicatedColumns = new Collection<IEntityColumnInfo>(),
+                SessionContext = ((QueryableStub)queryable).Context
             };
 
             if (queryable.ElementType.IsDynamic())
@@ -2551,6 +2531,25 @@ Group by error reasons:
                 new { ElementTypeName = queryable.ElementType.Name });
 
             return buffer;
+        }
+
+        private static SessionContext ExtractSessionContext(Expression expression)
+        {
+            var callExpression = expression as MethodCallExpression;
+
+            if (callExpression != null)
+            {
+                if (callExpression.Method.Name == "Query" || callExpression.Method.Name == "GetAll")
+                {
+                    var session = ParseValue(callExpression.Object) as Session;
+
+                    return (session != null) ? ((InternalSession)session.InternalSession).Context : null;
+                }
+
+                return ExtractSessionContext(callExpression.Arguments.First());
+            }
+
+            return null;
         }
 
         private IQueryable EvaluateQuery(IQueryable queryable)

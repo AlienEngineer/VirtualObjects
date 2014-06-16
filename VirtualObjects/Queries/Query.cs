@@ -9,10 +9,11 @@ namespace VirtualObjects.Queries
     class Query : IQueryable
     {
 
-        public Query(IQueryProvider provider, Expression expression, Type elementType)
+        public Query(IQueryProvider provider, Expression expression, Type elementType, SessionContext context)
         {
             Provider = provider;
             ElementType = elementType;
+            Context = context;
             Expression = expression;
         }
         
@@ -23,6 +24,7 @@ namespace VirtualObjects.Queries
 
         public Expression Expression { get; private set; }
         public Type ElementType { get; private set; }
+        public SessionContext Context { get; set; }
         public IQueryProvider Provider { get; private set; }
 
         public override string ToString()
@@ -39,13 +41,13 @@ namespace VirtualObjects.Queries
 
     class Query<TElement> : Query, IOrderedQueryable<TElement>
     {
-        public Query(IQueryProvider provider, Expression expression)
-            : base(provider, expression, typeof(TElement))
+        public Query(IQueryProvider provider, Expression expression, SessionContext context)
+            : base(provider, expression, typeof(TElement), context)
         {
         }
 
-        public Query(IQueryProvider provider) 
-            : this(provider, new List<TElement>().AsQueryable().Expression)
+        public Query(IQueryProvider provider, SessionContext context)
+            : this(provider, new List<TElement>().AsQueryable().Expression, context)
         {
 
         }

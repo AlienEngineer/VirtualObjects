@@ -18,7 +18,7 @@ namespace VirtualObjects.Queries.Execution
         {
             try
             {
-                var queryInfo = _translator.TranslateQuery(expression);
+                var queryInfo = _translator.TranslateQuery(expression, context);
 
                 return context.Connection.ExecuteScalar(queryInfo.CommandText, queryInfo.Parameters);
             }
