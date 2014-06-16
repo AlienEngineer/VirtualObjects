@@ -13,5 +13,10 @@ namespace VirtualObjects.Queries.Formatters
         {
             return Wrap(entityName + "$");
         }
+
+        public override string FormatTableName(IEntityInfo entityInfo, int index)
+        {
+            return FormatTableName(entityInfo.EntityName, index);
+        }
     }
 }

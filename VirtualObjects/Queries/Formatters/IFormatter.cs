@@ -402,6 +402,13 @@ namespace VirtualObjects.Queries.Formatters
         /// <returns></returns>
         string FormatRowNumber(String orderBy, int index);
 
-        
+        /// <summary>
+        /// Formats the name of the table.
+        /// </summary>
+        /// <param name="entityInfo">The entity information.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        String FormatTableName(IEntityInfo entityInfo, int index);
+
     }
 }

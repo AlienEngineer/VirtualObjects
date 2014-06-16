@@ -74,7 +74,8 @@ namespace VirtualObjects
         /// </summary>
         public virtual void Initialize()
         {
-            ConnectionProvider = ConnectionProvider ?? new NamedDbConnectionProvider();              
+            ConnectionProvider = ConnectionProvider ?? new NamedDbConnectionProvider();
+            DefaultSchema = DefaultSchema ?? "dbo";
         }
 
         /// <summary>
@@ -120,5 +121,16 @@ namespace VirtualObjects
             builder.CollectionFilter<FilterWith>(e => e.FieldName);
         }
 
+        /// <summary>
+        /// Flushes this instance.
+        /// </summary>
+        public void Flush()
+        {
+            Initialize();
+
+            ConfigurationTranslationBuilder.EntitySchema(e => DefaultSchema);
+
+            ConfigureMappingBuilder(ConfigurationTranslationBuilder);
+        }
     }
 }

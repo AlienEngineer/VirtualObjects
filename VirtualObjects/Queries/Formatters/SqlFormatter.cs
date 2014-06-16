@@ -157,6 +157,11 @@ namespace VirtualObjects.Queries.Formatters
                 .ToString();
         }
 
+        public virtual string FormatTableName(IEntityInfo entityInfo, int index)
+        {
+            return FormatTableName(entityInfo.EntitySchema) + "." + FormatTableName(entityInfo.EntityName, index);
+        }
+
         public string FormatFields(IEnumerable<IEntityColumnInfo> columns, int index)
         {
 #if NET35

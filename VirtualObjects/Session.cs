@@ -48,8 +48,7 @@ namespace VirtualObjects
         private void Initialize(SessionConfiguration configuration)
         {
             _configuration = configuration;
-            _configuration.Initialize();
-            _configuration.ConfigureMappingBuilder(_configuration.ConfigurationTranslationBuilder);
+            _configuration.Flush();
 
             ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
             Logger = configuration.Logger ?? new TextWriterStub();

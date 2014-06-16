@@ -812,13 +812,13 @@ namespace VirtualObjects.Queries.Translation
             // The first table will only be added in the first call.
             if (String.IsNullOrEmpty(buffer.From))
             {
-                buffer.From += _formatter.FormatTableName(entityInfo1.EntityName, _index);
+                buffer.From += _formatter.FormatTableName(entityInfo1, _index);
             }
 
             buffer.From += " ";
             buffer.From += _formatter.InnerJoin;
             buffer.From += " ";
-            buffer.From += _formatter.FormatTableName(entityInfo2.EntityName, newTranlator._index);
+            buffer.From += _formatter.FormatTableName(entityInfo2, newTranlator._index);
             buffer.From += " ";
             buffer.From += _formatter.On;
             buffer.From += " ";
@@ -1267,7 +1267,7 @@ namespace VirtualObjects.Queries.Translation
                     buffer.From += " ";
                     buffer.From += _formatter.From;
                     buffer.From += " ";
-                    buffer.From += _formatter.FormatTableName(buffer.EntityInfo.EntityName, 100 + _index);
+                    buffer.From += _formatter.FormatTableName(buffer.EntityInfo, 100 + _index);
 
                     //
                     // Here the problem is the [T0] must be [T100].
@@ -1320,7 +1320,7 @@ namespace VirtualObjects.Queries.Translation
 
 
             _EntitySources.Push(buffer.EntityInfo);
-            buffer.From = _formatter.FormatTableName(buffer.EntityInfo.EntityName, _index);
+            buffer.From += _formatter.FormatTableName(buffer.EntityInfo, _index);
         }
 
         private void CompilePredicateExpression(Expression expression, CompilerBuffer buffer)
@@ -1773,7 +1773,7 @@ Group by error reasons:
             buffer.Predicates += " ";
             buffer.Predicates += _formatter.From;
             buffer.Predicates += " ";
-            buffer.Predicates += _formatter.FormatTableName(foreignKey.EntityInfo.EntityName, queryCompiler._index);
+            buffer.Predicates += _formatter.FormatTableName(foreignKey.EntityInfo, queryCompiler._index);
             buffer.Predicates += " ";
             buffer.Predicates += _formatter.Where;
             buffer.Predicates += " ";
@@ -2107,7 +2107,6 @@ Group by error reasons:
         }
 
         #endregion
-
 
         #region Auxiliary Methods
 
