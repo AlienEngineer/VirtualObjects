@@ -15,14 +15,14 @@
       * Fix: DerivedTypes didn't map at all.
       * Fix: Throw exception when unable to compile generated code.
       * Fix: Added base type assemblies to the code compiler.
-      * Fix: Added base type assemblies of generic arguments used on dynamic types to the code compiler.
+      * Fix #32: Added base type assemblies of generic arguments used on dynamic types to the code compiler.
       * Feature: Generate code to files.
       * -1: Removed scaffolders from this project. See VirtualObjects.Scaffolders nuget package.
-      
+
       Version 1.3.14
       * Fix: Wrong convertion to SqlParameter over OLEDbConnection.
       * Change: Joins now translate into Left Joins. Apply filter if needed.
-      
+
       Version 1.3.13
       * Scaffold Feature: IRepository extension method to access transation and acquire the lock.
       * Fix: Lock release must clear cached lock.
