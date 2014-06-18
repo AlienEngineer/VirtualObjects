@@ -78,7 +78,7 @@ namespace VirtualObjects.CodeGenerators
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message + "\n" + e.StackTrace, e);
+                throw new MappingException(e.Message + "\n" + e.StackTrace, e);
             }
         }
 

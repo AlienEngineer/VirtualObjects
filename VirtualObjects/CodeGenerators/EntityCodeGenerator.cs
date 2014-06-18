@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Reflection;
 using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.CodeGenerators
@@ -41,6 +42,12 @@ namespace VirtualObjects.CodeGenerators
             }
 
             builder.References.Add(type.Assembly.CodeBase.Remove(0, "file:///".Length));
+
+            foreach (var argType in type.GetGenericArguments())
+            {
+                AddReference(argType);
+            }
+
             AddReference(type.BaseType);
         }
 

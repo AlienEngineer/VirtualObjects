@@ -973,6 +973,19 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(Repeat)]
+        public void SqlTranslation_Joins_Projection_Unnamed()
+        {
+            var query = from Order in Query<Orders>()
+                        join Detail in Query<OrderDetails>() on Order equals Detail.Order
+                        select new { Order, Detail };
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
         public void SqlTranslation_2Joins()
         {
             var query = from o in Query<Orders>()
