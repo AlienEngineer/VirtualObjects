@@ -6,16 +6,16 @@ using VirtualObjects.Queries;
 
 namespace VirtualObjects.NonQueries
 {
-    class Update<TEntity> : Query<TEntity>, IUpdate<TEntity>
+    class Update<TEntity> : IUpdate<TEntity>
     {
-        
         public IQueryable<TEntity> Query { get; private set; }
+        public SessionContext Context { get; private set; }
 
-        public Update(IQueryProvider provider, Expression expression, SessionContext context)
-            : base(provider, expression, context) { }
-
-        public Update(IQueryProvider provider, SessionContext context)
-            : base(provider, context) { }
+        public Update(SessionContext context, IQueryable<TEntity> query)
+        {
+            Query = query;
+            Context = context;
+        }
 
         public IUpdate<TEntity> Set<TValue>(Expression<Func<TEntity, TValue>> fieldGetter, TValue value)
         {
@@ -31,7 +31,7 @@ namespace VirtualObjects.NonQueries
         {
             //
             // Create a select statement to use as a stub.
-            var query = this.Select(e => new { NOFIELD = 1 });
+            var query = Query.Select(e => new { NOFIELD = 1 });
 
             //
             // Replace stub projection for update statements.
@@ -41,15 +41,9 @@ namespace VirtualObjects.NonQueries
             return queryInfo;
         }
 
-        public INonQuery<TEntity> Where(Func<IQueryable<TEntity>, IQueryable<TEntity>> clause)
+        public INonQuery<TEntity> Where(Expression<Func<TEntity, bool>> expression)
         {
-            if (Query != null)
-            {
-                throw new NonQueryOperationException("Unable to add more than one query.");
-            }
-
-            Query = clause(Provider.CreateQuery<TEntity>(null));
-
+            Query = Query.Where(expression);
             return this;
         }
 

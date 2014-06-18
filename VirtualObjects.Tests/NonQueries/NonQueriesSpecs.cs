@@ -19,7 +19,7 @@ namespace VirtualObjects.Tests.NonQueries
             {
                 update = Session.Update<Employee>()
                             .Set(e => e.LastName, "")
-                            .Where(c => c.Where(e => e.EmployeeId > 0));
+                            .Where(e => e.EmployeeId > 0);
                 
             };
 
