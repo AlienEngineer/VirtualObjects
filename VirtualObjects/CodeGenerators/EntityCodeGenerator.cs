@@ -43,7 +43,7 @@ namespace VirtualObjects.CodeGenerators
 
             builder.References.Add(type.Assembly.CodeBase.Remove(0, "file:///".Length));
 
-            foreach (var argType in type.GenericTypeArguments)
+            foreach (var argType in type.GetGenericArguments())
             {
                 AddReference(argType);
             }
