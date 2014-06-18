@@ -15,6 +15,7 @@
       * Fix: DerivedTypes didn't map at all.
       * Fix: Throw exception when unable to compile generated code.
       * Fix: Added base type assemblies to the code compiler.
+      * Fix: Added base type assemblies of generic arguments used on dynamic types to the code compiler.
       * Feature: Generate code to files.
       * -1: Removed scaffolders from this project. See VirtualObjects.Scaffolders nuget package.
       
