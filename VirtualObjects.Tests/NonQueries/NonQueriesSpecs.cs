@@ -26,7 +26,7 @@ namespace VirtualObjects.Tests.NonQueries
         It should_match =
             () => update.ToString()
                 .Should()
-                .Be("Update [Employee] Set [T0].[LastName] = @p1 From [Northwind].[dbo].[Employees] [T0] Where ([T0].[EmployeeId] > @p0)");
+                .Be("Update [Employees] Set [LastName] = @p1 From [Northwind].[dbo].[Employees] [T0] Where ([T0].[EmployeeId] > @p0)");
 
         private static INonQuery<Employee> update;
     }
