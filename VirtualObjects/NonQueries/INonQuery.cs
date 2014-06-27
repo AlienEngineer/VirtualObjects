@@ -22,7 +22,6 @@ namespace VirtualObjects.NonQueries
         /// <summary>
         /// Wheres the specified expression.
         /// </summary>
-        /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns></returns>
         INonQuery<TEntity> Where(Expression<Func<TEntity, Boolean>> expression);
