@@ -1,9 +1,12 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
 using VirtualObjects.Mappings;
 using VirtualObjects.Queries.Formatters;
+using ColumnAttribute = VirtualObjects.Mappings.ColumnAttribute;
+using TableAttribute = VirtualObjects.Mappings.TableAttribute;
 
 namespace VirtualObjects
 {
@@ -89,8 +92,10 @@ namespace VirtualObjects
 
             builder.ColumnKey<KeyAttribute>();
             builder.ColumnKey<IdentityAttribute>();
+            builder.ColumnKey<System.ComponentModel.DataAnnotations.KeyAttribute>();
 
             builder.ColumnIdentity<IdentityAttribute>();
+            builder.ColumnIdentity<DatabaseGeneratedAttribute>();
 
             builder.ForeignKey<AssociationAttribute>(e => e.OtherKey);
             builder.ForeignKeyLinks<AssociationAttribute>(e => e.Bind);

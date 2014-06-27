@@ -141,6 +141,12 @@ namespace VirtualObjects.Config
             });
         }
 
+        public void ColumnIdentity<TAttribute>(Func<TAttribute, Boolean> keyGetter = null,
+            Predicate<TAttribute> constraint = null) where TAttribute : Attribute
+        {
+            
+        }
+
         /// <summary>
         /// Appends a parser to find if a column is an Identity key based on a Property.
         /// </summary>
