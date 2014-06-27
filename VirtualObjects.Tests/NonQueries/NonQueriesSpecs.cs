@@ -6,6 +6,7 @@ using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.NonQueries
 {
+    [Tags("NonQueries")]
     public class NonQueriesSpecs : SpecsUtilityBelt
     {
 
@@ -20,13 +21,12 @@ namespace VirtualObjects.Tests.NonQueries
                 update = Session.Update<Employee>()
                             .Set(e => e.LastName, "")
                             .Where(e => e.EmployeeId > 0);
-                
             };
 
         It should_match =
             () => update.ToString()
                 .Should()
-                .Be("Update [Employee] Set [T0].[LastName] = @p0 From [Northwind].[dbo].[Employees] [T0] Where ([T0].[EmployeeId] > @p1)");
+                .Be("Update [Employee] Set [T0].[LastName] = @p1 From [Northwind].[dbo].[Employees] [T0] Where ([T0].[EmployeeId] > @p0)");
 
         private static INonQuery<Employee> update;
     }

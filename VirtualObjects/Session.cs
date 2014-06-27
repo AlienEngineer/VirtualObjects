@@ -62,7 +62,9 @@ namespace VirtualObjects
                 Configuration = configuration
             };
 
-            Formmater = configuration.Formatter ?? new SqlFormatter(SessionContext);
+            Formater = configuration.Formatter ?? new SqlFormatter(SessionContext);
+
+            SessionContext.Formatter = Formater;
 
             EntityBag = new HybridEntityBag(new EntityBag());
 
@@ -78,20 +80,18 @@ namespace VirtualObjects
             EntitiesMapper = new EntityModelEntitiesMapper();
             
             
-            OperationsProvider = new OperationsProvider(Formmater, EntityMapper, EntityProvider);
+            OperationsProvider = new OperationsProvider(Formater, EntityMapper, EntityProvider);
             
             ConfigurationTranslator = configuration.ConfigurationTranslationBuilder.Build();
 
             EntityInfoCodeGeneratorFactory = new EntityInfoCodeGeneratorFactory(EntityBag, ConfigurationTranslator, configuration);
-
-            
 
             Mapper = new Mapper(EntityBag, ConfigurationTranslator, OperationsProvider, EntityInfoCodeGeneratorFactory, SessionContext);
 
             SessionContext.Map = Mapper.Map;
             SessionContext.Mapper = Mapper;
 
-            Translator = new CachingTranslator(Formmater, Mapper, EntityBag, configuration);
+            Translator = new CachingTranslator(Formater, Mapper, EntityBag, configuration);
 
             SessionContext.Translator = Translator;
 
@@ -115,7 +115,7 @@ namespace VirtualObjects
         public IConfigurationTranslator ConfigurationTranslator { get; set; }
         public IEntityProvider EntityProvider { get; set; }
         public EntityInfoModelMapper EntityMapper { get; set; }
-        public IFormatter Formmater { get; set; }
+        public IFormatter Formater { get; set; }
         public OperationsProvider OperationsProvider { get; set; }
         public HybridEntityBag EntityBag { get; set; }
         public Mapper Mapper { get; set; }
@@ -244,7 +244,7 @@ namespace VirtualObjects
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <returns></returns>
-        public IUpdate<TEntity> Update<TEntity>()
+        public IUpdate<TEntity> Update<TEntity>() where TEntity : class, new()
         {
             return InternalSession.Update<TEntity>();
         }

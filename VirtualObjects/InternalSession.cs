@@ -103,10 +103,9 @@ namespace VirtualObjects
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public IUpdate<TEntity> Update<TEntity>()
+        public IUpdate<TEntity> Update<TEntity>() where TEntity : class, new()
         {
-            throw new NotImplementedException();
-            // return new Update<TEntity>(Context.QueryProvider, null);
+            return new Update<TEntity>(Context, GetAll<TEntity>());
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Linq;
 using VirtualObjects.Config;
 using VirtualObjects.Programability;
 using VirtualObjects.Queries;
+using VirtualObjects.Queries.Formatters;
 
 namespace VirtualObjects
 {
@@ -13,6 +14,15 @@ namespace VirtualObjects
     /// </summary>
     public class SessionContext : IDisposable
     {
+
+        /// <summary>
+        /// Gets or sets the formatter.
+        /// </summary>
+        /// <value>
+        /// The formatter.
+        /// </value>
+        public IFormatter Formatter { get; set; }
+
         /// <summary>
         /// Gets or sets the query provider.
         /// </summary>

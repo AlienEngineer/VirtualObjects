@@ -54,7 +54,7 @@ namespace VirtualObjects
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <returns></returns>
-        IUpdate<TEntity> Update<TEntity>();
+        IUpdate<TEntity> Update<TEntity>() where TEntity : class, new();
 
         /// <summary>
         /// Deletes the specified entity.

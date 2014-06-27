@@ -62,7 +62,7 @@ namespace VirtualObjects.Queries
         /// <value>
         /// The command text.
         /// </value>
-        string CommandText { get; }
+        string CommandText { get; set; }
 
         /// <summary>
         /// Gets the command.
