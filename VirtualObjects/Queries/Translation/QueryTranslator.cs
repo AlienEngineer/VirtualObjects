@@ -1718,7 +1718,7 @@ Group by error reasons:
                                 _formatter.WrapWithCollation(
                                     _formatter.FormatField(memberInfo.Name),
                                     memberInfo.ReflectedType,
-                                    _compileStack.Peek() == "Where" ? null : memberInfo.Name
+                                    GetAlias(memberInfo.Name)
                                 );
 
                             return;
@@ -1729,8 +1729,8 @@ Group by error reasons:
                     buffer.Predicates +=
                         _formatter.WrapWithCollation(
                             _formatter.FormatFieldWithTable(column.ColumnName, translator._index),
-                            column.Property.PropertyType, 
-                            _compileStack.Peek() == "Where" ? null : column.ColumnName 
+                            column.Property.PropertyType,
+                            GetAlias(column.ColumnName) 
                         );
 
                     buffer.AddPredicatedColumn(column);
@@ -1739,6 +1739,21 @@ Group by error reasons:
                 {
                     CompileMemberAccess(member, member.Expression, buffer);
                 }
+            }
+        }
+
+        private string GetAlias(String name)
+        {
+            switch (_compileStack.Peek())
+            {
+                case "Where": 
+                case "GroupBy":
+                case "OrderBy":
+                case "OrderByDescending":
+                case "ThenBy":
+                    return null;
+                default:
+                    return name;
             }
         }
 

@@ -79,7 +79,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName] From [Northwind].[dbo].[Employees] [T0]")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName] collate Latin1_General_CI_AS [LastName], [T0].[FirstName] collate Latin1_General_CI_AS [FirstName] From [Northwind].[dbo].[Employees] [T0]")
             );
         }
 
@@ -145,7 +145,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index], * From [Northwind].[dbo].[Employees] [T100] Where ([T100].[FirstName] = @p0) And ([T100].[FirstName] = @p1)) [T0] Where ([T0].[FirstName] = @p0) And ([T0].[FirstName] = @p1) And ([T0].[Internal_Row_Index] > 1 And [T0].[Internal_Row_Index] <= 2)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index], * From [Northwind].[dbo].[Employees] [T100] Where ([T100].[FirstName] collate Latin1_General_CI_AS = @p0) And ([T100].[FirstName] collate Latin1_General_CI_AS = @p1)) [T0] Where ([T0].[FirstName] collate Latin1_General_CI_AS = @p0) And ([T0].[FirstName] collate Latin1_General_CI_AS = @p1) And ([T0].[Internal_Row_Index] > 1 And [T0].[Internal_Row_Index] <= 2)")
             );
         }
 
@@ -157,7 +157,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[LastName]) as [Internal_Row_Index], * From [Northwind].[dbo].[Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1 And [T0].[Internal_Row_Index] <= 2)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From (Select ROW_NUMBER() OVER ( Order By [T100].[LastName] collate Latin1_General_CI_AS) as [Internal_Row_Index], * From [Northwind].[dbo].[Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1 And [T0].[Internal_Row_Index] <= 2)")
             );
         }
 
@@ -575,7 +575,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] like @p0 + '%')")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS like @p0 + '%')")
             );
 
         }
@@ -589,7 +589,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] like '%' + @p0)")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS like '%' + @p0)")
             );
 
         }
@@ -603,7 +603,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] like '%' + @p0 + '%')")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS like '%' + @p0 + '%')")
             );
 
         }
@@ -617,7 +617,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] like '%' + [T0].[City] + '%')")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS like '%' + [T0].[City] collate Latin1_General_CI_AS + '%')")
             );
 
         }
@@ -675,7 +675,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId], [T0].[LastName]")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId], [T0].[LastName] collate Latin1_General_CI_AS")
             );
 
         }
@@ -689,7 +689,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId], [T0].[LastName]")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId], [T0].[LastName] collate Latin1_General_CI_AS")
             );
 
         }
@@ -704,7 +704,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId], [T0].[LastName] Desc")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId], [T0].[LastName] collate Latin1_General_CI_AS Desc")
             );
 
         }
@@ -720,7 +720,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId] Desc, [T0].[LastName]")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId] Desc, [T0].[LastName] collate Latin1_General_CI_AS")
             );
 
         }
@@ -734,7 +734,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId] Desc, [T0].[LastName] Desc")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Northwind].[dbo].[Employees] [T0] Order By [T0].[EmployeeId] Desc, [T0].[LastName] collate Latin1_General_CI_AS Desc")
             );
 
         }
@@ -765,7 +765,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] = [T0].[City])")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS = [T0].[City] collate Latin1_General_CI_AS)")
             );
         }
 
@@ -776,7 +776,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] Is Null)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS Is Null)")
             );
         }
 
@@ -788,7 +788,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where (([T0].[LastName] = @p0) Or (@p1 Is Null))")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where (([T0].[LastName] collate Latin1_General_CI_AS = @p0) Or (@p1 Is Null))")
             );
         }
 
@@ -803,7 +803,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] = @p0)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS = @p0)")
             );
         }
 
@@ -814,7 +814,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] Is Not Null)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS Is Not Null)")
             );
         }
 
@@ -832,7 +832,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where (([T0].[LastName] = [T0].[City]) Or ([T0].[EmployeeId] = @p0)) And ([T0].[Extension] = @p1)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where (([T0].[LastName] collate Latin1_General_CI_AS = [T0].[City] collate Latin1_General_CI_AS) Or ([T0].[EmployeeId] = @p0)) And ([T0].[Extension] collate Latin1_General_CI_AS = @p1)")
             );
         }
 
@@ -854,7 +854,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[Extension] = @p0) And (([T0].[LastName] = [T0].[City]) Or ([T0].[EmployeeId] = @p1)) And ([T0].[Extension] = @p2) And (([T0].[LastName] = [T0].[City]) Or ([T0].[EmployeeId] = @p3)) And ([T0].[Extension] = @p4) And ([T0].[Extension] = @p5)")
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName], [T0].[Title], [T0].[TitleOfCourtesy], [T0].[BirthDate], [T0].[HireDate], [T0].[Address], [T0].[City], [T0].[Region], [T0].[PostalCode], [T0].[Country], [T0].[HomePhone], [T0].[Extension], [T0].[Notes], [T0].[Photo], [T0].[ReportsTo], [T0].[PhotoPath], [T0].[Version] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[Extension] collate Latin1_General_CI_AS = @p0) And (([T0].[LastName] collate Latin1_General_CI_AS = [T0].[City] collate Latin1_General_CI_AS) Or ([T0].[EmployeeId] = @p1)) And ([T0].[Extension] collate Latin1_General_CI_AS = @p2) And (([T0].[LastName] collate Latin1_General_CI_AS = [T0].[City] collate Latin1_General_CI_AS) Or ([T0].[EmployeeId] = @p3)) And ([T0].[Extension] collate Latin1_General_CI_AS = @p4) And ([T0].[Extension] collate Latin1_General_CI_AS = @p5)")
             );
         }
 
@@ -941,7 +941,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T1].[OrderId], [T1].[UnitPrice], [T0].[OrderDate], [T0].[ShipName], [T0].[EmployeeId] From [Northwind].[dbo].[Orders] [T0] Inner Join [Northwind].[dbo].[Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T1].[OrderId] > @p0)")
+                Is.EqualTo("Select [T1].[OrderId], [T1].[UnitPrice], [T0].[OrderDate], [T0].[ShipName] collate Latin1_General_CI_AS [ShipName], [T0].[EmployeeId] From [Northwind].[dbo].[Orders] [T0] Inner Join [Northwind].[dbo].[Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Where ([T1].[OrderId] > @p0)")
             );
         }
 
@@ -954,7 +954,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[OrderId], [T1].[UnitPrice], [T0].[ShipCity] From [Northwind].[dbo].[Orders] [T0] Inner Join [Northwind].[dbo].[Order Details] [T1] On ([T0].[Freight] = [T1].[UnitPrice])")
+                Is.EqualTo("Select [T0].[OrderId], [T1].[UnitPrice], [T0].[ShipCity] collate Latin1_General_CI_AS [ShipCity] From [Northwind].[dbo].[Orders] [T0] Inner Join [Northwind].[dbo].[Order Details] [T1] On ([T0].[Freight] = [T1].[UnitPrice])")
             );
         }
 
@@ -981,7 +981,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Northwind].[dbo].[Orders] [T0] Inner Join [Northwind].[dbo].[Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
             );
         }
 
@@ -1010,7 +1010,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount], [T2].[EmployeeId], [T2].[LastName], [T2].[FirstName], [T2].[Title], [T2].[TitleOfCourtesy], [T2].[BirthDate], [T2].[HireDate], [T2].[Address], [T2].[City], [T2].[Region], [T2].[PostalCode], [T2].[Country], [T2].[HomePhone], [T2].[Extension], [T2].[Notes], [T2].[Photo], [T2].[ReportsTo], [T2].[PhotoPath], [T2].[Version] From [Northwind].[dbo].[Orders] [T0] Inner Join [Northwind].[dbo].[Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Inner Join [Northwind].[dbo].[Employees] [T2] On ([T0].[EmployeeId] = [T2].[EmployeeId]) Where ([T0].[EmployeeId] In (Select [T3].[EmployeeId] From [Northwind].[dbo].[Employees] [T3] Where [T3].[Title] = [T2].[Region]))")
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount], [T2].[EmployeeId], [T2].[LastName], [T2].[FirstName], [T2].[Title], [T2].[TitleOfCourtesy], [T2].[BirthDate], [T2].[HireDate], [T2].[Address], [T2].[City], [T2].[Region], [T2].[PostalCode], [T2].[Country], [T2].[HomePhone], [T2].[Extension], [T2].[Notes], [T2].[Photo], [T2].[ReportsTo], [T2].[PhotoPath], [T2].[Version] From [Northwind].[dbo].[Orders] [T0] Inner Join [Northwind].[dbo].[Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Inner Join [Northwind].[dbo].[Employees] [T2] On ([T0].[EmployeeId] = [T2].[EmployeeId]) Where ([T0].[EmployeeId] In (Select [T3].[EmployeeId] From [Northwind].[dbo].[Employees] [T3] Where [T3].[Title] = [T2].[Region] collate Latin1_General_CI_AS))")
             );
         }
 
@@ -1025,7 +1025,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount], [T2].[EmployeeId], [T2].[LastName], [T2].[FirstName], [T2].[Title], [T2].[TitleOfCourtesy], [T2].[BirthDate], [T2].[HireDate], [T2].[Address], [T2].[City], [T2].[Region], [T2].[PostalCode], [T2].[Country], [T2].[HomePhone], [T2].[Extension], [T2].[Notes], [T2].[Photo], [T2].[ReportsTo], [T2].[PhotoPath], [T2].[Version] From [Northwind].[dbo].[Orders] [T0] Inner Join [Northwind].[dbo].[Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Inner Join [Northwind].[dbo].[Employees] [T2] On ([T0].[EmployeeId] = [T2].[EmployeeId]) Where ([T0].[EmployeeId] In (Select [T3].[EmployeeId] From [Northwind].[dbo].[Employees] [T3] Where [T3].[Title] = [T2].[Region]))")
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount], [T2].[EmployeeId], [T2].[LastName], [T2].[FirstName], [T2].[Title], [T2].[TitleOfCourtesy], [T2].[BirthDate], [T2].[HireDate], [T2].[Address], [T2].[City], [T2].[Region], [T2].[PostalCode], [T2].[Country], [T2].[HomePhone], [T2].[Extension], [T2].[Notes], [T2].[Photo], [T2].[ReportsTo], [T2].[PhotoPath], [T2].[Version] From [Northwind].[dbo].[Orders] [T0] Inner Join [Northwind].[dbo].[Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Inner Join [Northwind].[dbo].[Employees] [T2] On ([T0].[EmployeeId] = [T2].[EmployeeId]) Where ([T0].[EmployeeId] In (Select [T3].[EmployeeId] From [Northwind].[dbo].[Employees] [T3] Where [T3].[Title] = [T2].[Region] collate Latin1_General_CI_AS))")
             );
         }
 

@@ -55,7 +55,7 @@ namespace VirtualObjects.Tests
         {
             modules = new ModulesConfiguration(new SessionConfiguration
             {
-                // UniformeCollations = true,
+                UniformeCollations = true,
                 Logger = Console.Out
             }, "northwind");
 
