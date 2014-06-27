@@ -4,6 +4,9 @@ namespace VirtualObjects.Queries.Formatters
 {
     class ExcelFormatter : SqlFormatter
     {
+
+        public ExcelFormatter() : base(null) { }
+
         public override String FormatTableName(String name, int index)
         {
             return string.Format("{0} {1}", Wrap(name + "$"), GetTableAlias(index));

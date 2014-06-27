@@ -13,8 +13,9 @@ namespace VirtualObjects.Queries.Formatters
         private const string Separator = ", ";
         private const string TablePrefix = "T";
 
-        public SqlFormatter()
+        public SqlFormatter(SessionContext sessionContext)
         {
+
             Select = "Select";
             From = "From";
             Where = "Where";
@@ -41,6 +42,14 @@ namespace VirtualObjects.Queries.Formatters
             Update = "Update";
             Set = "Set";
             Identity = "Select @@IDENTITY";
+
+            if (sessionContext != null)
+            {
+                Collation = sessionContext.Configuration.UniformeCollations
+                    ? " collate " + sessionContext.Configuration.DefaultCollation
+                    : String.Empty;    
+            }
+            
         }
 
         protected static string Wrap(string name)
@@ -88,13 +97,24 @@ namespace VirtualObjects.Queries.Formatters
         public string Update { get; private set; }
         public string Set { get; private set; }
         public string Identity { get; private set; }
+        public string Collation { get; private set; }
 
-        public String FormatField(String name)
+        public string WrapWithCollation(string current, Type fieldType)
+        {
+            if (fieldType == typeof (String))
+            {
+                return current + Collation;    
+            }
+
+            return current;
+        }
+
+        public virtual String FormatField(String name)
         {
             return Wrap(name);
         }
 
-        public String FormatFieldWithTable(String name, int index)
+        public  virtual String FormatFieldWithTable(String name, int index)
         {
             return string.Format("{0}.{1}", GetTableAlias(index), Wrap(name));
         }
@@ -174,18 +194,10 @@ namespace VirtualObjects.Queries.Formatters
 
         public string FormatFields(IEnumerable<IEntityColumnInfo> columns, int index)
         {
-#if NET35
-            return String.Join(
-                FieldSeparator,
-                columns.Select(e => FormatFieldWithTable(e.ColumnName, index)).ToArray()
-            );
-#else
             return String.Join(
                 FieldSeparator,
                 columns.Select(e => FormatFieldWithTable(e.ColumnName, index))
             );
-#endif
-
         }
 
         public string GetRowNumberField(int index)

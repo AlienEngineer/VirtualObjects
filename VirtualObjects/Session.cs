@@ -53,9 +53,16 @@ namespace VirtualObjects
 
             ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
             Logger = configuration.Logger ?? new TextWriterStub();
-            Formmater = configuration.Formatter ?? new SqlFormatter();
 
             ConnectionManager = new Connection(ConnectionProvider, Logger, new SqlProgramability());
+
+            SessionContext = new SessionContext
+            {
+                Connection = ConnectionManager,
+                Configuration = configuration
+            };
+
+            Formmater = configuration.Formatter ?? new SqlFormatter(SessionContext);
 
             EntityBag = new HybridEntityBag(new EntityBag());
 
@@ -77,7 +84,7 @@ namespace VirtualObjects
 
             EntityInfoCodeGeneratorFactory = new EntityInfoCodeGeneratorFactory(EntityBag, ConfigurationTranslator, configuration);
 
-            SessionContext = new SessionContext { Connection = ConnectionManager };
+            
 
             Mapper = new Mapper(EntityBag, ConfigurationTranslator, OperationsProvider, EntityInfoCodeGeneratorFactory, SessionContext);
 

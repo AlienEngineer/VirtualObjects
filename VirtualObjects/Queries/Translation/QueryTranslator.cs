@@ -1714,13 +1714,22 @@ Group by error reasons:
                         }
                         else
                         {
-                            buffer.Predicates += _formatter.FormatField(memberInfo.Name);
+                            buffer.Predicates +=
+                                _formatter.WrapWithCollation(
+                                    _formatter.FormatField(memberInfo.Name),
+                                    memberInfo.ReflectedType
+                                );
+
                             return;
                         }
                     }
 
                     _memberAccessStack.Push(column);
-                    buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, translator._index);
+                    buffer.Predicates +=
+                        _formatter.WrapWithCollation(
+                            _formatter.FormatFieldWithTable(column.ColumnName, translator._index),
+                            column.Property.PropertyType
+                        );
 
                     buffer.AddPredicatedColumn(column);
                 }

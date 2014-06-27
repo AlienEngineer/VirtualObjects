@@ -138,6 +138,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\QueryAggregateFunctionsTests.cs" />
     <Compile Include="Queries\QueryMappingTests.cs" />
+    <Compile Include="Queries\SqlTranslationSpecs.cs" />
     <Compile Include="Queries\SqlTranslationTests.cs" />
     <Compile Include="Sessions\PerformanceCheck.cs" />
     <Compile Include="Sessions\RelatedFieldsTests.cs" />

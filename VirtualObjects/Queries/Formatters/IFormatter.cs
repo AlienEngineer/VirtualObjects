@@ -411,5 +411,12 @@ namespace VirtualObjects.Queries.Formatters
         /// <returns></returns>
         string FormatTableName(IEntityInfo entityInfo, int index, SessionContext context);
 
+        /// <summary>
+        /// Wraps with collation.
+        /// </summary>
+        /// <param name="current">The current.</param>
+        /// <param name="fieldType">The alias.</param>
+        /// <returns></returns>
+        string WrapWithCollation(string current, Type fieldType);
     }
 }

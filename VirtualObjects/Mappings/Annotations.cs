@@ -128,5 +128,20 @@ namespace VirtualObjects.Mappings
         public String FieldName { get; set; }
 
     }
+
+    /// <summary>
+    /// Sets the collation to use for a field comparation.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class Collation : Attribute
+    {
+        /// <summary>
+        /// Gets or sets the collate.
+        /// </summary>
+        /// <value>
+        /// The collate.
+        /// </value>
+        public String Collate { get; set; }
+    }
     
 }

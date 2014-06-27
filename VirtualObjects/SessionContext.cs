@@ -46,6 +46,14 @@ namespace VirtualObjects
         public ISession Session { get; set; }
 
         /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
+        public SessionConfiguration Configuration { get; set; }
+
+        /// <summary>
         /// Gets or sets the map.
         /// </summary>
         /// <value>

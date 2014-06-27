@@ -105,7 +105,8 @@ namespace VirtualObjects
         /// <exception cref="System.NotImplementedException"></exception>
         public IUpdate<TEntity> Update<TEntity>()
         {
-            return new Update<TEntity>(Context.QueryProvider, null, Context);
+            throw new NotImplementedException();
+            // return new Update<TEntity>(Context.QueryProvider, null);
         }
 
         /// <summary>

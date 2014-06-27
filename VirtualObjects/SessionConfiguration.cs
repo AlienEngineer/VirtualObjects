@@ -62,6 +62,22 @@ namespace VirtualObjects
         public Boolean SaveGeneratedCode { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether [uniforme collations].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [uniforme collations]; otherwise, <c>false</c>.
+        /// </value>
+        public Boolean UniformeCollations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default collation.
+        /// </summary>
+        /// <value>
+        /// The default collation.
+        /// </value>
+        public String DefaultCollation { get; set; }
+
+        /// <summary>
         /// Gets or sets the default schema.
         /// </summary>
         /// <value>
@@ -76,6 +92,7 @@ namespace VirtualObjects
         {
             ConnectionProvider = ConnectionProvider ?? new NamedDbConnectionProvider();
             DefaultSchema = DefaultSchema ?? "dbo";
+            DefaultCollation = DefaultCollation ?? "Latin1_General_CI_AS";
         }
 
         /// <summary>
