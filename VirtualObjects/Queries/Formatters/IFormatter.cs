@@ -416,7 +416,8 @@ namespace VirtualObjects.Queries.Formatters
         /// </summary>
         /// <param name="current">The current.</param>
         /// <param name="fieldType">The alias.</param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        string WrapWithCollation(string current, Type fieldType);
+        string WrapWithCollation(string current, Type fieldType, string name);
     }
 }

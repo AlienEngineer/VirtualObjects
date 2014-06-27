@@ -1717,18 +1717,20 @@ Group by error reasons:
                             buffer.Predicates +=
                                 _formatter.WrapWithCollation(
                                     _formatter.FormatField(memberInfo.Name),
-                                    memberInfo.ReflectedType
+                                    memberInfo.ReflectedType,
+                                    _compileStack.Peek() == "Where" ? null : memberInfo.Name
                                 );
 
                             return;
                         }
                     }
-
+                    
                     _memberAccessStack.Push(column);
                     buffer.Predicates +=
                         _formatter.WrapWithCollation(
                             _formatter.FormatFieldWithTable(column.ColumnName, translator._index),
-                            column.Property.PropertyType
+                            column.Property.PropertyType, 
+                            _compileStack.Peek() == "Where" ? null : column.ColumnName 
                         );
 
                     buffer.AddPredicatedColumn(column);

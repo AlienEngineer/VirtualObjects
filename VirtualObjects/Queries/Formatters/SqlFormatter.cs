@@ -47,16 +47,16 @@ namespace VirtualObjects.Queries.Formatters
             {
                 Collation = sessionContext.Configuration.UniformeCollations
                     ? " collate " + sessionContext.Configuration.DefaultCollation
-                    : String.Empty;    
+                    : String.Empty;
             }
-            
+
         }
 
         protected static string Wrap(string name)
         {
             var result = new StringBuffer();
 
-            foreach ( var item in name.Split('.') )
+            foreach (var item in name.Split('.'))
             {
                 result += string.Format("[{0}]", item);
                 result += ".";
@@ -99,11 +99,21 @@ namespace VirtualObjects.Queries.Formatters
         public string Identity { get; private set; }
         public string Collation { get; private set; }
 
-        public string WrapWithCollation(string current, Type fieldType)
+        public string WrapWithCollation(string current, Type fieldType, string name)
         {
-            if (fieldType == typeof (String))
+            if (fieldType == typeof(String))
             {
-                return current + Collation;    
+                StringBuffer sb = current;
+
+                sb += Collation;
+
+                if (!String.IsNullOrEmpty(name))
+                {
+                    sb += " ";
+                    sb += Wrap(name);
+                }
+
+                return sb;
             }
 
             return current;
@@ -114,7 +124,7 @@ namespace VirtualObjects.Queries.Formatters
             return Wrap(name);
         }
 
-        public  virtual String FormatFieldWithTable(String name, int index)
+        public virtual String FormatFieldWithTable(String name, int index)
         {
             return string.Format("{0}.{1}", GetTableAlias(index), Wrap(name));
         }
@@ -126,7 +136,7 @@ namespace VirtualObjects.Queries.Formatters
 
         public string FormatNode(ExpressionType nodeType)
         {
-            switch ( nodeType )
+            switch (nodeType)
             {
                 case ExpressionType.Add: return " + ";
                 case ExpressionType.Subtract: return " - ";
@@ -291,7 +301,7 @@ namespace VirtualObjects.Queries.Formatters
 
         public string BeginMethodCall(string methodCalled)
         {
-            switch ( methodCalled )
+            switch (methodCalled)
             {
                 case "StartsWith":
                     return " like ";
@@ -316,7 +326,7 @@ namespace VirtualObjects.Queries.Formatters
                     return "Datepart('dw', ";
                 case "DayOfYear":
                     return "Datepart('dy', ";
-                
+
             }
 
             throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });
@@ -324,7 +334,7 @@ namespace VirtualObjects.Queries.Formatters
 
         public string EndMethodCall(string methodCalled)
         {
-            switch ( methodCalled )
+            switch (methodCalled)
             {
                 case "StartsWith":
                 case "Contains":
@@ -350,7 +360,7 @@ namespace VirtualObjects.Queries.Formatters
 
         public string FormatConstant(object parseValue)
         {
-            if ( parseValue is Double )
+            if (parseValue is Double)
             {
                 return String.Format(CultureInfo.InvariantCulture, "{0: 0.0#}", parseValue);
             }

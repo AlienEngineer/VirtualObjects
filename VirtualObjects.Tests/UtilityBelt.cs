@@ -53,7 +53,11 @@ namespace VirtualObjects.Tests
 
         private void InitBelt()
         {
-            modules = new ModulesConfiguration(new SessionConfiguration(), "northwind");
+            modules = new ModulesConfiguration(new SessionConfiguration
+            {
+                // UniformeCollations = true,
+                Logger = Console.Out
+            }, "northwind");
 
             ConnectionManager = modules.ConnectionManager;
             Translator = modules.Translator;

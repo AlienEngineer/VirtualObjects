@@ -59,7 +59,7 @@ namespace VirtualObjects.Tests.Queries
         );
 
         private It should_match =
-            () => Translation.Should().Be("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS = @p0)");
+            () => Translation.Should().Be("Select [T0].[EmployeeId], [T0].[LastName] collate Latin1_General_CI_AS [LastName], [T0].[FirstName] collate Latin1_General_CI_AS [FirstName] From [Northwind].[dbo].[Employees] [T0] Where ([T0].[LastName] collate Latin1_General_CI_AS = @p0)");
     }
 
 }
