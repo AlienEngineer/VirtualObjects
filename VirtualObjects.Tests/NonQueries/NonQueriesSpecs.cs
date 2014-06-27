@@ -13,7 +13,7 @@ namespace VirtualObjects.Tests.NonQueries
     }
 
     [Subject(typeof (IUpdate<>))]
-    public class When_creating_an_update_operation : NonQueriesSpecs
+    public class When_creating_a_simple_employees_update_operation : NonQueriesSpecs
     {
         Because of =
             () =>
@@ -23,7 +23,7 @@ namespace VirtualObjects.Tests.NonQueries
                             .Where(e => e.EmployeeId > 0);
             };
 
-        It should_match =
+        It should_translate_to =
             () => update.ToString()
                 .Should()
                 .Be("Update [Employees] Set [LastName] = @p1 From [Northwind].[dbo].[Employees] [T0] Where ([T0].[EmployeeId] > @p0)");
