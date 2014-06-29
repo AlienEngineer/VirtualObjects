@@ -93,21 +93,26 @@ namespace VirtualObjects
             builder.ColumnKey<KeyAttribute>();
             builder.ColumnKey<IdentityAttribute>();
             builder.ColumnKey<System.ComponentModel.DataAnnotations.KeyAttribute>();
+            builder.ColumnKey<System.Data.Linq.Mapping.ColumnAttribute>(a => a.IsPrimaryKey);
 
             builder.ColumnIdentity<IdentityAttribute>();
-            builder.ColumnIdentity<DatabaseGeneratedAttribute>();
+            builder.ColumnIdentity<DatabaseGeneratedAttribute>(a => a.DatabaseGeneratedOption.CompareTo(DatabaseGeneratedOption.Identity) == 0);
+            builder.ColumnIdentity<System.Data.Linq.Mapping.ColumnAttribute>(a => a.IsDbGenerated && a.IsPrimaryKey);
 
             builder.ForeignKey<AssociationAttribute>(e => e.OtherKey);
+            builder.ForeignKey<InversePropertyAttribute>(a => a.Property);
             builder.ForeignKeyLinks<AssociationAttribute>(e => e.Bind);
 
             builder.ColumnVersion(e => e.Name == "Version" && e.PropertyType == typeof(byte[]));
             builder.ColumnVersion<VersionAttribute>();
+            builder.ColumnVersion<System.Data.Linq.Mapping.ColumnAttribute>(a => a.IsVersion);
 
             builder.ColumnIgnore(e => e.Name.StartsWith("Ignore"));
             builder.ColumnIgnore<IgnoreAttribute>();
+            builder.ColumnIgnore<NotMappedAttribute>();
 
             builder.ComputedColumn<ComputedAttribute>();
-
+            builder.ComputedColumn<DatabaseGeneratedAttribute>(a => a.DatabaseGeneratedOption.CompareTo(DatabaseGeneratedOption.Computed) == 0);
             //
             // Collections filters.
             //

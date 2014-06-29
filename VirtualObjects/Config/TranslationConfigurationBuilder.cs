@@ -107,7 +107,6 @@ namespace VirtualObjects.Config
             ColumnKey(prop =>
             {
                 var attributes = prop.Attributes<TAttribute>();
-
                 return attributes != null && attributes.Select(keyGetter).Any();
             });
         }
@@ -135,16 +134,9 @@ namespace VirtualObjects.Config
 
             ColumnIdentity(prop =>
             {
-                var attributes = prop.Attributes<TAttribute>();
-
+                IEnumerable<TAttribute> attributes = prop.Attributes<TAttribute>();
                 return attributes != null && attributes.Select(keyGetter).Any();
             });
-        }
-
-        public void ColumnIdentity<TAttribute>(Func<TAttribute, Boolean> keyGetter = null,
-            Predicate<TAttribute> constraint = null) where TAttribute : Attribute
-        {
-            
         }
 
         /// <summary>
@@ -228,8 +220,7 @@ namespace VirtualObjects.Config
 
             ComputedColumn(prop =>
             {
-                var attributes = prop.Attributes<TAttribute>();
-
+                IEnumerable<TAttribute> attributes = prop.Attributes<TAttribute>();
                 return attributes != null && attributes.Select(computedGetter).Any();
             });
         }
