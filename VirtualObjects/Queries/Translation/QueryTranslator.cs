@@ -813,7 +813,7 @@ namespace VirtualObjects.Queries.Translation
             }
 
             buffer.From += " ";
-            buffer.From += _formatter.InnerJoin;
+            buffer.From += _formatter.LeftJoin;
             buffer.From += " ";
             buffer.From += _formatter.FormatTableName(entityInfo2.EntityName, newTranlator._index);
             buffer.From += " ";
