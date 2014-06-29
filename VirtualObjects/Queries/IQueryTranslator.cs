@@ -49,7 +49,8 @@ namespace VirtualObjects.Queries
         /// <param name="formatter">The formatter.</param>
         /// <param name="mapper">The mapper.</param>
         /// <param name="entityBag">The entity bag.</param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
-        IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag);
+        IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, SessionConfiguration configuration);
     }
 }

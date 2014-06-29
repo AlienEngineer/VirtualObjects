@@ -12,14 +12,16 @@ namespace VirtualObjects.Queries.Translation
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
         private readonly IEntityBag _entityBag;
+        private readonly SessionConfiguration _configuration;
         private readonly IDictionary<int, IQueryInfo> _cachedQueries;
         private readonly IDictionary<Expression, IQueryInfo> _cachedExpressionQueries;
 
-        public CachingTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag)
+        public CachingTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, SessionConfiguration configuration)
         {
             _formatter = formatter;
             _mapper = mapper;
             _entityBag = entityBag;
+            _configuration = configuration;
 
             _cachedQueries = new Dictionary<int, IQueryInfo>();
             _cachedExpressionQueries = new Dictionary<Expression, IQueryInfo>();
@@ -52,7 +54,7 @@ namespace VirtualObjects.Queries.Translation
                 return result;
             }
 
-            return _cachedExpressionQueries[expression] = _cachedQueries[hashCode] = new QueryTranslator(_formatter, _mapper, _entityBag).TranslateQuery(expression);
+            return _cachedExpressionQueries[expression] = _cachedQueries[hashCode] = new QueryTranslator(_formatter, _mapper, _entityBag, _configuration).TranslateQuery(expression);
         }
 
         public IQueryInfo TranslateQuery(IQueryable queryable)
@@ -62,12 +64,12 @@ namespace VirtualObjects.Queries.Translation
 
         public IQueryInfo TranslateParametersOnly(IQueryable queryable, int howMany)
         {
-            return new QueryTranslator(_formatter, _mapper, _entityBag).TranslateParametersOnly(queryable, howMany);
+            return new QueryTranslator(_formatter, _mapper, _entityBag, _configuration).TranslateParametersOnly(queryable, howMany);
         }
 
         public IQueryInfo TranslateParametersOnly(Expression expression, int howMany)
         {
-            return new QueryTranslator(_formatter, _mapper, _entityBag).TranslateParametersOnly(expression, howMany);
+            return new QueryTranslator(_formatter, _mapper, _entityBag, _configuration).TranslateParametersOnly(expression, howMany);
         }
     }
 }

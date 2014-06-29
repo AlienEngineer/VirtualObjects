@@ -219,7 +219,14 @@ using VirtualObjects.Connections;
             // Use this text writer to print out the commands that are generated and executed.
             // usefull for debug purposes only.
             Logger = Logger ?? Console.Out;
+
+			
 #endif
+
+			//
+			// Outputs generated code to files.
+			// Enable this for debug purposes.
+			SaveGeneratedCode = false;
         }
 
 

@@ -113,6 +113,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Config\MappingSpecs.cs" />
     <Compile Include="Config\MappingTests.cs" />
     <Compile Include="MockReader.cs" />
     <Compile Include="Models\ModelsSpecs.cs" />

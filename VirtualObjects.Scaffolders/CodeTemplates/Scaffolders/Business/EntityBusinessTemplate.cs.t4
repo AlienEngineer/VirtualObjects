@@ -1,0 +1,163 @@
+<#@ Template Language="C#" HostSpecific="True" Inherits="DynamicTransform" #>
+<#@ Output Extension="cs" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+<#
+	if (!String.IsNullOrEmpty(Model.ModelFolder)) 
+	{
+		this.WriteLine("using " + Model.Namespace + "." + Model.ModelFolder.Replace("\\",".") + ";");
+		this.WriteLine("");
+    }
+
+
+	if (!String.IsNullOrEmpty(Model.BusinessFolder))
+    {
+		this.Write("namespace " + Model.Namespace + "." + Model.BusinessFolder.Replace("\\","."));
+    }
+	else 
+	{
+		this.Write("namespace " + Model.Namespace);
+    }
+	this.WriteLine("");
+
+	var modelVar = Model.Business.ToLower();
+	var modelType = Model.Business;
+
+#>
+{ 
+    public class <#= Model.BusinessPluralized #> : I<#= Model.BusinessPluralized #> 
+    {
+		private readonly IRepository repository;
+
+		public <#= Model.BusinessPluralized #>(IRepository repository) 
+		{
+			this.repository = repository;
+		}
+        
+		/// <summary>
+        /// Determines if the <#= modelVar #> exists.
+        /// </summary>
+        /// <param name="<#= modelVar #>">The <#= modelVar #>.</param>
+        /// <returns></returns>
+		public Boolean Exist<#= modelType #>(<#= modelType #> <#= modelVar #>)
+		{
+			return <#= modelVar #> == null ? false : repository.Exists(<#= modelVar #>);
+		}
+
+		/// <summary>
+        /// Gets the <#= modelVar #>.
+        /// </summary>
+        /// <param name="<#= modelVar #>">The <#= modelVar #>.</param>
+        /// <returns></returns>
+		public <#= modelType #> Get<#= modelType #>(<#= modelType #> <#= modelVar #>)
+		{
+			if ( <#= modelVar #> == null )
+            {
+                return null;
+            }
+			
+			return repository.GetById(<#= modelVar #>);
+		}
+
+		/// <summary>
+        /// Deletes the <#= modelVar #>.
+        /// </summary>
+        /// <param name="<#= modelVar #>">The <#= modelVar #>.</param>
+        /// <returns></returns>
+		public Boolean Delete<#= modelType #>(<#= modelType #> <#= modelVar #>)
+		{
+		<# 
+			if (Model.NoDelete) 
+			{
+		#>
+	throw new NotSupportedException();		
+		<# 
+            }
+			else
+            {
+		#>
+	if ( <#= modelVar #> == null )
+            {
+                throw new ArgumentException("<#= modelVar #> not supplied for delete operation", "<#= modelVar #>");
+            }
+			
+			return repository.Delete(<#= modelVar #>);
+		<# 
+            }
+		#>
+}
+
+		/// <summary>
+        /// Updates the <#= modelVar #>.
+        /// </summary>
+        /// <param name="<#= modelVar #>">The <#= modelVar #>.</param>
+        /// <returns></returns>
+        public Boolean Update<#= modelType #>(<#= modelType #> <#= modelVar #>)
+        {
+		<# 
+			if (Model.NoUpdate) 
+			{
+		#>
+	throw new NotSupportedException();		
+		<# 
+            }
+			else
+            {
+		#>
+	if ( <#= modelVar #> == null )
+            {
+                throw new ArgumentException("<#= modelVar #> not supplied for update operation", "<#= modelVar #>");
+            }
+			
+			return repository.Update(<#= modelVar #>) != null;
+		<# 
+            }
+		#>
+}
+
+		/// <summary>
+        /// Inserts the <#= modelVar #>.
+        /// </summary>
+        /// <param name="<#= modelVar #>">The <#= modelVar #>.</param>
+        /// <returns></returns>
+		public <#= modelType #> Insert<#= modelType #>(<#= modelType #> <#= modelVar #>)		
+        {
+		<# 
+			if (Model.NoInsert) 
+			{
+		#>
+	throw new NotSupportedException();		
+		<# 
+            }
+			else
+            {
+		#>
+	if ( <#= modelVar #> == null )
+            {
+                throw new ArgumentException("<#= modelVar #> not supplied for insert operation", "<#= modelVar #>");
+            }
+
+			if ( repository.Exists(<#= modelVar #>) )
+            {
+                throw new ArgumentException("Unable to insert a <#= modelVar #> that already exists", "<#= modelVar #>");
+            }
+			
+			return repository.Insert(<#= modelVar #>);
+		<# 
+            }
+		#>
+}
+		
+		/// <summary>
+        /// Gets all <#= Model.BusinessPluralized.ToLower() #>.
+        /// </summary>
+        /// <returns></returns>
+		public IQueryable<<#= modelType #>> GetAll<#= Model.BusinessPluralized #>()
+		{
+			return repository.GetAll<<#= modelType #>>();
+		}
+		
+    }
+
+}

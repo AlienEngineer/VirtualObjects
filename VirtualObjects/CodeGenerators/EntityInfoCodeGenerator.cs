@@ -17,8 +17,8 @@ namespace VirtualObjects.CodeGenerators
         private readonly IEntityBag _entityBag;
         private readonly String _properName;
 
-        public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration)
-            : base(info.EntityType.Namespace.Replace(".", "_") + "_Internal_Builder_" + info.EntityType.Name, info.EntityType)
+        public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration, SessionConfiguration sessionConfiguration)
+            : base(info.EntityType.Namespace.Replace(".", "_") + "_Internal_Builder_" + info.EntityType.Name, info.EntityType, sessionConfiguration)
         {
             _configuration = configuration;
             _entityBag = entityBag;
@@ -195,7 +195,7 @@ namespace VirtualObjects.CodeGenerators
                 if (foreignField != null)
                 {
 
-                    if (foreignField.Property.PropertyType == entityInfo.EntityType)
+                    if (foreignField.Property.PropertyType.IsAssignableFrom(entityInfo.EntityType))
                     {
 
                         result += "e.{Field} == this && ".FormatWith(new { Field = foreignField.Property.Name });
