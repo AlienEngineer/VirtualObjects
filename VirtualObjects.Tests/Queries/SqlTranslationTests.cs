@@ -1067,7 +1067,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[OrderId], [T2].[FirstName], [T2].[LastName], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Left Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Left Join [Employees] [T2] On ([T0].[EmployeeId] = [T2].[EmployeeId]) Left Join [Customers] [T3] On ([T0].[CustomerId] = [T3].[CustomerId]) Group By [T0].[OrderId], [T2].[FirstName], [T2].[LastName], [T0].[CustomerId], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] ")
+                Is.EqualTo("Select [T0].[OrderId], [T2].[FirstName], [T2].[LastName], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Left Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Left Join [Employees] [T2] On ([T0].[EmployeeId] = [T2].[EmployeeId]) Left Join [Customers] [T3] On ([T0].[CustomerId] = [T3].[CustomerId]) Group By [T0].[OrderId], [T2].[FirstName], [T2].[LastName], [T0].[CustomerId], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount]")
             );
         }
 

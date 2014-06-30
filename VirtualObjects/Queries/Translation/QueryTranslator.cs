@@ -1678,6 +1678,16 @@ Group by error reasons:
                     {
                         translator = Indexer.FirstOrDefault(e => e.Value.EntityInfo.EntityType == parameterExpression.Type).Value;
 
+                        //
+                        // When using join into the into parameter must be used to find the translator.
+                        if (translator == null && memberInfo is PropertyInfo)
+                        {
+                            var collectionType = ((PropertyInfo) memberInfo).PropertyType;
+                            var type = collectionType.GetGenericArguments().FirstOrDefault();
+
+                            translator = Indexer.FirstOrDefault(e => e.Value.EntityInfo.EntityType == type && e.Key.Name == memberInfo.Name).Value;
+                        }
+
                         if (translator != null)
                         {
                             entityInfo = translator.EntityInfo;
@@ -1690,10 +1700,20 @@ Group by error reasons:
                         }
                     }
 
-                    _memberAccessStack.Push(column);
-                    buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, translator._index);
+                    if (column == null)
+                    {
+                        
+                        //
+                        // When using join into we must group by all columns.
+                        buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns, translator._index);
+                    }
+                    else
+                    {
+                        _memberAccessStack.Push(column);
+                        buffer.Predicates += _formatter.FormatFieldWithTable(column.ColumnName, translator._index);
 
-                    buffer.AddPredicatedColumn(column);
+                        buffer.AddPredicatedColumn(column);    
+                    }
                 }
                 else
                 {
