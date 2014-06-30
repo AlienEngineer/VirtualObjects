@@ -49,6 +49,9 @@ namespace VirtualObjects
         {
             _configuration = configuration;
 
+            _configuration.Initialize();
+            _configuration.ConfigureMappingBuilder(_configuration.TranslationConfigurationBuilder);
+
             ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
             Logger = configuration.Logger ?? new TextWriterStub();
             Formmater = configuration.Formatter ?? new SqlFormatter();

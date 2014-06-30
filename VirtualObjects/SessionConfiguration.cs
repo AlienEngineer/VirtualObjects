@@ -22,8 +22,8 @@ namespace VirtualObjects
         {
             TranslationConfigurationBuilder = new TranslationConfigurationBuilder();
 
-            Initialize();
-            ConfigureMappingBuilder(TranslationConfigurationBuilder);
+            //Initialize();
+            //ConfigureMappingBuilder(TranslationConfigurationBuilder);
         }
 
         internal ITranslationConfigurationBuilder TranslationConfigurationBuilder { get; set; }
