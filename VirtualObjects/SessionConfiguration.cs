@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Web.UI.WebControls;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
 using VirtualObjects.Mappings;
@@ -22,9 +21,6 @@ namespace VirtualObjects
         public SessionConfiguration()
         {
             ConfigurationTranslationBuilder = new ConfigurationTranslationBuilder();
-
-            // Initialize();
-            // ConfigureMappingBuilder(ConfigurationTranslationBuilder);
         }
 
         internal IConfigurationTranslationBuilder ConfigurationTranslationBuilder { get; set; }

@@ -50,7 +50,7 @@ namespace VirtualObjects
         {
             _configuration = configuration;
             _configuration.Flush();
-
+            
             ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
             Logger = configuration.Logger ?? new TextWriterStub();
 

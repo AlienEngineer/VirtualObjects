@@ -148,6 +148,7 @@ namespace VirtualObjects.Tests.Queries
         {
             var query = from o in Query<Orders>()
                         join od in Query<OrderDetails>() on o.Freight equals od.UnitPrice
+                        where o.Freight == od.UnitPrice
                         select new { o.OrderId, od.UnitPrice, o.ShipCity };
 
             var entities = MapEntities(query);

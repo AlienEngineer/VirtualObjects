@@ -25,6 +25,7 @@ namespace VirtualObjects.Queries.Formatters
             IsNull = "Is Null";
             IsNotNull = "Is Not Null";
             InnerJoin = "Inner Join";
+            LeftJoin = "Left Join";
             OrderBy = "Order By";
             Descending = "Desc";
             Count = "Count(*)";
@@ -98,6 +99,7 @@ namespace VirtualObjects.Queries.Formatters
         public string Set { get; private set; }
         public string Identity { get; private set; }
         public string Collation { get; private set; }
+        public string LeftJoin { get; private set; }
 
         public string WrapWithCollation(string current, Type fieldType, string name)
         {

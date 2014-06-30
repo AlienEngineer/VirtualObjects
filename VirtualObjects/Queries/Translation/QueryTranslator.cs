@@ -825,7 +825,7 @@ namespace VirtualObjects.Queries.Translation
             }
 
             buffer.From += " ";
-            buffer.From += _formatter.InnerJoin;
+            buffer.From += _formatter.LeftJoin;
             buffer.From += " ";
             buffer.From += _formatter.FormatTableName(entityInfo2, newTranlator._index, buffer.SessionContext);
             buffer.From += " ";
@@ -1707,6 +1707,16 @@ Group by error reasons:
                     {
                         translator = Indexer.FirstOrDefault(e => e.Value.EntityInfo.EntityType == parameterExpression.Type).Value;
 
+                        //
+                        // When using join into the into parameter must be used to find the translator.
+                        if (translator == null && memberInfo is PropertyInfo)
+                        {
+                            var collectionType = ((PropertyInfo) memberInfo).PropertyType;
+                            var type = collectionType.GetGenericArguments().FirstOrDefault();
+
+                            translator = Indexer.FirstOrDefault(e => e.Value.EntityInfo.EntityType == type && e.Key.Name == memberInfo.Name).Value;
+                        }
+
                         if (translator != null)
                         {
                             entityInfo = translator.EntityInfo;
@@ -1724,16 +1734,26 @@ Group by error reasons:
                             return;
                         }
                     }
-                    
-                    _memberAccessStack.Push(column);
-                    buffer.Predicates +=
-                        _formatter.WrapWithCollation(
-                            _formatter.FormatFieldWithTable(column.ColumnName, translator._index),
-                            column.Property.PropertyType,
-                            GetAlias(column.ColumnName) 
-                        );
 
-                    buffer.AddPredicatedColumn(column);
+                    if (column == null)
+                    {
+                        
+                        //
+                        // When using join into we must group by all columns.
+                        buffer.Predicates += _formatter.FormatFields(translator.EntityInfo.Columns, translator._index);
+                    }
+                    else
+                    {
+                        _memberAccessStack.Push(column);
+                        buffer.Predicates +=
+                            _formatter.WrapWithCollation(
+                                _formatter.FormatFieldWithTable(column.ColumnName, translator._index),
+                                column.Property.PropertyType,
+                                GetAlias(column.ColumnName) 
+                            );
+
+                        buffer.AddPredicatedColumn(column);    
+                    }
                 }
                 else
                 {

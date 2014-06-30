@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 using FluentAssertions;
 using VirtualObjects.Exceptions;
@@ -341,6 +342,64 @@ namespace VirtualObjects.Tests.Queries
             var list = Diagnostic.Timed(() => orders.ToList());
 
             list.Count.Should().Be(89);
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Aggregate_Query_Joined_And_GroupBy_With_Many_Fields()
+        {
+            var orders = from order in Query<Orders>()
+                         join detail in Query<OrderDetails>() on order equals detail.Order into details
+                         join employee in Query<Employee>() on order.Employee equals employee
+                         join customer in Query<Customers>() on order.Customer equals customer
+                         group details by new
+                         {
+                             order.OrderId,
+                             employee.FirstName,
+                             employee.LastName,
+                             order.Customer,
+                             details
+                         } into grouped
+                         select new
+                         {
+                             grouped.Key.OrderId,
+                             grouped.Key.FirstName,
+                             grouped.Key.LastName,
+                             grouped.Key.details,
+                         };
+
+            /*
+                Select 
+	                [T0].[OrderId], 
+	                [T2].[FirstName], 
+	                [T2].[LastName], 
+	                [T1].[OrderId], 
+	                [T1].[ProductId], 
+	                [T1].[UnitPrice], 
+	                [T1].[Quantity], 
+	                [T1].[Discount] 
+
+                From [Orders] [T0] 
+	                Left Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) 
+	                Left Join [Employees] [T2] On ([T0].[EmployeeId] = [T2].[EmployeeId]) 
+	                Left Join [Customers] [T3] On ([T0].[CustomerId] = [T3].[CustomerId]) 
+
+                Group By 
+	                [T0].[OrderId], 
+	                [T2].[FirstName], 
+	                [T2].[LastName], 
+	                [T0].[CustomerId], 
+	                [T1].[OrderId], 
+	                [T1].[ProductId], 
+	                [T1].[UnitPrice], 
+	                [T1].[Quantity], 
+	                [T1].[Discount] 
+             */
+
+            Console.WriteLine(orders.ToString());
+
+            var list = Diagnostic.Timed(() => orders.ToList());
+
+            list.Count.Should().Be(830);
         }
 
         [Test, Repeat(Repeat)]

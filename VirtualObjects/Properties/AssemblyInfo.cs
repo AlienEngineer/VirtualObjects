@@ -38,6 +38,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("VirtualObjects.Tests")]
 
-
 [assembly: AssemblyInformationalVersion("1.4.0")]
-

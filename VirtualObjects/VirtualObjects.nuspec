@@ -16,6 +16,9 @@
       * Feature #20: mix different databases in the same query.
       * Feature #14: enable to add collation to queries.
 
+      Version 1.3.16
+      * Fix: Translation join into with group by clause was faulty.
+
       Version 1.3.15
       * Fix: DerivedTypes didn't map at all.
       * Fix: Throw exception when unable to compile generated code.

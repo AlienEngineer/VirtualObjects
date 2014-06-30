@@ -216,6 +216,14 @@ namespace VirtualObjects.Queries.Formatters
         String Identity { get; }
 
         /// <summary>
+        /// Gets the left join.
+        /// </summary>
+        /// <value>
+        /// The left join.
+        /// </value>
+        String LeftJoin { get; }
+
+        /// <summary>
         /// Formats the field.
         /// </summary>
         /// <param name="name">The name.</param>
