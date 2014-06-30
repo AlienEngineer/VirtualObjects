@@ -981,7 +981,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Inner Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
+                Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Left Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
             );
         }
 
@@ -1039,6 +1039,35 @@ namespace VirtualObjects.Tests.Queries
             Assert.That(
                 Translate(query),
                 Is.EqualTo("Select [T0].[OrderId], [T0].[CustomerId], [T0].[EmployeeId], [T0].[OrderDate], [T0].[RequiredDate], [T0].[ShippedDate], [T0].[ShipVia], [T0].[Freight], [T0].[ShipName], [T0].[ShipAddress], [T0].[ShipCity], [T0].[ShipRegion], [T0].[ShipPostalCode], [T0].[ShipCountry], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Left Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId])")
+            );
+        }
+        
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Translate_Joined_And_GroupBy_With_Many_Fields()
+        {
+            var query = from order in Query<Orders>()
+                        join detail in Query<OrderDetails>() on order equals detail.Order into details
+                        join employee in Query<Employee>() on order.Employee equals employee
+                        join customer in Query<Customers>() on order.Customer equals customer
+                        group details by new
+                        {
+                            order.OrderId,
+                            employee.FirstName,
+                            employee.LastName,
+                            order.Customer,
+                            details
+                        } into grouped
+                        select new
+                        {
+                            grouped.Key.OrderId,
+                            grouped.Key.FirstName,
+                            grouped.Key.LastName,
+                            grouped.Key.details,
+                        };
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[OrderId], [T2].[FirstName], [T2].[LastName], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] From [Orders] [T0] Left Join [Order Details] [T1] On ([T0].[OrderId] = [T1].[OrderId]) Left Join [Employees] [T2] On ([T0].[EmployeeId] = [T2].[EmployeeId]) Left Join [Customers] [T3] On ([T0].[CustomerId] = [T3].[CustomerId]) Group By [T0].[OrderId], [T2].[FirstName], [T2].[LastName], [T0].[CustomerId], [T1].[OrderId], [T1].[ProductId], [T1].[UnitPrice], [T1].[Quantity], [T1].[Discount] ")
             );
         }
 
