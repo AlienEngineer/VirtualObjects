@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Machine.Specifications;
 using VirtualObjects.NonQueries;
 using VirtualObjects.Tests.Models.Northwind;
