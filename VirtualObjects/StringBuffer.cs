@@ -119,7 +119,8 @@ namespace VirtualObjects
         /// <param name="nChars">How many chars.</param>
         public void RemoveLast(int nChars)
         {
-            Sb.Remove(Sb.Length - nChars, nChars);
+            if(Sb.Length == 0)return;
+            Sb.Remove(Math.Max(Sb.Length - nChars, 0), nChars);
         }
     }
 
