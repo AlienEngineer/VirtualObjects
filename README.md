@@ -93,6 +93,7 @@ Select * from Suppliers
 ### Get it as a NuGet Package [here] (http://www.nuget.org/packages/VirtualObjects/)
 ```
    PM> Install-Package VirtualObjects
+   PM> Install-Package VirtualObjects.Scaffolders
 ```
 
 
