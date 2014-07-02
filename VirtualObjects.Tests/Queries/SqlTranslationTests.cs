@@ -651,6 +651,73 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(Repeat)]
+        public void SqlTranslation_String_Predicate_SubString()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.Substring(0, 10) == e.City)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Substring([T0].[LastName], 0, 10) = [T0].[City])")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_String_Predicate_SubString_Start()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.Substring(5) == e.City)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Substring([T0].[LastName], 5) = [T0].[City])")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_String_Predicate_EmployeeId_ToString()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName == e.EmployeeId.ToString())
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] = Cast([T0].[EmployeeId] as Nvarchar(max)))")
+            );
+
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Custom_Projection_Without_Translation()
+        {
+            var query = Query<Employee>()
+                .Select(e => new { e.EmployeeId, DateTime = e.BirthDate.AddDays(1) });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[BirthDate] From [Employees] [T0]")
+            );
+
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_String_Predicate_EmployeeId_Convert()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName == Convert.ToString(e.EmployeeId))
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] = Cast([T0].[EmployeeId] as Nvarchar(max))")
+            );
+
+        }
+
+        [Test, Repeat(Repeat)]
         public void SqlTranslation_String_Projection_ToUpper()
         {
             var query = Query<Employee>()

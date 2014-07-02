@@ -271,10 +271,14 @@ namespace VirtualObjects.Queries.Formatters
         {
             switch ( methodCalled )
             {
+                case "ToString":
+                    return "Cast(";
                 case "ToLower":
                     return "Lower(";
                 case "ToUpper":
                     return "Upper(";
+                case "Substring":
+                    return "SubString(";
                 case "StartsWith":
                     return " like ";
                 case "EndsWith":
@@ -308,6 +312,8 @@ namespace VirtualObjects.Queries.Formatters
         {
             switch ( methodCalled )
             {
+                case "ToString":
+                    return " as Nvarchar(max)" + EndWrap();
                 case "StartsWith":
                 case "Contains":
                     return " + '%'";
@@ -326,6 +332,7 @@ namespace VirtualObjects.Queries.Formatters
                 case "Millisecond":
                 case "ToUpper":
                 case "ToLower":
+                case "Substring":
                     return EndWrap();
             }
 
