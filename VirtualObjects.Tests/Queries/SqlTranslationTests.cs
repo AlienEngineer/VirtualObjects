@@ -722,7 +722,7 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] = Cast([T0].[EmployeeId] as Nvarchar(max))")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] = Cast([T0].[EmployeeId] as Nvarchar(max)))")
             );
 
         }

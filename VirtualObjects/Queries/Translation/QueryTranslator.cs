@@ -1441,6 +1441,12 @@ namespace VirtualObjects.Queries.Translation
         /// </exception>
         private void CompileCallPredicate(MethodCallExpression expression, CompilerBuffer buffer)
         {
+            if (expression.Method.DeclaringType == typeof (Convert))
+            {
+                CompileConversions(expression, buffer);
+                return;
+            }
+
             if (expression.Method.Name != "Contains")
             {
                 throw new TranslationException(Errors.Translation_MethodNotYetSupported, expression.Method);
@@ -1475,6 +1481,25 @@ namespace VirtualObjects.Queries.Translation
             //
             // To be closed later on.
             buffer.Parenthesis++;
+        }
+
+        private void CompileConversions(MethodCallExpression expression, CompilerBuffer buffer)
+        {
+            switch (expression.Method.Name)
+            {
+                case "ToString":
+
+                    buffer.Predicates += _formatter.BeginMethodCall(expression.Method.Name);
+                    
+                    foreach (var argument in expression.Arguments)
+                    {
+                        CompilePredicateExpression(argument, buffer);
+                    }
+
+                    buffer.Predicates += _formatter.EndMethodCall(expression.Method.Name);
+
+                    break;
+            }
         }
 
         private Expression BuildMissingProjection(Expression nestedExpression, MemberExpression arg1)
@@ -2187,11 +2212,9 @@ Group by error reasons:
             if (call.Arguments.Count == 2)
             {
                 var tmpLambda = ExtractLambda(call.Arguments[1], false);
-#if NET35
-                var outputType = tmpLambda.Body.Type;
-#else
+
                 var outputType = tmpLambda.ReturnType;
-#endif
+
                 if (outputType == typeof(Boolean))
                 {
                     throw new TranslationException(Errors.Translation_PredicateOnProjection);
@@ -2373,27 +2396,10 @@ Group by error reasons:
             Expression body = unary != null ?
                 Expression.NotEqual(unary.Operand, Expression.Constant(true)) : // This is a NOT
                 Expression.Equal(lambda.Body, Expression.Constant(true));       // This is a Member Access
-#if NET35
-            return Expression.Lambda(body, parameters.ToArray());
-#else
+
             return Expression.Lambda(body, parameters);
-#endif
 
         }
-
-        /*
-                private static Type ExtractType(Expression expression)
-                {
-                    switch ( expression.NodeType )
-                    {
-                        case ExpressionType.New:
-                        case ExpressionType.Parameter:
-                            return expression.Type;
-                        default:
-                            throw new UnsupportedException(Errors.UnableToGetType, expression);
-                    }
-                }
-        */
 
         private static Expression ExtractAccessor(Expression expression)
         {
@@ -2476,17 +2482,6 @@ Group by error reasons:
             return expression.Arguments.Select(ParseValue).ToArray();
         }
 
-        /*
-                private string ExtractName(Expression expression, IEntityInfo entityInfo)
-                {
-                    if ( expression is MemberExpression )
-                        return ((MemberExpression)expression).Member.Name;
-                    if ( expression is ParameterExpression )
-                        return entityInfo.KeyColumns.First().ColumnName;
-
-                    return null;
-                }
-        */
 
         private string Merge(CompilerBuffer buffer)
         {
