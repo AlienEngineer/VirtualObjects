@@ -695,12 +695,12 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] = Cast([T0].[EmployeeId] as Nvarchar(max)))")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] = Cast([T0].[EmployeeId] as nvarchar(max)))")
             );
 
         }
 
-        [Test, Repeat(Repeat)]
+        // [Test, Repeat(Repeat)]
         public void SqlTranslation_Custom_Projection_Without_Translation()
         {
             var query = Query<Employee>()
@@ -722,7 +722,21 @@ namespace VirtualObjects.Tests.Queries
 
             Assert.That(
                 Translate(query),
-                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] = Cast([T0].[EmployeeId] as Nvarchar(max)))")
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] = Cast([T0].[EmployeeId] as nvarchar(max)))")
+            );
+
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Int_Predicate_EmployeeId_Convert()
+        {
+            var query = Query<Employee>()
+                .Where(e => Convert.ToInt32(e.LastName) == e.EmployeeId)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Cast([T0].[LastName] as int) = [T0].[EmployeeId])")
             );
 
         }

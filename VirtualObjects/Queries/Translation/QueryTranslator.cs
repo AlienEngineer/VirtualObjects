@@ -1485,21 +1485,14 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileConversions(MethodCallExpression expression, CompilerBuffer buffer)
         {
-            switch (expression.Method.Name)
+            buffer.Predicates += _formatter.BeginMethodCall(expression.Method.Name);
+
+            foreach (var argument in expression.Arguments)
             {
-                case "ToString":
-
-                    buffer.Predicates += _formatter.BeginMethodCall(expression.Method.Name);
-                    
-                    foreach (var argument in expression.Arguments)
-                    {
-                        CompilePredicateExpression(argument, buffer);
-                    }
-
-                    buffer.Predicates += _formatter.EndMethodCall(expression.Method.Name);
-
-                    break;
+                CompilePredicateExpression(argument, buffer);
             }
+
+            buffer.Predicates += _formatter.EndMethodCall(expression.Method.Name);
         }
 
         private Expression BuildMissingProjection(Expression nestedExpression, MemberExpression arg1)
