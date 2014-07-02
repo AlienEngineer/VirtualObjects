@@ -410,6 +410,20 @@ namespace VirtualObjects.Queries.Formatters
         /// <returns></returns>
         string FormatRowNumber(String orderBy, int index);
 
-        
+        /// <summary>
+        /// Formats to lower with.
+        /// </summary>
+        /// <param name="columnName">Name of the column.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        String FormatToLowerWith(string columnName, int index);
+
+        /// <summary>
+        /// Formats to upper with.
+        /// </summary>
+        /// <param name="columnName">Name of the column.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        String FormatToUpperWith(string columnName, int index);
     }
 }

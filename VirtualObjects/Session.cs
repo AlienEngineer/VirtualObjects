@@ -26,18 +26,26 @@ namespace VirtualObjects
 
         public ModulesConfiguration(SessionConfiguration configuration, IDbConnectionProvider connectionProvider)
         {
-            configuration = configuration ?? new SessionConfiguration();
-            configuration.ConnectionProvider = connectionProvider;
+            _configuration = configuration ?? new SessionConfiguration();
+
+            _configuration.Initialize();
+            _configuration.ConfigureMappingBuilder(_configuration.TranslationConfigurationBuilder);
+            
+            _configuration.ConnectionProvider = connectionProvider;
 
             Initialize(configuration);
         }
 
         public ModulesConfiguration(SessionConfiguration configuration, string connectionProvider)
         {
-            configuration = configuration ?? new SessionConfiguration();
-            configuration.ConnectionProvider = new NamedDbConnectionProvider(connectionProvider);
+            _configuration = configuration ?? new SessionConfiguration();
             
-            Initialize(configuration);
+            _configuration.Initialize();
+            _configuration.ConfigureMappingBuilder(_configuration.TranslationConfigurationBuilder);
+
+            _configuration.ConnectionProvider = new NamedDbConnectionProvider(connectionProvider);
+
+            Initialize(_configuration);
         }
 
         public ModulesConfiguration(SessionConfiguration configuration)
@@ -48,9 +56,6 @@ namespace VirtualObjects
         private void Initialize(SessionConfiguration configuration)
         {
             _configuration = configuration;
-
-            _configuration.Initialize();
-            _configuration.ConfigureMappingBuilder(_configuration.TranslationConfigurationBuilder);
 
             ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
             Logger = configuration.Logger ?? new TextWriterStub();

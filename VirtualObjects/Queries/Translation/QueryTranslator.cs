@@ -625,11 +625,7 @@ namespace VirtualObjects.Queries.Translation
                 .Methods(Flags.Static | Flags.StaticPublic, "First").First(e => e.Parameters().Count == expression.Arguments.Count)
                 .MakeGenericMethod(EntityInfo.EntityType);
 
-#if NET35
-            CompileMethodCall(Expression.Call(firstMethod, expression.Arguments.ToArray()), buffer, false);
-#else
             CompileMethodCall(Expression.Call(firstMethod, expression.Arguments), buffer, false);
-#endif
 
             foreach (var column in EntityInfo.KeyColumns)
             {
@@ -879,11 +875,7 @@ namespace VirtualObjects.Queries.Translation
 
             if (body is MemberExpression)
             {
-#if NET35
-                OutputType = lambda.Body.Type;
-#else
                 OutputType = lambda.ReturnType;
-#endif
 
                 buffer.Projection = CompileAndGetBuffer(() => CompileMemberAccess(lambda.Body, buffer), buffer);
             }
@@ -996,6 +988,32 @@ namespace VirtualObjects.Queries.Translation
 
                     buffer.Projection = CompileAndGetBuffer(
                         () => CompileCustomProjectionParameter(buffer, callExpression, body), buffer);
+
+                    return;
+                }
+
+                if (body is MethodCallExpression)
+                {
+                    OutputType = body.Type;
+
+                    buffer.Projection = CompileAndGetBuffer(
+                        () =>
+                        {
+                            if (CompileIfString(body, buffer))
+                            {
+
+                                var callExp = body as MethodCallExpression;
+
+                                var member = callExp.Object as MemberExpression;
+
+                                var column = buffer.EntityInfo.Columns.First(e => e.Property.Name == member.Member.Name);
+
+                                buffer.Predicates += " ";
+                                buffer.Predicates += _formatter.FormatField(column.ColumnName);
+
+                            }
+                        }, buffer);
+
                 }
 
             }
@@ -1391,6 +1409,9 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileMemberCallPredicate(MethodCallExpression callExpression, CompilerBuffer buffer)
         {
+
+            if (CompileIfString(callExpression, buffer)) return;
+
             CompilePredicateExpression(callExpression.Object, buffer);
 
             buffer.Predicates += _formatter.BeginMethodCall(callExpression.Method.Name);
@@ -1608,6 +1629,8 @@ namespace VirtualObjects.Queries.Translation
 
             if (CompileIfDatetime(expression, buffer)) return;
 
+            if (CompileIfString(expression, buffer)) return;
+
 
             //
             // Indicates that the accessor is a Dynamic type.
@@ -1722,6 +1745,8 @@ Group by error reasons:
             }
         }
 
+        
+
         private QueryTranslator CompileMemberAccess(MemberExpression expression, Expression nextExpression, CompilerBuffer buffer)
         {
             var parameterExpression = nextExpression as ParameterExpression;
@@ -1794,6 +1819,15 @@ Group by error reasons:
                     case "Length":
                         buffer.Predicates += _formatter.FormatLengthWith(foreignKey.ColumnName, translator._index);
                         break;
+
+                    case "ToUpper":
+                        buffer.Predicates += _formatter.FormatToUpperWith(foreignKey.ColumnName, translator._index);
+                        break;
+
+                    case "ToLower":
+                        buffer.Predicates += _formatter.FormatToLowerWith(foreignKey.ColumnName, translator._index);
+                        break;
+
                     default:
                         throw new TranslationException(Errors.Translation_String_MemberAccess_NotSupported, expression.Member);
                 }
@@ -1858,6 +1892,24 @@ Group by error reasons:
             queryTranslator = null;
 
             return false;
+        }
+
+        private bool CompileIfString(Expression expression, CompilerBuffer buffer)
+        {
+            var callExp = expression as MethodCallExpression;
+
+            if (callExp == null || callExp.Method.ReturnType != typeof(String))
+            {
+                return false;
+            }
+
+            buffer.Predicates += _formatter.BeginMethodCall(callExp.Method.Name);
+
+            CompilePredicateExpression(callExp.Object, buffer);
+
+            buffer.Predicates += _formatter.EndMethodCall(callExp.Method.Name);
+
+            return true;
         }
 
         private bool CompileIfDatetime(Expression expression, CompilerBuffer buffer)

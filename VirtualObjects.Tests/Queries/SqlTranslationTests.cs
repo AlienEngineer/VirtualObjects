@@ -623,6 +623,60 @@ namespace VirtualObjects.Tests.Queries
         }
 
         [Test, Repeat(Repeat)]
+        public void SqlTranslation_String_Predicate_ToUpper()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.ToUpper() == e.City)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Upper([T0].[LastName]) = [T0].[City])")
+            );
+
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_String_Predicate_ToLower()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.ToLower() == e.City)
+                .Select(e => new { e.EmployeeId });
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (Lower([T0].[LastName]) = [T0].[City])")
+            );
+
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_String_Projection_ToUpper()
+        {
+            var query = Query<Employee>()
+                .Select(e => e.LastName.ToUpper() );
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select Upper([T0].[LastName]) [LastName] From [Employees] [T0]")
+            );
+
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_String_Projection_ToLower()
+        {
+            var query = Query<Employee>()
+                .Select(e => e.LastName.ToLower());
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select Lower([T0].[LastName]) [LastName] From [Employees] [T0]")
+            );
+
+        }
+
+        [Test, Repeat(Repeat)]
         public void SqlTranslation_String_Predicate_Length()
         {
             var query = Query<Employee>()

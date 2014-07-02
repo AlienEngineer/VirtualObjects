@@ -159,19 +159,22 @@ namespace VirtualObjects.Queries.Formatters
                 .ToString();
         }
 
+        public string FormatToLowerWith(string columnName, int index)
+        {
+            return FormatFunctionCall("ToLower", columnName, index);
+        }
+
+        public string FormatToUpperWith(string columnName, int index)
+        {
+            return FormatFunctionCall("ToUpper", columnName, index);
+        }
+
         public string FormatFields(IEnumerable<IEntityColumnInfo> columns, int index)
         {
-#if NET35
-            return String.Join(
-                FieldSeparator,
-                columns.Select(e => FormatFieldWithTable(e.ColumnName, index)).ToArray()
-            );
-#else
             return String.Join(
                 FieldSeparator,
                 columns.Select(e => FormatFieldWithTable(e.ColumnName, index))
             );
-#endif
 
         }
 
@@ -268,6 +271,10 @@ namespace VirtualObjects.Queries.Formatters
         {
             switch ( methodCalled )
             {
+                case "ToLower":
+                    return "Lower(";
+                case "ToUpper":
+                    return "Upper(";
                 case "StartsWith":
                     return " like ";
                 case "EndsWith":
@@ -317,6 +324,8 @@ namespace VirtualObjects.Queries.Formatters
                 case "DayOfWeek":
                 case "DayOfYear":
                 case "Millisecond":
+                case "ToUpper":
+                case "ToLower":
                     return EndWrap();
             }
 
