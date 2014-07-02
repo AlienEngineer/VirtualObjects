@@ -622,6 +622,8 @@ namespace VirtualObjects.Tests.Queries
 
         }
 
+        //
+        // Issue #36
         [Test, Repeat(Repeat)]
         public void SqlTranslation_String_Predicate_ToUpper()
         {
@@ -636,6 +638,8 @@ namespace VirtualObjects.Tests.Queries
 
         }
 
+        //
+        // Issue #36
         [Test, Repeat(Repeat)]
         public void SqlTranslation_String_Predicate_ToLower()
         {
@@ -650,6 +654,8 @@ namespace VirtualObjects.Tests.Queries
 
         }
 
+        //
+        // Issue #38
         [Test, Repeat(Repeat)]
         public void SqlTranslation_String_Predicate_SubString()
         {
@@ -663,6 +669,8 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+        //
+        // Issue #38
         [Test, Repeat(Repeat)]
         public void SqlTranslation_String_Predicate_SubString_Start()
         {
@@ -676,6 +684,8 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+        //
+        // Issue #38
         [Test, Repeat(Repeat)]
         public void SqlTranslation_String_Predicate_EmployeeId_ToString()
         {
@@ -717,6 +727,8 @@ namespace VirtualObjects.Tests.Queries
 
         }
 
+        //
+        // Issue #36
         [Test, Repeat(Repeat)]
         public void SqlTranslation_String_Projection_ToUpper()
         {
@@ -730,6 +742,8 @@ namespace VirtualObjects.Tests.Queries
 
         }
 
+        //
+        // Issue #36
         [Test, Repeat(Repeat)]
         public void SqlTranslation_String_Projection_ToLower()
         {

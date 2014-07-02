@@ -14,7 +14,7 @@
       Version 1.3.16
       * Fix: Translation join into with group by clause was faulty.
       * Linq #36: Support ToUpper and ToLower on string predicates and projections.
-      * Linq #38: Support ToString.
+      * Linq #38: Support ToString and Substring.
       * small bug fixes.
 
       Version 1.3.15

@@ -1907,6 +1907,12 @@ Group by error reasons:
 
             CompilePredicateExpression(callExp.Object, buffer);
 
+            foreach (var argument in callExp.Arguments)
+            {
+                buffer.Predicates += _formatter.FieldSeparator;
+                buffer.Predicates += _formatter.FormatConstant(ParseValue(argument));
+            }
+
             buffer.Predicates += _formatter.EndMethodCall(callExp.Method.Name);
 
             return true;

@@ -278,7 +278,7 @@ namespace VirtualObjects.Queries.Formatters
                 case "ToUpper":
                     return "Upper(";
                 case "Substring":
-                    return "SubString(";
+                    return "Substring(";
                 case "StartsWith":
                     return " like ";
                 case "EndsWith":
