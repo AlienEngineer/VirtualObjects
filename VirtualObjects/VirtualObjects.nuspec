@@ -13,6 +13,7 @@
     <releaseNotes>
       Version 1.3.17
       * Change #41: ForeignKey fields should be decorated with ForeignKeyAttribute
+      * Small bug fixes.
 
       Version 1.3.16
       * Fix: Translation join into with group by clause was faulty.
