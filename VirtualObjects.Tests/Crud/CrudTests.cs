@@ -14,10 +14,12 @@ namespace VirtualObjects.Tests.Crud
     public class CrudTests : UtilityBelt
     {
         readonly IOperations _operations;
+        readonly OperationsProvider provider;
 
         public CrudTests()
         {
-            var provider = new OperationsProvider(new SqlFormatter(), new EntityInfoModelMapper(), new EntityModelProvider());
+            
+            provider = new OperationsProvider(new SqlFormatter(), new EntityInfoModelMapper(), new EntityModelProvider());
             _operations = provider.CreateOperations(Mapper.Map(typeof(Employee)));
         }
 
@@ -79,6 +81,25 @@ namespace VirtualObjects.Tests.Crud
             RollBackOnTearDown();
 
             var employee = Execute(_operations.InsertOperation, new Employee
+            {
+                EmployeeId = 10,
+                FirstName = "Sérgio",
+                LastName = "Ferreira"
+            });
+
+            employee.Should().NotBeNull();
+            employee.EmployeeId.Should().BeGreaterThan(9);
+            employee.LastName.Should().Be("Ferreira");
+
+        }
+
+        [Test, Repeat(Repeat)]
+        public void InsertOperation_Employee_Simple_Test()
+        {
+            RollBackOnTearDown();
+            var operations = provider.CreateOperations(Mapper.Map(typeof(EmployeeSimple)));
+
+            var employee = Execute(operations.InsertOperation, new EmployeeSimple
             {
                 EmployeeId = 10,
                 FirstName = "Sérgio",

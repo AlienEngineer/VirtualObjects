@@ -249,7 +249,8 @@ namespace VirtualObjects.Config
                 IsComputed = _configuration.ComputedColumnGetters.Any(isComputed => isComputed(propertyInfo)),
                 Property = propertyInfo,
                 ValueGetter = MakeValueGetter(columnName, propertyInfo.DelegateForGetPropertyValue()),
-                ValueSetter = MakeValueSetter(columnName, propertyInfo.DelegateForSetPropertyValue())
+                ValueSetter = MakeValueSetter(columnName, propertyInfo.DelegateForSetPropertyValue()),
+                InjectNulls = _configuration.IsForeignKeyGetters.Any(isForeignKey => isForeignKey(propertyInfo))
             };
 
             return column;

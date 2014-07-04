@@ -146,5 +146,18 @@ namespace VirtualObjects.Config
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="filterGetter">The filter getter.</param>
         void CollectionFilter<TAttribute>(Func<TAttribute, String> filterGetter) where TAttribute : Attribute;
+
+        /// <summary>
+        /// Appends a parser to ignore a property.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
+        void IsForeignKey<TAttribute>(Func<TAttribute, Boolean> isForeignKeyGetter = null) where TAttribute : Attribute;
+
+        /// <summary>
+        /// Appends a parser to ignore a property.
+        /// </summary>
+        /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
+        void IsForeignKey(Func<PropertyInfo, Boolean> isForeignKeyGetter);
     }
 }
