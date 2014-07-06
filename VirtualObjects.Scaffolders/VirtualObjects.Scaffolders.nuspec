@@ -11,8 +11,10 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>VirtualObjects Scaffolders</description>
     <releaseNotes>
+      Version 1.2
+      * Small corrections.
+      
       Version 1.1
-      * Fix: 
       * Change #41: ForeignKey fields should be decorated with ForeignKeyAttribute
 
       Version 1.0
