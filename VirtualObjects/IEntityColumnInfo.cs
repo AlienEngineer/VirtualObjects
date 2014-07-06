@@ -120,6 +120,8 @@ namespace VirtualObjects
         /// </value>
         object DefaultValue { get; }
 
+        bool InjectNulls { get; set; }
+
         /// <summary>
         /// Sets the value.
         /// </summary>

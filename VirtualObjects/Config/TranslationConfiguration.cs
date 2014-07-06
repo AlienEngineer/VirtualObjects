@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace VirtualObjects.Config
@@ -17,5 +16,6 @@ namespace VirtualObjects.Config
         public IList<Func<PropertyInfo, Boolean>> ColumnVersionFieldGetters { get; set; }
         public IList<Func<PropertyInfo, Boolean>> ComputedColumnGetters { get; set; }
         public IList<Func<PropertyInfo, String>> CollectionFilterGetters { get; set; }
+        public IList<Func<PropertyInfo, Boolean>> IsForeignKeyGetters { get; set; }
     }
 }

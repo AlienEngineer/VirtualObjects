@@ -26,11 +26,8 @@ namespace VirtualObjects
 
         public ModulesConfiguration(SessionConfiguration configuration, IDbConnectionProvider connectionProvider)
         {
-            _configuration = configuration ?? new SessionConfiguration();
+            InternalInitialize(configuration);
 
-            _configuration.Initialize();
-            _configuration.ConfigureMappingBuilder(_configuration.TranslationConfigurationBuilder);
-            
             _configuration.ConnectionProvider = connectionProvider;
 
             Initialize(configuration);
@@ -38,10 +35,7 @@ namespace VirtualObjects
 
         public ModulesConfiguration(SessionConfiguration configuration, string connectionProvider)
         {
-            _configuration = configuration ?? new SessionConfiguration();
-            
-            _configuration.Initialize();
-            _configuration.ConfigureMappingBuilder(_configuration.TranslationConfigurationBuilder);
+            InternalInitialize(configuration);
 
             _configuration.ConnectionProvider = new NamedDbConnectionProvider(connectionProvider);
 
@@ -50,13 +44,22 @@ namespace VirtualObjects
 
         public ModulesConfiguration(SessionConfiguration configuration)
         {
+            InternalInitialize(configuration);
+
             Initialize(configuration ?? new SessionConfiguration());
         }
 
+        private void InternalInitialize(SessionConfiguration configuration)
+        {
+            _configuration = configuration ?? new SessionConfiguration();
+
+            _configuration.Initialize();
+            _configuration.ConfigureMappingBuilder(_configuration.TranslationConfigurationBuilder);
+        }
+
+
         private void Initialize(SessionConfiguration configuration)
         {
-            _configuration = configuration;
-
             ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
             Logger = configuration.Logger ?? new TextWriterStub();
             Formmater = configuration.Formatter ?? new SqlFormatter();

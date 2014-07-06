@@ -33,8 +33,8 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.3.16")]
-[assembly: AssemblyFileVersion("1.3.16")]
+[assembly: AssemblyVersion("1.3.17")]
+[assembly: AssemblyFileVersion("1.3.17")]
 [assembly: InternalsVisibleTo("VirtualObjects.Tests")]
 
 //In brief, these correspond to: 
@@ -42,4 +42,4 @@ using System.Runtime.InteropServices;
 //  * Minor: New features, but backwards compatible. 
 //  * Patch: Backwards compatible bug fixes only.
 
-[assembly: AssemblyInformationalVersion("1.3.16")]
+[assembly: AssemblyInformationalVersion("1.3.17")]

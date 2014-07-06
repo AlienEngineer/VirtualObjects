@@ -29,6 +29,7 @@ namespace VirtualObjects.Config
                 ColumnVersionFieldGetters = new List<Func<PropertyInfo, Boolean>>(),
                 ColumnIgnoreGetters = new List<Func<PropertyInfo, Boolean>>(),
                 ComputedColumnGetters = new List<Func<PropertyInfo, Boolean>>(),
+                IsForeignKeyGetters = new List<Func<PropertyInfo, Boolean>>(),
                 EntityNameGetters = new List<Func<Type, String>>(),
                 ColumnForeignKeyGetters = new List<Func<PropertyInfo, String>>(),
                 ColumnForeignKeyLinksGetters = new List<Func<PropertyInfo, String>>(),
@@ -206,6 +207,35 @@ namespace VirtualObjects.Config
         public void ColumnIgnore(Func<PropertyInfo, Boolean> ignoreGetter)
         {
             configuration.ColumnIgnoreGetters.Insert(0, ignoreGetter);
+        }
+
+        /// <summary>
+        /// Appends a parser to ignore a property.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
+        public void IsForeignKey<TAttribute>(Func<TAttribute, Boolean> isForeignKeyGetter) where TAttribute : Attribute
+        {
+            if (isForeignKeyGetter == null)
+            {
+                isForeignKeyGetter = _defaultBooleanGetter;
+            }
+
+            IsForeignKey(prop =>
+            {
+                var attributes = prop.Attributes<TAttribute>();
+
+                return attributes != null && attributes.Select(isForeignKeyGetter).Any();
+            });
+        }
+
+        /// <summary>
+        /// Appends a parser to ignore a property.
+        /// </summary>
+        /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
+        public void IsForeignKey(Func<PropertyInfo, Boolean> isForeignKeyGetter)
+        {
+            configuration.IsForeignKeyGetters.Insert(0, isForeignKeyGetter);
         }
 
         /// <summary>

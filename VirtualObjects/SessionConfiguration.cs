@@ -21,9 +21,6 @@ namespace VirtualObjects
         public SessionConfiguration()
         {
             TranslationConfigurationBuilder = new TranslationConfigurationBuilder();
-
-            //Initialize();
-            //ConfigureMappingBuilder(TranslationConfigurationBuilder);
         }
 
         internal ITranslationConfigurationBuilder TranslationConfigurationBuilder { get; set; }
@@ -102,6 +99,7 @@ namespace VirtualObjects
             builder.ColumnIgnore<IgnoreAttribute>();
 
             builder.ComputedColumn<ComputedAttribute>();
+            builder.IsForeignKey<ForeignKeyAttribute>();
 
             //
             // Collections filters.

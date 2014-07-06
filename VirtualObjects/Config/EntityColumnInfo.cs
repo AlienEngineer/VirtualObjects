@@ -76,6 +76,7 @@ namespace VirtualObjects.Config
         public bool IsComputed { get; set; }
 
         public object DefaultValue { get; private set; }
+        public bool InjectNulls { get; set; }
 
         public virtual IEntityColumnInfo GetLastBind() { return this; }
 

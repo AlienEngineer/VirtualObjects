@@ -195,21 +195,23 @@ using VirtualObjects.Connections;
         
         public override void Initialize()
         {
+			base.Initialize();
+
             //
             // Use this to configure multiple data connection on app.config
             // It will use the machine name to select the proper connection string.
             //
-            //ConnectionProvider = ConnectionProvider ?? new NamedDbConnectionProvider();
+            //ConnectionProvider = new NamedDbConnectionProvider();
             
             //
             // Use this if you want to use the first connection string configured on app.config
             //
-            ConnectionProvider = ConnectionProvider ?? new FirstConnectionDbConnectionProvider();
+            ConnectionProvider = new FirstConnectionDbConnectionProvider();
             
             //
             // Use this if you want to use a specific non configurable connection string.
             //
-            // ConnectionProvider = ConnectionProvider ?? new DbConnectionProvider("System.Data.SqlClient", @"
+            // ConnectionProvider = new DbConnectionProvider("System.Data.SqlClient", @"
             //          Data Source=(LocalDB)\v11.0;
             //          AttachDbFilename=|DataDirectory|\database.mdf;
             //          Integrated Security=True;
@@ -234,6 +236,10 @@ using VirtualObjects.Connections;
         /// <param name="builder">The builder.</param>
         public override void ConfigureMappingBuilder(ITranslationConfigurationBuilder builder)
         {
+			//
+			// Keep Virtual Objects base configurations
+			base.ConfigureMappingBuilder(builder);
+			
             //
             // Table Mapping
             //
@@ -261,6 +267,7 @@ using VirtualObjects.Connections;
             builder.ColumnIgnore<IgnoreAttribute>();
 
             builder.ComputedColumn<ComputedAttribute>();
+			builder.IsForeignKey<ForeignKeyAttribute>();
 
             //
             // Collections filters.

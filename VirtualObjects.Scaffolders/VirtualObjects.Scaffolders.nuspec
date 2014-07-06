@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>VirtualObjects</id>
+    <id>VirtualObjects.Scaffolders</id>
     <version>1.0.0</version>
     <authors>Sérgio aka AlienEnginner</authors>
     <owners />
@@ -11,9 +11,13 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>VirtualObjects Scaffolders</description>
     <releaseNotes>
+      Version 1.1
+      * Fix: 
+      * Change #41: ForeignKey fields should be decorated with ForeignKeyAttribute
+
       Version 1.0
       * +1: Migrated VirtualObjects Scaffolder to this project.
-      
+
     </releaseNotes>
     <copyright>Copyright (c) 2014 AlienEngineer</copyright>
     <tags>ORM VirtualObjects DataBase Repository VODB ObjectRelationalMapping Scaffold</tags>
