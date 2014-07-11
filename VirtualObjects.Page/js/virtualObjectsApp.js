@@ -47,6 +47,7 @@ var switchPage = function($scope, item) {
     $scope.menu.Active.Class = '';
     item.Class = 'active';
     $scope.menu.Active = item;
+    Sunlight.highlightAll();
 };
 
 app.controller('MenuController', function($scope) {

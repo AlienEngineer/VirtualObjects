@@ -19,6 +19,12 @@ and open the template in the editor.
 
 @media screen and (max-width: 1325px) {
   #leftmenu {
+    width: 263px;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  #leftmenu {
     width: 213px;
   }
 }
