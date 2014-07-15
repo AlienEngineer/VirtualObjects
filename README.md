@@ -98,7 +98,7 @@ Select * from Suppliers
 
 
 [![PoweredBy](http://www.jetbrains.com/resharper/docs/banners/rs8_small.png)](www.jetbrains.com)  
-[![endorse](https://api.coderwall.com/alienengineer/endorsecount.png)](https://coderwall.com/alienengineer)
+[![endorse](https://api.coderwall.com/alienengineer/endorsecount.png)](https://coderwall.com/alienengineer)  
 [Ohloh](https://www.ohloh.net/p/VirtualObjects)
 
 [Release notes] (https://github.com/AlienEngineer/VirtualObjects/releases)  
