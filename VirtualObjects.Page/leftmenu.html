@@ -1,7 +1,7 @@
 <div id="leftmenu" >
     <ul class="nav nav-pills nav-stacked">
         <li ng-repeat="item in items" class="{{ item.Class}}">
-            <a href="#{{ item.Label}}"><i class="fa {{ item.Icon}} fa-fw"></i> {{ item.Label}}</a>
+            <a href="#{{ item.Label | nospace }}"><i class="fa {{ item.Icon}} fa-fw"></i> {{ item.Label}}</a>
         </li>
     </ul>    
 

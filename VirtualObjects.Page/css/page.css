@@ -8,6 +8,10 @@ and open the template in the editor.
     Author     : sérgio
 */
 
+h1 small.version {
+    font-size: 40%;
+}
+
 .logo{
     width: 24px;
 }

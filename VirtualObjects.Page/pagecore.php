@@ -3,7 +3,7 @@
 <div class="jumbotron hidden-xs">
     <img class="hidden-xs col-md-3 col-sm-4 col-lg-2 col-xs-3" src="images/1391724649_Database_3.png"  />
     <div>
-        <h1>VirtualObjects</h1>
+        <h1>VirtualObjects <small class="version" >1.3.17</small></h1>
         <p>Easy and Fast ORM</p>   
         
     </div>

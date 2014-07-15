@@ -1,18 +1,24 @@
 ﻿
         var app = angular.module('virtualObjectsApp', ['ngRoute']);
 
-app.config(['$routeProvider',
-    function($routeProvider) {
-        $routeProvider.
-                when('/ReleaseNotes', {
-                    templateUrl: 'ReleaseNotes',
-                    controller: 'ReleaseNotesController'
-                }).
-                otherwise({
-                    templateUrl: 'Home',
-                    controller: 'MainController'
-                });
-    }]);
+app.filter('nospace', function() {
+    return function(value) {
+        return (!value) ? '' : value.replace(/ /g, '');
+    };
+});
+
+app.config(function($routeProvider, $locationProvider) {
+    $routeProvider.
+//            when('/ReleaseNotes', {
+//                templateUrl: 'ReleaseNotes',
+//                controller: 'ReleaseNotesController'
+//            }).
+            otherwise({
+                templateUrl: 'Home',
+                controller: 'MainController'
+            });
+    
+});
 
 /*
  
@@ -50,12 +56,17 @@ var switchPage = function($scope, item) {
     Sunlight.highlightAll();
 };
 
+app.controller('UnderConstructionController', function($scope) {
+    $scope.menu = menu;
+    $scope.items = menu.toArray();
+    $scope.menu.UnderConstruction.Class = 'active';
+});
+
 app.controller('MenuController', function($scope) {
     $scope.menu = menu;
     $scope.items = menu.toArray();
     $scope.menu.Home.Class = 'active';
 });
-
 
 app.controller('ReleaseNotesController', function($scope) {
     $scope.menu = menu;

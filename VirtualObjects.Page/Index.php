@@ -5,9 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Landing Page Template for Bootstrap</title>
+    <meta name="author" content="Alien Engineer">
 
     <!-- Bootstrap core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
@@ -20,6 +18,8 @@
     <link href="css/timeline.css" rel="stylesheet"/>
     <link href="css/page.css" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="css/sunlight.default.css" />
+    
+    <title>VirtualObjects</title>
 
 </head>
 
