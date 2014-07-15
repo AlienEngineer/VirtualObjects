@@ -8,6 +8,17 @@ and open the template in the editor.
     Author     : sérgio
 */
 
+pre {
+    padding: 0px;
+    border-width: 0px;
+    margin-right: 0px !important;
+    margin: 0px;
+}
+
+pre.sunlight-highlighted {
+    background-color: #ffffff !important;
+}
+
 h1 small.version {
     font-size: 40%;
 }
@@ -38,5 +49,9 @@ h1 small.version {
     width: auto;
     position: initial;
     top: auto;
+  }
+  
+  pre.sunlight-line-number-margin {
+      display: none;
   }
 }
