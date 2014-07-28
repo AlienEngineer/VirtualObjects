@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Reflection;
 using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.CodeGenerators
@@ -34,6 +33,10 @@ namespace VirtualObjects.CodeGenerators
             builder.Body.Add(otherMethods);
         }
 
+        /// <summary>
+        /// Adds the assembly of the given type to the new assembly as dependency.
+        /// </summary>
+        /// <param name="type">The type.</param>
         protected void AddReference(Type type)
         {
             if (type == null || type == typeof(Object))
@@ -51,6 +54,10 @@ namespace VirtualObjects.CodeGenerators
             AddReference(type.BaseType);
         }
 
+        /// <summary>
+        /// Adds the namespace.
+        /// </summary>
+        /// <param name="nameSpace">The name space.</param>
         protected void AddNamespace(String nameSpace)
         {
             builder.Namespaces.Add(nameSpace);

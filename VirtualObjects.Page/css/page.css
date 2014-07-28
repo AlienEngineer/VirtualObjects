@@ -8,6 +8,10 @@ and open the template in the editor.
     Author     : sérgio
 */
 
+.image-defsize {
+    max-width: 630px;
+}
+
 pre {
     padding: 0px;
     border-width: 0px;

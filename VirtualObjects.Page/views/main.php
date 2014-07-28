@@ -87,7 +87,7 @@
 </pre>
 
 <div class="row" >
-    <img class="col-xs-12" alt="Count Suppliers" src="images/CountSuppliers.png">
+    <img class="col-xs-12 image-defsize" alt="Count Suppliers" src="images/CountSuppliers.png">
     <blockquote>
         <p>Results from Laptop and PC were iqual.</p>
     </blockquote>
@@ -98,14 +98,14 @@
 </pre>
 
 <div class="row" >
-    <img class="col-xs-12" alt="Mapping Suppliers" src="images/SuppliersMapping.png">
+    <img class="col-xs-12 image-defsize" alt="Mapping Suppliers" src="images/SuppliersMapping.png">
     <blockquote>
         <p>Results from intel i7-3537U 2.0GHz 8Gb RAM (4 core) Laptop</p>
     </blockquote>
 </div>
 
 <div class="row" >
-    <img class="col-xs-12" alt="Mapping Suppliers" src="images/SuppliersMapping_pc.png">
+    <img class="col-xs-12 image-defsize" alt="Mapping Suppliers" src="images/SuppliersMapping_pc.png">
     <blockquote>
         <p>Results from intel i7 3.07GHz 18Gb RAM (8 core) PC</p>
     </blockquote>    
