@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using VirtualObjects.Queries.Mapping;
 
@@ -8,6 +9,8 @@ namespace VirtualObjects.CodeGenerators
     {
         readonly TypeBuilder builder;
 
+        private readonly IList<Type> referencedtypes;
+
         protected EntityCodeGenerator(string typeName, Type baseType, SessionConfiguration configuration, bool IsDynamic = false)
         {
             builder = new TypeBuilder(typeName, baseType, configuration)
@@ -16,6 +19,7 @@ namespace VirtualObjects.CodeGenerators
             };
 
             TypeName = typeName;
+            referencedtypes = new List<Type>();
         }
 
         public String TypeName { get; private set; }
@@ -39,16 +43,28 @@ namespace VirtualObjects.CodeGenerators
         /// <param name="type">The type.</param>
         protected void AddReference(Type type)
         {
-            if (type == null || type == typeof(Object))
+            if (type == null || type == typeof(Object) || referencedtypes.Contains(type))
             {
                 return;
             }
+
+            referencedtypes.Add(type);
 
             builder.References.Add(type.Assembly.CodeBase.Remove(0, "file:///".Length));
 
             foreach (var argType in type.GetGenericArguments())
             {
                 AddReference(argType);
+            }
+
+            foreach (var prop in type.GetProperties())
+            {
+                AddReference(prop.PropertyType);
+            }
+
+            foreach (var field in type.GetFields())
+            {
+                AddReference(field.FieldType);
             }
 
             AddReference(type.BaseType);

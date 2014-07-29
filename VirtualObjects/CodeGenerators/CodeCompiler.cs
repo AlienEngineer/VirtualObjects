@@ -130,11 +130,18 @@ namespace VirtualObjects.CodeGenerators
             {
                 try
                 {
-                    File.WriteAllText(BaseType.Name + ".cs", Code);
+                    var fullpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                        BaseType.Name.Replace("<>", "_").Replace('`', '_') + ".cs");
+
+                    File.WriteAllText(fullpath, Code);
                 }
-                // This is not an important output for the framework to run.
-                // ReSharper disable once EmptyGeneralCatchClause
-                catch (Exception) { /* Ignore exceptions. */ }
+                    // This is not an important output for the framework to run.
+                    // ReSharper disable once EmptyGeneralCatchClause
+                catch (Exception)
+                {
+                     /* Ignore exceptions. */
+
+                }
             }
         }
 
