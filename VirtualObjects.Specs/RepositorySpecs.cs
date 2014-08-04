@@ -25,7 +25,7 @@ namespace VirtualObjects.Specs
             connectionString = ((InternalSession)session.InternalSession).Context.Connection.DbConnection.ConnectionString;
         };
 
-        It should_be_equal_to_testing = () => connectionString.Should().Be("testing");
+        It should_be_equal_to_testing = () => connectionString.Should().Be("Data Source=(LocalDB)\\v11.0;AttachDbFilename=|DataDirectory|\\northwnd.mdf;Integrated Security=True;Connect Timeout=30");
         
         static Repository testing;
         static String connectionString;

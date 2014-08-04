@@ -62,7 +62,7 @@ namespace VirtualObjects
         /// </summary>
         public virtual void Initialize()
         {
-            ConnectionProvider = new NamedDbConnectionProvider();              
+            ConnectionProvider = ConnectionProvider ?? new NamedDbConnectionProvider();              
         }
 
         /// <summary>

@@ -193,7 +193,7 @@ namespace VirtualObjects.Specs.Repositories
             //
             // Use this if you want to use the first connection string configured on app.config
             //
-            ConnectionProvider = new FirstConnectionDbConnectionProvider();
+            ConnectionProvider = ConnectionProvider ?? new FirstConnectionDbConnectionProvider();
             
             //
             // Use this if you want to use a specific non configurable connection string.
