@@ -22,7 +22,7 @@ namespace VirtualObjects.Specs
         };
 
         It should_not_fail = () => exception.Should().BeNull();
-
+         
         It should_not_be_null = () => entityInfo.Should().NotBeNull();
 
         It should_have_newfield_at_last_position = () => entityInfo.Columns.Last().ColumnName.Should().Be("NewField");
