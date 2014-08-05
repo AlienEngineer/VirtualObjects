@@ -6,7 +6,7 @@ namespace VirtualObjects.Tests.Models.Northwind
     public class Suppliers
     {
         [Identity]
-        [System.ComponentModel.DataAnnotations.Key]
+        // [System.ComponentModel.DataAnnotations.Key]
         public int SupplierId { get; set; }
 
         public String CompanyName { get; set; }
