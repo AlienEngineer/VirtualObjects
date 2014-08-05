@@ -5,6 +5,8 @@ before_install:
   - sudo apt-get install -qq mono-devel mono-gmcs mono-dmcs > /dev/null
   - sudo apt-get install nunit-console
   - sudo apt-get install mono-complete
+  - sudo apt-get install libmono-system4.0-cil
+  - sudo apt-get install libmono-corlib4.5-cil
   - mozroots --import --sync
   - mv -f .nuget/NuGet.mono.targets .nuget/NuGet.targets
   - export EnableNuGetPackageRestore=true
