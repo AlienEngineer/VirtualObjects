@@ -2,8 +2,9 @@ language: c
  
 before_install:
   - sudo apt-get update -qq > /dev/null
-  - sudo apt-get install -qq mono-devel mono-gmcs > /dev/null
+  - sudo apt-get install -qq mono-devel mono-gmcs mono-dmcs > /dev/null
   - sudo apt-get install nunit-console
+  - sudo apt-get install mono-complete
   - mozroots --import --sync
   - mv -f .nuget/NuGet.mono.targets .nuget/NuGet.targets
   - export EnableNuGetPackageRestore=true
