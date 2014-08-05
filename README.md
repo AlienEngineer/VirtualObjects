@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/AlienEngineer/VirtualObjects.svg?branch=1.3)](https://travis-ci.org/AlienEngineer/VirtualObjects)
+
 ### Getting Started (Scaffolding)
 
 [Short demonstration video] (http://screencast.com/t/CghgJTdmx#mediaDisplayArea)
