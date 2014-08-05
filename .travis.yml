@@ -4,7 +4,7 @@ before_install:
   - sudo apt-get update -qq > /dev/null
   - sudo apt-get install -qq mono-devel mono-gmcs > /dev/null
   - mozroots --import --sync
-  - mv -f src/.nuget/NuGet.mono.targets src/.nuget/NuGet.targets
+  - mv -f .nuget/NuGet.mono.targets .nuget/NuGet.targets
   - export EnableNuGetPackageRestore=true
   
 script:
