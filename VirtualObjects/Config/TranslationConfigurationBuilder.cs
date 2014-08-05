@@ -102,7 +102,7 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
-                keyGetter = _defaultBooleanGetter;
+                keyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ColumnKey(prop =>
@@ -131,7 +131,7 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
-                keyGetter = _defaultBooleanGetter;
+                keyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ColumnIdentity(prop =>
@@ -160,7 +160,7 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
-                keyGetter = _defaultBooleanGetter;
+                keyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ColumnVersion(prop =>
@@ -189,7 +189,7 @@ namespace VirtualObjects.Config
         {
             if ( ignoreGetter == null )
             {
-                ignoreGetter = _defaultBooleanGetter;
+                ignoreGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ColumnIgnore(prop =>
@@ -218,7 +218,7 @@ namespace VirtualObjects.Config
         {
             if (isForeignKeyGetter == null)
             {
-                isForeignKeyGetter = _defaultBooleanGetter;
+                isForeignKeyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             IsForeignKey(prop =>
@@ -247,7 +247,7 @@ namespace VirtualObjects.Config
         {
             if ( computedGetter == null )
             {
-                computedGetter = _defaultBooleanGetter;
+                computedGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ComputedColumn(prop =>
