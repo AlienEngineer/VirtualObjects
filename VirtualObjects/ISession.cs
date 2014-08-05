@@ -69,5 +69,13 @@ namespace VirtualObjects
         /// <param name="args">The arguments.</param>
         /// <returns></returns>
         int ExecuteStoreProcedure(String storeProcedure, IEnumerable<KeyValuePair<String, Object>> args);
+
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
+        String ConnectionString { get; }
     }
 }

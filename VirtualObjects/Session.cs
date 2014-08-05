@@ -156,7 +156,18 @@ namespace VirtualObjects
         /// </summary>
         public Session()
             : this(configuration: null, connectionName: null) { }
-        
+
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
+        public String ConnectionString
+        {
+            get { return ((InternalSession) InternalSession).Context.Connection.ConnectionString; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>

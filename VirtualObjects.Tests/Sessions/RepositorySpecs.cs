@@ -44,7 +44,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             northwind = testing.CreateNewRepository("NORTHWIND");
             var session = (Session)((Repository)northwind).Session;
-            connectionString = ((InternalSession)session.InternalSession).Context.Connection.DbConnection.ConnectionString;
+            connectionString = session.ConnectionString;
         };
 
         private It should_be_equal_to_northwind = () => connectionString.Should().Be("                    Data Source=(LocalDB)\\v11.0;                                                         AttachDbFilename=|DataDirectory|\\northwnd.mdf;                                                         Integrated Security=True;                                                         Connect Timeout=30;          MultipleActiveResultSets=True");

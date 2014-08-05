@@ -130,6 +130,14 @@ namespace VirtualObjects
             return Context.Connection.ExecuteProcedure(storeProcedure, args);
         }
 
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
+        public string ConnectionString { get { return Context.Connection.ConnectionString; } }
+
         private TEntity ExecuteOperation<TEntity>(IOperation operation, TEntity entityModel)
         {
             return (TEntity)operation.PrepareOperation(entityModel).Execute(Context);

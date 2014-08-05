@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using VirtualObjects.CRUD;
@@ -65,6 +63,7 @@ namespace VirtualObjects.Connections
             _log = log;
             _programmability = programmability;
             _dbConnection = provider.CreateConnection();
+            ConnectionString = _dbConnection.ConnectionString;
             ++count;
         }
 
@@ -91,6 +90,8 @@ namespace VirtualObjects.Connections
         {
             return AutoClose(() => CreateCommand(commandText, parameters).ExecuteScalar());
         }
+
+        public string ConnectionString { get; private set; }
 
         public object ExecuteScalar(IDbCommand cmd, IDictionary<string, IOperationParameter> parameters)
         {
