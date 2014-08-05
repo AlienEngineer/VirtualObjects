@@ -17,7 +17,7 @@ namespace VirtualObjects.Connections
         
         private readonly IDbConnectionProvider _provider;
         private readonly TextWriter _log;
-        private readonly IProgramability _programability;
+        private readonly IProgramability _programmability;
         private IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
@@ -59,11 +59,11 @@ namespace VirtualObjects.Connections
         #endregion
 
 
-        public Connection(IDbConnectionProvider provider, TextWriter log, IProgramability programability)
+        public Connection(IDbConnectionProvider provider, TextWriter log, IProgramability programmability)
         {
             _provider = provider;
             _log = log;
-            _programability = programability;
+            _programmability = programmability;
             _dbConnection = provider.CreateConnection();
             ++count;
         }
@@ -301,7 +301,7 @@ namespace VirtualObjects.Connections
             Rolledback = _rolledBack = true;
             _endedTransaction = true;
 
-            _programability.ReleaseLock(this);
+            _programmability.ReleaseLock(this);
             _dbTransaction.Rollback();
             Close();
         }
@@ -314,14 +314,14 @@ namespace VirtualObjects.Connections
             }
 
             _endedTransaction = true;
-            _programability.ReleaseLock(this);
+            _programmability.ReleaseLock(this);
             _dbTransaction.Commit();
             Close();
         }
 
         public bool AcquireLock(string resourceName, int timeout = 30000)
         {
-            return _programability.AcquireLock(this, resourceName, timeout);
+            return _programmability.AcquireLock(this, resourceName, timeout);
         }
     }
 

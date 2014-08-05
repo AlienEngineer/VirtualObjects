@@ -1,8 +1,11 @@
+using System;
+
 namespace VirtualObjects.Exceptions
 {
     /// <summary>
     /// 
     /// </summary>
+    [Serializable]
     public class UnsupportedException : VirtualObjectsException
     {
         /// <summary>
