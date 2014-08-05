@@ -187,7 +187,7 @@ namespace VirtualObjects.Tests.Repositories
         
         public override void Initialize()
         {
-			base.Initialize();
+			// base.Initialize();
 
             //
             // Use this to configure multiple data connection on app.config
