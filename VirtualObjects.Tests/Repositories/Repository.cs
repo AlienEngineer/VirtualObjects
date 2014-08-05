@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
-using VirtualObjects.Tests.Annotations;
+using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Tests.Repositories
 {
