@@ -12,7 +12,7 @@
     <description>VirtualObjects Scaffolders</description>
     <releaseNotes>
       Version 1.1
-      * Fix: 
+      * Fix: Added Create new Repository in the interface.
       * Change #41: ForeignKey fields should be decorated with ForeignKeyAttribute
 
       Version 1.0

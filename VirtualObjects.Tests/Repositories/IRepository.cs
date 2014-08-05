@@ -49,6 +49,12 @@ namespace VirtualObjects.Tests.Repositories
         /// </summary>
         /// <returns></returns>
         IRepositoryTransaction BeginTransaction();
+
+        /// <summary>
+        /// Creates a new Repository.
+        /// </summary>
+        /// <returns></returns>
+        IRepository CreateNewRepository(string connectionName);
     }
 
 	public interface IRepositoryTransaction

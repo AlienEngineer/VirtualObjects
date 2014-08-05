@@ -30,4 +30,27 @@ namespace VirtualObjects.Tests.Sessions
         static Repository testing;
         static String connectionString;
     }
+
+    [Subject(typeof (IRepository))]
+    public class When_creating_a_repository_from_another : RepositorySpecs
+    {
+        Establish context = () =>
+        {
+            testing = new Repository("TESTING");
+            
+        };
+
+        private Because of = () =>
+        {
+            northwind = testing.CreateNewRepository("NORTHWIND");
+            var session = (Session)((Repository)northwind).Session;
+            connectionString = ((InternalSession)session.InternalSession).Context.Connection.DbConnection.ConnectionString;
+        };
+
+        private It should_be_equal_to_northwind = () => connectionString.Should().Be("                    Data Source=(LocalDB)\\v11.0;                                                         AttachDbFilename=|DataDirectory|\\northwnd.mdf;                                                         Integrated Security=True;                                                         Connect Timeout=30;          MultipleActiveResultSets=True");
+        
+        private static IRepository northwind;
+        private static IRepository testing;
+        private static String connectionString;
+    }
 }

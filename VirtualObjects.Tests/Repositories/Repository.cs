@@ -61,6 +61,11 @@ namespace VirtualObjects.Tests.Repositories
             return new RepositoryTransaction(Session.BeginTransaction());
         }
 
+        public IRepository CreateNewRepository(string connectionName)
+        {
+            return new Repository(connectionName);
+        }
+
         #endregion
 
 		#region IDisposable Members
