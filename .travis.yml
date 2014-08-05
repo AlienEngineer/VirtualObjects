@@ -3,9 +3,11 @@ language: c
 before_install:
   - sudo apt-get update -qq > /dev/null
   - sudo apt-get install -qq mono-devel mono-gmcs > /dev/null
+  - sudo apt-get install nunit-console
   - mozroots --import --sync
   - mv -f .nuget/NuGet.mono.targets .nuget/NuGet.targets
   - export EnableNuGetPackageRestore=true
   
 script:
   - xbuild VirtualObjects.sln
+  - nunit-console ./VirtualObjects.Tests/bin/Debug/VirtualObjects.Tests.dll
