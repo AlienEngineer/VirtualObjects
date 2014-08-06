@@ -63,15 +63,14 @@ To improve myself and create something really easy to use with the best performa
 ***
 
 ### Performance
-Verified on unit-tests using NUnit on a intel i7 3.07GHz 18Gb RAM and intel i7-3537U 2.0GHz 8Gb RAM.
+Verified on unit-tests using NUnit on a intel i7 3.07GHz 18Gb RAM and intel i7-3537U 2.0GHz 8Gb RAM. On 06/08/2014.
 
-
-* VO Version 1.3
-* Dapper Version 1.13
-* Entity Framework 6
+* VO Version 1.3.18
+* Dapper Version 1.27
+* Entity Framework 6.1.1
 
 #### Under Northwind Database
-To obtain a fresh Graphic and more detail execute the unit-test _Performance Check_ the excel will be filled on Bin\Performance\Session folder.
+To obtain a fresh Graphic and more detail, execute the unit-test _Performance Check_. The excel will be filled on Bin\Performance\Session folder.
 More graphics will be provided on /docs folder.
 
 ```MySQL
