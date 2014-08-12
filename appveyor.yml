@@ -56,7 +56,7 @@ matrix:
 #---------------------------------#
  
 # build platform, i.e. x86, x64, AnyCPU. This setting is optional.
-platform: AnyCPU
+#platform: AnyCPU
  
 # to add several platforms to build matrix:
 #platform:
@@ -64,7 +64,7 @@ platform: AnyCPU
 #  - AnyCPU
  
 # build Configuration, i.e. Debug, Release, etc.
-configuration: Debug
+configuration: Release 4.5
  
 # to add several configurations to build matrix:
 #configuration:
