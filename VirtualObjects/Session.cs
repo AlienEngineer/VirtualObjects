@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -208,6 +209,16 @@ namespace VirtualObjects
         public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new()
         {
             return InternalSession.GetAll<TEntity>();
+        }
+
+        /// <summary>
+        /// Gets the raw data.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
+        public IDataReader GetRawData(string query)
+        {
+            return InternalSession.GetRawData(query);
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace VirtualObjects
@@ -16,6 +17,13 @@ namespace VirtualObjects
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <returns></returns>
         IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new();
+
+        /// <summary>
+        /// Gets the raw data.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
+        IDataReader GetRawData(String query);
 
         /// <summary>
         /// Gets how many entities existe of the given TEntity type.
