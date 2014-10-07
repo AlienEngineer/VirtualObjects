@@ -5,6 +5,7 @@ namespace VirtualObjects.Exceptions
     /// <summary>
     /// 
     /// </summary>
+    [Serializable]
     public class ConfigException : VirtualObjectsException
     {
         /// <summary>

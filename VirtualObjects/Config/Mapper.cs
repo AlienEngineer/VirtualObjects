@@ -75,7 +75,7 @@ namespace VirtualObjects.Config
                 EntityType = entityType
             };
 
-            entityInfo.Columns = MapColumns(entityType.Properties(), entityInfo).ToList();
+            entityInfo.Columns = MapColumns(entityInfo).ToList();
             entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey).ToList();
 
             int i = 0;
@@ -222,12 +222,26 @@ namespace VirtualObjects.Config
 
         #region Auxiliary column mapping methods
 
-        private IEnumerable<IEntityColumnInfo> MapColumns(IEnumerable<PropertyInfo> properties, IEntityInfo entityInfo)
+        private IEnumerable<IEntityColumnInfo> MapColumns(IEntityInfo entityInfo)
         {
-            return properties
-                .Where(e => !e.PropertyType.IsGenericType || !e.PropertyType.GetInterfaces().Contains(typeof(IEnumerable)))
+            return MapColumns(entityInfo, entityInfo.EntityType);
+        }
+
+        private IEnumerable<IEntityColumnInfo> MapColumns(IEntityInfo entityInfo, Type type)
+        {
+            if (type == typeof (Object))
+            {
+                return new IEntityColumnInfo[0];
+            }
+
+            var baseColumns = MapColumns(entityInfo, type.BaseType);
+
+            return baseColumns.Concat(type.Properties()
+                .Where(e => !e.PropertyType.IsGenericType || !e.PropertyType.GetInterfaces().Contains(typeof (IEnumerable)))
                 .Where(e => !ShouldIgnore(e))
-                .Select(e => MapColumn(e, entityInfo));
+                .Where(e => !baseColumns.Select(o => o.Property.Name).Contains(e.Name) )
+                .Select(e => MapColumn(e, entityInfo)));
+
         }
 
         private IEntityColumnInfo MapColumn(PropertyInfo propertyInfo, IEntityInfo entityInfo)

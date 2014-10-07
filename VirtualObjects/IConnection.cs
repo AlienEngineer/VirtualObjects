@@ -60,6 +60,14 @@ namespace VirtualObjects
         bool KeepAlive { get; set; }
 
         /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
+        string ConnectionString { get; }
+
+        /// <summary>
         /// Executes the scalar.
         /// </summary>
         /// <param name="cmd">The command.</param>

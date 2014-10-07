@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using VirtualObjects.CRUD;
@@ -17,7 +15,7 @@ namespace VirtualObjects.Connections
         
         private readonly IDbConnectionProvider _provider;
         private readonly TextWriter _log;
-        private readonly IProgramability _programability;
+        private readonly IProgramability _programmability;
         private IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
@@ -59,12 +57,13 @@ namespace VirtualObjects.Connections
         #endregion
 
 
-        public Connection(IDbConnectionProvider provider, TextWriter log, IProgramability programability)
+        public Connection(IDbConnectionProvider provider, TextWriter log, IProgramability programmability)
         {
             _provider = provider;
             _log = log;
-            _programability = programability;
+            _programmability = programmability;
             _dbConnection = provider.CreateConnection();
+            ConnectionString = _dbConnection.ConnectionString;
             ++count;
         }
 
@@ -91,6 +90,8 @@ namespace VirtualObjects.Connections
         {
             return AutoClose(() => CreateCommand(commandText, parameters).ExecuteScalar());
         }
+
+        public string ConnectionString { get; private set; }
 
         public object ExecuteScalar(IDbCommand cmd, IDictionary<string, IOperationParameter> parameters)
         {
@@ -301,7 +302,7 @@ namespace VirtualObjects.Connections
             Rolledback = _rolledBack = true;
             _endedTransaction = true;
 
-            _programability.ReleaseLock(this);
+            _programmability.ReleaseLock(this);
             _dbTransaction.Rollback();
             Close();
         }
@@ -314,14 +315,14 @@ namespace VirtualObjects.Connections
             }
 
             _endedTransaction = true;
-            _programability.ReleaseLock(this);
+            _programmability.ReleaseLock(this);
             _dbTransaction.Commit();
             Close();
         }
 
         public bool AcquireLock(string resourceName, int timeout = 30000)
         {
-            return _programability.AcquireLock(this, resourceName, timeout);
+            return _programmability.AcquireLock(this, resourceName, timeout);
         }
     }
 

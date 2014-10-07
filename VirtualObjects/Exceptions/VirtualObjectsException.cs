@@ -6,6 +6,7 @@ namespace VirtualObjects.Exceptions
     /// <summary>
     /// 
     /// </summary>
+    [Serializable]
     public class VirtualObjectsException : Exception
     {
         /// <summary>

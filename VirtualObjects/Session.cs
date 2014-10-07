@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -156,7 +157,18 @@ namespace VirtualObjects
         /// </summary>
         public Session()
             : this(configuration: null, connectionName: null) { }
-        
+
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
+        public String ConnectionString
+        {
+            get { return ((InternalSession) InternalSession).Context.Connection.ConnectionString; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
@@ -197,6 +209,16 @@ namespace VirtualObjects
         public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new()
         {
             return InternalSession.GetAll<TEntity>();
+        }
+
+        /// <summary>
+        /// Gets the raw data.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
+        public IDataReader GetRawData(string query)
+        {
+            return InternalSession.GetRawData(query);
         }
 
         /// <summary>

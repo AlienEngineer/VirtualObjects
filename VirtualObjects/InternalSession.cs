@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using VirtualObjects.Config;
 using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
@@ -40,6 +41,16 @@ namespace VirtualObjects
         public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new()
         {
             return Context.QueryProvider.CreateQuery<TEntity>(null);
+        }
+
+        /// <summary>
+        /// Gets the raw data.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
+        public IDataReader GetRawData(String query)
+        {
+            return connection.ExecuteReader(query, new Dictionary<string, IOperationParameter>());
         }
 
         /// <summary>
@@ -129,6 +140,14 @@ namespace VirtualObjects
         {
             return Context.Connection.ExecuteProcedure(storeProcedure, args);
         }
+
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
+        public string ConnectionString { get { return Context.Connection.ConnectionString; } }
 
         private TEntity ExecuteOperation<TEntity>(IOperation operation, TEntity entityModel)
         {

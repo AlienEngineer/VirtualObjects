@@ -1,0 +1,20 @@
+<?php include 'views/topmenu.html' ?>    
+
+<div class="jumbotron hidden-xs">
+    <img class="hidden-xs col-md-3 col-sm-4 col-lg-2 col-xs-3" src="images/1391724649_Database_3.png"  />
+    <div>
+        <h1>VirtualObjects <small class="version" >1.3.17</small></h1>
+        <p>Easy and Fast ORM</p>   
+        
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-3" ng-controller="MenuController">
+        <?php include 'leftmenu.html' ?>
+    </div>
+    <div class="col-md-9">
+        <div ng-view></div>
+    </div>
+</div>

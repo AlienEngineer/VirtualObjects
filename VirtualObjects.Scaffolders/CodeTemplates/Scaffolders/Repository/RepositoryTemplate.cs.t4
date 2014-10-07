@@ -74,6 +74,11 @@ using VirtualObjects.Connections;
             return new RepositoryTransaction(Session.BeginTransaction());
         }
 
+		public IRepository CreateNewRepository(string connectionName)
+        {
+            return new Repository(connectionName);
+        }
+
         #endregion
 
 		#region IDisposable Members
@@ -195,7 +200,7 @@ using VirtualObjects.Connections;
         
         public override void Initialize()
         {
-			base.Initialize();
+			// base.Initialize();
 
             //
             // Use this to configure multiple data connection on app.config

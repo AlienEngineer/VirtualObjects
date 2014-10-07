@@ -17,13 +17,13 @@ namespace VirtualObjects.CodeGenerators
     {
         private readonly Type _type;
         private readonly IEntityBag entityBag;
-        private readonly IQueryInfo queryInfo;
-        private int projectionIndex = 0;
+        private readonly IQueryInfo QueryInfo;
+        private int projectionIndex;
         
         public DynamicModelCodeGenerator(Type type, IEntityBag entityBag, IQueryInfo queryInfo, SessionConfiguration configuration)
             : base(type.Namespace + "_Internal_Builder_Dynamic_" + MakeDynamicSafeName(type), type, configuration, IsDynamic: true)
         {
-            this.queryInfo = queryInfo;
+            QueryInfo = queryInfo;
             this.entityBag = entityBag;
             _type = type;
 
@@ -148,10 +148,10 @@ namespace VirtualObjects.CodeGenerators
    
 ".FormatWith(new
    {
-       Body = GenerateMapBody(_type, queryInfo),
+       Body = GenerateMapBody(_type, QueryInfo),
        Name = TypeName,
        UnderlyingType = _type.FullName.Replace('+', '.'),
-       SpecificMethods = GenerateSpecificMethods(_type, entityBag, queryInfo)
+       SpecificMethods = GenerateSpecificMethods(_type, entityBag, QueryInfo)
    });
         }
 
@@ -240,17 +240,30 @@ namespace VirtualObjects.CodeGenerators
 
             for (var i = 0; i < entityInfo.Columns.Count; i++)
             {
-                
+                String value = GenerateFieldAssignment(
+                    entityInfo.Columns[i].Property,
+                    queryInfo, 
+                    withMethodCall: false, 
+                    column: entityInfo.Columns[i]);
+
+                value = value.Substring(3, value.Length - 3);
+
                 result += @"
-        entity.{FieldName} {Value}; ++i;
+        {Comment} try {{
+            entity.{FieldName} = {Value}; ++i;
+        {Comment} }} catch (InvalidCastException) {{ 
+        {Comment}    entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type})); ++i;
+        {Comment} }}
 ".FormatWith(new
  {
      FieldName = entityInfo.Columns[i].Property.Name,
-     Value = GenerateFieldAssignment(
-                        entityInfo.Columns[i].Property,
-                        queryInfo, 
-                        withMethodCall: false, 
-                        column: entityInfo.Columns[i])
+     Type = entityInfo.Columns[i].Property.PropertyType.FullName.Replace('+', '.'),
+     Comment = !entityInfo.Columns[i].Property.PropertyType.IsFrameworkType() || entityInfo.Columns[i].Property.PropertyType.IsGenericCollection() ? "//" : String.Empty,
+     NotComment = entityInfo.Columns[i].Property.PropertyType.IsFrameworkType() && !entityInfo.Columns[i].Property.PropertyType.IsGenericCollection() ? String.Empty : "//",
+     Value = value,
+     ValueNoType = value
+        .Replace(String.Format("({0})", entityInfo.Columns[i].Property.PropertyType.Name), "")
+        .Replace("default", String.Format("default({0})", entityInfo.Columns[i].Property.PropertyType.Name)),
  });
                 ++projectionIndex;
             }
@@ -271,16 +284,18 @@ namespace VirtualObjects.CodeGenerators
                 const string setter = @"
         try
         {{
-            {Comment}if (data[{i}] != DBNull.Value)
+            {Comment}if (data[i] != DBNull.Value) {{
                 entity.{FieldName} = {Value};
+            {Comment} }} else
+                {Comment} {{ entity.{FieldName} = default({Type}); }}
         }}
-        catch (InvalidCastException) 
-        {{ 
+        {NotComment}catch (InvalidCastException) 
+        {NotComment}{{ 
             {NotComment}entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
-        }}
+        {NotComment}}}
         catch ( Exception ex)
         {{
-            throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value."", ex);
+            throw new Exception(""Error setting value to [{FieldName}] with ["" + data[i] + ""] value. \nInner Exception: "" + ex.Message + ""\nIndex:"" + i);
         }}
         ++i;
 ";
@@ -290,6 +305,7 @@ namespace VirtualObjects.CodeGenerators
                     queryInfo, 
                     withMethodCall: true, 
                     column: projectionIndex < queryInfo.PredicatedColumns.Count ? queryInfo.PredicatedColumns[projectionIndex] : null);
+
                 value = value.Substring(3, value.Length - 3);
 
                 result += setter.FormatWith(new
@@ -297,15 +313,15 @@ namespace VirtualObjects.CodeGenerators
                     i,
                     FieldName = propertyInfo.Name,
                     Value = value,
-                    Comment = propertyInfo.PropertyType.IsFrameworkType() || propertyInfo.PropertyType.IsGenericCollection() ? "//" : String.Empty,
+                    Comment = !propertyInfo.PropertyType.IsFrameworkType() || propertyInfo.PropertyType.IsGenericCollection() ? "//" : String.Empty,
                     NotComment = propertyInfo.PropertyType.IsFrameworkType() && !propertyInfo.PropertyType.IsGenericCollection() ? String.Empty : "//",
                     ValueNoType = value
                        .Replace(String.Format("({0})", propertyInfo.PropertyType.Name), "")
                        .Replace("default", String.Format("default({0})", propertyInfo.PropertyType.Name)),
-                    Type = propertyInfo.PropertyType.Name
+                    Type = propertyInfo.PropertyType.FullName.Replace('+', '.')
                 });
 
-
+                
                 if ( propertyInfo.PropertyType.IsFrameworkType() )
                 {
                     if ( propertyInfo.PropertyType.IsGenericCollection() )
@@ -357,7 +373,7 @@ namespace VirtualObjects.CodeGenerators
                     {
                         Type = column.Property.PropertyType.FullName.Replace('+', '.'),
                         BoundField = column.ForeignKey.Property.Name,
-                        Value = GenerateFieldAssignment(column.ForeignKey.Property, queryInfo, withMethodCall, column.ForeignKey)
+                        Value = GenerateFieldAssignment(column.ForeignKey.Property, queryInfo, false, column.ForeignKey)
                     });
                 }
                 else
