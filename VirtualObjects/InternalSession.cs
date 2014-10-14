@@ -34,6 +34,14 @@ namespace VirtualObjects
         }
 
         /// <summary>
+        /// Gets the connection.
+        /// </summary>
+        /// <value>
+        /// The connection.
+        /// </value>
+        public IDbConnection Connection { get { return connection.DbConnection; } }
+
+        /// <summary>
         /// Gets all entities of TEntity type.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>

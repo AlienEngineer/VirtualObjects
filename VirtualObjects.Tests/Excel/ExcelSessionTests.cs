@@ -23,7 +23,7 @@ namespace VirtualObjects.Tests.Excel
         [Test]
         public void ExcelSession_GetData()
         {
-            using ( var session = new ExcelSession("Excel\\book.xlsx") )
+            using ( var session = new ExcelSession("Excel\\book.xlsx", new SessionConfiguration { Logger = Console.Out }) )
             {
                 var count = session.GetAll<Product>().ToList().Count();
 
@@ -83,7 +83,11 @@ namespace VirtualObjects.Tests.Excel
         [Test]
         public void ExcelSession_InsertPerson()
         {
-            using ( var session = new ExcelSession("Excel\\NewPeople.xlsx") )
+            using ( var session = new ExcelSession("Excel\\NewPeople.xlsx", new SessionConfiguration
+            {
+                Logger = Console.Out,
+                SaveGeneratedCode = true
+            }) )
             {
                 session.KeepAlive(() =>
                 {
@@ -93,10 +97,15 @@ namespace VirtualObjects.Tests.Excel
                         {
                             Name = "Sérgio",
                             Age = 23,
-                            Address = "Sérgio Address"
+                            Address = "Sérgio Address",
+                            Active = true
                         });
                     }
                 });
+
+                var people = session.GetAll<Person>().ToList();
+
+                Assert.That(people, Is.Not.Empty);
             }
         }
     }
@@ -108,6 +117,7 @@ namespace VirtualObjects.Tests.Excel
         public String Address { get; set; }
         public String City { get; set; }
         public String Title { get; set; }
+        public Boolean Active { get; set; }
     }
 
     [Table(TableName = "Folha1")]
