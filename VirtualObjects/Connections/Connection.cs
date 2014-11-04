@@ -136,7 +136,7 @@ namespace VirtualObjects.Connections
             return AutoClose(() => CreateCommand(commandText, parameters).ExecuteNonQuery());
         }
 
-        public ITransaction BeginTransaction()
+        public ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified)
         {
             if ( _dbTransaction != null )
             {
@@ -144,7 +144,10 @@ namespace VirtualObjects.Connections
             }
 
             Open();
-            _dbTransaction = DbConnection.BeginTransaction();
+            _dbTransaction = isolation == IsolationLevel.Unspecified ? 
+                DbConnection.BeginTransaction() : 
+                DbConnection.BeginTransaction(isolation);
+            
             _endedTransaction = false;
 
             return this;

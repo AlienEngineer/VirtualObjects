@@ -287,10 +287,11 @@ namespace VirtualObjects
         /// <summary>
         /// Begins the transaction.
         /// </summary>
+        /// <param name="isolation"></param>
         /// <returns></returns>
-        public ITransaction BeginTransaction()
+        public ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified)
         {
-            return InternalSession.BeginTransaction();
+            return InternalSession.BeginTransaction(isolation);
         }
 
         /// <summary>

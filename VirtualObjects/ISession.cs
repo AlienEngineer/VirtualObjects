@@ -76,7 +76,7 @@ namespace VirtualObjects
         /// Begins the transaction.
         /// </summary>
         /// <returns></returns>
-        ITransaction BeginTransaction();
+        ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified);
 
         /// <summary>
         /// Executes the store procedure.

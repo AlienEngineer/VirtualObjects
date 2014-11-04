@@ -133,9 +133,9 @@ namespace VirtualObjects
         /// Begins the transaction.
         /// </summary>
         /// <returns></returns>
-        public ITransaction BeginTransaction()
+        public ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified)
         {
-            return Context.Connection.BeginTransaction();
+            return Context.Connection.BeginTransaction(isolation);
         }
 
         /// <summary>
