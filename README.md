@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/f0nexr1d9havh95u?svg=true)](https://ci.appveyor.com/project/AlienEngineer/virtualobjects)
 
 ### Getting Started (Scaffolding)
 
