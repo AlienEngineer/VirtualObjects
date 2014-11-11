@@ -113,10 +113,8 @@ test:
 
 # scripts to run before tests
 before_test:
-   - echo trying to give access to the database file.  
+   - echo trying to give access to the database file.
    - icacls C:\PROJECTS\VIRTUALOBJECTS\VIRTUALOBJECTS.TESTS\BIN\RELEASE\DATA\* /grant appveyor:(f)
-#  - echo script1
-#  - ps: Write-Host "script1"
 
 # scripts to run after tests
 after_test:
