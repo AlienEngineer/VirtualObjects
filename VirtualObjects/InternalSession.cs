@@ -34,6 +34,14 @@ namespace VirtualObjects
         }
 
         /// <summary>
+        /// Gets the connection.
+        /// </summary>
+        /// <value>
+        /// The connection.
+        /// </value>
+        public IDbConnection Connection { get { return connection.DbConnection; } }
+
+        /// <summary>
         /// Gets all entities of TEntity type.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
@@ -125,9 +133,9 @@ namespace VirtualObjects
         /// Begins the transaction.
         /// </summary>
         /// <returns></returns>
-        public ITransaction BeginTransaction()
+        public ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified)
         {
-            return Context.Connection.BeginTransaction();
+            return Context.Connection.BeginTransaction(isolation);
         }
 
         /// <summary>

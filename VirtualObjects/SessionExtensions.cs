@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 
 namespace VirtualObjects
@@ -37,11 +38,48 @@ namespace VirtualObjects
         /// <summary>
         /// Executes an operation Within a transaction.
         /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="session">The session.</param>
+        /// <param name="isolation">The isolation.</param>
+        /// <param name="execute">The execute.</param>
+        /// <returns></returns>
+        public static TResult WithinTransaction<TResult>(this ISession session, IsolationLevel isolation, Func<ITransaction, TResult> execute)
+        {
+            var transaction = session.BeginTransaction(isolation);
+            try
+            {
+                return execute(transaction);
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+            finally
+            {
+                transaction.Commit();
+            }
+        }
+
+        /// <summary>
+        /// Executes an operation Within a transaction.
+        /// </summary>
         /// <param name="session">The session.</param>
         /// <param name="execute">The execute.</param>
         public static void WithinTransaction(this ISession session, Action<ITransaction> execute)
         {
             session.WithinTransaction<Object>(transaction => { execute(transaction); return null; });
+        }
+
+        /// <summary>
+        /// Executes an operation Within a transaction.
+        /// </summary>
+        /// <param name="session">The session.</param>
+        /// <param name="isolation">The isolation.</param>
+        /// <param name="execute">The execute.</param>
+        public static void WithinTransaction(this ISession session, IsolationLevel isolation, Action<ITransaction> execute)
+        {
+            session.WithinTransaction<Object>(isolation, transaction => { execute(transaction); return null; });
         }
 
         /// <summary>

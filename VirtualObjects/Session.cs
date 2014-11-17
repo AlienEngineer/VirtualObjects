@@ -202,6 +202,14 @@ namespace VirtualObjects
         }
 
         /// <summary>
+        /// Gets the connection.
+        /// </summary>
+        /// <value>
+        /// The connection.
+        /// </value>
+        public IDbConnection Connection { get { return InternalSession.Connection; } }
+
+        /// <summary>
         /// Gets all entities of TEntity type.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
@@ -279,10 +287,11 @@ namespace VirtualObjects
         /// <summary>
         /// Begins the transaction.
         /// </summary>
+        /// <param name="isolation"></param>
         /// <returns></returns>
-        public ITransaction BeginTransaction()
+        public ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified)
         {
-            return InternalSession.BeginTransaction();
+            return InternalSession.BeginTransaction(isolation);
         }
 
         /// <summary>

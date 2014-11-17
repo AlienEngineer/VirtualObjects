@@ -12,6 +12,14 @@ namespace VirtualObjects
     {
 
         /// <summary>
+        /// Gets the connection.
+        /// </summary>
+        /// <value>
+        /// The connection.
+        /// </value>
+        IDbConnection Connection { get; }
+
+        /// <summary>
         /// Gets all entities of TEntity type.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
@@ -68,7 +76,7 @@ namespace VirtualObjects
         /// Begins the transaction.
         /// </summary>
         /// <returns></returns>
-        ITransaction BeginTransaction();
+        ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified);
 
         /// <summary>
         /// Executes the store procedure.

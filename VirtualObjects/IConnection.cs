@@ -42,8 +42,9 @@ namespace VirtualObjects
         /// <summary>
         /// Begins the transaction.
         /// </summary>
+        /// <param name="isolation"></param>
         /// <returns></returns>
-        ITransaction BeginTransaction();
+        ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified);
         /// <summary>
         /// Gets the database connection.
         /// </summary>
