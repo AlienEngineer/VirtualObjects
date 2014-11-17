@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/f0nexr1d9havh95u?svg=true)](https://ci.appveyor.com/project/AlienEngineer/virtualobjects)
+[![Build status](https://ci.appveyor.com/api/projects/status/f0nexr1d9havh95u/branch/1.4?svg=true)](https://ci.appveyor.com/project/AlienEngineer/virtualobjects/branch/1.4)
 
 ### Getting Started (Scaffolding)
 
