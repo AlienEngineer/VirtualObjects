@@ -1,0 +1,13 @@
+<div id="leftmenu" >
+    <ul class="nav nav-pills nav-stacked">
+        <li ng-repeat="item in items" class="{{ item.Class}}">
+            <a href="#{{ item.Label | nospace }}"><i class="fa {{ item.Icon}} fa-fw"></i> {{ item.Label}}</a>
+        </li>
+    </ul>    
+
+    <a href="https://github.com/AlienEngineer/VirtualObjects" class="btn btn-primary btn-lg btn-block" >
+        <i class="fa fa-github-alt fa-fw"></i>
+        Source Code
+    </a>
+
+</div>

@@ -29,6 +29,7 @@ namespace VirtualObjects.Config
                 ColumnVersionFieldGetters = new List<Func<PropertyInfo, Boolean>>(),
                 ColumnIgnoreGetters = new List<Func<PropertyInfo, Boolean>>(),
                 ComputedColumnGetters = new List<Func<PropertyInfo, Boolean>>(),
+                IsForeignKeyGetters = new List<Func<PropertyInfo, Boolean>>(),
                 EntityNameGetters = new List<Func<Type, String>>(),
                 EntitySchemaGetters = new List<Func<Type, String>>(),
                 ColumnForeignKeyGetters = new List<Func<PropertyInfo, String>>(),
@@ -119,7 +120,7 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
-                keyGetter = _defaultBooleanGetter;
+                keyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ColumnKey(prop =>
@@ -148,7 +149,7 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
-                keyGetter = _defaultBooleanGetter;
+                keyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ColumnIdentity(prop =>
@@ -177,7 +178,7 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
-                keyGetter = _defaultBooleanGetter;
+                keyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ColumnVersion(prop =>
@@ -206,7 +207,7 @@ namespace VirtualObjects.Config
         {
             if ( ignoreGetter == null )
             {
-                ignoreGetter = _defaultBooleanGetter;
+                ignoreGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ColumnIgnore(prop =>
@@ -227,6 +228,35 @@ namespace VirtualObjects.Config
         }
 
         /// <summary>
+        /// Appends a parser to ignore a property.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
+        public void IsForeignKey<TAttribute>(Func<TAttribute, Boolean> isForeignKeyGetter) where TAttribute : Attribute
+        {
+            if (isForeignKeyGetter == null)
+            {
+                isForeignKeyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
+            }
+
+            IsForeignKey(prop =>
+            {
+                var attributes = prop.Attributes<TAttribute>();
+
+                return attributes != null && attributes.Select(isForeignKeyGetter).Any();
+            });
+        }
+
+        /// <summary>
+        /// Appends a parser to ignore a property.
+        /// </summary>
+        /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
+        public void IsForeignKey(Func<PropertyInfo, Boolean> isForeignKeyGetter)
+        {
+            configuration.IsForeignKeyGetters.Insert(0, isForeignKeyGetter);
+        }
+
+        /// <summary>
         /// Appends a parser to find a computed a property.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
@@ -235,7 +265,7 @@ namespace VirtualObjects.Config
         {
             if ( computedGetter == null )
             {
-                computedGetter = _defaultBooleanGetter;
+                computedGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
             }
 
             ComputedColumn(prop =>

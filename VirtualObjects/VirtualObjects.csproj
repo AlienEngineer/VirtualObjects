@@ -30,7 +30,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <OutputPath>bin\Debug\net45\</OutputPath>
+    <OutputPath>bin\Debug\net40\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug 4.5|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -94,6 +94,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Fasterflect">
@@ -112,19 +113,7 @@
   </ItemGroup>
   <Choose>
     <When Condition=" '$(TargetFrameworkVersion)' == 'v4.5' " />
-    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
-      <ItemGroup>
-        <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
-        </Reference>
-        <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\Ninject.3.2.0.0\lib\net40\Ninject.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition=" '$(TargetFrameworkVersion)' == 'v4.0' " />
   </Choose>
   <ItemGroup>
     <Compile Include="CodeGenerators\CodeCompiler.cs" />

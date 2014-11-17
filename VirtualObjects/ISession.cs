@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using VirtualObjects.NonQueries;
 
@@ -12,11 +13,26 @@ namespace VirtualObjects
     {
 
         /// <summary>
+        /// Gets the connection.
+        /// </summary>
+        /// <value>
+        /// The connection.
+        /// </value>
+        IDbConnection Connection { get; }
+
+        /// <summary>
         /// Gets all entities of TEntity type.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <returns></returns>
         IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new();
+
+        /// <summary>
+        /// Gets the raw data.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
+        IDataReader GetRawData(String query);
 
         /// <summary>
         /// Gets how many entities existe of the given TEntity type.
@@ -68,7 +84,7 @@ namespace VirtualObjects
         /// Begins the transaction.
         /// </summary>
         /// <returns></returns>
-        ITransaction BeginTransaction();
+        ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified);
 
         /// <summary>
         /// Executes the store procedure.
@@ -77,5 +93,13 @@ namespace VirtualObjects
         /// <param name="args">The arguments.</param>
         /// <returns></returns>
         int ExecuteStoreProcedure(String storeProcedure, IEnumerable<KeyValuePair<String, Object>> args);
+
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
+        String ConnectionString { get; }
     }
 }

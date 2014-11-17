@@ -6,9 +6,8 @@ using System.Linq.Expressions;
 
 namespace VirtualObjects.Queries
 {
-    class Query : IQueryable
+    abstract class Query : IQueryable
     {
-
         public Query(IQueryProvider provider, Expression expression, Type elementType, SessionContext context)
         {
             Provider = provider;
@@ -16,11 +15,8 @@ namespace VirtualObjects.Queries
             Context = context;
             Expression = expression;
         }
-        
-        public IEnumerator GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+
+        public abstract IEnumerator GetEnumerator();
 
         public Expression Expression { get; private set; }
         public Type ElementType { get; private set; }
@@ -52,7 +48,14 @@ namespace VirtualObjects.Queries
 
         }
 
-        public new IEnumerator<TElement> GetEnumerator()
+        IEnumerator<TElement> IEnumerable<TElement>.GetEnumerator()
+        {
+            var result = Provider.Execute<IEnumerable<TElement>>(Expression);
+
+            return result.GetEnumerator();
+        }
+
+        public override IEnumerator GetEnumerator()
         {
             var result = Provider.Execute<IEnumerable<TElement>>(Expression);
 

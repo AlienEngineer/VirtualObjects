@@ -127,6 +127,7 @@ namespace VirtualObjects
             builder.ColumnIgnore<IgnoreAttribute>();
 
             builder.ComputedColumn<ComputedAttribute>();
+            builder.IsForeignKey<ForeignKeyAttribute>();
 
             //
             // Collections filters.

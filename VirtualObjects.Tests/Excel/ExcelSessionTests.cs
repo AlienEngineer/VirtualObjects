@@ -6,46 +6,72 @@ using VirtualObjects.Mappings;
 namespace VirtualObjects.Tests.Excel
 {
     /// <summary>
-    /// 
+    ///
     /// Excel session unit tests
-    /// 
+    ///
     /// Author: Sérgio
     /// </summary>
     [TestFixture, Category("Excel")]
     public class ExcelSessionTests
     {
 
-        /// <summary>
-        /// 
-        /// Gets all products in the file.
-        /// 
-        /// </summary>
-        [Test]
-        public void ExcelSession_GetData()
+        private static void CaptureIfProviderIsMissing(Action action)
         {
-            using ( var session = new ExcelSession("Excel\\book.xlsx") )
+            try
             {
-                var count = session.GetAll<Product>().ToList().Count();
-
-                Assert.That(count, Is.EqualTo(3));
+                action();
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (ex.Message.Contains("'Microsoft.ACE.OLEDB.12.0' provider is not registered"))
+                {
+                    Assert.Inconclusive(
+                        "The 'Microsoft.ACE.OLEDB.12.0' provider is not registered on the local machine.");
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
 
         /// <summary>
-        /// 
+        ///
+        /// Gets all products in the file.
+        ///
+        /// </summary>
+        [Test]
+        public void ExcelSession_GetData()
+        {
+            CaptureIfProviderIsMissing(() =>
+            {
+                using (var session = new ExcelSession("Excel\\book.xlsx", new SessionConfiguration {Logger = Console.Out}))
+                {
+                    var count = session.GetAll<Product>().ToList().Count();
+
+                    Assert.That(count, Is.EqualTo(3));
+                }
+            });
+        }
+
+        /// <summary>
+        ///
         /// Get data from a second sheet.
-        /// 
+        ///
         /// </summary>
         [Test]
         public void ExcelSession_GetData1()
         {
-            using ( var session = new ExcelSession("Excel\\book.xlsx") )
+            CaptureIfProviderIsMissing(() =>
             {
-                var count = session.GetAll<Product1>().ToList().Count();
+                using (var session = new ExcelSession("Excel\\book.xlsx"))
+                {
+                    var count = session.GetAll<Product1>().ToList().Count();
 
-                
-                Assert.That(count, Is.EqualTo(4));
-            }
+
+                    Assert.That(count, Is.EqualTo(4));
+                }
+            });
         }
 
 
@@ -55,13 +81,16 @@ namespace VirtualObjects.Tests.Excel
         [Test]
         public void ExcelSession_GetData_Predicated()
         {
-            using ( var session = new ExcelSession("Excel\\book.xlsx") )
+            CaptureIfProviderIsMissing(() =>
             {
-                var count = session.GetAll<Product>().Count(e => e.Artigo == 1);
+                using (var session = new ExcelSession("Excel\\book.xlsx"))
+                {
+                    var count = session.GetAll<Product>().Count(e => e.Artigo == 1);
 
 
-                Assert.That(count, Is.EqualTo(1));
-            }
+                    Assert.That(count, Is.EqualTo(1));
+                }
+            });
         }
 
         /// <summary>
@@ -70,34 +99,49 @@ namespace VirtualObjects.Tests.Excel
         [Test]
         public void ExcelSession_GetLotsOfData()
         {
-            using ( var session = new ExcelSession("Excel\\People.xlsx") )
+            CaptureIfProviderIsMissing(() =>
             {
-                var count = session.GetAll<Person>()
-                    .ToList()
-                    .Count();
+                using (var session = new ExcelSession("Excel\\People.xlsx"))
+                {
+                    var count = session.GetAll<Person>()
+                        .ToList()
+                        .Count();
 
-                Assert.That(count, Is.EqualTo(5000));
-            }
+                    Assert.That(count, Is.EqualTo(5000));
+                }
+            });
         }
 
         [Test]
         public void ExcelSession_InsertPerson()
         {
-            using ( var session = new ExcelSession("Excel\\NewPeople.xlsx") )
+            CaptureIfProviderIsMissing(() =>
             {
-                session.KeepAlive(() =>
+                using (var session = new ExcelSession("Excel\\NewPeople.xlsx", new SessionConfiguration
                 {
-                    for (int i = 0; i < 1000; i++)
+                    Logger = Console.Out,
+                    SaveGeneratedCode = true
+                }))
+                {
+                    session.KeepAlive(() =>
                     {
-                        session.Insert(new Person
+                        for (int i = 0; i < 1000; i++)
                         {
-                            Name = "Sérgio",
-                            Age = 23,
-                            Address = "Sérgio Address"
-                        });
-                    }
-                });
-            }
+                            session.Insert(new Person
+                            {
+                                Name = "Sérgio",
+                                Age = 23,
+                                Address = "Sérgio Address",
+                                Active = true
+                            });
+                        }
+                    });
+
+                    var people = session.GetAll<Person>().ToList();
+
+                    Assert.That(people, Is.Not.Empty);
+                }
+            });
         }
     }
 
@@ -108,6 +152,7 @@ namespace VirtualObjects.Tests.Excel
         public String Address { get; set; }
         public String City { get; set; }
         public String Title { get; set; }
+        public Boolean Active { get; set; }
     }
 
     [Table(TableName = "Folha1")]

@@ -61,7 +61,6 @@ namespace VirtualObjects.Config
                 .FirstOrDefault(e => e.ForeignKey.ColumnName == name);
         }
 
-
         public IEntityColumnInfo this[string propertyName]
         {
             get
@@ -77,15 +76,10 @@ namespace VirtualObjects.Config
             {
                 return EntityName + " => no columns";
             }
-#if NET35
-            return EntityName + " = {\n" +
-                   String.Join(",\n", Columns.Select(e => e.ColumnName).ToArray()) +
-                   "} ";
-#else
+
             return EntityName + " = {\n" +
                    String.Join(",\n", Columns.Select(e => e.ColumnName)) +
                    "} ";
-#endif
         }
     }
 }

@@ -121,6 +121,14 @@ namespace VirtualObjects
         object DefaultValue { get; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether [inject nulls].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [inject nulls]; otherwise, <c>false</c>.
+        /// </value>
+        bool InjectNulls { get; set; }
+
+        /// <summary>
         /// Sets the value.
         /// </summary>
         /// <param name="entity">The entity.</param>

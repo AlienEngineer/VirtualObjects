@@ -204,12 +204,24 @@ namespace VirtualObjects.Queries.Formatters
             return buffer;
         }
 
+        public string FormatToLowerWith(string columnName, int index)
+        {
+            return FormatFunctionCall("ToLower", columnName, index);
+        }
+
+        public string FormatToUpperWith(string columnName, int index)
+        {
+            return FormatFunctionCall("ToUpper", columnName, index);
+
+        }
+
         public string FormatFields(IEnumerable<IEntityColumnInfo> columns, int index)
         {
             return String.Join(
                 FieldSeparator,
                 columns.Select(e => FormatFieldWithTable(e.ColumnName, index))
             );
+
         }
 
         public string GetRowNumberField(int index)
@@ -305,6 +317,27 @@ namespace VirtualObjects.Queries.Formatters
         {
             switch (methodCalled)
             {
+                case "ToString":
+                case "ToInt16":
+                case "ToInt32":
+                case "ToInt64":
+                case "ToUInt16":
+                case "ToUInt32":
+                case "ToUInt64":
+                case "ToByte":
+                case "ToSByte":
+                case "ToDouble":
+                case "ToDecimal":
+                case "ToBoolean":
+                case "ToSingle":
+                case "ToDateTime":
+                    return "Cast(";
+                case "ToLower":
+                    return "Lower(";
+                case "ToUpper":
+                    return "Upper(";
+                case "Substring":
+                    return "Substring(";
                 case "StartsWith":
                     return " like ";
                 case "EndsWith":
@@ -338,6 +371,31 @@ namespace VirtualObjects.Queries.Formatters
         {
             switch (methodCalled)
             {
+                case "ToString":
+                    return " as nvarchar(max)" + EndWrap();
+                case "ToByte":
+                    return " as tinyint" + EndWrap();
+                case "ToInt16":
+                case "ToSByte":
+                    return " as smallint" + EndWrap();
+                case "ToInt32":
+                case "ToUInt16":
+                    return " as int" + EndWrap();
+                case "ToInt64":
+                case "ToUInt32":
+                    return " as bigint" + EndWrap();
+                case "ToUInt64":
+                    return " as Decimal(20,0)" + EndWrap();
+                case "ToDouble":
+                    return " as float" + EndWrap();
+                case "ToDecimal":
+                    return " as decimal(26,3)" + EndWrap();
+                case "ToBoolean":
+                    return " as bit" + EndWrap();
+                case "ToSingle":
+                    return " as real" + EndWrap();
+                case "ToDateTime":
+                    return " as dateTime" + EndWrap();
                 case "StartsWith":
                 case "Contains":
                     return " + '%'";
@@ -354,6 +412,9 @@ namespace VirtualObjects.Queries.Formatters
                 case "DayOfWeek":
                 case "DayOfYear":
                 case "Millisecond":
+                case "ToUpper":
+                case "ToLower":
+                case "Substring":
                     return EndWrap();
             }
 

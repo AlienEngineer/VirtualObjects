@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions
@@ -48,7 +49,7 @@ namespace VirtualObjects.Tests.Sessions
         [Table("Order Details")]
         public class OrderDetails
         {
-            [System.ComponentModel.DataAnnotations.Key]
+            [Key]
             public int OrderId { get; set; }
 
             public int ProductId { get; set; }

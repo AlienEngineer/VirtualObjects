@@ -113,6 +113,16 @@ namespace VirtualObjects.Mappings
     }
 
     /// <summary>
+    /// Marks a property as a ForeignKey. <br />
+    /// The framework will inject null values instead of default values.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class ForeignKeyAttribute : Attribute
+    {
+
+    }
+
+    /// <summary>
     /// Filters a Collection field with the field specified in this attribute.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]

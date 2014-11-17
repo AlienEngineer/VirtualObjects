@@ -7,6 +7,22 @@ namespace VirtualObjects.Tests.Models.Northwind
 {
 
     [Table(TableName = "Employees")]
+    public class EmployeeSimple
+    {
+        [Identity]
+        public int EmployeeId { get; set; }
+
+        public String LastName { get; set; }
+
+        public String FirstName { get; set; }
+
+        public DateTime HireDate { get; set; }
+
+        [ForeignKey]
+        public int ReportsTo { get; set; }
+    }
+
+    [Table(TableName = "Employees")]
     public class Employee
     {
         [Identity]

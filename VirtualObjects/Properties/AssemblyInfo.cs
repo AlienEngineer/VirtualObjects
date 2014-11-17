@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("1.4.0")]
 [assembly: AssemblyFileVersion("1.4.0")]
-
 [assembly: InternalsVisibleTo("VirtualObjects.Tests")]
 
 [assembly: AssemblyInformationalVersion("1.4.0")]
+

@@ -333,6 +333,8 @@ namespace VirtualObjects.CodeGenerators
             {
                 var column = entityInfo.Columns[i];
 
+                var res = "-1".Equals(true.ToString());
+
                 const string setter = @"
                 try
                 {{
@@ -343,7 +345,9 @@ namespace VirtualObjects.CodeGenerators
                 {{ 
                      try
                      {{
-                        {NotComment}entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
+                        {IsBoolean} entity.{FieldName} = ""-1"".Equals({ValueNoType}.ToString());    
+
+                        {IsNotBoolean} {NotComment} entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
                      }}
                      catch ( Exception ex)
                      {{
@@ -369,7 +373,9 @@ namespace VirtualObjects.CodeGenerators
                         .Replace("default", String.Format("default({0})", column.Property.PropertyType.Name)),
                      Comment = column.ForeignKey == null ? "//" : String.Empty,
                      NotComment = column.ForeignKey == null ? String.Empty : "//",
-                     Type = column.Property.PropertyType.Name
+                     Type = column.Property.PropertyType.Name,
+                     IsBoolean = column.Property.PropertyType == typeof(Boolean) ? String.Empty : "//",
+                     IsNotBoolean = column.Property.PropertyType != typeof(Boolean) ? String.Empty : "//",
                  });
 
             }

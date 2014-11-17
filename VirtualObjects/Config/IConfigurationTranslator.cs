@@ -89,5 +89,13 @@ namespace VirtualObjects.Config
         /// The collection filter getters.
         /// </value>
         IList<Func<PropertyInfo, String>> CollectionFilterGetters { get; }
+
+        /// <summary>
+        /// Gets or sets the is foreign getters.
+        /// </summary>
+        /// <value>
+        /// The is foreign getters.
+        /// </value>
+        IList<Func<PropertyInfo, Boolean>> IsForeignKeyGetters { get; }
     }
 }

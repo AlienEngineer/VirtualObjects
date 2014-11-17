@@ -427,5 +427,22 @@ namespace VirtualObjects.Queries.Formatters
         /// <param name="name"></param>
         /// <returns></returns>
         string WrapWithCollation(string current, Type fieldType, string name);
+
+        /// <summary>
+        /// Formats to lower with.
+        /// </summary>
+        /// <param name="columnName">Name of the column.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        String FormatToLowerWith(string columnName, int index);
+
+        /// <summary>
+        /// Formats to upper with.
+        /// </summary>
+        /// <param name="columnName">Name of the column.</param>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        String FormatToUpperWith(string columnName, int index);
+
     }
 }

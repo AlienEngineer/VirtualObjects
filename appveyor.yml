@@ -1,0 +1,211 @@
+# Notes:
+#   - Minimal appveyor.yml file is an empty file. All sections are optional.
+#   - Indent each level of configuration with 2 spaces. Do not use tabs!
+#   - All section names are case-sensitive.
+#   - Section names should be unique on each level.
+
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+# version format
+version: 1.3.19.{build}
+
+# branches to build
+branches:
+  # whitelist
+  only:
+    - master
+    - 1.3
+    - 1.4
+
+  # blacklist
+  except:
+    - gh-pages
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+
+# environment:
+#  global:
+#    connection_string: Server=(local)\SQL2012SP1;Database=master;User ID=sa;Password=Password12!
+#    service_url: https://127.0.0.1:8090
+#
+#  matrix:
+#  - db: mysql
+#    provider: mysql
+#
+#  - db: mssql
+#    provider: mssql
+#    password:
+#      secure: $#(JFDA)jQ@#$
+
+# this is how to allow failing jobs in the matrix
+matrix:
+  allow_failures:
+    - platform: x86
+      configuration: Debug 4.5
+    - platform: x64
+      configuration: Release 4.5
+
+# services:
+#    - mssql2012sp1
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+# build platform, i.e. x86, x64, AnyCPU. This setting is optional.
+#platform: AnyCPU
+
+# to add several platforms to build matrix:
+#platform:
+#  - x86
+#  - AnyCPU
+
+# build Configuration, i.e. Debug, Release, etc.
+configuration: Release 4.5
+
+# to add several configurations to build matrix:
+#configuration:
+#  - Debug
+#  - Release
+
+build:
+  project: VirtualObjects.sln     # path to Visual Studio solution or project
+#  publish_wap: true               # package Web Application Projects (WAP) for Web Deploy
+#  publish_wap_xcopy: true         # package Web Application Projects (WAP) for XCopy deployment
+#  publish_azure: true             # package Azure Cloud Service projects and push to artifacts
+#  publish_nuget: true             # package projects with .nuspec files and push to artifacts
+
+# MSBuild verbosity level
+  #verbosity: quiet|minimal|normal|detailed
+  verbosity: minimal
+
+
+# scripts to run before build
+before_build:
+
+# scripts to run after build
+after_build:
+
+# to run your custom scripts instead of automatic MSBuild
+build_script:
+
+# to disable automatic builds
+#build: off
+
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+test:
+  assemblies:
+    - VirtualObjects.tests.dll
+
+# to run tests from different categories as separate jobs in parallel
+#test:
+#  categories:
+#    - A            # A category common for all jobs
+#    - [UI]         # 1st job
+#    - [DAL, BL]    # 2nd job
+
+# scripts to run before tests
+before_test:
+   - echo trying to give access to the database file.
+   - icacls C:\PROJECTS\VIRTUALOBJECTS\VIRTUALOBJECTS.TESTS\BIN\RELEASE\DATA\* /grant appveyor:(f)
+
+# scripts to run after tests
+after_test:
+
+# to run your custom scripts instead of automatic tests
+test_script:
+ - echo NUnit
+ - nunit-console "C:\projects\virtualobjects\VirtualObjects.Tests\bin\Release\VirtualObjects.Tests.dll"
+ - echo Mspec
+ - mspec-clr4 --appveyor "C:\projects\virtualobjects\VirtualObjects.Tests\bin\Release\VirtualObjects.Tests.dll"
+
+
+# to disable automatic tests
+#test: off
+
+
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
+artifacts:
+
+  # pushing a single file
+  - path: virtualObjects.zip
+
+  # pushing a single file with environment variable in path and "Deployment name" specified
+  - path: virtualObjects\bin\$(configuration)
+    name: virtualObjects
+
+  # pushing entire folder as a zip archive
+  - path: logs
+
+  # pushing all *.nupkg files in directory
+  - path: out\*.nupkg
+
+
+#---------------------------------#
+#     deployment configuration    #
+#---------------------------------#
+
+# providers: Local, FTP, WebDeploy, AzureCS, AzureBlob, S3, NuGet, Environment
+# provider name are case-sensitive!
+#deploy:
+#  - provider: FTP
+#    username: admin
+#    password: psw
+#
+#  - provider: WebDeploy
+#    url: http://www.deploy.com/myendpoint
+#    on:
+#      branch: release
+#      platform: x86
+#      configuration: debug
+#
+#  - provider: Environment
+#    name: staging
+#    on:
+#      branch: staging
+#      environment:
+#      var1: value1
+#      var2: value2
+
+# scripts to run before deployment
+before_deploy:
+
+# scripts to run after deployment
+after_deploy:
+
+# to run your custom scripts instead of provider deployments
+deploy_script:
+
+# to disable deployment
+#deploy: off
+
+#---------------------------------#
+#        global handlers          #
+#---------------------------------#
+
+# on successful build
+on_success:
+#  - do something
+
+# on build failure
+on_failure:
+#  - do something
+
+# webhooks
+#notifications:
+#  webhooks:
+#    - url: http://www.myhook.com
+#      events: build_success
+#    - url: http://www.myhook2.com
+#      events: [build_success, deployment_success]

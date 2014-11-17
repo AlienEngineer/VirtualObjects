@@ -42,8 +42,9 @@ namespace VirtualObjects
         /// <summary>
         /// Begins the transaction.
         /// </summary>
+        /// <param name="isolation"></param>
         /// <returns></returns>
-        ITransaction BeginTransaction();
+        ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified);
         /// <summary>
         /// Gets the database connection.
         /// </summary>
@@ -58,6 +59,14 @@ namespace VirtualObjects
         ///   <c>true</c> if [keep alive]; otherwise, <c>false</c>.
         /// </value>
         bool KeepAlive { get; set; }
+
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
+        string ConnectionString { get; }
 
         /// <summary>
         /// Executes the scalar.

@@ -83,7 +83,7 @@ namespace VirtualObjects.CRUD.Operations
                 return null;
             }
 
-            if (!finalValue.Equals(e.DefaultValue))
+            if (!finalValue.Equals(e.DefaultValue) || !e.InjectNulls)
             {
                 return finalValue;
             }

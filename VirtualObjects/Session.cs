@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,7 +38,7 @@ namespace VirtualObjects
         {
             configuration = configuration ?? new SessionConfiguration();
             configuration.ConnectionProvider = new NamedDbConnectionProvider(connectionProvider);
-            
+
             Initialize(configuration);
         }
 
@@ -46,11 +47,20 @@ namespace VirtualObjects
             Initialize(configuration ?? new SessionConfiguration());
         }
 
+        private void InternalInitialize(SessionConfiguration configuration)
+        {
+            _configuration = configuration ?? new SessionConfiguration();
+
+            _configuration.Initialize();
+            _configuration.ConfigureMappingBuilder(_configuration.ConfigurationTranslationBuilder);
+        }
+
+
         private void Initialize(SessionConfiguration configuration)
         {
             _configuration = configuration;
             _configuration.Flush();
-            
+
             ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
             Logger = configuration.Logger ?? new TextWriterStub();
 
@@ -152,7 +162,18 @@ namespace VirtualObjects
         /// </summary>
         public Session()
             : this(configuration: null, connectionName: null) { }
-        
+
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
+        public String ConnectionString
+        {
+            get { return ((InternalSession) InternalSession).Context.Connection.ConnectionString; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
@@ -186,6 +207,14 @@ namespace VirtualObjects
         }
 
         /// <summary>
+        /// Gets the connection.
+        /// </summary>
+        /// <value>
+        /// The connection.
+        /// </value>
+        public IDbConnection Connection { get { return InternalSession.Connection; } }
+
+        /// <summary>
         /// Gets all entities of TEntity type.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
@@ -193,6 +222,16 @@ namespace VirtualObjects
         public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class, new()
         {
             return InternalSession.GetAll<TEntity>();
+        }
+
+        /// <summary>
+        /// Gets the raw data.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
+        public IDataReader GetRawData(string query)
+        {
+            return InternalSession.GetRawData(query);
         }
 
         /// <summary>
@@ -263,10 +302,11 @@ namespace VirtualObjects
         /// <summary>
         /// Begins the transaction.
         /// </summary>
+        /// <param name="isolation"></param>
         /// <returns></returns>
-        public ITransaction BeginTransaction()
+        public ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified)
         {
-            return InternalSession.BeginTransaction();
+            return InternalSession.BeginTransaction(isolation);
         }
 
         /// <summary>

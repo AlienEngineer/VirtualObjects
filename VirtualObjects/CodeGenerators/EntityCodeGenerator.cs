@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Reflection;
 using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.CodeGenerators
@@ -8,6 +8,8 @@ namespace VirtualObjects.CodeGenerators
     abstract class EntityCodeGenerator : IEntityCodeGenerator
     {
         readonly TypeBuilder builder;
+
+        private readonly IList<Type> referencedtypes;
 
         protected EntityCodeGenerator(string typeName, Type baseType, SessionConfiguration configuration, bool IsDynamic = false)
         {
@@ -17,6 +19,7 @@ namespace VirtualObjects.CodeGenerators
             };
 
             TypeName = typeName;
+            referencedtypes = new List<Type>();
         }
 
         public String TypeName { get; private set; }
@@ -34,23 +37,43 @@ namespace VirtualObjects.CodeGenerators
             builder.Body.Add(otherMethods);
         }
 
+        /// <summary>
+        /// Adds the assembly of the given type to the new assembly as dependency.
+        /// </summary>
+        /// <param name="type">The type.</param>
         protected void AddReference(Type type)
         {
-            if (type == null || type == typeof(Object))
+            if (type == null || type == typeof(Object) || referencedtypes.Contains(type))
             {
                 return;
             }
 
-            builder.References.Add(type.Assembly.CodeBase.Remove(0, "file:///".Length));
+            referencedtypes.Add(type);
+
+            builder.References.Add(type.Assembly.Location);
 
             foreach (var argType in type.GetGenericArguments())
             {
                 AddReference(argType);
             }
 
+            foreach (var prop in type.GetProperties())
+            {
+                AddReference(prop.PropertyType);
+            }
+
+            foreach (var field in type.GetFields())
+            {
+                AddReference(field.FieldType);
+            }
+
             AddReference(type.BaseType);
         }
 
+        /// <summary>
+        /// Adds the namespace.
+        /// </summary>
+        /// <param name="nameSpace">The name space.</param>
         protected void AddNamespace(String nameSpace)
         {
             builder.Namespaces.Add(nameSpace);
