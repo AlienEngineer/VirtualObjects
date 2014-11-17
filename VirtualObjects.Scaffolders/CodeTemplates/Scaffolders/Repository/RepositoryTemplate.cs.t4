@@ -229,7 +229,7 @@ using VirtualObjects.Connections;
 
 			//
 			// Outputs generated code to files.
-			SaveGeneratedCode = true;
+			// SaveGeneratedCode = true;
 #endif
         }
 

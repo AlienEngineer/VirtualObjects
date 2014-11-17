@@ -40,7 +40,7 @@ namespace <#= Model.Namespace #>
 
             if (repo == null)
             {
-                throw new PrimaveraException("WithinTransaction only supports Repository instances.");
+                throw new VirtualObjectsException("WithinTransaction only supports Repository instances.");
             }
 
             return repo.Session.WithinTransaction(execute);

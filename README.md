@@ -94,11 +94,13 @@ Select * from Suppliers
 ### Get it as a NuGet Package [here] (http://www.nuget.org/packages/VirtualObjects/)
 ```
    PM> Install-Package VirtualObjects
+   PM> Install-Package VirtualObjects.Scaffolders
 ```
 
 
-[![PoweredBy](http://www.jetbrains.com/resharper/img/rs179x67.gif)](www.jetbrains.com)  
-[![endorse](https://api.coderwall.com/alienengineer/endorsecount.png)](https://coderwall.com/alienengineer)
+[![PoweredBy](http://www.jetbrains.com/resharper/docs/banners/rs8_small.png)](www.jetbrains.com)  
+[![endorse](https://api.coderwall.com/alienengineer/endorsecount.png)](https://coderwall.com/alienengineer)  
+[Ohloh](https://www.ohloh.net/p/VirtualObjects)
 
 [Release notes] (https://github.com/AlienEngineer/VirtualObjects/releases)  
 [What the future holds] (https://github.com/AlienEngineer/VirtualObjects/issues?milestone=1)  
