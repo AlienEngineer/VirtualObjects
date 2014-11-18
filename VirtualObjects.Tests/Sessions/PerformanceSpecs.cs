@@ -162,7 +162,6 @@ namespace VirtualObjects.Tests.Sessions
     public class When_mapping_suppliers : PerformanceSpecs
     {
 
-
         private Because of = () =>
         {
 
@@ -263,5 +262,112 @@ namespace VirtualObjects.Tests.Sessions
             };
 
         private static IList<MappingSuppliers> _results = new List<MappingSuppliers>();
+    }
+
+
+    [Subject("PerformanceSpecs")]
+    public class When_mapping_order_details : PerformanceSpecs
+    {
+
+        private Because of = () =>
+        {
+
+            int numberOfExecutions = 0;
+            do
+            {
+                numberOfExecutions += EXECUTION_STEP;
+
+                Diagnostic.Timed(() =>
+                {
+                    for (int i = 0; i < numberOfExecutions; i++)
+                    {
+                        Connection.Query<OrderDetails>("Select * from [Order Details]").ToList();
+                    }
+                }, name: STR_Dapper);
+
+                Diagnostic.Timed(() =>
+                {
+                    for (int i = 0; i < numberOfExecutions; i++)
+                    {
+                        EntityFramework.Suppliers.ToList();
+                    }
+                }, name: STR_EntityFramework);
+
+                Diagnostic.Timed(() =>
+                {
+                    VObjects.KeepAlive(() =>
+                    {
+                        for (int i = 0; i < numberOfExecutions; i++)
+                        {
+                            VObjects.GetAll<OrderDetails>().ToList();
+                        }
+                    });
+                }, name: STR_VirtualObjects);
+
+                Diagnostic.Timed(() =>
+                {
+                    if (Connection.State != ConnectionState.Open)
+                        Connection.Open();
+
+                    for (int i = 0; i < numberOfExecutions; i++)
+                    {
+                        var cmd = Connection.CreateCommand();
+                        cmd.CommandText = "Select * from [Order Details]";
+                        var reader = cmd.ExecuteReader();
+
+                        MapOrderDetail(reader).ToList();
+
+                        reader.Close();
+                    }
+                    Connection.Close();
+                }, name: STR_HardCoded);
+
+                _results.Add(new MappingOrderDetails
+                {
+                    NumberOfExecutions = numberOfExecutions,
+                    EntityFramework = (float)Diagnostic.GetMilliseconds(STR_EntityFramework),
+                    VirtualObjects = (float)Diagnostic.GetMilliseconds(STR_VirtualObjects),
+                    Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
+                    HandCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
+                });
+
+            } while (numberOfExecutions < NUMBER_OF_EXECUTIONS);
+
+        };
+
+
+        private It should_allways_have_virtual_objects_as_lower_result =
+            () =>
+            {
+                //
+                // Allow results to be worst in 2 iterations.
+                // At times a thread could be blocked and therefore vo could be slower in those cases. 
+                int failTolerance = 5;
+
+                int i = 0;
+
+                foreach (var result in _results)
+                {
+                    try
+                    {
+                        result.VirtualObjects.Should().BeLessOrEqualTo(result.Dapper, "VirtualObjects should be faster than Dapper on the {0} iteration", i);
+                        result.VirtualObjects.Should().BeLessOrEqualTo(result.EntityFramework, "VirtualObjects should be faster than EntityFramework on the {0} iteration", i);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(" => " + ex.Message);
+                        --failTolerance;
+
+                        if (failTolerance == 0)
+                        {
+                            throw;
+                        }
+                    }
+
+                    ++i;
+                }
+            };
+
+        private static IList<MappingOrderDetails> _results = new List<MappingOrderDetails>();
     }
 }
