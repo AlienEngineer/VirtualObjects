@@ -10,6 +10,7 @@ namespace VirtualObjects.Queries.Formatters
 {
     class SqlFormatter : IFormatter
     {
+        private int _inMethod = 0;
         private const string Separator = ", ";
         private const string TablePrefix = "T";
 
@@ -109,7 +110,7 @@ namespace VirtualObjects.Queries.Formatters
 
                 sb += Collation;
 
-                if (!String.IsNullOrEmpty(name))
+                if (!String.IsNullOrEmpty(name) && _inMethod == 0)
                 {
                     sb += " ";
                     sb += Wrap(name);
@@ -315,6 +316,11 @@ namespace VirtualObjects.Queries.Formatters
 
         public string BeginMethodCall(string methodCalled)
         {
+            //
+            // Increments the level within a method call. (call stack count)
+            // Usage: used to validate if the collation should append the field name or not.
+            // it should never put the name inside a method call.
+            ++_inMethod;
             switch (methodCalled)
             {
                 case "ToString":
@@ -369,6 +375,7 @@ namespace VirtualObjects.Queries.Formatters
 
         public string EndMethodCall(string methodCalled)
         {
+            --_inMethod;
             switch (methodCalled)
             {
                 case "ToString":
