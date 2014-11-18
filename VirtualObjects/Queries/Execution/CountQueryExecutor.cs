@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using Fasterflect;
 
 namespace VirtualObjects.Queries.Execution
 {
@@ -42,7 +41,7 @@ namespace VirtualObjects.Queries.Execution
                 method.Name == "Sum" ||
                 method.Name == "Contains" ||
                 method.Name == "Average" ||
-                (method.Parameters().Count == 2 && (method.Name == "Min" || method.Name == "Max")));
+                (method.GetParameters().Length == 2 && (method.Name == "Min" || method.Name == "Max")));
         }
     }
 }

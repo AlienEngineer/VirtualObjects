@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using Fasterflect;
 using VirtualObjects.Exceptions;
 using VirtualObjects.CodeGenerators;
+using VirtualObjects.Reflection;
 
 namespace VirtualObjects.Config
 {
@@ -247,7 +247,7 @@ namespace VirtualObjects.Config
 
             var baseColumns = MapColumns(entityInfo, type.BaseType);
 
-            return baseColumns.Concat(type.Properties()
+            return baseColumns.Concat(type.GetProperties()
                 .Where(e => !e.PropertyType.IsGenericType || !e.PropertyType.GetInterfaces().Contains(typeof (IEnumerable)))
                 .Where(e => !ShouldIgnore(e))
                 .Where(e => !baseColumns.Select(o => o.Property.Name).Contains(e.Name) )

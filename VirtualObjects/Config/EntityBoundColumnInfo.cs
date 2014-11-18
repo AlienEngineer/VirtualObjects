@@ -1,5 +1,4 @@
 using System;
-using Fasterflect;
 
 namespace VirtualObjects.Config
 {

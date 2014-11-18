@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
-using Fasterflect;
 using System.Collections.Generic;
+using VirtualObjects.Reflection;
 
 namespace VirtualObjects.Config
 {

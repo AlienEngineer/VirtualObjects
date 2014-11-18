@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using System.Data;
-using System.Linq;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Connections

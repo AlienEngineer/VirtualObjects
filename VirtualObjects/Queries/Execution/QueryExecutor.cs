@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Fasterflect;
+using VirtualObjects.Reflection;
 
 namespace VirtualObjects.Queries.Execution
 {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using Fasterflect;
 using VirtualObjects.Config;
+using VirtualObjects.Reflection;
 
 namespace VirtualObjects.Queries
 {
