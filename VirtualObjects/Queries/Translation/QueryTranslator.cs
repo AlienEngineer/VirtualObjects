@@ -8,13 +8,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Fasterflect;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.CodeGenerators;
 using System.Data;
 using VirtualObjects.Queries.Mapping;
+using VirtualObjects.Reflection;
 
 namespace VirtualObjects.Queries.Translation
 {
@@ -634,7 +634,7 @@ namespace VirtualObjects.Queries.Translation
         private void CompileLastMethodCall(MethodCallExpression expression, CompilerBuffer buffer)
         {
             var firstMethod = typeof(Queryable)
-                .Methods(Flags.Static | Flags.StaticPublic, "First").First(e => e.Parameters().Count == expression.Arguments.Count)
+                .Methods(null, null, Flags.Static | Flags.StaticPublic, "First").First(e => e.GetParameters().Length == expression.Arguments.Count)
                 .MakeGenericMethod(EntityInfo.EntityType);
 
             CompileMethodCall(Expression.Call(firstMethod, expression.Arguments), buffer, false);
@@ -642,7 +642,7 @@ namespace VirtualObjects.Queries.Translation
             foreach (var column in EntityInfo.KeyColumns)
             {
                 var orderByDesc = typeof(Queryable)
-                .Methods(Flags.Static | Flags.StaticPublic, "OrderByDescending").First(e => e.Parameters().Count == 2)
+                .Methods(null, null, Flags.Static | Flags.StaticPublic, "OrderByDescending").First(e => e.GetParameters().Length == 2)
                 .MakeGenericMethod(EntityInfo.EntityType, column.Property.PropertyType);
 
                 var parameter = Expression.Parameter(EntityInfo.EntityType, "e");
@@ -671,8 +671,8 @@ namespace VirtualObjects.Queries.Translation
             // Create a new MethodCallExpression to Any with the proper predicate.
 
             var method = typeof(Queryable)
-                .Methods(Flags.Static | Flags.StaticPublic, "Any")
-                .First(e => e.Parameters().Count == 2)
+                .Methods(null, null, Flags.Static | Flags.StaticPublic, "Any")
+                .First(e => e.GetParameters().Length == 2)
                 .MakeGenericMethod(EntityInfo.EntityType);
 
 
@@ -1544,8 +1544,8 @@ namespace VirtualObjects.Queries.Translation
             var entityType = foreignKey.ForeignKey.EntityInfo.EntityType;
 
             var method = typeof(Queryable)
-                .Methods(Flags.Static | Flags.StaticPublic, "Select")
-                .First(e => e.Parameters().Count == 2)
+                .Methods(null, null, Flags.Static | Flags.StaticPublic, "Select")
+                .First(e => e.GetParameters().Length == 2)
                 .MakeGenericMethod(entityType, foreignKey.ForeignKey.Property.PropertyType);
 
             var parameter = Expression.Parameter(entityType, "e");
@@ -2534,7 +2534,7 @@ Group by error reasons:
                 if (Attribute.IsDefined(constantExpression.Type, typeof(CompilerGeneratedAttribute)))
                 {
                     // TODO: this is a little bit weird code. Do I really have to check the fields of this type?!
-                    return constantExpression.Type.Fields()
+                    return constantExpression.Type.Fields(Flags.InstanceAnyVisibility)
                         .First(e => !e.Name.Contains("<>"))
                         .Get(constantExpression.Value);
                 }

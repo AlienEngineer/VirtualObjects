@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using VirtualObjects.Exceptions;
-using Fasterflect;
 using System.Reflection;
 using VirtualObjects.Config;
 using System.Data;
+using VirtualObjects.Reflection;
 
 namespace VirtualObjects.CodeGenerators
 {

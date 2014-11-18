@@ -3,13 +3,13 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Fasterflect;
 using System.Dynamic;
 using System.Collections.Generic;
 using VirtualObjects.Config;
 using System.Data;
 using VirtualObjects.Queries;
 using VirtualObjects.Exceptions;
+using VirtualObjects.Reflection;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -50,10 +50,10 @@ namespace VirtualObjects.CodeGenerators
         private static String MakeDynamicSafeName(Type type)
         {
             var result = new StringBuilder();
-            
-            for (int index = 0; index < type.Properties().Count; index++)
+
+            for (int index = 0; index < type.GetProperties().Length; index++)
             {
-                var property = type.Properties()[index];
+                var property = type.GetProperties()[index];
                 result = result.Append(index).Append(property.PropertyType.FullName).Append(property.Name);
             }
 

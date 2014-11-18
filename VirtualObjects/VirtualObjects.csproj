@@ -97,10 +97,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fasterflect">
-      <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -227,6 +223,27 @@
     <Compile Include="Queries\Translation\OnClause.cs" />
     <Compile Include="Queries\Translation\QueryTranslator.cs" />
     <Compile Include="ReflectionExtensions.cs" />
+    <Compile Include="Reflection\AttributeExtensions.cs" />
+    <Compile Include="Reflection\Cache\Cache.cs" />
+    <Compile Include="Reflection\Cache\CacheStrategy.cs" />
+    <Compile Include="Reflection\CallInfo.cs" />
+    <Compile Include="Reflection\Constants.cs" />
+    <Compile Include="Reflection\ConstructorUtils.cs" />
+    <Compile Include="Reflection\Emitter\BaseEmitter.cs" />
+    <Compile Include="Reflection\Emitter\CtorInvocationEmitter.cs" />
+    <Compile Include="Reflection\Emitter\EmitHelper.cs" />
+    <Compile Include="Reflection\Emitter\InvocationEmitter.cs" />
+    <Compile Include="Reflection\Emitter\MemberGetEmitter.cs" />
+    <Compile Include="Reflection\Emitter\MemberSetEmitter.cs" />
+    <Compile Include="Reflection\FieldUtils.cs" />
+    <Compile Include="Reflection\Flags.cs" />
+    <Compile Include="Reflection\LookupUtils.cs" />
+    <Compile Include="Reflection\MemberFilter.cs" />
+    <Compile Include="Reflection\MemberUtils.cs" />
+    <Compile Include="Reflection\MethodUtils.cs" />
+    <Compile Include="Reflection\PropertyUtils.cs" />
+    <Compile Include="Reflection\TypeUtils.cs" />
+    <Compile Include="Reflection\ValueTypeHolder.cs" />
     <Compile Include="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -241,7 +258,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeTemplates\Scaffolders\Pack\Pack.ps1" />
-    <None Include="packages.config" />
     <None Include="VirtualObjects.nuspec">
       <SubType>Designer</SubType>
     </None>

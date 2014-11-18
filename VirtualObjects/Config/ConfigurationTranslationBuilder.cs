@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Fasterflect;
 using System.Linq;
+using System.Reflection;
 
 namespace VirtualObjects.Config
 {
@@ -51,7 +50,7 @@ namespace VirtualObjects.Config
         {
             EntityName(type =>
             {
-                var attributes = type.Attributes<TAttribute>();
+                var attributes = type.GetCustomAttributes(true).OfType<TAttribute>();
 
                 return attributes != null ?
                     attributes.Select(nameGetter).FirstOrDefault(e => !String.IsNullOrEmpty(e))
@@ -72,7 +71,7 @@ namespace VirtualObjects.Config
         {
             EntitySchema(type =>
             {
-                var attributes = type.Attributes<TAttribute>();
+                var attributes = type.GetCustomAttributes(true).OfType<TAttribute>();
 
                 return attributes != null ?
                     attributes.Select(nameGetter).FirstOrDefault(e => !String.IsNullOrEmpty(e))
@@ -94,7 +93,7 @@ namespace VirtualObjects.Config
         {
             ColumnName(prop =>
             {
-                var attributes = prop.Attributes<TAttribute>();
+                var attributes = prop.GetCustomAttributes(true).OfType<TAttribute>();
 
                 return attributes != null ?
                     attributes.Select(nameGetter).FirstOrDefault(e => !String.IsNullOrEmpty(e))
@@ -125,7 +124,7 @@ namespace VirtualObjects.Config
 
             ColumnKey(prop =>
             {
-                var attributes = prop.Attributes<TAttribute>();
+                var attributes = prop.GetCustomAttributes(true).OfType<TAttribute>();
 
                 return attributes != null && attributes.Select(keyGetter).Any();
             });
@@ -154,7 +153,7 @@ namespace VirtualObjects.Config
 
             ColumnIdentity(prop =>
             {
-                var attributes = prop.Attributes<TAttribute>();
+                var attributes = prop.GetCustomAttributes(true).OfType<TAttribute>();
 
                 return attributes != null && attributes.Select(keyGetter).Any();
             });
@@ -183,7 +182,7 @@ namespace VirtualObjects.Config
 
             ColumnVersion(prop =>
             {
-                var attributes = prop.Attributes<TAttribute>();
+                var attributes = prop.GetCustomAttributes(true).OfType<TAttribute>();
 
                 return attributes != null && attributes.Select(keyGetter).Any();
             });
@@ -212,7 +211,7 @@ namespace VirtualObjects.Config
 
             ColumnIgnore(prop =>
             {
-                var attributes = prop.Attributes<TAttribute>();
+                var attributes = prop.GetCustomAttributes(true).OfType<TAttribute>();
 
                 return attributes != null && attributes.Select(ignoreGetter).Any();
             });
@@ -241,7 +240,7 @@ namespace VirtualObjects.Config
 
             IsForeignKey(prop =>
             {
-                var attributes = prop.Attributes<TAttribute>();
+                var attributes = prop.GetCustomAttributes(true).OfType<TAttribute>();
 
                 return attributes != null && attributes.Select(isForeignKeyGetter).Any();
             });
@@ -270,7 +269,7 @@ namespace VirtualObjects.Config
 
             ComputedColumn(prop =>
             {
-                var attributes = prop.Attributes<TAttribute>();
+                var attributes = prop.GetCustomAttributes(true).OfType<TAttribute>();
 
                 return attributes != null && attributes.Select(computedGetter).Any();
             });
@@ -304,7 +303,7 @@ namespace VirtualObjects.Config
         {
             ForeignKey(prop =>
             {
-                var attribute = prop.Attribute<TAttribute>();
+                var attribute = prop.GetCustomAttributes(true).OfType<TAttribute>().FirstOrDefault();
                 return attribute != null ? foreignKeyGetter(attribute) : null;
             });
         }
@@ -328,7 +327,7 @@ namespace VirtualObjects.Config
         {
             ForeignKeyLinks(prop =>
             {
-                var attribute = prop.Attribute<TAttribute>();
+                var attribute = prop.GetCustomAttributes(true).OfType<TAttribute>().FirstOrDefault();
                 return attribute != null ? foreignKeyGetter(attribute) : null;
             });
         }
@@ -351,7 +350,7 @@ namespace VirtualObjects.Config
         {
             CollectionFilter(prop =>
             {
-                var attribute = prop.Attribute<TAttribute>();
+                var attribute = prop.GetCustomAttributes(true).OfType<TAttribute>().FirstOrDefault();
                 return attribute != null ? filterGetter(attribute) : null;
             });
         }
