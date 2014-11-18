@@ -47,7 +47,12 @@ namespace VirtualObjects.Tests.Sessions
             connectionString = session.ConnectionString;
         };
 
-        private It should_be_equal_to_northwind = () => connectionString.Should().Be("          \r\n         Data Source=(LocalDB)\\v11.0;                                               \r\n         AttachDbFilename=|DataDirectory|\\northwnd.mdf;          \r\n         Initial Catalog=Northwind;\r\n         Integrated Security=True;                                               \r\n         Connect Timeout=30;\r\n         MultipleActiveResultSets=True");
+        private It should_be_equal_to_northwind =
+            () =>
+            {
+                connectionString.Should().Contain("AttachDbFilename=|DataDirectory|\\northwnd.mdf;");
+                connectionString.Should().Contain("Initial Catalog=Northwind;");
+            };
         
         private static IRepository northwind;
         private static IRepository testing;
