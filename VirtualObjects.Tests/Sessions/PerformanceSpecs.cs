@@ -142,11 +142,11 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
-        protected static IEnumerable<PerformanceCheck.OrderDetails> MapOrderDetail(IDataReader reader)
+        protected static IEnumerable<OrderDetails> MapOrderDetail(IDataReader reader)
         {
             while (reader.Read())
             {
-                yield return new PerformanceCheck.OrderDetails
+                yield return new OrderDetails
                 {
                     OrderId = (int)reader["OrderId"],
                     Discount = (float)reader["Discount"],
