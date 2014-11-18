@@ -233,9 +233,9 @@ namespace VirtualObjects.Tests.Sessions
             () =>
             {
                 //
-                // Allow results to be worst in 2 iterations.
+                // Allow results to be worst in 5 iterations.
                 // At times a thread could be blocked and therefore vo could be slower in those cases. 
-                int failTolerance = 2;
+                int failTolerance = 5;
 
                 int i = 0;
                 
@@ -340,7 +340,7 @@ namespace VirtualObjects.Tests.Sessions
             () =>
             {
                 //
-                // Allow results to be worst in 2 iterations.
+                // Allow results to be worst in 5 iterations.
                 // At times a thread could be blocked and therefore vo could be slower in those cases. 
                 int failTolerance = 5;
 
