@@ -42,10 +42,10 @@ namespace VirtualObjects.Tests.Sessions
         public class MappingSuppliers : PerfRecord { }
 
         public class MappingOrderDetails : PerfRecord { }
-        
+
         public class MappingDynamicSuppliers : PerfRecord { }
-                  
-        [VirtualObjects.Mappings.Table(TableName = "Order Details")]
+
+        [Mappings.Table(TableName = "Order Details")]
         [Table("Order Details")]
         public class OrderDetails
         {
@@ -67,7 +67,7 @@ namespace VirtualObjects.Tests.Sessions
                 : base(connection, false)
             {
             }
-            
+
             public DbSet<Suppliers> Suppliers { get; set; }
             public DbSet<OrderDetails> OrderDetails { get; set; }
 
@@ -148,6 +148,7 @@ namespace VirtualObjects.Tests.Sessions
         public void Performance_Check_SuppliersMapping()
         {
             var ef = new EFContext((DbConnection)Connection);
+            var vo = new Session(connectionName: "Northwind");
             using (var session = new ExcelSession("Sessions\\Performance.xlsx"))
             {
                 session.KeepAlive(() =>
@@ -175,11 +176,11 @@ namespace VirtualObjects.Tests.Sessions
 
                         Diagnostic.Timed(() =>
                         {
-                            Session.KeepAlive(() =>
+                            vo.KeepAlive(() =>
                             {
                                 for (int i = 0; i < numberOfExecutions; i++)
                                 {
-                                    Session.GetAll<Suppliers>().ToList();
+                                    vo.GetAll<Suppliers>().ToList();
                                 }
                             });
                         }, name: STR_VirtualObjects);
@@ -213,7 +214,7 @@ namespace VirtualObjects.Tests.Sessions
 
                     } while (numberOfExecutions < 500);
                 });
-                
+
             }
         }
 
@@ -221,7 +222,7 @@ namespace VirtualObjects.Tests.Sessions
         public void Performance_Check_DynamicSuppliersMapping()
         {
             var ef = new EFContext((DbConnection)Connection);
-
+            var vo = new Session(connectionName: "Northwind");
             using (var session = new ExcelSession("Sessions\\Performance.xlsx"))
             {
                 session.KeepAlive(() =>
@@ -277,11 +278,12 @@ namespace VirtualObjects.Tests.Sessions
 
                         Diagnostic.Timed(() =>
                         {
-                            for (int i = 0; i < numberOfExecutions; i++)
+                            vo.KeepAlive(() =>
                             {
-                                Session.KeepAlive(() =>
+                                for (int i = 0; i < numberOfExecutions; i++)
                                 {
-                                    Session.GetAll<Suppliers>().Select(e => new
+
+                                    vo.GetAll<Suppliers>().Select(e => new
                                     {
                                         e.Address,
                                         e.City,
@@ -296,8 +298,9 @@ namespace VirtualObjects.Tests.Sessions
                                         e.Region,
                                         e.SupplierId
                                     }).ToList();
-                                });
-                            }
+
+                                }
+                            });
                         }, name: STR_VirtualObjects);
 
                         Diagnostic.Timed(() =>
@@ -336,6 +339,7 @@ namespace VirtualObjects.Tests.Sessions
         public void Performance_Check_OrderDetailsMapping()
         {
             var ef = new EFContext((DbConnection)Connection);
+            var vo = new Session(connectionName: "Northwind");
 
             using (var session = new ExcelSession("Sessions\\Performance.xlsx"))
             {
@@ -364,11 +368,11 @@ namespace VirtualObjects.Tests.Sessions
 
                         Diagnostic.Timed(() =>
                         {
-                            Session.KeepAlive(() =>
+                            vo.KeepAlive(() =>
                             {
                                 for (int i = 0; i < numberOfExecutions; i++)
                                 {
-                                    Session.GetAll<OrderDetails>().ToList();
+                                    vo.GetAll<OrderDetails>().ToList();
                                 }
                             });
                         }, name: STR_VirtualObjects);
@@ -409,6 +413,7 @@ namespace VirtualObjects.Tests.Sessions
         public void Performance_Check_Count()
         {
             var ef = new EFContext((DbConnection)Connection);
+            var vo = new Session(connectionName: "Northwind");
 
             using (var session = new ExcelSession("Sessions\\Performance.xlsx"))
             {
@@ -437,11 +442,11 @@ namespace VirtualObjects.Tests.Sessions
 
                         Diagnostic.Timed(() =>
                         {
-                            Session.KeepAlive(() =>
+                            vo.KeepAlive(() =>
                             {
                                 for (int i = 0; i < numberOfExecutions; i++)
                                 {
-                                    Session.Count<Suppliers>();
+                                    vo.Count<Suppliers>();
                                 }
                             });
                         }, name: STR_VirtualObjects);

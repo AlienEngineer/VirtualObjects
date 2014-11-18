@@ -129,7 +129,7 @@ namespace VirtualObjects.Tests
             var type = typeof(Suppliers);
             var entityInfo = Mapper.Map(type);
 
-            Object[] tmpData = new Object[] 
+            Object[] tmpData =
             {
                 1,
                 "Company Name",
