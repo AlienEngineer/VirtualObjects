@@ -31,6 +31,7 @@ namespace VirtualObjects
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
         object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters);
+        
         /// <summary>
         /// Executes the reader.
         /// </summary>
@@ -70,6 +71,7 @@ namespace VirtualObjects
         /// <param name="isolation"></param>
         /// <returns></returns>
         ITransaction BeginTransaction(IsolationLevel isolation = IsolationLevel.Unspecified);
+        
         /// <summary>
         /// Gets the database connection.
         /// </summary>
@@ -77,6 +79,7 @@ namespace VirtualObjects
         /// The database connection.
         /// </value>
         IDbConnection DbConnection { get; }
+        
         /// <summary>
         /// Gets or sets a value indicating whether [keep alive].
         /// </summary>

@@ -25,14 +25,16 @@ namespace VirtualObjects.Tests.Sessions
             AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data"));
 
             var VObjects = new Session(connectionName: "Northwind");
-
-            VObjects.KeepAlive(() =>
+            for (int i = 0; i < 100; i++)
             {
-                for (int i = 0; i < 100; i++)
+                Diagnostic.Timed(() => VObjects.KeepAlive(() =>
                 {
+
                     VObjects.GetAll<Suppliers>().ToList();
-                }
-            });
+
+                }));
+            }
+            Diagnostic.PrintAverageTime("{2} ticks");
         }
     }
 
@@ -258,7 +260,7 @@ namespace VirtualObjects.Tests.Sessions
                 int failTolerance = 5;
 
                 int i = 0;
-                
+
                 foreach (var result in _results)
                 {
                     try
@@ -276,7 +278,7 @@ namespace VirtualObjects.Tests.Sessions
                             throw;
                         }
                     }
-                    
+
                     ++i;
                 }
             };
@@ -422,7 +424,7 @@ namespace VirtualObjects.Tests.Sessions
         private Because of = () => { };
 
         private It should_ = () => { };
-        
+
         private static IDataReader _reader;
     }
 
