@@ -18,6 +18,7 @@ namespace VirtualObjects.Queries.Mapping
 
         public IEnumerable<object> MapEntities(IDataReader reader, IQueryInfo queryInfo, Type outputType, SessionContext sessionContext)
         {
+
             var hasMore = false;
             var keepAlive = sessionContext.Connection.KeepAlive;
             sessionContext.Connection.KeepAlive = true;

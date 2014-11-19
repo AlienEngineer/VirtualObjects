@@ -198,6 +198,14 @@
     <Compile Include="Programability\IProgramability.cs" />
     <Compile Include="Programability\SqlProgramability.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queries\ConcurrentReader\BlockingDataReader.cs" />
+    <Compile Include="Queries\ConcurrentReader\ConcurrentDataReader.cs" />
+    <Compile Include="Queries\ConcurrentReader\ConcurrentDataReaderBase.cs" />
+    <Compile Include="Queries\ConcurrentReader\DataRow.cs" />
+    <Compile Include="Queries\ConcurrentReader\IConcurrentDataReader.cs" />
+    <Compile Include="Queries\ConcurrentReader\ITuple.cs" />
+    <Compile Include="Queries\ConcurrentReader\RowReader.cs" />
+    <Compile Include="Queries\ConcurrentReader\Tuple.cs" />
     <Compile Include="Queries\Execution\CompositeExecutor.cs" />
     <Compile Include="Queries\Execution\CountQueryExecutor.cs" />
     <Compile Include="Queries\Execution\IQueryExecutor.cs" />
@@ -219,6 +227,7 @@
     <Compile Include="Queries\Query.cs" />
     <Compile Include="Queries\QueryInfo.cs" />
     <Compile Include="Queries\QueryProvider.cs" />
+    <Compile Include="Queries\ReaderExtensions.cs" />
     <Compile Include="Queries\Translation\CachingTranslator.cs" />
     <Compile Include="Queries\Translation\OnClause.cs" />
     <Compile Include="Queries\Translation\QueryTranslator.cs" />

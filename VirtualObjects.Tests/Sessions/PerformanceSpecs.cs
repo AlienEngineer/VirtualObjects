@@ -25,17 +25,57 @@ namespace VirtualObjects.Tests.Sessions
             AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data"));
 
             var VObjects = new Session(connectionName: "Northwind");
-            for (int i = 0; i < 100; i++)
+            VObjects.KeepAlive(() =>
             {
-                Diagnostic.Timed(() => VObjects.KeepAlive(() =>
+                for (int i = 0; i < 1000; i++)
                 {
-
-                    VObjects.GetAll<Suppliers>().ToList();
-
-                }));
-            }
-            Diagnostic.PrintAverageTime("{2} ticks");
+                    Diagnostic.Timed(() => VObjects.GetAll<OrderDetails>().ToList());
+                }
+            });
+            Diagnostic.PrintAverageTime("{2} ticks | {0} millis");
         }
+
+        [Test]
+        public void GetValues_vs_GetValue()
+        {
+            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data"));
+
+            var VObjects = new Session(connectionName: "Northwind");
+            
+
+            for (int j = 0; j < 500; j++)
+            {
+                var reader = VObjects.Connection.ExecuteReader("Select * from [Order Details]");
+                var data = new object[reader.FieldCount];
+
+                while (reader.Read())
+                {
+                    Diagnostic.Timed(() => reader.GetValues(), name: "GET_VALUES");
+
+                    Diagnostic.Timed(() =>
+                    {   
+                        reader.GetValues(data);
+                    }, name: "GET_VALUES(...)");
+
+                    Diagnostic.Timed(() =>
+                    {
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            data[i] = reader.GetValue(i);
+                        }
+                    }, name: "GET_VALUE");
+
+                }
+
+                reader.Close();    
+            }
+
+            
+            Diagnostic.PrintTime("reader.GetValues()    {2} ticks | {0}", "GET_VALUES");
+            Diagnostic.PrintTime("reader.GetValues(...) {2} ticks | {0}", "GET_VALUES(...)");
+            Diagnostic.PrintTime("reader.GetValue()     {2} ticks | {0}", "GET_VALUE");
+        }
+
     }
 
     [Tags("Performance")]

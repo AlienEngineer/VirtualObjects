@@ -164,6 +164,8 @@ namespace VirtualObjects.Connections
 #endif
             RefreshParameters(command, parameters);
 
+            Open();
+
             //
             // This is not closed because the reader has to be closed by who ever is using it.
             // e.g. after mapping...
