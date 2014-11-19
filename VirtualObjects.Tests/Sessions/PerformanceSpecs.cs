@@ -5,16 +5,36 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using Dapper;
 using FluentAssertions;
 using Machine.Specifications;
+using NUnit.Framework;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions
 {
 
-    
+    [TestFixture, Category("Session")]
+    public class PerformanceInvestigation
+    {
+        [Test]
+        public void Testing()
+        {
+            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data"));
+
+            var VObjects = new Session(connectionName: "Northwind");
+
+            VObjects.KeepAlive(() =>
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    VObjects.GetAll<Suppliers>().ToList();
+                }
+            });
+        }
+    }
 
     [Tags("Performance")]
     public abstract class PerformanceSpecs : SpecsUtilityBelt
@@ -370,4 +390,40 @@ namespace VirtualObjects.Tests.Sessions
 
         private static IList<MappingOrderDetails> _results = new List<MappingOrderDetails>();
     }
+
+
+    [Subject("PerformanceSpecs")]
+    public class When_mapping_using_different_strategies : PerformanceSpecs
+    {
+        Establish context = () =>
+        {
+            var type = typeof(Suppliers);
+            var entityInfo = Mapper.Map(type);
+
+            Object[] tmpData =
+            {
+                1,
+                "Company Name",
+                "Contact Name",
+                "ContactTitle",
+                "Address",
+                "City",
+                "Region",
+                "PostalCode",
+                "Country",
+                "Phone",
+                "Fax",
+                "HomePage"
+            };
+
+            _reader = new MockReader(tmpData);
+        };
+
+        private Because of = () => { };
+
+        private It should_ = () => { };
+        
+        private static IDataReader _reader;
+    }
+
 }

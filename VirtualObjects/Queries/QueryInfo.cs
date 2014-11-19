@@ -12,7 +12,7 @@ namespace VirtualObjects.Queries
 
         #region IQueryInfo Members
 
-        public DbCommand Command { get; set; }
+        public IDbCommand Command { get; set; }
 
         public string CommandText { get; set; }
 

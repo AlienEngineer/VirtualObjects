@@ -70,7 +70,7 @@ namespace VirtualObjects.Queries
         /// <value>
         /// The command.
         /// </value>
-        DbCommand Command { get; }
+        IDbCommand Command { get; set; }
 
         /// <summary>
         /// Gets or sets the parameters.

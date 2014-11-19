@@ -15,7 +15,7 @@ namespace VirtualObjects.Tests
 
                 Session = new Session(new SessionConfiguration
                 {
-                    Logger = Console.Out,
+                    //Logger = Console.Out,
                     SaveGeneratedCode = true
                 }, "northwind");
 

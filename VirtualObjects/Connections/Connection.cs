@@ -86,6 +86,15 @@ namespace VirtualObjects.Connections
             return value;
         }
 
+        public IDbCommand ReuseCommand(IDbCommand command)
+        {
+            command.Parameters.Clear();
+            command.Connection = _dbConnection;
+            command.Transaction = _dbTransaction;
+
+            return command;
+        }
+
         public object ExecuteScalar(string commandText, IDictionary<string, IOperationParameter> parameters)
         {
             return AutoClose(() => CreateCommand(commandText, parameters).ExecuteScalar());
@@ -125,6 +134,42 @@ namespace VirtualObjects.Connections
              // e.g. after mapping...
              //
             currentReader = CreateCommand(commandText, parameters).ExecuteReader();
+#if DEBUG
+            readers.Push(currentReader);
+#endif
+            return currentReader;
+        }
+
+        public IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters, out IDbCommand command)
+        {
+#if DEBUG
+            commands.Push(commandText);
+#endif
+            command = CreateCommand(commandText, parameters);
+            //
+            // This is not closed because the reader has to be closed by who ever is using it.
+            // e.g. after mapping...
+            //
+            currentReader = command.ExecuteReader();
+#if DEBUG
+            readers.Push(currentReader);
+#endif
+            return currentReader;
+        }
+
+        public IDataReader ExecuteReader(IDbCommand command, IDictionary<string, IOperationParameter> parameters)
+        {
+#if DEBUG
+            commands.Push(command.CommandText);
+#endif
+            RefreshParameters(command, parameters);
+
+            //
+            // This is not closed because the reader has to be closed by who ever is using it.
+            // e.g. after mapping...
+            //
+            currentReader = command.ExecuteReader();
+
 #if DEBUG
             readers.Push(currentReader);
 #endif

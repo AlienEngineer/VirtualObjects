@@ -18,6 +18,13 @@ namespace VirtualObjects
         IDbCommand CreateCommand(string commandText);
 
         /// <summary>
+        /// Reuses the command.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <returns></returns>
+        IDbCommand ReuseCommand(IDbCommand command);
+
+        /// <summary>
         /// Executes the scalar.
         /// </summary>
         /// <param name="commandText">The command text.</param>
@@ -31,6 +38,24 @@ namespace VirtualObjects
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
         IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters);
+
+        /// <summary>
+        /// Executes the reader.
+        /// </summary>
+        /// <param name="commandText">The command text.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="command">The command.</param>
+        /// <returns></returns>
+        IDataReader ExecuteReader(string commandText, IDictionary<string, IOperationParameter> parameters, out IDbCommand command);
+
+        /// <summary>
+        /// Executes the reader.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        IDataReader ExecuteReader(IDbCommand command, IDictionary<string, IOperationParameter> parameters);
+
         /// <summary>
         /// Executes the non query.
         /// </summary>
