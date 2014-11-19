@@ -144,6 +144,7 @@
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\RepositoryExtensions.cs" />
     <Compile Include="Sessions\PerformanceCheck.cs" />
+    <Compile Include="Sessions\PerformanceSpecs.cs" />
     <Compile Include="Sessions\RelatedFieldsTests.cs" />
     <Compile Include="Sessions\RepositorySpecs.cs" />
     <Compile Include="Sessions\SessionSpecs.cs" />

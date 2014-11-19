@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using Machine.Specifications;
 using VirtualObjects.Config;
@@ -19,10 +20,11 @@ namespace VirtualObjects.Tests
                 }, "northwind");
 
                 Mapper = ((InternalSession)Session.InternalSession).Mapper;
-                
+                Connection = ((InternalSession)Session.InternalSession).Connection;
             };
         
         protected static IMapper Mapper;
+        protected static IDbConnection Connection;
         protected static Session Session;
     }
 }
