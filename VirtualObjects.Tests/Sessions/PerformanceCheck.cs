@@ -352,10 +352,10 @@ namespace VirtualObjects.Tests.Sessions
 
                         Diagnostic.Timed(() =>
                         {
-                            for (int i = 0; i < numberOfExecutions; i++)
-                            {
-                                Connection.Query<OrderDetails>("Select * from [Order Details]").ToList();
-                            }
+                            //for (int i = 0; i < numberOfExecutions; i++)
+                            //{
+                            //    Connection.Query<OrderDetails>("Select * from [Order Details]").ToList();
+                            //}
                         }, name: STR_Dapper);
 
                         Diagnostic.Timed(() =>
@@ -379,20 +379,20 @@ namespace VirtualObjects.Tests.Sessions
 
                         Diagnostic.Timed(() =>
                         {
-                            if (Connection.State != ConnectionState.Open)
-                                Connection.Open();
+                            //if (Connection.State != ConnectionState.Open)
+                            //    Connection.Open();
 
-                            for (int i = 0; i < numberOfExecutions; i++)
-                            {
-                                var cmd = Connection.CreateCommand();
-                                cmd.CommandText = "Select * from [Order Details]";
-                                var reader = cmd.ExecuteReader();
+                            //for (int i = 0; i < numberOfExecutions; i++)
+                            //{
+                            //    var cmd = Connection.CreateCommand();
+                            //    cmd.CommandText = "Select * from [Order Details]";
+                            //    var reader = cmd.ExecuteReader();
 
-                                MapOrderDetail(reader).ToList();
+                            //    MapOrderDetail(reader).ToList();
 
-                                reader.Close();
-                            }
-                            Connection.Close();
+                            //    reader.Close();
+                            //}
+                            //Connection.Close();
                         }, name: STR_HardCoded);
 
                         session.Insert(new MappingOrderDetails

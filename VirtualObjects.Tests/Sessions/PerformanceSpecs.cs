@@ -32,7 +32,7 @@ namespace VirtualObjects.Tests.Sessions
                     Diagnostic.Timed(() => VObjects.GetAll<OrderDetails>().ToList());
                 }
             });
-            Diagnostic.PrintAverageTime("{2} ticks | {0} millis");
+            Diagnostic.PrintTime("{2} ticks | {0} millis");
         }
 
         [Test]
@@ -351,7 +351,7 @@ namespace VirtualObjects.Tests.Sessions
                 {
                     for (int i = 0; i < numberOfExecutions; i++)
                     {
-                        EntityFramework.Suppliers.ToList();
+                        EntityFramework.OrderDetails.ToList();
                     }
                 }, name: STR_EntityFramework);
 
@@ -392,7 +392,7 @@ namespace VirtualObjects.Tests.Sessions
                     Dapper = (float)Diagnostic.GetMilliseconds(STR_Dapper),
                     HandCoded = (float)Diagnostic.GetMilliseconds(STR_HardCoded)
                 });
-
+                
             } while (numberOfExecutions < NUMBER_OF_EXECUTIONS);
 
         };

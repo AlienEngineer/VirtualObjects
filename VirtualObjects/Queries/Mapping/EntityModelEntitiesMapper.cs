@@ -26,6 +26,7 @@ namespace VirtualObjects.Queries.Mapping
             while (hasMore || reader.Read())
             {
                 var entity = queryInfo.MakeEntity(sessionContext.Session);
+                // var mapped = new MapResult {Entity = entity, HasMore = false}; 
                 var mapped = queryInfo.MapEntity(entity, reader);
                 var casted = queryInfo.EntityCast(mapped.Entity);
 
