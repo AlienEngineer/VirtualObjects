@@ -97,17 +97,7 @@ namespace VirtualObjects.CodeGenerators
      Name = TypeName
  });
         }
-
-        protected override string GenerateGetFieldCount()
-        {
-            return @"
-    public static Int32 FieldCount()
-    {{
-        return {FieldCount};
-    }}
-".FormatWith(new { FieldCount = _type.GetProperties().Length });
-        }
-
+        
         protected override string GenerateOtherMethodsCode()
         {
             projectionIndex = 0;

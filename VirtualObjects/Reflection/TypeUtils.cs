@@ -84,7 +84,6 @@ namespace VirtualObjects.Reflection
         /// <summary>
         /// Returns true of the supplied <paramref name="type" /> inherits from or implements the type <typeparam name="T"></typeparam>.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="type">The type to check.</param>
         /// <returns>
         /// True if the given type inherits from or implements the specified base type.

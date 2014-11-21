@@ -102,6 +102,12 @@ namespace VirtualObjects.Queries.ConcurrentReader
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Gets the column with the specified name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">The field  + name +  was not found.</exception>
         public object this[string name]
         {
             get
@@ -131,6 +137,10 @@ namespace VirtualObjects.Queries.ConcurrentReader
         }
 
 
+        /// <summary>
+        /// Gets the tuples.
+        /// </summary>
+        /// <returns></returns>
         public abstract IEnumerable<ITuple> GetTuples();
 
         #endregion

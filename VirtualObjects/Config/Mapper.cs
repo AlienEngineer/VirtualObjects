@@ -134,7 +134,6 @@ namespace VirtualObjects.Config
             entityInfo.EntityFactory = codeGenerator.GetEntityProvider();
             entityInfo.EntityProxyFactory = codeGenerator.GetEntityProxyProvider();
             entityInfo.EntityCast = codeGenerator.GetEntityCast();
-            entityInfo.GetFieldCount = codeGenerator.GetEntityFieldCount();
 
             return entityInfo;
         }

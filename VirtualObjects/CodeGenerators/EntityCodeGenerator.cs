@@ -30,7 +30,6 @@ namespace VirtualObjects.CodeGenerators
             builder.Body.Add(GenerateMakeCode());
             builder.Body.Add(GenerateMakeProxyCode());
             builder.Body.Add(GenerateOtherMethodsCode());
-            builder.Body.Add(GenerateGetFieldCount());
         }
 
         /// <summary>
@@ -79,7 +78,6 @@ namespace VirtualObjects.CodeGenerators
         protected abstract String GenerateMakeCode();
         protected abstract String GenerateMakeProxyCode();
         protected abstract String GenerateOtherMethodsCode();
-        protected abstract String GenerateGetFieldCount();
 
                            
         public void PrintCode()
@@ -117,9 +115,5 @@ namespace VirtualObjects.CodeGenerators
             return (Action<Type>)builder.GetDelegate<Action<Type>>("Init");
         }
 
-        public Func<Int32> GetEntityFieldCount()
-        {
-            return (Func<Int32>) builder.GetDelegate<Func<Int32>>("FieldCount");
-        }
     }
 }
