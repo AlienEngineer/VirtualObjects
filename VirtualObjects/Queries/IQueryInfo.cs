@@ -49,6 +49,15 @@ namespace VirtualObjects.Queries
         /// </value>
         Func<ISession, Object> MakeEntity { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the get field count.
+        /// </summary>
+        /// <value>
+        /// The get field count.
+        /// </value>
+        Func<Int32> GetFieldCount { get; set; }
+
         /// <summary>
         /// Gets or sets the entity information.
         /// </summary>

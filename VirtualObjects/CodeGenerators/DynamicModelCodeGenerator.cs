@@ -65,9 +65,9 @@ namespace VirtualObjects.CodeGenerators
         protected override string GenerateMapObjectCode()
         {
             return @"
-    public static MapResult MapObject(Object entity, IDataReader reader)
+    public static MapResult MapObject(Object entity, IDataReader reader, object[] data)
     {
-        return Map(entity, reader);
+        return Map(entity, reader, data);
     }
 ";
         }
@@ -97,7 +97,17 @@ namespace VirtualObjects.CodeGenerators
      Name = TypeName
  });
         }
-        
+
+        protected override string GenerateGetFieldCount()
+        {
+            return @"
+    public static Int32 FieldCount()
+    {{
+        return {FieldCount};
+    }}
+".FormatWith(new { FieldCount = _type.GetProperties().Length });
+        }
+
         protected override string GenerateOtherMethodsCode()
         {
             projectionIndex = 0;
@@ -120,10 +130,10 @@ namespace VirtualObjects.CodeGenerators
         return ctor.Invoke(parameterValues);
     }}
 
-    public static MapResult Map(dynamic entity, IDataReader reader)
+    public static MapResult Map(dynamic entity, IDataReader reader, object[] data)
     {{
         int i = 0;
-        var data = reader.GetValues();
+        reader.GetValues(data);
         var hasMoreData = false;
         {Body}
         

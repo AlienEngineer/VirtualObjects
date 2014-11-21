@@ -6,6 +6,9 @@ using System.Threading;
 
 namespace VirtualObjects.Queries.ConcurrentReader
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ConcurrentDataReader : ConcurrentDataReaderBase
     {
         private readonly IDataReader _reader;
@@ -18,6 +21,11 @@ namespace VirtualObjects.Queries.ConcurrentReader
         private int _current;
         private int _running;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConcurrentDataReader"/> class.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="readWhile">The read while.</param>
         public ConcurrentDataReader(IDataReader reader, Predicate<IDataReader> readWhile = null)
         {
             _reader = reader;
@@ -52,6 +60,11 @@ namespace VirtualObjects.Queries.ConcurrentReader
             _reader.Close();
         }
 
+        /// <summary>
+        /// Gets the data.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">No data found for the current thread.</exception>
         public override ITuple GetData()
         {
             try
@@ -64,6 +77,9 @@ namespace VirtualObjects.Queries.ConcurrentReader
             }
         }
 
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
         public override void Close()
         {
             while ( _loaderThread.ThreadState == ThreadState.Unstarted )
@@ -74,6 +90,9 @@ namespace VirtualObjects.Queries.ConcurrentReader
             _loaderThread.Join();
         }
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
         public override void Dispose()
         {
             if ( _reader == null )
@@ -84,6 +103,10 @@ namespace VirtualObjects.Queries.ConcurrentReader
             _reader.Dispose();
         }
 
+        /// <summary>
+        /// Reads this instance.
+        /// </summary>
+        /// <returns></returns>
         public override bool Read()
         {
             if ( Thread.VolatileRead(ref _running) != 1 && Interlocked.CompareExchange(ref _running, 1, 0) == 0 )
@@ -114,6 +137,10 @@ namespace VirtualObjects.Queries.ConcurrentReader
             return true;
         }
 
+        /// <summary>
+        /// Gets the tuples.
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerable<ITuple> GetTuples()
         {
             return _data;

@@ -22,7 +22,7 @@ namespace VirtualObjects.Queries.Mapping
             
             //
             // Data buffer. Avoiding the creation of memory objects.
-            var data = new object[queryInfo.EntityInfo.Columns.Count];
+            var data = new object[queryInfo.GetFieldCount()];
 
             while (hasMore || reader.Read())
             {

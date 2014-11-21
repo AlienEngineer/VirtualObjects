@@ -16,6 +16,12 @@ namespace VirtualObjects.Queries.ConcurrentReader
         /// </value>
         IEnumerable<string> Columns { get; }
 
+        /// <summary>
+        /// Gets the reader.
+        /// </summary>
+        /// <value>
+        /// The reader.
+        /// </value>
         IConcurrentDataReader Reader { get; }
 
         /// <summary>

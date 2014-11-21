@@ -74,6 +74,16 @@ namespace VirtualObjects.CodeGenerators
  });
         }
 
+        protected override string GenerateGetFieldCount()
+        {
+            return @"
+    public static Int32 FieldCount()
+    {{
+        return {FieldCount};
+    }}
+".FormatWith(new { FieldCount = _entityInfo.Columns.Count });
+        }
+
         protected override string GenerateOtherMethodsCode()
         {
             if (!_entityInfo.EntityType.IsPublic && !_entityInfo.EntityType.IsNestedPublic)

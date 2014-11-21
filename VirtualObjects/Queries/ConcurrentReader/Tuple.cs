@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace VirtualObjects.Queries.ConcurrentReader
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Tuple : ITuple
     {
         private readonly IDictionary<String, Object> data;
@@ -21,6 +24,12 @@ namespace VirtualObjects.Queries.ConcurrentReader
             Reader = reader;
         }
 
+        /// <summary>
+        /// Gets the columns.
+        /// </summary>
+        /// <value>
+        /// The columns.
+        /// </value>
         public IEnumerable<String> Columns
         {
             get
@@ -29,16 +38,33 @@ namespace VirtualObjects.Queries.ConcurrentReader
             }
         }
 
+        /// <summary>
+        /// Gets the value of the given column.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="column">The column.</param>
+        /// <returns></returns>
         public T GetValue<T>(String column)
         {
             return (T) Convert.ChangeType(GetValue(column), typeof (T));
         }
 
+        /// <summary>
+        /// Gets the value of the given column index.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
         public T GetValue<T>(int index)
         {
             return (T) Convert.ChangeType(GetValue(index), typeof (T));
         }
 
+        /// <summary>
+        /// Gets the value of the given column index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
         public object GetValue(int index)
         {
             if ( dataList == null )
@@ -48,12 +74,21 @@ namespace VirtualObjects.Queries.ConcurrentReader
             return dataList[index];
         }
 
+        /// <summary>
+        /// Gets the value of the given column.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <returns></returns>
         public object GetValue(string column)
         {
             return data[column.ToLower()];
         }
 
 
+        /// <summary>
+        /// Gets the values.
+        /// </summary>
+        /// <returns></returns>
         public object[] GetValues()
         {
             if ( dataList == null )
@@ -63,6 +98,11 @@ namespace VirtualObjects.Queries.ConcurrentReader
             return dataList.ToArray();
         }
 
+        /// <summary>
+        /// Gets the name of a column given its index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
         public string GetName(int index)
         {
             if ( keyList == null )
@@ -72,6 +112,12 @@ namespace VirtualObjects.Queries.ConcurrentReader
             return keyList[index];
         }
 
+        /// <summary>
+        /// Gets the reader.
+        /// </summary>
+        /// <value>
+        /// The reader.
+        /// </value>
         public IConcurrentDataReader Reader { get; private set; }
     }
 }

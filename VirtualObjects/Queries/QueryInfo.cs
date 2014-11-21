@@ -16,7 +16,7 @@ namespace VirtualObjects.Queries
 
         public string CommandText { get; set; }
 
-        
+
         public IEntityInfo EntityInfo { get; set; }
 
         public IDictionary<string, IOperationParameter> Parameters { get; set; }
@@ -30,11 +30,13 @@ namespace VirtualObjects.Queries
         public IEntitiesMapper EntitiesMapper { get; set; }
 
         public Func<object, IDataReader, object[], MapResult> MapEntity { get; set; }
-        
+
         public Func<object, object> EntityCast { get; set; }
 
         public Func<ISession, Object> MakeEntity { get; set; }
         
+        public Func<int> GetFieldCount { get; set; }
+
         public IList<IEntityInfo> Sources { get; set; }
 
         public IList<OnClause> OnClauses { get; set; }

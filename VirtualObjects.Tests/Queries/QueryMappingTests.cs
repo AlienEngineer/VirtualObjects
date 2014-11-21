@@ -63,7 +63,9 @@ namespace VirtualObjects.Tests.Queries
         {
             var queryInfo = TranslateQuery(queryable);
             var reader = ExecuteReader(queryInfo);
-            return Diagnostic.Timed(() => _entitiesMapper.MapEntities<TEntity>(reader, queryInfo, SessionContext)).ToList();
+            return Diagnostic.Timed(() => 
+                _entitiesMapper.MapEntities<TEntity>(reader, queryInfo, SessionContext)
+            ).ToList();
         }
 
         [Test, Repeat(Repeat)]

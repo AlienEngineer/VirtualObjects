@@ -244,6 +244,7 @@ namespace VirtualObjects.Queries.Translation
             Func<object, IDataReader, object[], MapResult> mapEntity = null;
             Func<ISession, Object> makeEntity = null;
             Func<Object, Object> entityCast = null;
+            Func<Int32> getFieldCount = null;
 
             if (entityInfo == null && !OutputType.IsDynamic())
             {
@@ -281,7 +282,7 @@ namespace VirtualObjects.Queries.Translation
                     mapEntity = dynCodeGen.GetEntityMapper();
                     makeEntity = dynCodeGen.GetEntityProxyProvider();
                     entityCast = dynCodeGen.GetEntityCast();
-
+                    getFieldCount = dynCodeGen.GetEntityFieldCount();
                 }
             }
             else
@@ -289,12 +290,14 @@ namespace VirtualObjects.Queries.Translation
                 mapEntity = entityInfo.MapEntity;
                 makeEntity = entityInfo.EntityProxyFactory;
                 entityCast = entityInfo.EntityCast;
+                getFieldCount = entityInfo.GetFieldCount;
             }
 
 
             queryinfo.MakeEntity = makeEntity;
             queryinfo.MapEntity = mapEntity;
             queryinfo.EntityCast = entityCast;
+            queryinfo.GetFieldCount = getFieldCount;
 
             return queryinfo;
         }

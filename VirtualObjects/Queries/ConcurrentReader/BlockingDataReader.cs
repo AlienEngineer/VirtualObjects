@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace VirtualObjects.Queries.ConcurrentReader
 {
+    /// <summary>
+    /// 
+    /// </summary>
     internal class BlockingDataReader : ConcurrentDataReaderBase
     {
         private readonly ThreadLocal<ITuple> _consumerTuple = new ThreadLocal<ITuple>();
@@ -20,6 +23,11 @@ namespace VirtualObjects.Queries.ConcurrentReader
         private readonly BlockingCollection<ITuple> _transformedRows = new BlockingCollection<ITuple>();
         private IDataReader _reader;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlockingDataReader"/> class.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="readWhile">The read while.</param>
         public BlockingDataReader(IDataReader reader, Predicate<IDataReader> readWhile = null)
         {
             _reader = reader;
@@ -27,7 +35,7 @@ namespace VirtualObjects.Queries.ConcurrentReader
             var f = new TaskFactory(TaskCreationOptions.LongRunning, TaskContinuationOptions.None);
 
             _loadDataRows = f.StartNew(() => LoadingWork(readWhile));
-            _mapIntoTuples = f.StartNew(() => MapDataRows());
+            _mapIntoTuples = f.StartNew(MapDataRows);
         }
 
         private void MapDataRows()
@@ -91,6 +99,9 @@ namespace VirtualObjects.Queries.ConcurrentReader
             _reader.Close();
         }
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
         public override void Dispose()
         {
             if ( _reader != null )
@@ -100,16 +111,27 @@ namespace VirtualObjects.Queries.ConcurrentReader
             }
         }
 
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
         public override void Close()
         {
             Task.WaitAll(_loadDataRows, _mapIntoTuples);
         }
 
+        /// <summary>
+        /// Gets the data.
+        /// </summary>
+        /// <returns></returns>
         public override ITuple GetData()
         {
             return _consumerTuple.Value;
         }
 
+        /// <summary>
+        /// Reads this instance.
+        /// </summary>
+        /// <returns></returns>
         public override bool Read()
         {
             _consumerTuple.Value = _transformedRows.GetConsumingEnumerable().FirstOrDefault();
@@ -117,6 +139,10 @@ namespace VirtualObjects.Queries.ConcurrentReader
             return _consumerTuple.Value != null;
         }
 
+        /// <summary>
+        /// Gets the tuples.
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerable<ITuple> GetTuples()
         {
             return _data;

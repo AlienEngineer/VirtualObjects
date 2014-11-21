@@ -30,6 +30,7 @@ namespace VirtualObjects.Config
         public IList<IEntityColumnInfo> KeyColumns { get; set; }
         public IEntityColumnInfo Identity { get; set; }
         public Func<object, IDataReader, object[], MapResult> MapEntity { get; set; }
+        public Func<int> GetFieldCount { get; set; }
         public Func<object> EntityFactory { get; set; }
         public Func<Object, Object> EntityCast { get; set; }
         public string DataBase {

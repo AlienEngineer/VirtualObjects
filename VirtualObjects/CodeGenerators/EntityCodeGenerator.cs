@@ -26,15 +26,11 @@ namespace VirtualObjects.CodeGenerators
 
         public void GenerateCode()
         {
-            var mapObject = GenerateMapObjectCode();
-            var make = GenerateMakeCode();
-            var makeProxy = GenerateMakeProxyCode();
-            var otherMethods = GenerateOtherMethodsCode();
-
-            builder.Body.Add(mapObject);
-            builder.Body.Add(make);
-            builder.Body.Add(makeProxy);
-            builder.Body.Add(otherMethods);
+            builder.Body.Add(GenerateMapObjectCode());
+            builder.Body.Add(GenerateMakeCode());
+            builder.Body.Add(GenerateMakeProxyCode());
+            builder.Body.Add(GenerateOtherMethodsCode());
+            builder.Body.Add(GenerateGetFieldCount());
         }
 
         /// <summary>
@@ -83,6 +79,7 @@ namespace VirtualObjects.CodeGenerators
         protected abstract String GenerateMakeCode();
         protected abstract String GenerateMakeProxyCode();
         protected abstract String GenerateOtherMethodsCode();
+        protected abstract String GenerateGetFieldCount();
 
                            
         public void PrintCode()
@@ -118,6 +115,11 @@ namespace VirtualObjects.CodeGenerators
         public Action<Type> GetInitializer()
         {
             return (Action<Type>)builder.GetDelegate<Action<Type>>("Init");
+        }
+
+        public Func<Int32> GetEntityFieldCount()
+        {
+            return (Func<Int32>) builder.GetDelegate<Func<Int32>>("FieldCount");
         }
     }
 }

@@ -43,6 +43,15 @@ namespace VirtualObjects
         /// </value>
         Func<object, IDataReader, object[], MapResult> MapEntity { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the get field count.
+        /// </summary>
+        /// <value>
+        /// The get field count.
+        /// </value>
+        Func<Int32> GetFieldCount { get; set; }
+
         /// <summary>
         /// Gets the <see cref="IEntityColumnInfo"/> with the specified property name.
         /// </summary>
@@ -168,5 +177,7 @@ namespace VirtualObjects
         /// The data base.
         /// </value>
         String DataBase { get; }
+
+        
     }
 }
