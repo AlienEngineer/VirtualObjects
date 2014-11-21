@@ -16,9 +16,10 @@ namespace VirtualObjects.Queries
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="buffer">The buffer.</param>
+        /// <param name="data">The data.</param>
         /// <param name="mapContext">The map context.</param>
         /// <returns></returns>
-        object MapEntity(IDataReader reader, object buffer, MapperContext mapContext);
+        object MapEntity(IDataReader reader, object buffer, Object[] data, MapperContext mapContext);
 
         /// <summary>
         /// Determines whether this instance [can map entity] the specified context.

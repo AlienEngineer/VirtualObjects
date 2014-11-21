@@ -10,7 +10,7 @@ namespace VirtualObjects.CodeGenerators
         void GenerateCode();
         void PrintCode();
 
-        Func<Object, IDataReader, MapResult> GetEntityMapper();
+        Func<object, IDataReader, object[], MapResult> GetEntityMapper();
         Func<Object> GetEntityProvider();        
         Func<ISession, Object> GetEntityProxyProvider();
         Func<Object, Object> GetEntityCast();

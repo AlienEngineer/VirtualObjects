@@ -41,7 +41,7 @@ namespace VirtualObjects
         /// <value>
         /// The map entity.
         /// </value>
-        Func<Object, IDataReader, MapResult> MapEntity { get; set; }
+        Func<object, IDataReader, object[], MapResult> MapEntity { get; set; }
 
         /// <summary>
         /// Gets the <see cref="IEntityColumnInfo"/> with the specified property name.

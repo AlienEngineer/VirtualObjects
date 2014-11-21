@@ -44,7 +44,7 @@ namespace VirtualObjects.CRUD.Operations
                 _mapper.PrepareMapper(_context);
                 var proxy = _entityProvider.CreateEntity(entityInfo.EntityType);
 
-                return _mapper.MapEntity(reader, proxy, _context);
+                return _mapper.MapEntity(reader, proxy, new object[entityInfo.Columns.Count], _context);
             }
             finally
             {

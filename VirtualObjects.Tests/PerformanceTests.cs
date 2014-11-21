@@ -193,7 +193,7 @@ namespace VirtualObjects.Tests
                             {
 
                                 var supplier = sups[i];
-                                entityInfo.MapEntity(supplier, reader);
+                                entityInfo.MapEntity(supplier, reader, new object[entityInfo.Columns.Count]);
 
                             });
                         }, name: STR_Parallel);
@@ -227,7 +227,7 @@ namespace VirtualObjects.Tests
                             for (int i = 0; i < numberOfEntities; i++)
                             {
                                 var supplier = suppliers[i];
-                                entityInfo.MapEntity(supplier, reader);
+                                entityInfo.MapEntity(supplier, reader, new object[entityInfo.Columns.Count]);
                             }
                         }, name: STR_Compiled);
 

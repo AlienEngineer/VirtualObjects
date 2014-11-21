@@ -50,7 +50,7 @@ namespace VirtualObjects.Tests.Queries
 
             while ( reader.Read() )
             {
-                entities.Add((Employee)mapper.MapEntity(reader, new Employee(), mapperContext));
+                entities.Add((Employee)mapper.MapEntity(reader, new Employee(), new object[queryInfo.EntityInfo.Columns.Count], mapperContext));
             }
 
             reader.Close();

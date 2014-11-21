@@ -43,9 +43,9 @@ namespace VirtualObjects.CodeGenerators
         protected override string GenerateMapObjectCode()
         {
             return @"
-    public static MapResult MapObject(Object entity, IDataReader reader)
+    public static MapResult MapObject(Object entity, IDataReader reader, object[] data)
     {{
-        return Map(({TypeName})entity, reader);
+        return Map(({TypeName})entity, reader, data);
     }}
 ".FormatWith(new { TypeName = _properName });
         }
@@ -98,12 +98,11 @@ namespace VirtualObjects.CodeGenerators
     {{
     }}
 
-    public static MapResult Map({TypeName} entity, IDataReader reader)
+    public static MapResult Map({TypeName} entity, IDataReader reader, object[] data)
     {{
-        object[] data;
         try 
         {{
-            data = reader.GetValues();
+            reader.GetValues(data);
         }}
         catch (Exception ex)
         {{

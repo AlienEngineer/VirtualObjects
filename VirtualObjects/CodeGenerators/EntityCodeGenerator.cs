@@ -95,9 +95,9 @@ namespace VirtualObjects.CodeGenerators
             Console.WriteLine("-----------------------------------------------------------");
         }
 
-        public Func<Object, IDataReader, MapResult> GetEntityMapper()
+        public Func<Object, IDataReader, Object[], MapResult> GetEntityMapper()
         {
-            return (Func<Object, IDataReader, MapResult>)builder.GetDelegate<Func<Object, IDataReader, MapResult>>("MapObject");
+            return (Func<Object, IDataReader, Object[], MapResult>)builder.GetDelegate<Func<Object, IDataReader, Object[], MapResult>>("MapObject");
         }
 
         public Func<Object> GetEntityProvider()

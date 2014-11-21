@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 namespace VirtualObjects.Queries.Mapping
 {
@@ -8,9 +9,9 @@ namespace VirtualObjects.Queries.Mapping
     /// </summary>
     class EntityInfoModelMapper : IEntityMapper
     {
-        public virtual object MapEntity(IDataReader reader, object buffer, MapperContext mapContext)
+        public virtual object MapEntity(IDataReader reader, object buffer, Object[] data, MapperContext mapContext)
         {
-            mapContext.EntityInfo.MapEntity(buffer, reader);
+            mapContext.EntityInfo.MapEntity(buffer, reader, data);
 
             return buffer;
         }

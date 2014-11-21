@@ -29,7 +29,7 @@ namespace VirtualObjects.Queries
 
         public IEntitiesMapper EntitiesMapper { get; set; }
 
-        public Func<Object, IDataReader, MapResult> MapEntity { get; set; }
+        public Func<object, IDataReader, object[], MapResult> MapEntity { get; set; }
         
         public Func<object, object> EntityCast { get; set; }
 

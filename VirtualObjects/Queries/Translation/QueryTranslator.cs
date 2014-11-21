@@ -241,7 +241,7 @@ namespace VirtualObjects.Queries.Translation
                 entityInfo = null;
             }
 
-            Func<Object, IDataReader, MapResult> mapEntity = null;
+            Func<object, IDataReader, object[], MapResult> mapEntity = null;
             Func<ISession, Object> makeEntity = null;
             Func<Object, Object> entityCast = null;
 
