@@ -294,33 +294,14 @@ namespace VirtualObjects.Tests.Sessions
         private It should_allways_have_virtual_objects_as_lower_result =
             () =>
             {
-                //
-                // Allow results to be worst in 5 iterations.
-                // At times a thread could be blocked and therefore vo could be slower in those cases. 
-                int failTolerance = 5;
+                var vo = _results.Sum(e => e.VirtualObjects);
+                var ef = _results.Sum(e => e.EntityFramework);
+                var dp = _results.Sum(e => e.Dapper);
+                var hc = _results.Sum(e => e.HandCoded);
 
-                int i = 0;
-
-                foreach (var result in _results)
-                {
-                    try
-                    {
-                        result.VirtualObjects.Should().BeLessOrEqualTo(result.Dapper, "VirtualObjects should be faster than Dapper on the {0} iteration", i);
-                        result.VirtualObjects.Should().BeLessOrEqualTo(result.EntityFramework, "VirtualObjects should be faster than EntityFramework on the {0} iteration", i);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(" => " + ex.Message);
-                        --failTolerance;
-
-                        if (failTolerance == 0)
-                        {
-                            throw;
-                        }
-                    }
-
-                    ++i;
-                }
+                vo.Should().BeLessOrEqualTo(ef);
+                vo.Should().BeLessOrEqualTo(dp);
+                vo.Should().BeLessOrEqualTo(hc);
             };
 
         private static IList<MappingSuppliers> _results = new List<MappingSuppliers>();
@@ -401,33 +382,14 @@ namespace VirtualObjects.Tests.Sessions
         private It should_allways_have_virtual_objects_as_lower_result =
             () =>
             {
-                //
-                // Allow results to be worst in 5 iterations.
-                // At times a thread could be blocked and therefore vo could be slower in those cases. 
-                int failTolerance = 5;
+                var vo = _results.Sum(e => e.VirtualObjects);
+                var ef = _results.Sum(e => e.EntityFramework);
+                var dp = _results.Sum(e => e.Dapper);
+                var hc = _results.Sum(e => e.HandCoded);
 
-                int i = 0;
-
-                foreach (var result in _results)
-                {
-                    try
-                    {
-                        result.VirtualObjects.Should().BeLessOrEqualTo(result.Dapper, "VirtualObjects should be faster than Dapper on the {0} iteration", i);
-                        result.VirtualObjects.Should().BeLessOrEqualTo(result.EntityFramework, "VirtualObjects should be faster than EntityFramework on the {0} iteration", i);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(" => " + ex.Message);
-                        --failTolerance;
-
-                        if (failTolerance == 0)
-                        {
-                            throw;
-                        }
-                    }
-
-                    ++i;
-                }
+                vo.Should().BeLessOrEqualTo(ef);
+                vo.Should().BeLessOrEqualTo(dp);
+                vo.Should().BeLessOrEqualTo(hc);
             };
 
         private static IList<MappingOrderDetails> _results = new List<MappingOrderDetails>();
