@@ -288,23 +288,21 @@ namespace VirtualObjects.Tests.Sessions
 
             } while (numberOfExecutions < NUMBER_OF_EXECUTIONS);
 
+            _vo = _results.Sum(e => e.VirtualObjects);
+            _ef = _results.Sum(e => e.EntityFramework);
+            _dp = _results.Sum(e => e.Dapper);
+            _hc = _results.Sum(e => e.HandCoded);
         };
 
-
-        private It should_allways_have_virtual_objects_as_lower_result =
-            () =>
-            {
-                var vo = _results.Sum(e => e.VirtualObjects);
-                var ef = _results.Sum(e => e.EntityFramework);
-                var dp = _results.Sum(e => e.Dapper);
-                var hc = _results.Sum(e => e.HandCoded);
-
-                vo.Should().BeLessOrEqualTo(ef);
-                vo.Should().BeLessOrEqualTo(dp);
-                vo.Should().BeLessOrEqualTo(hc);
-            };
+        It should_be_faster_than_entity_framework = () => _vo.Should().BeLessThan(_ef);
+        It should_be_faster_than_dapper = () => _vo.Should().BeLessThan(_dp);
 
         private static IList<MappingSuppliers> _results = new List<MappingSuppliers>();
+
+        private static float _hc;
+        private static float _dp;
+        private static float _ef;
+        private static float _vo;
     }
 
 
@@ -376,58 +374,22 @@ namespace VirtualObjects.Tests.Sessions
                 
             } while (numberOfExecutions < NUMBER_OF_EXECUTIONS);
 
+            _vo = _results.Sum(e => e.VirtualObjects);
+            _ef = _results.Sum(e => e.EntityFramework);
+            _dp = _results.Sum(e => e.Dapper);
+            _hc = _results.Sum(e => e.HandCoded);
         };
 
-
-        private It should_allways_have_virtual_objects_as_lower_result =
-            () =>
-            {
-                var vo = _results.Sum(e => e.VirtualObjects);
-                var ef = _results.Sum(e => e.EntityFramework);
-                var dp = _results.Sum(e => e.Dapper);
-                var hc = _results.Sum(e => e.HandCoded);
-
-                vo.Should().BeLessOrEqualTo(ef);
-                vo.Should().BeLessOrEqualTo(dp);
-                vo.Should().BeLessOrEqualTo(hc);
-            };
+        It should_be_faster_than_entity_framework = () => _vo.Should().BeLessThan(_ef);
+        It should_be_faster_than_dapper = () => _vo.Should().BeLessThan(_dp);
 
         private static IList<MappingOrderDetails> _results = new List<MappingOrderDetails>();
+
+        private static float _hc;
+        private static float _dp;
+        private static float _ef;
+        private static float _vo;
     }
 
-
-    [Subject("PerformanceSpecs")]
-    public class When_mapping_using_different_strategies : PerformanceSpecs
-    {
-        Establish context = () =>
-        {
-            var type = typeof(Suppliers);
-            var entityInfo = Mapper.Map(type);
-
-            Object[] tmpData =
-            {
-                1,
-                "Company Name",
-                "Contact Name",
-                "ContactTitle",
-                "Address",
-                "City",
-                "Region",
-                "PostalCode",
-                "Country",
-                "Phone",
-                "Fax",
-                "HomePage"
-            };
-
-            _reader = new MockReader(tmpData);
-        };
-
-        private Because of = () => { };
-
-        private It should_ = () => { };
-
-        private static IDataReader _reader;
-    }
 
 }
