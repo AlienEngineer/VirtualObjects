@@ -343,7 +343,7 @@ namespace VirtualObjects.Tests.Sessions
                 {
                     for (int i = 0; i < numberOfExecutions; i++)
                     {
-                        Connection.Query<OrderDetails>("Select * from [Order Details]").ToList();
+                        Connection.Query<OrderDetails>("Select top 1000 * from [Order Details]").ToList();
                     }
                 }, name: STR_Dapper);
 
@@ -351,7 +351,7 @@ namespace VirtualObjects.Tests.Sessions
                 {
                     for (int i = 0; i < numberOfExecutions; i++)
                     {
-                        EntityFramework.OrderDetails.ToList();
+                        EntityFramework.OrderDetails.Take(1000).ToList();
                     }
                 }, name: STR_EntityFramework);
 
@@ -361,7 +361,7 @@ namespace VirtualObjects.Tests.Sessions
                     {
                         for (int i = 0; i < numberOfExecutions; i++)
                         {
-                            VObjects.GetAll<OrderDetails>().ToList();
+                            VObjects.GetAll<OrderDetails>().Take(1000).ToList();
                         }
                     });
                 }, name: STR_VirtualObjects);
@@ -374,7 +374,7 @@ namespace VirtualObjects.Tests.Sessions
                     for (int i = 0; i < numberOfExecutions; i++)
                     {
                         var cmd = Connection.CreateCommand();
-                        cmd.CommandText = "Select * from [Order Details]";
+                        cmd.CommandText = "Select top 1000 * from [Order Details]";
                         var reader = cmd.ExecuteReader();
 
                         MapOrderDetail(reader).ToList();
