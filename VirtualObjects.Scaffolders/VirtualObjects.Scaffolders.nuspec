@@ -15,10 +15,7 @@
       * Small corrections.
       
       Version 1.1
-<<<<<<< HEAD
-=======
       * Fix: Added Create new Repository in the interface.
->>>>>>> 1.3
       * Change #41: ForeignKey fields should be decorated with ForeignKeyAttribute
 
       Version 1.0
