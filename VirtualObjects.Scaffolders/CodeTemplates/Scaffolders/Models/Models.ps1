@@ -16,7 +16,9 @@ param(
 	[System.String]$ModelFolder = "Models",
 	[System.String]$RepositoryFolder = "Repositories",
 	[System.String]$AnnotationsFolder = "Annotations",
-	[System.String]$ToFolder = "-"
+	[System.String]$ToFolder = "-",
+	[System.String]$userId = "-",
+	[System.String]$userPass = "-"
 )
 
 if (-not ($ToFolder -eq "-"))
@@ -44,7 +46,13 @@ $namespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 		Write-Verbose "Database: $database" 
 
 		try {
-			$connectionString = "Data Source=${server};Initial Catalog=${database};Integrated Security=True"
+			$connectionString = "Data Source=${server};Initial Catalog=${database};"
+
+			if ($userId -eq "-") {
+				$connectionString = $connectionString + "Integrated Security=True"
+			} else {
+				$connectionString = $connectionString + "UID=$userId;PWD=$userPass"
+			}
 
 			Write-Verbose $connectionString        
 
