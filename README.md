@@ -1,5 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/f0nexr1d9havh95u/branch/1.3?svg=true)](https://ci.appveyor.com/project/AlienEngineer/virtualobjects/branch/1.3)
 
+
 ### Getting Started (Scaffolding)
 
 [Short demonstration video] (http://screencast.com/t/CghgJTdmx#mediaDisplayArea)
@@ -98,7 +99,6 @@ Select * from Suppliers
 ```
 
 
-[![PoweredBy](http://www.jetbrains.com/resharper/docs/banners/rs8_small.png)](www.jetbrains.com)  
 [![endorse](https://api.coderwall.com/alienengineer/endorsecount.png)](https://coderwall.com/alienengineer)  
 [Ohloh](https://www.ohloh.net/p/VirtualObjects)
 

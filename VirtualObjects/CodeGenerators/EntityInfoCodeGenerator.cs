@@ -189,6 +189,7 @@ namespace VirtualObjects.CodeGenerators
                 if (foreignField == null && foreignTable.ForeignKeys != null)
                 {
                     foreignField = foreignTable.ForeignKeys
+                        .SelectMany(f => f.ForeignKeyLinks).Select(pair => pair.Value)
                         .FirstOrDefault(f => f.BindOrName.Equals(key.ColumnName, StringComparison.InvariantCultureIgnoreCase));
                 }
 
