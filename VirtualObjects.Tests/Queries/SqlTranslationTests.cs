@@ -71,6 +71,7 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+
         [Test, Repeat(Repeat)]
         public void SqlTranslation_Projected_Query()
         {
@@ -253,6 +254,27 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+
+        /// <summary>
+        /// 
+        /// Sql translation for a simple predicate
+        /// 
+        /// </summary>
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Query_with_custom_function_call()
+        {
+            var query = Query<Employee>().Where(e => CustomTest(e.EmployeeId) == true).Select(e => e.EmployeeId);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (dbo.Test([T0].[EmployeeId]) = @p0)")
+            );
+        }
+
+        private static bool CustomTest(int employee)
+        {
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// 
         /// Sql translation for a simple predicate

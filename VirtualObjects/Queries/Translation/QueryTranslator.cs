@@ -1325,7 +1325,7 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompilePredicateExpression(Expression expression, CompilerBuffer buffer)
         {
-            if (ShouldReturn)
+            if (ShouldReturn || expression == null)
             {
                 return;
             }
@@ -1369,7 +1369,7 @@ namespace VirtualObjects.Queries.Translation
                         return;
                     }
 
-                    if (callExpression.Object != null && IsMemberAccess(callExpression))
+                    if (callExpression.Object != null && IsMemberAccess(callExpression) || callExpression.Method.Name.StartsWith("Custom"))
                     {
                         CompileMemberCallPredicate(callExpression, buffer);
                         return;
@@ -1446,6 +1446,8 @@ namespace VirtualObjects.Queries.Translation
                 CompileConversions(expression, buffer);
                 return;
             }
+
+            
 
             if (expression.Method.Name != "Contains")
             {

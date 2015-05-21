@@ -297,10 +297,7 @@ namespace VirtualObjects.Queries.Formatters
                 case "EndsWith":
                 case "Contains":
                     return " like '%' + ";
-                case "Year":
-                case "Month":
-                case "Day":
-                    return methodCalled + BeginWrap();
+                
                 case "Date":
                     return "cast" + BeginWrap();
                 case "Hour":
@@ -315,7 +312,13 @@ namespace VirtualObjects.Queries.Formatters
                     return "Datepart('dw', ";
                 case "DayOfYear":
                     return "Datepart('dy', ";
-                
+                case "Year":
+                case "Month":
+                case "Day":
+                    return methodCalled + BeginWrap();
+                default:
+                    return methodCalled.Replace("Custom", "dbo.") + BeginWrap();
+
             }
 
             throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });
@@ -369,6 +372,8 @@ namespace VirtualObjects.Queries.Formatters
                 case "ToUpper":
                 case "ToLower":
                 case "Substring":
+                    return EndWrap();
+                default:
                     return EndWrap();
             }
 
