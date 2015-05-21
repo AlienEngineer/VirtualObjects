@@ -114,9 +114,20 @@ namespace VirtualObjects.Config
 
             entityInfo.ForeignKeys = entityInfo.Columns.Where(e => e.ForeignKey != null).ToList();
 
+
             foreach ( var column in entityInfo.Columns )
             {
                 column.ForeignKeyLinks = GetForeignKeyLinks(column, entityInfo).ToList();
+            }
+
+            foreach (var foreignKey in entityInfo.ForeignKeys
+                .Where(foreignKey => foreignKey.Property.Name == foreignKey.ColumnName)
+                .Where(foreignKey => foreignKey.ForeignKeyLinks != null && foreignKey.ForeignKeyLinks.Any()))
+            {
+
+                // Remove foreignKey from columns if it was used only for bind purposes.
+                // This should be used when a lazy load is needed with multiple keys.
+                entityInfo.Columns.Remove(foreignKey);
             }
 
             MapRelatedEntities(entityInfo);
