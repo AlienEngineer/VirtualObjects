@@ -29,6 +29,7 @@ namespace VirtualObjects.Config
         public Func<Object, IDataReader, MapResult> MapEntity { get; set; }
         public Func<object> EntityFactory { get; set; }
         public Func<Object, Object> EntityCast { get; set; }
+        public Mapping State { get; set; }
         public Func<ISession, object> EntityProxyFactory { get; set; }
         public IEntityColumnInfo VersionControl { get; set; }
 

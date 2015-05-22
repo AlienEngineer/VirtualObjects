@@ -31,12 +31,12 @@ namespace VirtualObjects.Config
 
         public IEntityInfo Map(Type entityType)
         {
-            if ( entityType.IsFrameworkType() || entityType.IsDynamic() )
+            if (entityType.IsFrameworkType() || entityType.IsDynamic())
             {
                 return null;
             }
 
-            if ( entityType.IsProxy() )
+            if (entityType.IsProxy())
             {
                 return Map(entityType.BaseType);
             }
@@ -45,7 +45,7 @@ namespace VirtualObjects.Config
             {
                 return MapType(entityType);
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
                 throw new MappingException(Errors.UnableToMapEntity, entityType, ex);
             }
@@ -53,7 +53,7 @@ namespace VirtualObjects.Config
 
         private void MapRelatedEntities(IEntityInfo entityInfo)
         {
-            foreach ( var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()) )
+            foreach (var property in entityInfo.EntityType.GetProperties().Where(e => e.IsVirtual() && e.PropertyType.IsCollection()))
             {
                 var entityType = property.PropertyType.GetGenericArguments().First();
                 Map(entityType);
@@ -64,7 +64,7 @@ namespace VirtualObjects.Config
         {
             IEntityInfo entityInfo;
 
-            if ( _entityBag.TryGetValue(entityType, out entityInfo) )
+            if (_entityBag.TryGetValue(entityType, out entityInfo) && entityInfo.State >= Mapping.FieldsMapped)
             {
                 return entityInfo;
             }
@@ -75,11 +75,15 @@ namespace VirtualObjects.Config
                 EntityType = entityType
             };
 
+            entityInfo.State = Mapping.Mapping;
+
             entityInfo.Columns = MapColumns(entityInfo).ToList();
             entityInfo.KeyColumns = entityInfo.Columns.Where(e => e.IsKey).ToList();
 
+            entityInfo.State = Mapping.KeysMapped;
+
             int i = 0;
-            foreach ( var column in entityInfo.Columns )
+            foreach (var column in entityInfo.Columns)
             {
                 column.Index = i++;
                 column.ForeignKey = GetForeignKey(column.Property);
@@ -91,12 +95,12 @@ namespace VirtualObjects.Config
 #if DEBUG
             entityInfo.Columns.ForEach(e =>
             {
-                if ( e.ForeignKey == null && !e.Property.PropertyType.IsFrameworkType() )
+                if (e.ForeignKey == null && !e.Property.PropertyType.IsFrameworkType())
                 {
                     throw new ConfigException("The column [{ColumnName}] returns a complex type but is not associated with another key.", e);
                 }
 
-                if ( e.ForeignKey != null && !(e is EntityBoundColumnInfo) )
+                if (e.ForeignKey != null && !(e is EntityBoundColumnInfo))
                 {
                     throw new ConfigException("The column [{ColumnName}] returns a complex type but is not associated with another key.", e);
                 }
@@ -115,7 +119,7 @@ namespace VirtualObjects.Config
             entityInfo.ForeignKeys = entityInfo.Columns.Where(e => e.ForeignKey != null).ToList();
 
 
-            foreach ( var column in entityInfo.Columns )
+            foreach (var column in entityInfo.Columns)
             {
                 column.ForeignKeyLinks = GetForeignKeyLinks(column, entityInfo).ToList();
             }
@@ -130,9 +134,17 @@ namespace VirtualObjects.Config
                 entityInfo.Columns.Remove(foreignKey);
             }
 
+            // By this point all fields are mapped.
+            entityInfo.State = Mapping.FieldsMapped;
+
             MapRelatedEntities(entityInfo);
 
+            entityInfo.State = Mapping.RelatedEntitiesMapped;
+
             entityInfo.Operations = _operationsProvider.CreateOperations(entityInfo);
+
+            entityInfo.State = Mapping.OperationsCreated;
+
             var codeGenerator = _codeGeneratorFactory.Make(entityInfo);
 
             codeGenerator.GenerateCode();
@@ -141,6 +153,8 @@ namespace VirtualObjects.Config
             entityInfo.EntityFactory = codeGenerator.GetEntityProvider();
             entityInfo.EntityProxyFactory = codeGenerator.GetEntityProxyProvider();
             entityInfo.EntityCast = codeGenerator.GetEntityCast();
+
+            entityInfo.State = Mapping.Ready;
 
             return entityInfo;
         }
@@ -152,17 +166,17 @@ namespace VirtualObjects.Config
 
         private static IEntityColumnInfo WrapColumn(IEntityColumnInfo column)
         {
-            if ( column.ForeignKey != null )
+            if (column.ForeignKey != null)
             {
                 return WrapWithBoundColumn(column);
             }
 
-            if ( column.Property.PropertyType == typeof(DateTime) )
+            if (column.Property.PropertyType == typeof(DateTime))
             {
                 return WrapWithDatetimeColumn(column);
             }
 
-            if ( column.Property.PropertyType == typeof(Guid) )
+            if (column.Property.PropertyType == typeof(Guid))
             {
                 return WrapWithGuidColumn(column);
             }
@@ -240,7 +254,7 @@ namespace VirtualObjects.Config
 
         private IEnumerable<IEntityColumnInfo> MapColumns(IEntityInfo entityInfo, Type type)
         {
-            if (type == typeof (Object))
+            if (type == typeof(Object))
             {
                 return new IEntityColumnInfo[0];
             }
@@ -248,9 +262,9 @@ namespace VirtualObjects.Config
             var baseColumns = MapColumns(entityInfo, type.BaseType);
 
             return baseColumns.Concat(type.Properties()
-                .Where(e => !e.PropertyType.IsGenericType || !e.PropertyType.GetInterfaces().Contains(typeof (IEnumerable)))
+                .Where(e => !e.PropertyType.IsGenericType || !e.PropertyType.GetInterfaces().Contains(typeof(IEnumerable)))
                 .Where(e => !ShouldIgnore(e))
-                .Where(e => !baseColumns.Select(o => o.Property.Name).Contains(e.Name) )
+                .Where(e => !baseColumns.Select(o => o.Property.Name).Contains(e.Name))
                 .Select(e => MapColumn(e, entityInfo)));
 
         }
@@ -259,7 +273,7 @@ namespace VirtualObjects.Config
         {
             var columnName = GetName(propertyInfo);
 
-            if ( columnName == null )
+            if (columnName == null)
             {
                 throw new MappingException(Errors.Mapping_UnableToGetColumnName, propertyInfo);
             }
@@ -283,7 +297,7 @@ namespace VirtualObjects.Config
 
         private IEntityColumnInfo GetForeignKey(PropertyInfo propertyInfo)
         {
-            if ( propertyInfo.PropertyType.IsFrameworkType() )
+            if (propertyInfo.PropertyType.IsFrameworkType())
             {
                 return null;
             }
@@ -298,7 +312,7 @@ namespace VirtualObjects.Config
                 entity.KeyColumns.FirstOrDefault() :
                 entity[keyName];
 
-            if ( foreignKey == null && _configuration.ColumnForeignKeyGetters.Any() )
+            if (foreignKey == null && _configuration.ColumnForeignKeyGetters.Any())
             {
                 throw new ConfigException(Errors.Mapping_UnableToGetForeignKey, propertyInfo);
             }
@@ -308,7 +322,7 @@ namespace VirtualObjects.Config
 
         private IEnumerable<KeyValuePair<IEntityColumnInfo, IEntityColumnInfo>> GetForeignKeyLinks(IEntityColumnInfo column, IEntityInfo currentEntity)
         {
-            if ( column.ForeignKey != null )
+            if (column.ForeignKey != null)
             {
                 var links = _configuration.ColumnForeignKeyLinksGetters
                     .Select(keyGetter => keyGetter(column.Property))
@@ -316,7 +330,7 @@ namespace VirtualObjects.Config
 
                 if (links == null) yield break;
 
-                foreach ( var link in links.Split(';') )
+                foreach (var link in links.Split(';'))
                 {
                     var properties = link.Split(':');
 
@@ -332,7 +346,7 @@ namespace VirtualObjects.Config
 
                     var firstField = currentEntity[properties[0]];
 
-                    if ( firstField == null )
+                    if (firstField == null)
                     {
                         throw new MappingException(
                             Errors.Mapping_FieldNotFoundOnEntity,
@@ -345,7 +359,7 @@ namespace VirtualObjects.Config
 
                     var columnLink = column.ForeignKey.EntityInfo[properties[1]];
 
-                    if ( columnLink == null )
+                    if (columnLink == null)
                     {
                         throw new MappingException(
                             Errors.Mapping_FieldNotFoundOnEntity,
@@ -391,7 +405,7 @@ namespace VirtualObjects.Config
                 {
                     return getter(entity);
                 }
-                catch ( Exception ex )
+                catch (Exception ex)
                 {
                     throw new ConfigException(
                         Errors.Mapping_UnableToGetValue,
@@ -411,7 +425,7 @@ namespace VirtualObjects.Config
                 {
                     setter(entity, value);
                 }
-                catch ( Exception ex )
+                catch (Exception ex)
                 {
                     throw new ConfigException(
                         Errors.Mapping_UnableToSetValue,
@@ -441,7 +455,7 @@ namespace VirtualObjects.Config
 
         protected virtual void Dispose(bool disposing)
         {
-            if ( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
             }
@@ -449,4 +463,16 @@ namespace VirtualObjects.Config
 
         #endregion
     }
+
+#pragma warning disable 1591
+    public enum Mapping
+    {
+        FieldsMapped = 50,
+        RelatedEntitiesMapped = 60,
+        OperationsCreated = 90,
+        Ready = 100,
+        Mapping = 0,
+        KeysMapped = 1
+    }
+#pragma warning restore 1591
 }

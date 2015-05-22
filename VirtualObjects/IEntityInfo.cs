@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using VirtualObjects.Config;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Mapping;
 
@@ -152,5 +153,10 @@ namespace VirtualObjects
         /// </value>
         ///   <returns></returns>
         Func<Object, Object> EntityCast { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Mapping State { get; set; }
     }
 }
