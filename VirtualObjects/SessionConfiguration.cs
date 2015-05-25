@@ -4,6 +4,7 @@ using VirtualObjects.Config;
 using VirtualObjects.Connections;
 using VirtualObjects.Mappings;
 using VirtualObjects.Queries.Formatters;
+using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects
 {
@@ -24,6 +25,11 @@ namespace VirtualObjects
         }
 
         internal ITranslationConfigurationBuilder TranslationConfigurationBuilder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the custom function translation module.
+        /// </summary>
+        public ICustomFunctionTranslation FunctionTranslation { get; set; }
 
         /// <summary>
         /// Gets or sets the connection provider.

@@ -588,6 +588,8 @@ namespace VirtualObjects.Queries.Translation
                     CompileMinMaxMethod(expression, _formatter.Max, buffer);
                     break;
                 default:
+
+
                     throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
             }
 
@@ -765,7 +767,7 @@ namespace VirtualObjects.Queries.Translation
 
             if (lambda.Body is NewExpression)
             {
-                var newExp = lambda.Body as NewExpression;
+                var newExp = (NewExpression) lambda.Body;
 
                 Debug.Assert(newExp != null, "newExp != null");
 
@@ -777,6 +779,32 @@ namespace VirtualObjects.Queries.Translation
                 }
 
                 stringBuffer.RemoveLast(_formatter.FieldSeparator);
+            }
+            else if (lambda.Body is MethodCallExpression)
+            {
+                var newExp = (MethodCallExpression) lambda.Body;
+                
+                Debug.Assert(newExp != null, "newExp != null");
+
+                stringBuffer += CompileAndGetBuffer(() =>
+                {
+                    if (_formatter.SupportsCustomFunction(newExp.Method.Name))
+                    {
+                        buffer.Predicates += _formatter.BeginMethodCall(newExp.Method.Name);
+                        foreach (var argument in newExp.Arguments)
+                        {
+                            CompileMemberAccess(argument, buffer);
+                            buffer.Predicates += _formatter.FieldSeparator;
+                        }
+
+                        buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
+                        buffer.Predicates += _formatter.EndMethodCall(newExp.Method.Name);
+                    }
+                    else
+                    {
+                        throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
+                    }
+                }, buffer);
             }
             else
             {
@@ -1369,7 +1397,7 @@ namespace VirtualObjects.Queries.Translation
                         return;
                     }
 
-                    if (callExpression.Object != null && IsMemberAccess(callExpression) || callExpression.Method.Name.StartsWith("Custom"))
+                    if (callExpression.Object != null && IsMemberAccess(callExpression) || _formatter.SupportsCustomFunction(callExpression.Method.Name))
                     {
                         CompileMemberCallPredicate(callExpression, buffer);
                         return;

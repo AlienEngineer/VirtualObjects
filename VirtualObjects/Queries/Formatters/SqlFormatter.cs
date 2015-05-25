@@ -5,16 +5,19 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using VirtualObjects.Exceptions;
+using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects.Queries.Formatters
 {
     class SqlFormatter : IFormatter
     {
-        private const string Separator = ", ";
-        private const string TablePrefix = "T";
+        private readonly ICustomFunctionTranslation _functionTranslation;
+        private const string SEPARATOR = ", ";
+        private const string TABLE_PREFIX = "T";
 
-        public SqlFormatter()
+        public SqlFormatter(ICustomFunctionTranslation functionTranslation)
         {
+            _functionTranslation = functionTranslation ?? new CustomSqlFunctionTranslation();
             Select = "Select";
             From = "From";
             Where = "Where";
@@ -60,7 +63,7 @@ namespace VirtualObjects.Queries.Formatters
 
         public String FieldSeparator
         {
-            get { return Separator; }
+            get { return SEPARATOR; }
         }
 
         public string Select { get; private set; }
@@ -169,6 +172,11 @@ namespace VirtualObjects.Queries.Formatters
             return FormatFunctionCall("ToUpper", columnName, index);
         }
 
+        public bool SupportsCustomFunction(string methodName)
+        {
+            return _functionTranslation.SupportsMethod(methodName);
+        }
+
         public string FormatFields(IEnumerable<IEntityColumnInfo> columns, int index)
         {
             return String.Join(
@@ -185,7 +193,7 @@ namespace VirtualObjects.Queries.Formatters
 
         public string GetTableAlias(int index)
         {
-            return FormatField(TablePrefix + index);
+            return FormatField(TABLE_PREFIX + index);
         }
 
         public string BeginWrap()
@@ -316,9 +324,12 @@ namespace VirtualObjects.Queries.Formatters
                 case "Month":
                 case "Day":
                     return methodCalled + BeginWrap();
-                default:
-                    return methodCalled.Replace("Custom", "dbo.") + BeginWrap();
 
+            }
+
+            if (_functionTranslation.SupportsMethod(methodCalled))
+            {
+                return _functionTranslation.TranslateBegin(methodCalled);
             }
 
             throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });
@@ -373,8 +384,11 @@ namespace VirtualObjects.Queries.Formatters
                 case "ToLower":
                 case "Substring":
                     return EndWrap();
-                default:
-                    return EndWrap();
+            }
+
+            if (_functionTranslation.SupportsMethod(methodCalled))
+            {
+                return _functionTranslation.TranslateEnd(methodCalled);
             }
 
             throw new TranslationException(Errors.Translation_MethodCall_NotSupported, new { MethodName = methodCalled });

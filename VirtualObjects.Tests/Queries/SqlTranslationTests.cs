@@ -257,13 +257,13 @@ namespace VirtualObjects.Tests.Queries
 
         /// <summary>
         /// 
-        /// Sql translation for a simple predicate
+        /// Sql translation with a custom function predicate
         /// 
         /// </summary>
         [Test, Repeat(Repeat)]
         public void SqlTranslation_Query_with_custom_function_call()
         {
-            var query = Query<Employee>().Where(e => CustomTest(e.EmployeeId) == true).Select(e => e.EmployeeId);
+            var query = Query<Employee>().Where(e => Test(e.EmployeeId) == true).Select(e => e.EmployeeId);
 
             Assert.That(
                 Translate(query),
@@ -271,10 +271,55 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
-        private static bool CustomTest(int employee)
+
+        /// <summary>
+        /// 
+        /// Sql translation with a custom function order
+        /// 
+        /// </summary>
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Query_with_custom_function_order_clause()
+        {
+            var query = Query<Employee>().OrderBy(e => SomeCalculation(e.EmployeeId)).Select(e => e.EmployeeId);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By dbo.SomeCalculation([T0].[EmployeeId])")
+            );
+        }
+
+
+        /// <summary>
+        /// 
+        /// Sql translation with a custom function order
+        /// 
+        /// </summary>
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Query_with_custom_function_with_two_parameters_order_clause()
+        {
+            var query = Query<Employee>().OrderBy(e => SomeCalculation(e.EmployeeId, e.City)).Select(e => e.EmployeeId);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By dbo.SomeCalculation([T0].[EmployeeId], [T0].[City])")
+            );
+        }
+
+        private static bool Test(int employee)
         {
             throw new NotImplementedException();
         }
+
+        private static int SomeCalculation(int employee)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static int SomeCalculation(int employee, string sadas)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 
         /// Sql translation for a simple predicate

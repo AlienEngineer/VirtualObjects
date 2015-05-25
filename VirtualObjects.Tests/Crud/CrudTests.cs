@@ -19,7 +19,7 @@ namespace VirtualObjects.Tests.Crud
         public CrudTests()
         {
             
-            provider = new OperationsProvider(new SqlFormatter(), new EntityInfoModelMapper(), new EntityModelProvider());
+            provider = new OperationsProvider(new SqlFormatter(null), new EntityInfoModelMapper(), new EntityModelProvider());
             _operations = provider.CreateOperations(Mapper.Map(typeof(Employee)));
         }
 

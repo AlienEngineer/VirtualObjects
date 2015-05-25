@@ -220,6 +220,8 @@
     <Compile Include="Queries\QueryInfo.cs" />
     <Compile Include="Queries\QueryProvider.cs" />
     <Compile Include="Queries\Translation\CachingTranslator.cs" />
+    <Compile Include="Queries\CustomSqlFunctionTranslation.cs" />
+    <Compile Include="Queries\Translation\ICustomFunctionTranslation.cs" />
     <Compile Include="Queries\Translation\OnClause.cs" />
     <Compile Include="Queries\Translation\QueryTranslator.cs" />
     <Compile Include="ReflectionExtensions.cs" />

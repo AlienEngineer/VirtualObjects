@@ -1,4 +1,5 @@
 ﻿using System;
+using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects.Queries.Formatters
 {
@@ -13,5 +14,7 @@ namespace VirtualObjects.Queries.Formatters
         {
             return Wrap(entityName + "$");
         }
+
+        public ExcelFormatter(ICustomFunctionTranslation functionTranslation) : base(functionTranslation) {}
     }
 }

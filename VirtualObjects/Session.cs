@@ -63,7 +63,7 @@ namespace VirtualObjects
         {
             ConnectionProvider = configuration.ConnectionProvider ?? new NamedDbConnectionProvider();
             Logger = configuration.Logger ?? new TextWriterStub();
-            Formmater = configuration.Formatter ?? new SqlFormatter();
+            Formmater = configuration.Formatter ?? new SqlFormatter(configuration.FunctionTranslation);
 
             ConnectionManager = new Connection(ConnectionProvider, Logger, new SqlProgramability());
 
@@ -387,7 +387,7 @@ namespace VirtualObjects
                 configuration = new SessionConfiguration();
             }
 
-            configuration.Formatter = new ExcelFormatter();
+            configuration.Formatter = new ExcelFormatter(configuration.FunctionTranslation);
 
             return configuration;
         }

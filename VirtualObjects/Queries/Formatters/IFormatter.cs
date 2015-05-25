@@ -425,5 +425,12 @@ namespace VirtualObjects.Queries.Formatters
         /// <param name="index">The index.</param>
         /// <returns></returns>
         String FormatToUpperWith(string columnName, int index);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="methodName"></param>
+        /// <returns></returns>
+        bool SupportsCustomFunction(string methodName);
     }
 }
