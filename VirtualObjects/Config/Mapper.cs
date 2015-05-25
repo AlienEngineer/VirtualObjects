@@ -86,7 +86,7 @@ namespace VirtualObjects.Config
             foreach (var column in entityInfo.Columns)
             {
                 column.Index = i++;
-                column.ForeignKey = GetForeignKey(column.Property);
+                column.ForeignKey = GetForeignKey(entityInfo, column.Property);
             }
 
             entityInfo.Columns = WrapColumns(entityInfo.Columns).ToList();
@@ -295,14 +295,16 @@ namespace VirtualObjects.Config
             return column;
         }
 
-        private IEntityColumnInfo GetForeignKey(PropertyInfo propertyInfo)
+        private IEntityColumnInfo GetForeignKey(IEntityInfo entityInfo, PropertyInfo propertyInfo)
         {
             if (propertyInfo.PropertyType.IsFrameworkType())
             {
                 return null;
             }
 
-            var entity = Map(propertyInfo.PropertyType);
+            //
+            // If mapping a column with the same type as  the current entity, use the current entity.
+            var entity = (propertyInfo.PropertyType == entityInfo.EntityType) ? entityInfo : Map(propertyInfo.PropertyType);
 
             var keyName = _configuration.ColumnForeignKeyGetters
                 .Select(keyGetter => keyGetter(propertyInfo))

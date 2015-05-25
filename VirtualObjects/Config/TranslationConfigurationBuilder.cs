@@ -13,7 +13,7 @@ namespace VirtualObjects.Config
     class TranslationConfigurationBuilder : ITranslationConfigurationBuilder
     {
         private readonly Func<Attribute, Boolean> _defaultBooleanGetter;
-        private readonly ITranslationConfiguration configuration;
+        private readonly ITranslationConfiguration _configuration;
 
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace VirtualObjects.Config
         /// </summary>
         public TranslationConfigurationBuilder()
         {
-            configuration = new TranslationConfiguration
+            _configuration = new TranslationConfiguration
             {
                 ColumnNameGetters = new List<Func<PropertyInfo, String>>(),
                 ColumnKeyGetters = new List<Func<PropertyInfo, Boolean>>(),
@@ -64,7 +64,7 @@ namespace VirtualObjects.Config
         /// <param name="nameGetter">The name getter.</param>
         public void EntityName(Func<Type, String> nameGetter)
         {
-            configuration.EntityNameGetters.Insert(0, nameGetter);
+            _configuration.EntityNameGetters.Insert(0, nameGetter);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace VirtualObjects.Config
         /// <param name="nameGetter">The name getter.</param>
         public void ColumnName(Func<PropertyInfo, String> nameGetter)
         {
-            configuration.ColumnNameGetters.Insert(0, nameGetter);
+            _configuration.ColumnNameGetters.Insert(0, nameGetter);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace VirtualObjects.Config
         /// <param name="keyGetter">The key getter.</param>
         public void ColumnKey(Func<PropertyInfo, Boolean> keyGetter)
         {
-            configuration.ColumnKeyGetters.Insert(0, keyGetter);
+            _configuration.ColumnKeyGetters.Insert(0, keyGetter);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace VirtualObjects.Config
         /// <param name="keyGetter">The key getter.</param>
         public void ColumnIdentity(Func<PropertyInfo, Boolean> keyGetter)
         {
-            configuration.ColumnIdentityGetters.Insert(0, keyGetter);
+            _configuration.ColumnIdentityGetters.Insert(0, keyGetter);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace VirtualObjects.Config
         /// <param name="keyGetter">The key getter.</param>
         public void ColumnVersion(Func<PropertyInfo, Boolean> keyGetter)
         {
-            configuration.ColumnVersionFieldGetters.Insert(0, keyGetter);
+            _configuration.ColumnVersionFieldGetters.Insert(0, keyGetter);
         }
 
         /// <summary>
@@ -206,7 +206,7 @@ namespace VirtualObjects.Config
         /// <param name="ignoreGetter">The ignore getter.</param>
         public void ColumnIgnore(Func<PropertyInfo, Boolean> ignoreGetter)
         {
-            configuration.ColumnIgnoreGetters.Insert(0, ignoreGetter);
+            _configuration.ColumnIgnoreGetters.Insert(0, ignoreGetter);
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace VirtualObjects.Config
         /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
         public void IsForeignKey(Func<PropertyInfo, Boolean> isForeignKeyGetter)
         {
-            configuration.IsForeignKeyGetters.Insert(0, isForeignKeyGetter);
+            _configuration.IsForeignKeyGetters.Insert(0, isForeignKeyGetter);
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace VirtualObjects.Config
         /// <param name="computedGetter">The computed getter.</param>
         public void ComputedColumn(Func<PropertyInfo, Boolean> computedGetter)
         {
-            configuration.ComputedColumnGetters.Insert(0, computedGetter);
+            _configuration.ComputedColumnGetters.Insert(0, computedGetter);
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace VirtualObjects.Config
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
         public void ForeignKey(Func<PropertyInfo, String> foreignKeyGetter)
         {
-            configuration.ColumnForeignKeyGetters.Insert(0, foreignKeyGetter);
+            _configuration.ColumnForeignKeyGetters.Insert(0, foreignKeyGetter);
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace VirtualObjects.Config
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
         public void ForeignKeyLinks(Func<PropertyInfo, String> foreignKeyGetter)
         {
-            configuration.ColumnForeignKeyLinksGetters.Insert(0, foreignKeyGetter);
+            _configuration.ColumnForeignKeyLinksGetters.Insert(0, foreignKeyGetter);
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace VirtualObjects.Config
         /// <param name="filterGetter">The filter getter.</param>
         public void CollectionFilter(Func<PropertyInfo, String> filterGetter)
         {
-            configuration.CollectionFilterGetters.Insert(0, filterGetter);
+            _configuration.CollectionFilterGetters.Insert(0, filterGetter);
         }
 
         /// <summary>
@@ -345,7 +345,7 @@ namespace VirtualObjects.Config
         /// <returns></returns>
         public ITranslationConfiguration Build()
         {
-            return configuration;
+            return _configuration;
         }
 
     }
