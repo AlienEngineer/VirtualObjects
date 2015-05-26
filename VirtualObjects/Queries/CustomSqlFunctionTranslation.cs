@@ -4,7 +4,7 @@ using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects.Queries
 {
-    class CustomSqlFunctionTranslation : ICustomFunctionTranslation
+    public class CustomSqlFunctionTranslation : ICustomFunctionTranslation
     {
         private readonly string[] _methodNames;
 

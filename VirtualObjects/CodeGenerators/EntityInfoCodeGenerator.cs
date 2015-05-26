@@ -387,7 +387,7 @@ namespace VirtualObjects.CodeGenerators
         private static StringBuffer GenerateFieldAssignment(int i, IEntityColumnInfo column)
         {
             StringBuffer result = " = ";
-            if (column.Property.PropertyType.IsFrameworkType())
+            if (column.Property.PropertyType.IsFrameworkType() || column.Property.PropertyType.IsEnum)
             {
                 result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = column.Property.PropertyType.Name });
             }

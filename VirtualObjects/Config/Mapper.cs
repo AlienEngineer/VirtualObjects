@@ -95,7 +95,7 @@ namespace VirtualObjects.Config
 #if DEBUG
             entityInfo.Columns.ForEach(e =>
             {
-                if (e.ForeignKey == null && !e.Property.PropertyType.IsFrameworkType())
+                if (e.ForeignKey == null && !e.Property.PropertyType.IsFrameworkType() && !e.Property.PropertyType.IsEnum)
                 {
                     throw new ConfigException("The column [{ColumnName}] returns a complex type but is not associated with another key.", e);
                 }
@@ -297,7 +297,7 @@ namespace VirtualObjects.Config
 
         private IEntityColumnInfo GetForeignKey(IEntityInfo entityInfo, PropertyInfo propertyInfo)
         {
-            if (propertyInfo.PropertyType.IsFrameworkType())
+            if (propertyInfo.PropertyType.IsFrameworkType() || propertyInfo.PropertyType.IsEnum)
             {
                 return null;
             }

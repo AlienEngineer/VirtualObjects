@@ -913,7 +913,7 @@ namespace VirtualObjects.Queries.Translation
                 if (newExpression != null)
                 {
 
-                    if (!String.IsNullOrEmpty(buffer.Projection))
+                    if (!string.IsNullOrEmpty(buffer.Projection))
                     {
                         return;
                     }
@@ -935,8 +935,7 @@ namespace VirtualObjects.Queries.Translation
                                     !tmpExp.Type.IsFrameworkType() &&
                                     _EntitySources.FirstOrDefault(e => e.EntityType == tmpExp.Type) == null)
                                 {
-                                    throw new TranslationException(
-                                        Errors.Translation_UnableToGroup);
+                                    throw new TranslationException(Errors.Translation_UnableToGroup);
                                 }
 
                                 CompileCustomProjectionArgument(buffer, callExpression, tmpExp, member);
