@@ -1631,11 +1631,17 @@ namespace VirtualObjects.Queries.Translation
 
             var value = ParseValue(expression);
 
-            if (value != null && !value.GetType().IsFrameworkType())
+            
+            if (value != null)
             {
-                var member = _memberAccessStack.Peek();
-                member = member.GetLastBind();
-                value = member.GetFieldFinalValue(value);
+                var valueType = value.GetType();
+                
+                if (!valueType.IsFrameworkType() && !valueType.IsEnum)
+                {
+                    var member = _memberAccessStack.Peek();
+                    member = member.GetLastBind();
+                    value = member.GetFieldFinalValue(value);
+                }
             }
 
             var formatted = _formatter.FormatConstant(value, Parameters.Count);
