@@ -143,8 +143,8 @@
     <file src="bin\Release\net45\VirtualObjects.xml" target="lib\net45\VirtualObjects.xml" />
     
     <!-- Content -->
-    <file src="content\app.config.transform" target="content\app.config.transform" />
-    <file src="content\web.config.transform" target="content\web.config.transform" />
+    <file src="content\config.transform" target="content\app.config.transform" />
+    <file src="content\config.transform" target="content\web.config.transform" />
     
   </files>
 </package>

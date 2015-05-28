@@ -1,0 +1,8 @@
+﻿<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <connectionStrings>
+    <add 
+        name="DataSource" 
+        providerName="System.Data.SqlClient" 
+        connectionString="Data Source=(localdb)\v11.0;Initial Catalog=mydb;Integrated Security=True" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)"/>
+  </connectionStrings>
+</configuration>

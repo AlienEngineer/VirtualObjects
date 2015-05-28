@@ -1,8 +1,0 @@
-﻿<configuration>
-  <connectionStrings>
-    <add 
-        name="DataSource" 
-        providerName="System.Data.SqlClient" 
-        connectionString="Data Source=(localdb)\v11.0;Initial Catalog=mydb;Integrated Security=True" />
-  </connectionStrings>
-</configuration>
