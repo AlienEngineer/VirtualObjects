@@ -71,7 +71,9 @@ matrix:
 #  - AnyCPU
 
 # build Configuration, i.e. Debug, Release, etc.
-configuration: Release 4.5
+configuration:
+- Release 4.5
+- Release 4.0
 
 # to add several configurations to build matrix:
 #configuration:
