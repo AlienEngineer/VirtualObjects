@@ -9,7 +9,7 @@
 #---------------------------------#
 
 # version format
-version: '{branch}.19.{build}'
+version: '1.3.20.{build}'
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
