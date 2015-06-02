@@ -259,7 +259,24 @@ namespace VirtualObjects.Tests.Queries
         /// 
         /// </summary>
         [Test, Repeat(Repeat)]
-        public void SqlTranslation_Query_with_custom_function_call()
+        public void SqlTranslation_Query_with_custom_function_call_on_where_clause()
+        {
+            var query = Query<Employee>().Where(e => Test(e.EmployeeId) == true).Select(e => e.EmployeeId);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (dbo.Test([T0].[EmployeeId]) = @p0)")
+            );
+        }
+
+
+        /// <summary>
+        /// 
+        /// Sql translation with a custom function predicate
+        /// 
+        /// </summary>
+        //[Test, Repeat(Repeat)]
+        public void SqlTranslation_Query_with_custom_function_call_unary_way_on_where_clause()
         {
             var query = Query<Employee>().Where(e => Test(e.EmployeeId)).Select(e => e.EmployeeId);
 
@@ -268,7 +285,6 @@ namespace VirtualObjects.Tests.Queries
                 Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (dbo.Test([T0].[EmployeeId]) = @p0)")
             );
         }
-
 
         /// <summary>
         /// 

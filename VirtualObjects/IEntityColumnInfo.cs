@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 
 namespace VirtualObjects
@@ -143,6 +144,14 @@ namespace VirtualObjects
         /// The formats.
         /// </value>
         string[] Formats { get; }
+
+        /// <summary>
+        /// Gets or sets the number format.
+        /// </summary>
+        /// <value>
+        /// The number format.
+        /// </value>
+        NumberFormatInfo NumberFormat { get; }
 
         /// <summary>
         /// Sets the value.

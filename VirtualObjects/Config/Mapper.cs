@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Fasterflect;
@@ -288,6 +289,7 @@ namespace VirtualObjects.Config
                 IsVersionControl = _configuration.ColumnVersionFieldGetters.Any(isVersion => isVersion(propertyInfo)),
                 IsComputed = _configuration.ComputedColumnGetters.Any(isComputed => isComputed(propertyInfo)),
                 Formats = GetFormats(propertyInfo).ToArray(),
+                NumberFormat = GetNumberFormat(propertyInfo),
                 Property = propertyInfo,
                 ValueGetter = MakeValueGetter(columnName, propertyInfo.DelegateForGetPropertyValue()),
                 ValueSetter = MakeValueSetter(columnName, propertyInfo.DelegateForSetPropertyValue()),
@@ -295,6 +297,13 @@ namespace VirtualObjects.Config
             };
 
             return column;
+        }
+
+        private NumberFormatInfo GetNumberFormat(PropertyInfo propertyInfo)
+        {
+            var numberFormatGetter = _configuration.ColumnNumberFormattersGetters.FirstOrDefault();
+            
+            return numberFormatGetter != null ? numberFormatGetter(propertyInfo) : null;
         }
 
         private IEntityColumnInfo GetForeignKey(IEntityInfo entityInfo, PropertyInfo propertyInfo)

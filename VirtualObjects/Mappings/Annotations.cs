@@ -147,4 +147,37 @@ namespace VirtualObjects.Mappings
         public string Format { get; set; }
 
     }
+
+    /// <summary>
+    /// Indicates a format string to be used on value parsing.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
+    public class NumberFormatAttribute : Attribute
+    {
+
+        /// <summary>
+        /// Gets or sets the decimal separator.
+        /// </summary>
+        /// <value>
+        /// The decimal separator.
+        /// </value>
+        public string DecimalSeparator { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group separator.
+        /// </summary>
+        /// <value>
+        /// The group separator.
+        /// </value>
+        public string GroupSeparator { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group sizes.
+        /// </summary>
+        /// <value>
+        /// The group sizes.
+        /// </value>
+        public int GroupSizes { get; set; }
+
+    }
 }

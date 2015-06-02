@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
@@ -93,6 +94,12 @@ namespace VirtualObjects
             builder.ColumnKey<IdentityAttribute>();
             
             builder.ColumnFormat<FormatAttribute>(e => e.Format);
+            builder.ColumnNumberFormat<NumberFormatAttribute>(e => new NumberFormatInfo
+            {
+                NumberGroupSizes = new [] { e.GroupSizes },
+                NumberDecimalSeparator = e.DecimalSeparator,
+                NumberGroupSeparator = e.GroupSeparator
+            });
 
             builder.ColumnIdentity<IdentityAttribute>();
 

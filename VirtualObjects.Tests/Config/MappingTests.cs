@@ -30,6 +30,9 @@ namespace VirtualObjects.Tests.Config
 
             [Format(Format = "yyyy-MM-dd")]
             public DateTime Date { get; set; }
+
+            [NumberFormat(DecimalSeparator = ",", GroupSeparator = ".", GroupSizes = 3)]
+            public double SomeValue { get; set; }
         }
 
         public class TestModel1
@@ -67,7 +70,7 @@ namespace VirtualObjects.Tests.Config
         [Test]
         public void EntityInfo_Should_Have_Columns()
         {
-            _entityInfo.Columns.Count().Should().Be(5);
+            _entityInfo.Columns.Count().Should().Be(6);
             _entityInfo.Columns.Should().NotBeEmpty();
             CollectionAssert.AllItemsAreNotNull(_entityInfo.Columns);
         }
@@ -110,6 +113,12 @@ namespace VirtualObjects.Tests.Config
         public void EntityInfo_Should_Have_Specific_Format_On_Field()
         {
             _entityInfo.Columns.Count(e => e.HasFormattingStyles && e.Formats.Contains("yyyy-MM-dd")).Should().Be(1);
+        }
+
+        [Test]
+        public void EntityInfo_Should_Have_Specific_Number_Format_On_Field()
+        {
+            _entityInfo.Columns.Count(e => e.HasFormattingStyles && e.NumberFormat != null && e.NumberFormat.NumberDecimalSeparator == ",").Should().Be(1);
         }
 
         [Test]

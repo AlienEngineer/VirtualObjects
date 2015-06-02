@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Fasterflect;
@@ -330,12 +331,10 @@ namespace VirtualObjects.CodeGenerators
         {
             var result = new StringBuffer();
 
-            for (int i = 0; i < entityInfo.Columns.Count; i++)
+            for (var i = 0; i < entityInfo.Columns.Count; i++)
             {
                 var column = entityInfo.Columns[i];
-
-                var res = "-1".Equals(true.ToString());
-
+                
                 const string setter = @"
                 try
                 {{
@@ -352,12 +351,12 @@ namespace VirtualObjects.CodeGenerators
                      }}
                      catch ( Exception ex)
                      {{
-                        throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value."", ex);
+                        throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value of type ["" + data[{i}].GetType() + ""]."", ex);
                      }}
                 }}
                 catch ( Exception ex)
                 {{
-                    throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value."", ex);
+                    throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value of type ["" + data[{i}].GetType() + ""]."", ex);
                 }}
 ";
 
@@ -397,6 +396,19 @@ namespace VirtualObjects.CodeGenerators
                             i,
                             Formats = string.Join(", ", column.Formats.Select(e => "\"{e}\"".FormatWith(new { e }))),
                             Type = column.Property.PropertyType.Name
+                        });
+                    return result;
+                }
+                
+                if (column.HasFormattingStyles && column.Property.PropertyType == typeof(double))
+                {
+                    result += "Convert.ToDouble(Parse(data[{i}]), new NumberFormatInfo {{ NumberDecimalSeparator = \"{DecimalSeparator}\", NumberGroupSeparator = \"{GroupSeparator}\", NumberGroupSizes = new[] {{ {GroupSizes} }} }})"
+                        .FormatWith(new
+                        {
+                            i,
+                            DecimalSeparator = column.NumberFormat.NumberDecimalSeparator,
+                            GroupSeparator = column.NumberFormat.NumberGroupSeparator,
+                            GroupSizes = string.Join(", ", column.NumberFormat.NumberGroupSizes)
                         });
                     return result;
                 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 
 namespace VirtualObjects.Config
@@ -96,5 +97,13 @@ namespace VirtualObjects.Config
         /// The column formatters getters.
         /// </value>
         IList<Func<PropertyInfo, string>> ColumnFormattersGetters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the column number formatters getters.
+        /// </summary>
+        /// <value>
+        /// The column number formatters getters.
+        /// </value>
+        IList<Func<PropertyInfo, NumberFormatInfo>> ColumnNumberFormattersGetters { get; set; }
     }
 }

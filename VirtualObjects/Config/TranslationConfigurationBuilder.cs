@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Fasterflect;
@@ -34,14 +35,15 @@ namespace VirtualObjects.Config
                 ColumnForeignKeyGetters = new List<Func<PropertyInfo, string>>(),
                 ColumnForeignKeyLinksGetters = new List<Func<PropertyInfo, string>>(),
                 CollectionFilterGetters = new List<Func<PropertyInfo, string>>(),
-                ColumnFormattersGetters = new List<Func<PropertyInfo, string>>()
+                ColumnFormattersGetters = new List<Func<PropertyInfo, string>>(),
+                ColumnNumberFormattersGetters = new List<Func<PropertyInfo, NumberFormatInfo>>()
             };
 
             _defaultBooleanGetter = attribute => attribute != null;
         }
 
         #region Building Methods
-
+        
         /// <summary>
         /// Appends a parser to get the name of the entity attribute based.
         /// </summary>
@@ -92,6 +94,32 @@ namespace VirtualObjects.Config
         public void ColumnName(Func<PropertyInfo, string> nameGetter)
         {
             _configuration.ColumnNameGetters.Insert(0, nameGetter);
+        }
+
+        /// <summary>
+        /// Appends a parser to get the number format of the column attribute based.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="numberFormatGetter">The number format getter.</param>
+        public void ColumnNumberFormat<TAttribute>(Func<TAttribute, NumberFormatInfo> numberFormatGetter) where TAttribute : Attribute
+        {
+            ColumnNumberFormat(prop =>
+            {
+                var attributes = prop.Attributes<TAttribute>();
+
+                return attributes != null ?
+                    attributes.Select(numberFormatGetter).FirstOrDefault()
+                    : null;
+            });
+        }
+
+        /// <summary>
+        /// Appends a parser to get the number format of the column based on a Property.
+        /// </summary>
+        /// <param name="numberFormatGetter">The number format getter.</param>
+        public void ColumnNumberFormat(Func<PropertyInfo, NumberFormatInfo> numberFormatGetter)
+        {
+            _configuration.ColumnNumberFormattersGetters.Insert(0, numberFormatGetter);
         }
 
         /// <summary>

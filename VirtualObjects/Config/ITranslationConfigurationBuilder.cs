@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Reflection;
 
 namespace VirtualObjects.Config
@@ -170,5 +171,18 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <param name="formatGetter">The format getter.</param>
         void ColumnFormat(Func<PropertyInfo, string> formatGetter);
+
+        /// <summary>
+        /// Appends a parser to get the number format of the column attribute based.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="numberFormatGetter">The number format getter.</param>
+        void ColumnNumberFormat<TAttribute>(Func<TAttribute, NumberFormatInfo> numberFormatGetter) where TAttribute : Attribute;
+
+        /// <summary>
+        /// Appends a parser to get the number format of the column based on a Property.
+        /// </summary>
+        /// <param name="numberFormatGetter">The number format getter.</param>
+        void ColumnNumberFormat(Func<PropertyInfo, NumberFormatInfo> numberFormatGetter);
     }
 }

@@ -1473,11 +1473,23 @@ namespace VirtualObjects.Queries.Translation
                 CompileConversions(expression, buffer);
                 return;
             }
-
             
-
             if (expression.Method.Name != "Contains")
             {
+                if (_formatter.SupportsCustomFunction(expression.Method.Name))
+                {
+                    buffer.Predicates += _formatter.BeginMethodCall(expression.Method.Name);
+                    foreach (var argument in expression.Arguments)
+                    {
+                        CompileMemberAccess(argument, buffer);
+                        buffer.Predicates += _formatter.FieldSeparator;
+                    }
+
+                    buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
+                    buffer.Predicates += _formatter.EndMethodCall(expression.Method.Name);
+                    return;
+                }
+
                 throw new TranslationException(Errors.Translation_MethodNotYetSupported, expression.Method);
             }
 

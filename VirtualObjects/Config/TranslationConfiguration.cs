@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 
 namespace VirtualObjects.Config
@@ -9,6 +10,7 @@ namespace VirtualObjects.Config
         public IList<Func<PropertyInfo, bool>> ColumnIgnoreGetters { get; set; }
         public IList<Func<PropertyInfo, string>> ColumnNameGetters { get; set; }
         public IList<Func<PropertyInfo, string>> ColumnFormattersGetters { get; set; }
+        public IList<Func<PropertyInfo, NumberFormatInfo>> ColumnNumberFormattersGetters { get; set; }
         public IList<Func<PropertyInfo, bool>> ColumnKeyGetters { get; set; }
         public IList<Func<PropertyInfo, bool>> ColumnIdentityGetters { get; set; }
         public IList<Func<Type, string>> EntityNameGetters { get; set; }
