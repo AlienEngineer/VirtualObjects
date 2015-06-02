@@ -22,7 +22,7 @@ namespace VirtualObjects
         /// <value>
         /// The name of the column.
         /// </value>
-        String ColumnName { get; }
+        string ColumnName { get; }
 
         /// <summary>
         /// Gets or sets the foreign key links.
@@ -38,7 +38,7 @@ namespace VirtualObjects
         /// <value>
         ///   <c>true</c> if [is key]; otherwise, <c>false</c>.
         /// </value>
-        Boolean IsKey { get; }
+        bool IsKey { get; }
 
         /// <summary>
         /// Gets a value indicating whether [is identity].
@@ -46,7 +46,7 @@ namespace VirtualObjects
         /// <value>
         ///   <c>true</c> if [is identity]; otherwise, <c>false</c>.
         /// </value>
-        Boolean IsIdentity { get; }
+        bool IsIdentity { get; }
 
         /// <summary>
         /// Gets the property.
@@ -86,7 +86,7 @@ namespace VirtualObjects
         /// <value>
         /// The value getter.
         /// </value>
-        Func<Object, Object> ValueGetter { get; }
+        Func<object, object> ValueGetter { get; }
 
         /// <summary>
         /// Gets the value setter.
@@ -94,7 +94,7 @@ namespace VirtualObjects
         /// <value>
         /// The value setter.
         /// </value>
-        Action<Object, Object> ValueSetter { get; }
+        Action<object, object> ValueSetter { get; }
 
         /// <summary>
         /// Gets a value indicating whether [is version control].
@@ -133,14 +133,14 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="value">The value.</param>
-        Object SetValue(Object entity, Object value);
+        object SetValue(object entity, object value);
 
         /// <summary>
         /// Gets the value.
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        object GetValue(Object entity);
+        object GetValue(object entity);
 
         /// <summary>
         /// Gets the field final value.
@@ -154,7 +154,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="value">The value.</param>
-        Object SetFieldFinalValue(object entity, object value);
+        object SetFieldFinalValue(object entity, object value);
 
         /// <summary>
         /// Gets the last bind.

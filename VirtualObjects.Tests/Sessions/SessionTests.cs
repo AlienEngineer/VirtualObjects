@@ -366,7 +366,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             var session = Session;
             {
-                String lastName = null;
+                string lastName = null;
                 var employees = session.GetAll<Employee>()
                     .Where(e => e.LastName == lastName || lastName == null);
 
@@ -379,7 +379,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             var session = Session;
             {
-                String lastName = "Leverling";
+                string lastName = "Leverling";
                 var employees = session.GetAll<Employee>()
                     .Where(e => e.LastName == lastName || lastName == null);
 
@@ -453,7 +453,7 @@ namespace VirtualObjects.Tests.Sessions
                 var foo = new
                 {
                     LastName = "test",
-                    ToString = (Func<String>)(() => "Andrew")
+                    ToString = (Func<string>)(() => "Andrew")
                 };
 
                 var employees = session.GetAll<Employee>()

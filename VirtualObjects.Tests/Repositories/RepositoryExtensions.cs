@@ -22,7 +22,7 @@ namespace VirtualObjects.Tests.Repositories
 
         public static void WithinTransaction(this IRepository repository, Action execute)
         {
-            repository.WithinTransaction<Object>(() =>
+            repository.WithinTransaction<object>(() =>
             {
                 execute();
                 return null;
@@ -50,7 +50,7 @@ namespace VirtualObjects.Tests.Repositories
         /// <param name="execute">The execute.</param>
         public static void WithinTransaction(this IRepository repository, Action<ITransaction> execute)
         {
-            repository.WithinTransaction<Object>(trans =>
+            repository.WithinTransaction<object>(trans =>
             {
                 execute(trans);
                 return null;
@@ -83,7 +83,7 @@ namespace VirtualObjects.Tests.Repositories
         /// <param name="execute">The execute.</param>
         public static void KeepAlive(this IRepository repository, Action execute)
         {
-            repository.KeepAlive<Object>(() =>
+            repository.KeepAlive<object>(() =>
             {
                 execute();
                 return null;
@@ -100,7 +100,7 @@ namespace VirtualObjects.Tests.Repositories
             return repository.GetAll<TEntity>().Count();
         }
 
-        public static Boolean Exists<TEntity>(this IRepository repository, TEntity entity) where TEntity : class, new()
+        public static bool Exists<TEntity>(this IRepository repository, TEntity entity) where TEntity : class, new()
         {
             return repository.GetById(entity) != null;
         }
@@ -125,7 +125,7 @@ namespace VirtualObjects.Tests.Repositories
 
         public static void WithRollback(this IRepository repository, Action execute)
         {
-            repository.WithRollback<Object>(() =>
+            repository.WithRollback<object>(() =>
             {
                 execute(); return null;
             });

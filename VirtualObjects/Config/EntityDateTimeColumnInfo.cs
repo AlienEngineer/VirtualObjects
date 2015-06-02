@@ -4,7 +4,7 @@ namespace VirtualObjects.Config
 {
     class EntityDateTimeColumnInfo : EntityColumnInfo
     {
-        public override Object SetFieldFinalValue(object entity, object value)
+        public override object SetFieldFinalValue(object entity, object value)
         {
             if ( value == DBNull.Value )
             {

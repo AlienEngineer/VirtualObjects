@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VirtualObjects.Queries.Mapping
+﻿namespace VirtualObjects.Queries.Mapping
 {
     /// <summary>
     /// 
@@ -13,13 +11,13 @@ namespace VirtualObjects.Queries.Mapping
         /// <value>
         /// The entity.
         /// </value>
-        public Object Entity { get; set; }
+        public object Entity { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether [has more].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [has more]; otherwise, <c>false</c>.
         /// </value>
-        public Boolean HasMore { get; set; }
+        public bool HasMore { get; set; }
     }
 }

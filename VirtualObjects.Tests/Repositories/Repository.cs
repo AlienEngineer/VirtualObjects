@@ -20,7 +20,7 @@ namespace VirtualObjects.Tests.Repositories
             Session = session;
         }
 
-        public Repository(String connectionName)
+        public Repository(string connectionName)
             : this(new Session(new Configuration
             {
                 ConnectionProvider = new NamedDbConnectionProvider(connectionName)
@@ -179,7 +179,7 @@ namespace VirtualObjects.Tests.Repositories
 	public class VirtualObjectsException : Exception
     {
         public VirtualObjectsException(Exception innerException): base(innerException.Message, innerException) { }
-		public VirtualObjectsException(String message): base(message) { }
+		public VirtualObjectsException(string message): base(message) { }
     }
 
 	class Configuration : SessionConfiguration

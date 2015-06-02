@@ -33,7 +33,7 @@ namespace VirtualObjects.EntityProvider
             MainProvider = this;
         }
 
-        public Boolean CanCreate(Type type)
+        public bool CanCreate(Type type)
         {
             return _entityProviders.Any(e => e.CanCreate(type));
         }

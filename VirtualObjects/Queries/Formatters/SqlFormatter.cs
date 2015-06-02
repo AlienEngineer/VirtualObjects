@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -61,7 +60,7 @@ namespace VirtualObjects.Queries.Formatters
             return result;
         }
 
-        public String FieldSeparator
+        public string FieldSeparator
         {
             get { return SEPARATOR; }
         }
@@ -94,17 +93,17 @@ namespace VirtualObjects.Queries.Formatters
         public string Identity { get; private set; }
         public string LeftJoin { get; private set; }
 
-        public String FormatField(String name)
+        public string FormatField(string name)
         {
             return Wrap(name);
         }
 
-        public String FormatFieldWithTable(String name, int index)
+        public string FormatFieldWithTable(string name, int index)
         {
             return string.Format("{0}.{1}", GetTableAlias(index), Wrap(name));
         }
 
-        public virtual String FormatTableName(String name, int index)
+        public virtual string FormatTableName(string name, int index)
         {
             return string.Format("{0} {1}", Wrap(name), GetTableAlias(index));
         }
@@ -153,7 +152,7 @@ namespace VirtualObjects.Queries.Formatters
             return FormatRowNumber(" Order By " + FormatFields(columns, 100 + index), index);
         }
 
-        public string FormatRowNumber(String orderBy, int index)
+        public string FormatRowNumber(string orderBy, int index)
         {
             return new StringBuilder()
                 .Append("ROW_NUMBER() OVER (")
@@ -179,7 +178,7 @@ namespace VirtualObjects.Queries.Formatters
 
         public string FormatFields(IEnumerable<IEntityColumnInfo> columns, int index)
         {
-            return String.Join(
+            return string.Join(
                 FieldSeparator,
                 columns.Select(e => FormatFieldWithTable(e.ColumnName, index))
             );
@@ -206,7 +205,7 @@ namespace VirtualObjects.Queries.Formatters
             return new string(')', i);
         }
 
-        private String FormatFunctionCall(String function, String columnName, int index)
+        private string FormatFunctionCall(string function, string columnName, int index)
         {
             var buffer = new StringBuffer();
             buffer += function;
@@ -217,7 +216,7 @@ namespace VirtualObjects.Queries.Formatters
             return buffer;
         }
 
-        private String FormatFunctionCall(String function, String parameters, String columnName, int index)
+        private string FormatFunctionCall(string function, string parameters, string columnName, int index)
         {
             var buffer = new StringBuffer();
             buffer += function;
@@ -235,7 +234,7 @@ namespace VirtualObjects.Queries.Formatters
             return FormatFunctionCall("Day", columnName, index);
         }
 
-        public String FormatDateOf(string columnName, int index)
+        public string FormatDateOf(string columnName, int index)
         {
             return FormatFunctionCall("Cast", columnName + " as Date", index);
         }
@@ -368,7 +367,7 @@ namespace VirtualObjects.Queries.Formatters
                 case "Contains":
                     return " + '%'";
                 case "EndsWith":
-                    return String.Empty;
+                    return string.Empty;
                 case "Date":
                     return " as Date" + EndWrap();
                 case "Year":
@@ -396,9 +395,9 @@ namespace VirtualObjects.Queries.Formatters
 
         public string FormatConstant(object parseValue)
         {
-            if ( parseValue is Double )
+            if ( parseValue is double )
             {
-                return String.Format(CultureInfo.InvariantCulture, "{0: 0.0#}", parseValue);
+                return string.Format(CultureInfo.InvariantCulture, "{0: 0.0#}", parseValue);
             }
 
             return parseValue.ToString();

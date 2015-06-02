@@ -1,5 +1,4 @@
-﻿using System;
-using VirtualObjects.Mappings;
+﻿using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
@@ -8,8 +7,8 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Identity]
         public int ShipperId { get; set; }
 
-        public String CompanyName { get; set; }
+        public string CompanyName { get; set; }
 
-        public String Phone { get; set; }
+        public string Phone { get; set; }
     }
 }

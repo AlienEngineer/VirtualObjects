@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
@@ -61,7 +60,7 @@ namespace VirtualObjects
         /// <value>
         ///   <c>true</c> if [save generated code]; otherwise, <c>false</c>.
         /// </value>
-        public Boolean SaveGeneratedCode { get; set; }
+        public bool SaveGeneratedCode { get; set; }
 
         /// <summary>
         /// Initializes this instance.

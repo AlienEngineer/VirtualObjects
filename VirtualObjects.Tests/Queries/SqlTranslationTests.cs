@@ -44,7 +44,7 @@ namespace VirtualObjects.Tests.Queries
             _translator = Translator;
         }
 
-        private String Translate(IQueryable query)
+        private string Translate(IQueryable query)
         {
             var str = Diagnostic.Timed(() => _translator.TranslateQuery(query).CommandText);
 
@@ -1009,9 +1009,9 @@ namespace VirtualObjects.Tests.Queries
         [Repeat(Repeat)]
         [TestCase("SomeName")]
         [TestCase(null)]
-        public void SqlTranslation_FuncNull_Compare_Predicate(String lastName)
+        public void SqlTranslation_FuncNull_Compare_Predicate(string lastName)
         {
-            Func<String> getLastName = () => lastName;
+            Func<string> getLastName = () => lastName;
 
             var query = Query<Employee>().Where(e => e.LastName == getLastName());
 

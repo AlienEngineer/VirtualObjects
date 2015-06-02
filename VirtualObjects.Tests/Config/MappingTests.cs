@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using VirtualObjects.Mappings;
@@ -57,7 +56,7 @@ namespace VirtualObjects.Tests.Config
         }
 
         [TestCase("TestModel")]
-        public void EntityInfo_Name_Should_Be(String name)
+        public void EntityInfo_Name_Should_Be(string name)
         {
             _entityInfo.EntityName.Should().Be(name);
         }

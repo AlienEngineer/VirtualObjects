@@ -1,5 +1,4 @@
-﻿using System;
-using VirtualObjects.Mappings;
+﻿using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
@@ -9,6 +8,6 @@ namespace VirtualObjects.Tests.Models.Northwind
         public int Id { get; set; }
 
         [Column(FieldName = "RegionDescription")]
-        public String Description { get; set; }
+        public string Description { get; set; }
     }
 }

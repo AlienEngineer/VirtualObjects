@@ -19,143 +19,143 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="nameGetter">The name getter.</param>
-        void EntityName<TAttribute>(Func<TAttribute, String> nameGetter) where TAttribute : Attribute;
+        void EntityName<TAttribute>(Func<TAttribute, string> nameGetter) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to get the name of the entity based on the type.
         /// </summary>
         /// <param name="nameGetter">The name getter.</param>
-        void EntityName(Func<Type, String> nameGetter);
+        void EntityName(Func<Type, string> nameGetter);
 
         /// <summary>
         /// Appends a parser to get the name of the column attribute based.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="nameGetter">The name getter.</param>
-        void ColumnName<TAttribute>(Func<TAttribute, String> nameGetter) where TAttribute : Attribute;
+        void ColumnName<TAttribute>(Func<TAttribute, string> nameGetter) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to get the name of the column based on a Property.
         /// </summary>
         /// <param name="nameGetter">The name getter.</param>
-        void ColumnName(Func<PropertyInfo, String> nameGetter);
+        void ColumnName(Func<PropertyInfo, string> nameGetter);
 
         /// <summary>
         /// Appends a parser to find if a column is a key attribute based.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="keyGetter">The key getter.</param>
-        void ColumnKey<TAttribute>(Func<TAttribute, Boolean> keyGetter = null) where TAttribute : Attribute;
+        void ColumnKey<TAttribute>(Func<TAttribute, bool> keyGetter = null) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to find if a column is a key based on a Property.
         /// </summary>
         /// <param name="keyGetter">The key getter.</param>
-        void ColumnKey(Func<PropertyInfo, Boolean> keyGetter);
+        void ColumnKey(Func<PropertyInfo, bool> keyGetter);
 
         /// <summary>
         /// Appends a parser to find if a column is a Identity key attribute based.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="keyGetter">The key getter.</param>
-        void ColumnIdentity<TAttribute>(Func<TAttribute, Boolean> keyGetter = null) where TAttribute : Attribute;
+        void ColumnIdentity<TAttribute>(Func<TAttribute, bool> keyGetter = null) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to find if a column is an Identity key based on a Property.
         /// </summary>
         /// <param name="keyGetter">The key getter.</param>
-        void ColumnIdentity(Func<PropertyInfo, Boolean> keyGetter);
+        void ColumnIdentity(Func<PropertyInfo, bool> keyGetter);
 
         /// <summary>
         /// Appends a parser to find if a column is a Version field attribute based.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="keyGetter">The key getter.</param>
-        void ColumnVersion<TAttribute>(Func<TAttribute, Boolean> keyGetter = null) where TAttribute : Attribute;
+        void ColumnVersion<TAttribute>(Func<TAttribute, bool> keyGetter = null) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to find if a column is a Version field based on a Property.
         /// </summary>
         /// <param name="keyGetter">The key getter.</param>
-        void ColumnVersion(Func<PropertyInfo, Boolean> keyGetter);
+        void ColumnVersion(Func<PropertyInfo, bool> keyGetter);
 
         /// <summary>
         /// Appends a parser to find the association based on the property.
         /// </summary>
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
-        void ForeignKey(Func<PropertyInfo, String> foreignKeyGetter);
+        void ForeignKey(Func<PropertyInfo, string> foreignKeyGetter);
 
         /// <summary>
         /// Appends a parser to find the association based on the property attribute.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
-        void ForeignKey<TAttribute>(Func<TAttribute, String> foreignKeyGetter) where TAttribute : Attribute;
+        void ForeignKey<TAttribute>(Func<TAttribute, string> foreignKeyGetter) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to find the association based on the property.
         /// </summary>
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
-        void ForeignKeyLinks(Func<PropertyInfo, String> foreignKeyGetter);
+        void ForeignKeyLinks(Func<PropertyInfo, string> foreignKeyGetter);
 
         /// <summary>
         /// Appends a parser to find the association based on the property attribute.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
-        void ForeignKeyLinks<TAttribute>(Func<TAttribute, String> foreignKeyGetter) where TAttribute : Attribute;
+        void ForeignKeyLinks<TAttribute>(Func<TAttribute, string> foreignKeyGetter) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to ignore a property.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="ignoreGetter">The ignore getter.</param>
-        void ColumnIgnore<TAttribute>(Func<TAttribute, Boolean> ignoreGetter = null) where TAttribute : Attribute;
+        void ColumnIgnore<TAttribute>(Func<TAttribute, bool> ignoreGetter = null) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to ignore a property.
         /// </summary>
         /// <param name="ignoreGetter">The ignore getter.</param>
-        void ColumnIgnore(Func<PropertyInfo, Boolean> ignoreGetter);
+        void ColumnIgnore(Func<PropertyInfo, bool> ignoreGetter);
 
         /// <summary>
         /// Appends a parser to find a computed a property.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="computedGetter">The computed getter.</param>
-        void ComputedColumn<TAttribute>(Func<TAttribute, Boolean> computedGetter = null) where TAttribute : Attribute;
+        void ComputedColumn<TAttribute>(Func<TAttribute, bool> computedGetter = null) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to find a computed a property.
         /// </summary>
         /// <param name="computedGetter">The computed getter.</param>
-        void ComputedColumn(Func<PropertyInfo, Boolean> computedGetter);
+        void ComputedColumn(Func<PropertyInfo, bool> computedGetter);
 
 
         /// <summary>
         /// Appends a parser to find the filter based on the property.
         /// </summary>
         /// <param name="filterGetter">The filter getter.</param>
-        void CollectionFilter(Func<PropertyInfo, String> filterGetter);
+        void CollectionFilter(Func<PropertyInfo, string> filterGetter);
 
         /// <summary>
         /// Appends a parser to find the filter based on the property attribute.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="filterGetter">The filter getter.</param>
-        void CollectionFilter<TAttribute>(Func<TAttribute, String> filterGetter) where TAttribute : Attribute;
+        void CollectionFilter<TAttribute>(Func<TAttribute, string> filterGetter) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to ignore a property.
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
-        void IsForeignKey<TAttribute>(Func<TAttribute, Boolean> isForeignKeyGetter = null) where TAttribute : Attribute;
+        void IsForeignKey<TAttribute>(Func<TAttribute, bool> isForeignKeyGetter = null) where TAttribute : Attribute;
 
         /// <summary>
         /// Appends a parser to ignore a property.
         /// </summary>
         /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
-        void IsForeignKey(Func<PropertyInfo, Boolean> isForeignKeyGetter);
+        void IsForeignKey(Func<PropertyInfo, bool> isForeignKeyGetter);
     }
 }

@@ -28,12 +28,12 @@ namespace VirtualObjects.CodeGenerators
             this.entityBag = entityBag;
             _type = type;
 
-            AddReference(typeof(Object));
+            AddReference(typeof(object));
             AddReference(typeof(Uri));
             AddReference(typeof(RuntimeBinderException));
             AddReference(typeof(ExpandoObject));
             AddReference(typeof(ISession));
-            AddReference(typeof(IDictionary<Object, Object>));
+            AddReference(typeof(IDictionary<object, object>));
             AddReference(typeof(IQueryable));
             AddReference(typeof(IDataReader));
             AddReference(type);
@@ -48,7 +48,7 @@ namespace VirtualObjects.CodeGenerators
             AddNamespace("System.Reflection");
         }
 
-        private static String MakeDynamicSafeName(Type type)
+        private static string MakeDynamicSafeName(Type type)
         {
             var result = new StringBuilder();
             
@@ -241,7 +241,7 @@ namespace VirtualObjects.CodeGenerators
 
             for (var i = 0; i < entityInfo.Columns.Count; i++)
             {
-                String value = GenerateFieldAssignment(
+                string value = GenerateFieldAssignment(
                     entityInfo.Columns[i].Property,
                     queryInfo, false, entityInfo.Columns[i]);
 
@@ -257,12 +257,12 @@ namespace VirtualObjects.CodeGenerators
  {
      FieldName = entityInfo.Columns[i].Property.Name,
      Type = entityInfo.Columns[i].Property.PropertyType.FullName.Replace('+', '.'),
-     Comment = !entityInfo.Columns[i].Property.PropertyType.IsFrameworkType() || entityInfo.Columns[i].Property.PropertyType.IsGenericCollection() ? "//" : String.Empty,
-     NotComment = entityInfo.Columns[i].Property.PropertyType.IsFrameworkType() && !entityInfo.Columns[i].Property.PropertyType.IsGenericCollection() ? String.Empty : "//",
+     Comment = !entityInfo.Columns[i].Property.PropertyType.IsFrameworkType() || entityInfo.Columns[i].Property.PropertyType.IsGenericCollection() ? "//" : string.Empty,
+     NotComment = entityInfo.Columns[i].Property.PropertyType.IsFrameworkType() && !entityInfo.Columns[i].Property.PropertyType.IsGenericCollection() ? string.Empty : "//",
      Value = value,
      ValueNoType = value
-        .Replace(String.Format("({0})", entityInfo.Columns[i].Property.PropertyType.Name), "")
-        .Replace("default", String.Format("default({0})", entityInfo.Columns[i].Property.PropertyType.Name))
+        .Replace(string.Format("({0})", entityInfo.Columns[i].Property.PropertyType.Name), "")
+        .Replace("default", string.Format("default({0})", entityInfo.Columns[i].Property.PropertyType.Name))
  });
                 ++projectionIndex;
             }
@@ -271,7 +271,7 @@ namespace VirtualObjects.CodeGenerators
             return result;
         }
 
-        private String GenerateMapBody(Type type, IQueryInfo queryInfo)
+        private string GenerateMapBody(Type type, IQueryInfo queryInfo)
         {
             var result = new StringBuffer();
 
@@ -299,7 +299,7 @@ namespace VirtualObjects.CodeGenerators
         ++i;
 ";
 
-                String value = GenerateFieldAssignment(
+                string value = GenerateFieldAssignment(
                     propertyInfo, 
                     queryInfo, true, projectionIndex < queryInfo.PredicatedColumns.Count ? queryInfo.PredicatedColumns[projectionIndex] : null);
 
@@ -310,11 +310,11 @@ namespace VirtualObjects.CodeGenerators
                     i,
                     FieldName = propertyInfo.Name,
                     Value = value,
-                    Comment = !propertyInfo.PropertyType.IsFrameworkType() || propertyInfo.PropertyType.IsGenericCollection() ? "//" : String.Empty,
-                    NotComment = propertyInfo.PropertyType.IsFrameworkType() && !propertyInfo.PropertyType.IsGenericCollection() ? String.Empty : "//",
+                    Comment = !propertyInfo.PropertyType.IsFrameworkType() || propertyInfo.PropertyType.IsGenericCollection() ? "//" : string.Empty,
+                    NotComment = propertyInfo.PropertyType.IsFrameworkType() && !propertyInfo.PropertyType.IsGenericCollection() ? string.Empty : "//",
                     ValueNoType = value
-                       .Replace(String.Format("({0})", propertyInfo.PropertyType.Name), "")
-                       .Replace("default", String.Format("default({0})", propertyInfo.PropertyType.Name)),
+                       .Replace(string.Format("({0})", propertyInfo.PropertyType.Name), "")
+                       .Replace("default", string.Format("default({0})", propertyInfo.PropertyType.Name)),
                     Type = propertyInfo.PropertyType.FullName.Replace('+', '.')
                 });
 
@@ -340,7 +340,7 @@ namespace VirtualObjects.CodeGenerators
             return result;
         }
 
-        private StringBuffer GenerateFieldAssignment(PropertyInfo propertyInfo, IQueryInfo queryInfo, Boolean withMethodCall = false, IEntityColumnInfo column = null)
+        private StringBuffer GenerateFieldAssignment(PropertyInfo propertyInfo, IQueryInfo queryInfo, bool withMethodCall = false, IEntityColumnInfo column = null)
         {
             StringBuffer result = " = ";
             if (propertyInfo.PropertyType.IsFrameworkType())

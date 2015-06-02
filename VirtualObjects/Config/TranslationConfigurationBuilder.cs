@@ -12,7 +12,7 @@ namespace VirtualObjects.Config
     /// </summary>
     class TranslationConfigurationBuilder : ITranslationConfigurationBuilder
     {
-        private readonly Func<Attribute, Boolean> _defaultBooleanGetter;
+        private readonly Func<Attribute, bool> _defaultBooleanGetter;
         private readonly ITranslationConfiguration _configuration;
 
 
@@ -23,17 +23,17 @@ namespace VirtualObjects.Config
         {
             _configuration = new TranslationConfiguration
             {
-                ColumnNameGetters = new List<Func<PropertyInfo, String>>(),
-                ColumnKeyGetters = new List<Func<PropertyInfo, Boolean>>(),
-                ColumnIdentityGetters = new List<Func<PropertyInfo, Boolean>>(),
-                ColumnVersionFieldGetters = new List<Func<PropertyInfo, Boolean>>(),
-                ColumnIgnoreGetters = new List<Func<PropertyInfo, Boolean>>(),
-                ComputedColumnGetters = new List<Func<PropertyInfo, Boolean>>(),
-                IsForeignKeyGetters = new List<Func<PropertyInfo, Boolean>>(),
-                EntityNameGetters = new List<Func<Type, String>>(),
-                ColumnForeignKeyGetters = new List<Func<PropertyInfo, String>>(),
-                ColumnForeignKeyLinksGetters = new List<Func<PropertyInfo, String>>(),
-                CollectionFilterGetters = new List<Func<PropertyInfo, String>>()
+                ColumnNameGetters = new List<Func<PropertyInfo, string>>(),
+                ColumnKeyGetters = new List<Func<PropertyInfo, bool>>(),
+                ColumnIdentityGetters = new List<Func<PropertyInfo, bool>>(),
+                ColumnVersionFieldGetters = new List<Func<PropertyInfo, bool>>(),
+                ColumnIgnoreGetters = new List<Func<PropertyInfo, bool>>(),
+                ComputedColumnGetters = new List<Func<PropertyInfo, bool>>(),
+                IsForeignKeyGetters = new List<Func<PropertyInfo, bool>>(),
+                EntityNameGetters = new List<Func<Type, string>>(),
+                ColumnForeignKeyGetters = new List<Func<PropertyInfo, string>>(),
+                ColumnForeignKeyLinksGetters = new List<Func<PropertyInfo, string>>(),
+                CollectionFilterGetters = new List<Func<PropertyInfo, string>>()
             };
 
             _defaultBooleanGetter = attribute => attribute != null;
@@ -46,14 +46,14 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="nameGetter">The name getter.</param>
-        public void EntityName<TAttribute>(Func<TAttribute, String> nameGetter) where TAttribute : Attribute
+        public void EntityName<TAttribute>(Func<TAttribute, string> nameGetter) where TAttribute : Attribute
         {
             EntityName(type =>
             {
                 var attributes = type.Attributes<TAttribute>();
 
                 return attributes != null ?
-                    attributes.Select(nameGetter).FirstOrDefault(e => !String.IsNullOrEmpty(e))
+                    attributes.Select(nameGetter).FirstOrDefault(e => !string.IsNullOrEmpty(e))
                     : null;
             });
         }
@@ -62,7 +62,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to get the name of the entity based on the type.
         /// </summary>
         /// <param name="nameGetter">The name getter.</param>
-        public void EntityName(Func<Type, String> nameGetter)
+        public void EntityName(Func<Type, string> nameGetter)
         {
             _configuration.EntityNameGetters.Insert(0, nameGetter);
         }
@@ -72,14 +72,14 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="nameGetter">The name getter.</param>
-        public void ColumnName<TAttribute>(Func<TAttribute, String> nameGetter) where TAttribute : Attribute
+        public void ColumnName<TAttribute>(Func<TAttribute, string> nameGetter) where TAttribute : Attribute
         {
             ColumnName(prop =>
             {
                 var attributes = prop.Attributes<TAttribute>();
 
                 return attributes != null ?
-                    attributes.Select(nameGetter).FirstOrDefault(e => !String.IsNullOrEmpty(e))
+                    attributes.Select(nameGetter).FirstOrDefault(e => !string.IsNullOrEmpty(e))
                     : null;
             });
         }
@@ -88,7 +88,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to get the name of the column based on a Property.
         /// </summary>
         /// <param name="nameGetter">The name getter.</param>
-        public void ColumnName(Func<PropertyInfo, String> nameGetter)
+        public void ColumnName(Func<PropertyInfo, string> nameGetter)
         {
             _configuration.ColumnNameGetters.Insert(0, nameGetter);
         }
@@ -98,7 +98,7 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="keyGetter">The key getter.</param>
-        public void ColumnKey<TAttribute>(Func<TAttribute, Boolean> keyGetter = null) where TAttribute : Attribute
+        public void ColumnKey<TAttribute>(Func<TAttribute, bool> keyGetter = null) where TAttribute : Attribute
         {
             if ( keyGetter == null )
             {
@@ -117,7 +117,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to find if a column is a key based on a Property.
         /// </summary>
         /// <param name="keyGetter">The key getter.</param>
-        public void ColumnKey(Func<PropertyInfo, Boolean> keyGetter)
+        public void ColumnKey(Func<PropertyInfo, bool> keyGetter)
         {
             _configuration.ColumnKeyGetters.Insert(0, keyGetter);
         }
@@ -127,7 +127,7 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="keyGetter">The key getter.</param>
-        public void ColumnIdentity<TAttribute>(Func<TAttribute, Boolean> keyGetter = null) where TAttribute : Attribute
+        public void ColumnIdentity<TAttribute>(Func<TAttribute, bool> keyGetter = null) where TAttribute : Attribute
         {
             if ( keyGetter == null )
             {
@@ -146,7 +146,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to find if a column is an Identity key based on a Property.
         /// </summary>
         /// <param name="keyGetter">The key getter.</param>
-        public void ColumnIdentity(Func<PropertyInfo, Boolean> keyGetter)
+        public void ColumnIdentity(Func<PropertyInfo, bool> keyGetter)
         {
             _configuration.ColumnIdentityGetters.Insert(0, keyGetter);
         }
@@ -156,7 +156,7 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="keyGetter">The key getter.</param>
-        public void ColumnVersion<TAttribute>(Func<TAttribute, Boolean> keyGetter = null) where TAttribute : Attribute
+        public void ColumnVersion<TAttribute>(Func<TAttribute, bool> keyGetter = null) where TAttribute : Attribute
         {
             if ( keyGetter == null )
             {
@@ -175,7 +175,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to find if a column is a Version field based on a Property.
         /// </summary>
         /// <param name="keyGetter">The key getter.</param>
-        public void ColumnVersion(Func<PropertyInfo, Boolean> keyGetter)
+        public void ColumnVersion(Func<PropertyInfo, bool> keyGetter)
         {
             _configuration.ColumnVersionFieldGetters.Insert(0, keyGetter);
         }
@@ -185,7 +185,7 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="ignoreGetter">The ignore getter.</param>
-        public void ColumnIgnore<TAttribute>(Func<TAttribute, Boolean> ignoreGetter) where TAttribute : Attribute
+        public void ColumnIgnore<TAttribute>(Func<TAttribute, bool> ignoreGetter) where TAttribute : Attribute
         {
             if ( ignoreGetter == null )
             {
@@ -204,7 +204,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to ignore a property.
         /// </summary>
         /// <param name="ignoreGetter">The ignore getter.</param>
-        public void ColumnIgnore(Func<PropertyInfo, Boolean> ignoreGetter)
+        public void ColumnIgnore(Func<PropertyInfo, bool> ignoreGetter)
         {
             _configuration.ColumnIgnoreGetters.Insert(0, ignoreGetter);
         }
@@ -214,7 +214,7 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
-        public void IsForeignKey<TAttribute>(Func<TAttribute, Boolean> isForeignKeyGetter) where TAttribute : Attribute
+        public void IsForeignKey<TAttribute>(Func<TAttribute, bool> isForeignKeyGetter) where TAttribute : Attribute
         {
             if (isForeignKeyGetter == null)
             {
@@ -233,7 +233,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to ignore a property.
         /// </summary>
         /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
-        public void IsForeignKey(Func<PropertyInfo, Boolean> isForeignKeyGetter)
+        public void IsForeignKey(Func<PropertyInfo, bool> isForeignKeyGetter)
         {
             _configuration.IsForeignKeyGetters.Insert(0, isForeignKeyGetter);
         }
@@ -243,7 +243,7 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="computedGetter">The computed getter.</param>
-        public void ComputedColumn<TAttribute>(Func<TAttribute, Boolean> computedGetter) where TAttribute : Attribute
+        public void ComputedColumn<TAttribute>(Func<TAttribute, bool> computedGetter) where TAttribute : Attribute
         {
             if ( computedGetter == null )
             {
@@ -263,7 +263,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to find a computed a property.
         /// </summary>
         /// <param name="computedGetter">The computed getter.</param>
-        public void ComputedColumn(Func<PropertyInfo, Boolean> computedGetter)
+        public void ComputedColumn(Func<PropertyInfo, bool> computedGetter)
         {
             _configuration.ComputedColumnGetters.Insert(0, computedGetter);
         }
@@ -272,7 +272,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to find the association based on the property.
         /// </summary>
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
-        public void ForeignKey(Func<PropertyInfo, String> foreignKeyGetter)
+        public void ForeignKey(Func<PropertyInfo, string> foreignKeyGetter)
         {
             _configuration.ColumnForeignKeyGetters.Insert(0, foreignKeyGetter);
         }
@@ -282,7 +282,7 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
-        public void ForeignKey<TAttribute>(Func<TAttribute, String> foreignKeyGetter) where TAttribute : Attribute
+        public void ForeignKey<TAttribute>(Func<TAttribute, string> foreignKeyGetter) where TAttribute : Attribute
         {
             ForeignKey(prop =>
             {
@@ -296,7 +296,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to find the association based on the property.
         /// </summary>
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
-        public void ForeignKeyLinks(Func<PropertyInfo, String> foreignKeyGetter)
+        public void ForeignKeyLinks(Func<PropertyInfo, string> foreignKeyGetter)
         {
             _configuration.ColumnForeignKeyLinksGetters.Insert(0, foreignKeyGetter);
         }
@@ -306,7 +306,7 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="foreignKeyGetter">The foreign key getter.</param>
-        public void ForeignKeyLinks<TAttribute>(Func<TAttribute, String> foreignKeyGetter) where TAttribute : Attribute
+        public void ForeignKeyLinks<TAttribute>(Func<TAttribute, string> foreignKeyGetter) where TAttribute : Attribute
         {
             ForeignKeyLinks(prop =>
             {
@@ -319,7 +319,7 @@ namespace VirtualObjects.Config
         /// Appends a parser to find the association based on the property.
         /// </summary>
         /// <param name="filterGetter">The filter getter.</param>
-        public void CollectionFilter(Func<PropertyInfo, String> filterGetter)
+        public void CollectionFilter(Func<PropertyInfo, string> filterGetter)
         {
             _configuration.CollectionFilterGetters.Insert(0, filterGetter);
         }
@@ -329,7 +329,7 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
         /// <param name="filterGetter">The filter getter.</param>
-        public void CollectionFilter<TAttribute>(Func<TAttribute, String> filterGetter) where TAttribute : Attribute
+        public void CollectionFilter<TAttribute>(Func<TAttribute, string> filterGetter) where TAttribute : Attribute
         {
             CollectionFilter(prop =>
             {

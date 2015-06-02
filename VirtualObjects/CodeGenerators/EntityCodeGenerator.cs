@@ -22,7 +22,7 @@ namespace VirtualObjects.CodeGenerators
             referencedtypes = new List<Type>();
         }
 
-        public String TypeName { get; private set; }
+        public string TypeName { get; private set; }
 
         public void GenerateCode()
         {
@@ -43,7 +43,7 @@ namespace VirtualObjects.CodeGenerators
         /// <param name="type">The type.</param>
         protected void AddReference(Type type)
         {
-            if (type == null || type == typeof(Object) || referencedtypes.Contains(type))
+            if (type == null || type == typeof(object) || referencedtypes.Contains(type))
             {
                 return;
             }
@@ -74,15 +74,15 @@ namespace VirtualObjects.CodeGenerators
         /// Adds the namespace.
         /// </summary>
         /// <param name="nameSpace">The name space.</param>
-        protected void AddNamespace(String nameSpace)
+        protected void AddNamespace(string nameSpace)
         {
             builder.Namespaces.Add(nameSpace);
         }
 
-        protected abstract String GenerateMapObjectCode();
-        protected abstract String GenerateMakeCode();
-        protected abstract String GenerateMakeProxyCode();
-        protected abstract String GenerateOtherMethodsCode();
+        protected abstract string GenerateMapObjectCode();
+        protected abstract string GenerateMakeCode();
+        protected abstract string GenerateMakeProxyCode();
+        protected abstract string GenerateOtherMethodsCode();
 
                            
         public void PrintCode()
@@ -95,24 +95,24 @@ namespace VirtualObjects.CodeGenerators
             Console.WriteLine("-----------------------------------------------------------");
         }
 
-        public Func<Object, IDataReader, MapResult> GetEntityMapper()
+        public Func<object, IDataReader, MapResult> GetEntityMapper()
         {
-            return (Func<Object, IDataReader, MapResult>)builder.GetDelegate<Func<Object, IDataReader, MapResult>>("MapObject");
+            return (Func<object, IDataReader, MapResult>)builder.GetDelegate<Func<object, IDataReader, MapResult>>("MapObject");
         }
 
-        public Func<Object> GetEntityProvider()
+        public Func<object> GetEntityProvider()
         {
-            return (Func<Object>)builder.GetDelegate<Func<Object>>("Make");
+            return (Func<object>)builder.GetDelegate<Func<object>>("Make");
         }
 
-        public Func<ISession, Object> GetEntityProxyProvider()
+        public Func<ISession, object> GetEntityProxyProvider()
         {
-            return (Func<ISession, Object>)builder.GetDelegate<Func<ISession, Object>>("MakeProxy");
+            return (Func<ISession, object>)builder.GetDelegate<Func<ISession, object>>("MakeProxy");
         }
 
-        public Func<Object, Object> GetEntityCast()
+        public Func<object, object> GetEntityCast()
         {
-            return (Func<Object, Object>)builder.GetDelegate<Func<Object, Object>>("EntityCast");
+            return (Func<object, object>)builder.GetDelegate<Func<object, object>>("EntityCast");
         }
 
         public Action<Type> GetInitializer()

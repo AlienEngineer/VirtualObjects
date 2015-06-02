@@ -33,7 +33,7 @@ namespace VirtualObjects.CodeGenerators
         /// <value>
         /// The code.
         /// </value>
-        public String Code { get; private set; }
+        public string Code { get; private set; }
 
         /// <summary>
         /// Gets the name of the assembly.
@@ -41,7 +41,7 @@ namespace VirtualObjects.CodeGenerators
         /// <value>
         /// The name of the assembly.
         /// </value>
-        protected abstract String AssemblyName { get; }
+        protected abstract string AssemblyName { get; }
 
         /// <summary>
         /// Gets a value indicating whether [is dynamic].
@@ -49,7 +49,7 @@ namespace VirtualObjects.CodeGenerators
         /// <value>
         ///   <c>true</c> if [is dynamic]; otherwise, <c>false</c>.
         /// </value>
-        public abstract Boolean IsDynamic { get; set; }
+        public abstract bool IsDynamic { get; set; }
 
         /// <summary>
         /// The base type

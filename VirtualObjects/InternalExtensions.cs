@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using VirtualObjects.Config;
 
 namespace VirtualObjects
@@ -26,9 +25,9 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <returns></returns>
-        public static Object[] GetValues(this IDataReader reader)
+        public static object[] GetValues(this IDataReader reader)
         {
-            var values = new Object[reader.FieldCount];
+            var values = new object[reader.FieldCount];
             reader.GetValues(values);
             return values;
         }

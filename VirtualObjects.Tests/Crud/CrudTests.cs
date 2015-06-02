@@ -136,7 +136,7 @@ namespace VirtualObjects.Tests.Crud
                 EmployeeId = 1,
                 FirstName = "Sérgio",
                 LastName = "Ferreira",
-                Version = BitConverter.GetBytes(Int64.MaxValue)
+                Version = BitConverter.GetBytes(long.MaxValue)
             });
 
             employee.Should().NotBeNull();

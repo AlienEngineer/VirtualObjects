@@ -36,11 +36,11 @@ namespace VirtualObjects.Config
 
         public List<KeyValuePair<IEntityColumnInfo, IEntityColumnInfo>> ForeignKeyLinks { get; set; }
 
-        public Func<Object, Object> ValueGetter { get; set; }
+        public Func<object, object> ValueGetter { get; set; }
 
-        public Action<Object, Object> ValueSetter { get; set; }
+        public Action<object, object> ValueSetter { get; set; }
 
-        public Object SetValue(Object entity, Object value)
+        public object SetValue(object entity, object value)
         {
             if ( value == DBNull.Value )
             {
@@ -56,7 +56,7 @@ namespace VirtualObjects.Config
             return null;
         }
 
-        public object GetValue(Object entity)
+        public object GetValue(object entity)
         {
             return ValueGetter(entity);
         }
@@ -66,7 +66,7 @@ namespace VirtualObjects.Config
             return GetValue(entity);
         }
 
-        public virtual Object SetFieldFinalValue(object entity, object value)
+        public virtual object SetFieldFinalValue(object entity, object value)
         {
             return SetValue(entity, value);
         }

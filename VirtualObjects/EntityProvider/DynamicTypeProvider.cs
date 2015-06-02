@@ -35,11 +35,11 @@ namespace VirtualObjects.EntityProvider
 
         private IEnumerable<object> GetArguments(Type type)
         {
-            ICollection<Object> args = new List<Object>();
+            ICollection<object> args = new List<object>();
 
             foreach (var field in type.GetConstructors().First().GetParameters())
             {
-                Object arg = null;
+                object arg = null;
 
                 if (!field.ParameterType.IsFrameworkType() ||
                     (field.ParameterType.InheritsOrImplements<IEnumerable>() && field.ParameterType != typeof (string)))

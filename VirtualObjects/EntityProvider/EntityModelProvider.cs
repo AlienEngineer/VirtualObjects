@@ -4,7 +4,7 @@ namespace VirtualObjects.EntityProvider
 {
     class EntityModelProvider : IEntityProvider
     {
-        private Func<ISession, Type, Object> Make;
+        private Func<ISession, Type, object> Make;
         private Type outputType;
         private SessionContext sessionContext;
         

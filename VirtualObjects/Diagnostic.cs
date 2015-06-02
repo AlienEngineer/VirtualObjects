@@ -43,9 +43,9 @@ namespace VirtualObjects
             }
         }
 
-        static readonly IDictionary<String, DiagnosticTimeSpan> Times = new Dictionary<string, DiagnosticTimeSpan>();
+        static readonly IDictionary<string, DiagnosticTimeSpan> Times = new Dictionary<string, DiagnosticTimeSpan>();
 
-        static void Add(TimeSpan time, String name = "DEFAULT")
+        static void Add(TimeSpan time, string name = "DEFAULT")
         {
             DiagnosticTimeSpan record;
             if ( !Times.TryGetValue(name, out record) )
@@ -63,9 +63,9 @@ namespace VirtualObjects
         /// <param name="func">The function.</param>
         /// <param name="mask">The mask.</param>
         /// <param name="name">The name.</param>
-        public static void Timed(Action func, String mask = null, String name = "DEFAULT")
+        public static void Timed(Action func, string mask = null, string name = "DEFAULT")
         {
-            Timed<Object>(() =>
+            Timed<object>(() =>
             {
                 func();
                 return null;
@@ -80,7 +80,7 @@ namespace VirtualObjects
         /// <param name="mask">For the mask use [{0} for millis, {1} for TimeSpan, {2} for Ticks]. Or null to hide.</param>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public static TResult Timed<TResult>(Func<TResult> func, String mask = null, String name = "DEFAULT")
+        public static TResult Timed<TResult>(Func<TResult> func, string mask = null, string name = "DEFAULT")
         {
             var timer = Stopwatch.StartNew();
             try
@@ -106,7 +106,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="mask">For the mask use [{0} for millis, {1} for TimeSpan, {2} for Ticks].</param>
         /// <param name="name">The name.</param>
-        public static void PrintAverageTime(String mask, String name = "DEFAULT")
+        public static void PrintAverageTime(string mask, string name = "DEFAULT")
         {
             if ( !Times.ContainsKey(name) )
             {
@@ -127,7 +127,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="mask">For the mask use [{0} for millis, {1} for TimeSpan, {2} for Ticks].</param>
         /// <param name="name">The name.</param>
-        public static void PrintTime(String mask, String name = "DEFAULT")
+        public static void PrintTime(string mask, string name = "DEFAULT")
         {
             if ( !Times.ContainsKey(name) )
             {
@@ -148,7 +148,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public static double GetMilliseconds(String name = "DEFAULT")
+        public static double GetMilliseconds(string name = "DEFAULT")
         {
             if ( !Times.ContainsKey(name) )
             {

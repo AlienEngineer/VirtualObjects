@@ -26,17 +26,17 @@ namespace VirtualObjects.Config
 
         public IList<IEntityColumnInfo> KeyColumns { get; set; }
         public IEntityColumnInfo Identity { get; set; }
-        public Func<Object, IDataReader, MapResult> MapEntity { get; set; }
+        public Func<object, IDataReader, MapResult> MapEntity { get; set; }
         public Func<object> EntityFactory { get; set; }
-        public Func<Object, Object> EntityCast { get; set; }
+        public Func<object, object> EntityCast { get; set; }
         public Mapping State { get; set; }
         public Func<ISession, object> EntityProxyFactory { get; set; }
         public IEntityColumnInfo VersionControl { get; set; }
 
         public Type EntityType { get; set; }
-        public Func<Object, int> KeyHashCode { get; set; }
+        public Func<object, int> KeyHashCode { get; set; }
 
-        public int GetKeyHashCode(Object obj)
+        public int GetKeyHashCode(object obj)
         {
             return KeyHashCode(obj);
         }
@@ -70,7 +70,7 @@ namespace VirtualObjects.Config
             }
 
             return EntityName + " = {\n" +
-                   String.Join(",\n", Columns.Select(e => e.ColumnName)) +
+                   string.Join(",\n", Columns.Select(e => e.ColumnName)) +
                    "} ";
         }
     }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VirtualObjects.CRUD
+﻿namespace VirtualObjects.CRUD
 {
     /// <summary>
     /// 
@@ -13,28 +11,28 @@ namespace VirtualObjects.CRUD
         /// <param name="entityModel">The entity model.</param>
         /// <param name="sessionContext">The session context.</param>
         /// <returns></returns>
-        Object Insert(Object entityModel, SessionContext sessionContext);
+        object Insert(object entityModel, SessionContext sessionContext);
         /// <summary>
         /// Updates the specified entity model.
         /// </summary>
         /// <param name="entityModel">The entity model.</param>
         /// <param name="sessionContext">The session context.</param>
         /// <returns></returns>
-        Object Update(Object entityModel, SessionContext sessionContext);
+        object Update(object entityModel, SessionContext sessionContext);
         /// <summary>
         /// Deletes the specified entity model.
         /// </summary>
         /// <param name="entityModel">The entity model.</param>
         /// <param name="sessionContext">The session context.</param>
         /// <returns></returns>
-        Object Delete(Object entityModel, SessionContext sessionContext);
+        object Delete(object entityModel, SessionContext sessionContext);
         /// <summary>
         /// Gets the specified entity model.
         /// </summary>
         /// <param name="entityModel">The entity model.</param>
         /// <param name="sessionContext">The session context.</param>
         /// <returns></returns>
-        Object Get(Object entityModel, SessionContext sessionContext);
+        object Get(object entityModel, SessionContext sessionContext);
 
         /// <summary>
         /// Gets the version.
@@ -42,7 +40,7 @@ namespace VirtualObjects.CRUD
         /// <param name="entityModel">The entity model.</param>
         /// <param name="sessionContext">The session context.</param>
         /// <returns></returns>
-        byte[] GetVersion(Object entityModel, SessionContext sessionContext);
+        byte[] GetVersion(object entityModel, SessionContext sessionContext);
     }
 
     /// <summary>
@@ -86,6 +84,6 @@ namespace VirtualObjects.CRUD
         /// <param name="entityModel">The entity model.</param>
         /// <param name="sessionContext">The session context.</param>
         /// <returns></returns>
-        Byte[] GetVersion(Object entityModel, SessionContext sessionContext);
+        byte[] GetVersion(object entityModel, SessionContext sessionContext);
     }
 }

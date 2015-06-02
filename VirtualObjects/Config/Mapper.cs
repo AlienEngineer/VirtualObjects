@@ -240,7 +240,7 @@ namespace VirtualObjects.Config
         {
             return _configuration.EntityNameGetters
                 .Select(nameGetter => nameGetter(entityType))
-                .FirstOrDefault(name => !String.IsNullOrEmpty(name));
+                .FirstOrDefault(name => !string.IsNullOrEmpty(name));
         }
 
         #endregion
@@ -254,7 +254,7 @@ namespace VirtualObjects.Config
 
         private IEnumerable<IEntityColumnInfo> MapColumns(IEntityInfo entityInfo, Type type)
         {
-            if (type == typeof(Object))
+            if (type == typeof(object))
             {
                 return new IEntityColumnInfo[0];
             }
@@ -310,7 +310,7 @@ namespace VirtualObjects.Config
                 .Select(keyGetter => keyGetter(propertyInfo))
                 .FirstOrDefault();
 
-            var foreignKey = String.IsNullOrEmpty(keyName) ?
+            var foreignKey = string.IsNullOrEmpty(keyName) ?
                 entity.KeyColumns.FirstOrDefault() :
                 entity[keyName];
 
@@ -396,10 +396,10 @@ namespace VirtualObjects.Config
         {
             return _configuration.ColumnNameGetters
                 .Select(nameGetter => nameGetter(propertyInfo))
-                .FirstOrDefault(name => !String.IsNullOrEmpty(name));
+                .FirstOrDefault(name => !string.IsNullOrEmpty(name));
         }
 
-        private static Func<Object, Object> MakeValueGetter(String fieldName, MemberGetter getter)
+        private static Func<object, object> MakeValueGetter(string fieldName, MemberGetter getter)
         {
             return entity =>
             {
@@ -419,7 +419,7 @@ namespace VirtualObjects.Config
             };
         }
 
-        private static Action<Object, Object> MakeValueSetter(String fieldName, MemberSetter setter)
+        private static Action<object, object> MakeValueSetter(string fieldName, MemberSetter setter)
         {
             return (entity, value) =>
             {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VirtualObjects.CRUD
+﻿namespace VirtualObjects.CRUD
 {
     class OperationsExecutor : IOperationsExecutor
     {
@@ -11,28 +9,28 @@ namespace VirtualObjects.CRUD
             _entityOperations = entityOperations;
         }
 
-        public Object Insert(Object entityModel, SessionContext sessionContext)
+        public object Insert(object entityModel, SessionContext sessionContext)
         {
             return _entityOperations.InsertOperation
                 .PrepareOperation(entityModel)
                 .Execute(sessionContext);
         }
 
-        public Object Update(Object entityModel, SessionContext sessionContext)
+        public object Update(object entityModel, SessionContext sessionContext)
         {
             return _entityOperations.UpdateOperation
                 .PrepareOperation(entityModel)
                 .Execute(sessionContext);
         }
 
-        public Object Delete(Object entityModel, SessionContext sessionContext)
+        public object Delete(object entityModel, SessionContext sessionContext)
         {
             return _entityOperations.DeleteOperation
                 .PrepareOperation(entityModel)
                 .Execute(sessionContext);
         }
 
-        public Object Get(Object entityModel, SessionContext sessionContext)
+        public object Get(object entityModel, SessionContext sessionContext)
         {
             return _entityOperations.GetOperation
                 .PrepareOperation(entityModel)
@@ -46,7 +44,7 @@ namespace VirtualObjects.CRUD
                 .Execute(sessionContext) as byte[];
         }
 
-        public Object Count(SessionContext sessionContext)
+        public object Count(SessionContext sessionContext)
         {
             return _entityOperations.CountOperation.Execute(sessionContext);
         }

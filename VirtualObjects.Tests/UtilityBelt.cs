@@ -74,7 +74,7 @@ namespace VirtualObjects.Tests
         ITransaction _dbTransaction;
         private IModulesConfiguration modules;
 
-        private readonly Stack<String> testStack = new Stack<string>();
+        private readonly Stack<string> testStack = new Stack<string>();
 
         [SetUp]
         public void PushTestToStack()
@@ -114,7 +114,7 @@ namespace VirtualObjects.Tests
             return ExecuteReader(query.CommandText, query.Parameters);
         }
 
-        public Object ExecuteScalar(IQueryInfo query)
+        public object ExecuteScalar(IQueryInfo query)
         {
             return ExecuteScalar(query.CommandText, query.Parameters);
         }

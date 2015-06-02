@@ -11,7 +11,7 @@ namespace VirtualObjects.CRUD.Operations
         private IDictionary<string, IOperationParameter> _parameters;
         private object _entityModel;
 
-        protected Operation(String commandText, IEntityInfo entityInfo)
+        protected Operation(string commandText, IEntityInfo entityInfo)
         {
             CommandText = commandText;
             _entityInfo = entityInfo;
@@ -88,7 +88,7 @@ namespace VirtualObjects.CRUD.Operations
                 return finalValue;
             }
 
-            if (e.Property.PropertyType == typeof (Boolean))
+            if (e.Property.PropertyType == typeof (bool))
             {
                 return finalValue;
             }

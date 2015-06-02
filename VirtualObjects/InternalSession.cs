@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using VirtualObjects.Config;
-using VirtualObjects.Exceptions;
 using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
 
 namespace VirtualObjects
@@ -57,7 +56,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns></returns>
-        public IDataReader GetRawData(String query)
+        public IDataReader GetRawData(string query)
         {
             return connection.ExecuteReader(query, new Dictionary<string, IOperationParameter>());
         }
@@ -145,7 +144,7 @@ namespace VirtualObjects
         /// <param name="storeProcedure">The store procedure.</param>
         /// <param name="args">The arguments.</param>
         /// <returns></returns>
-        public int ExecuteStoreProcedure(string storeProcedure, IEnumerable<KeyValuePair<String, Object>> args)
+        public int ExecuteStoreProcedure(string storeProcedure, IEnumerable<KeyValuePair<string, object>> args)
         {
             return Context.Connection.ExecuteProcedure(storeProcedure, args);
         }

@@ -4,7 +4,7 @@ namespace VirtualObjects.Config
 {
     class EntityBoundColumnInfo : EntityColumnInfo
     {
-        public override Object GetFieldFinalValue(object entity)
+        public override object GetFieldFinalValue(object entity)
         {
             var value = GetValue(entity);
             return ForeignKey != null && value != null ? ForeignKey.GetValue(value) : value;

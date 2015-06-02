@@ -1,5 +1,4 @@
-﻿using System;
-using VirtualObjects.Mappings;
+﻿using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
@@ -8,9 +7,9 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Identity]
         public int CategoryId { get; set; }
 
-        public String CategoryName { get; set; }
+        public string CategoryName { get; set; }
 
-        public String Description { get; set; }
+        public string Description { get; set; }
     }
 
     public class CategoriesBadName
@@ -18,8 +17,8 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Identity]
         public int CategoryId { get; set; }
 
-        public String CategoryName { get; set; }
+        public string CategoryName { get; set; }
 
-        public String Description { get; set; }
+        public string Description { get; set; }
     }
 }

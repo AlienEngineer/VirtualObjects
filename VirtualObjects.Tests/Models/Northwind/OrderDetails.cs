@@ -1,5 +1,4 @@
-﻿using System;
-using VirtualObjects.Mappings;
+﻿using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
@@ -10,9 +9,9 @@ namespace VirtualObjects.Tests.Models.Northwind
 
         public int ProductId { get; set; }
 
-        public Decimal UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
 
-        public Int16 Quantity { get; set; }
+        public short Quantity { get; set; }
     }
 
     [Table(TableName = "Order Details")]
@@ -26,11 +25,11 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Association(OtherKey = "ProductId")]
         public virtual Products Product { get; set; }
 
-        public Decimal UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
 
-        public Int16 Quantity { get; set; }
+        public short Quantity { get; set; }
 
-        public Single Discount { get; set; }
+        public float Discount { get; set; }
     }
 
 }

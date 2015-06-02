@@ -68,7 +68,7 @@ namespace VirtualObjects
         /// <param name="execute">The execute.</param>
         public static void WithinTransaction(this ISession session, Action<ITransaction> execute)
         {
-            session.WithinTransaction<Object>(transaction => { execute(transaction); return null; });
+            session.WithinTransaction<object>(transaction => { execute(transaction); return null; });
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace VirtualObjects
         /// <param name="execute">The execute.</param>
         public static void WithinTransaction(this ISession session, IsolationLevel isolation, Action<ITransaction> execute)
         {
-            session.WithinTransaction<Object>(isolation, transaction => { execute(transaction); return null; });
+            session.WithinTransaction<object>(isolation, transaction => { execute(transaction); return null; });
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace VirtualObjects
         /// <param name="execute">The execute.</param>
         public static void KeepAlive(this ISession session, Action execute)
         {
-            session.KeepAlive<Object>(() => { execute(); return null; });
+            session.KeepAlive<object>(() => { execute(); return null; });
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace VirtualObjects
         /// <param name="session">The session.</param>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        public static Boolean Exists<TEntity>(this ISession session, TEntity entity) where TEntity : class, new()
+        public static bool Exists<TEntity>(this ISession session, TEntity entity) where TEntity : class, new()
         {
             return session.GetById(entity) != null;
         }
@@ -180,7 +180,7 @@ namespace VirtualObjects
         /// <param name="execute">The execute.</param>
         public static void WithRollback(this ISession session, Action execute)
         {
-            session.WithRollback<Object>(() =>
+            session.WithRollback<object>(() =>
             {
                 execute(); return null;
             });

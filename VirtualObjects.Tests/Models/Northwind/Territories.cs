@@ -1,14 +1,13 @@
-﻿using System;
-using VirtualObjects.Mappings;
+﻿using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
     public class Territories
     {
         [Key]
-        public String TerritoryId { get; set; }
+        public string TerritoryId { get; set; }
 
-        public String TerritoryDescription { get; set; }
+        public string TerritoryDescription { get; set; }
 
         [Column(FieldName = "RegionId")]
         public virtual Region Region { get; set; }

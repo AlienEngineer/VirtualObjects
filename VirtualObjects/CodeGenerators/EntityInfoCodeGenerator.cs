@@ -14,7 +14,7 @@ namespace VirtualObjects.CodeGenerators
         private readonly IEntityInfo _entityInfo;
         private readonly ITranslationConfiguration _configuration;
         private readonly IEntityBag _entityBag;
-        private readonly String _properName;
+        private readonly string _properName;
 
         public EntityInfoCodeGenerator(IEntityInfo info, IEntityBag entityBag, ITranslationConfiguration configuration, SessionConfiguration sessionConfiguration)
             : base(info.EntityType.Namespace.Replace(".", "_") + "_Internal_Builder_" + info.EntityType.Name, info.EntityType, sessionConfiguration)
@@ -26,7 +26,7 @@ namespace VirtualObjects.CodeGenerators
 
 
             AddReference(_entityInfo.EntityType);
-            AddReference(typeof(Object));
+            AddReference(typeof(object));
             AddReference(typeof(ISession));
             AddReference(typeof(IQueryable));
             AddReference(typeof(IDataReader));
@@ -140,7 +140,7 @@ namespace VirtualObjects.CodeGenerators
 
         }
 
-        private String GenerateWhereClause(IEntityInfo entityInfo, PropertyInfo property)
+        private string GenerateWhereClause(IEntityInfo entityInfo, PropertyInfo property)
         {
             var result = new StringBuffer();
 
@@ -230,7 +230,7 @@ namespace VirtualObjects.CodeGenerators
             return result;
         }
 
-        private String GenerateOverridableMembers(IEntityInfo entityInfo)
+        private string GenerateOverridableMembers(IEntityInfo entityInfo)
         {
             var result = new StringBuffer();
 
@@ -290,9 +290,9 @@ namespace VirtualObjects.CodeGenerators
         }}
 ".FormatWith(new
  {
-     Type = String.Format("{0}.{1}<{2}>", property.PropertyType.Namespace, property.PropertyType.Name.Replace("`1", ""), entityType.FullName.Replace('+', '.')),
+     Type = string.Format("{0}.{1}<{2}>", property.PropertyType.Namespace, property.PropertyType.Name.Replace("`1", ""), entityType.FullName.Replace('+', '.')),
      EntityType = entityType.FullName.Replace('+', '.'),
-     ToList = property.PropertyType.Name.Contains("ICollection") ? ".ToList()" : String.Empty,
+     ToList = property.PropertyType.Name.Contains("ICollection") ? ".ToList()" : string.Empty,
      property.Name,
      WhereClause = GenerateWhereClause(entityInfo, property)
  });
@@ -301,7 +301,7 @@ namespace VirtualObjects.CodeGenerators
             return result;
         }
 
-        private String GenerateCodeForLinks(IEntityColumnInfo column)
+        private string GenerateCodeForLinks(IEntityColumnInfo column)
         {
             var result = new StringBuffer();
 
@@ -319,7 +319,7 @@ namespace VirtualObjects.CodeGenerators
             return result;
         }
 
-        private String GenerateDependencyValue(IEntityColumnInfo column, KeyValuePair<IEntityColumnInfo, IEntityColumnInfo> foreignKeyLink)
+        private string GenerateDependencyValue(IEntityColumnInfo column, KeyValuePair<IEntityColumnInfo, IEntityColumnInfo> foreignKeyLink)
         {
             return "this." + foreignKeyLink.Key.Property.Name;
 
@@ -360,7 +360,7 @@ namespace VirtualObjects.CodeGenerators
                 }}
 ";
 
-                String value = GenerateFieldAssignment(i, column);
+                string value = GenerateFieldAssignment(i, column);
                 value = value.Substring(3, value.Length - 3);
 
                 result += setter.FormatWith(new
@@ -369,13 +369,13 @@ namespace VirtualObjects.CodeGenerators
                      i,
                      Value = value,
                      ValueNoType = value
-                        .Replace(String.Format("({0})", column.Property.PropertyType.Name), "")
-                        .Replace("default", String.Format("default({0})", column.Property.PropertyType.Name)),
-                     Comment = column.ForeignKey == null ? "//" : String.Empty,
-                     NotComment = column.ForeignKey == null ? String.Empty : "//",
+                        .Replace(string.Format("({0})", column.Property.PropertyType.Name), "")
+                        .Replace("default", string.Format("default({0})", column.Property.PropertyType.Name)),
+                     Comment = column.ForeignKey == null ? "//" : string.Empty,
+                     NotComment = column.ForeignKey == null ? string.Empty : "//",
                      Type = column.Property.PropertyType.Name,
-                     IsBoolean = column.Property.PropertyType == typeof(Boolean) ? String.Empty : "//",
-                     IsNotBoolean = column.Property.PropertyType != typeof(Boolean) ? String.Empty : "//"
+                     IsBoolean = column.Property.PropertyType == typeof(bool) ? string.Empty : "//",
+                     IsNotBoolean = column.Property.PropertyType != typeof(bool) ? string.Empty : "//"
                  });
 
             }

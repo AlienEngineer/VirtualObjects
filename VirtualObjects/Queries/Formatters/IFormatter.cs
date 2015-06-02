@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -15,7 +14,7 @@ namespace VirtualObjects.Queries.Formatters
         /// <param name="name">The name.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatFieldWithTable(String name, int index);
+        string FormatFieldWithTable(string name, int index);
 
         /// <summary>
         /// Formats the name of the table.
@@ -23,7 +22,7 @@ namespace VirtualObjects.Queries.Formatters
         /// <param name="name">The name.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatTableName(String name, int index);
+        string FormatTableName(string name, int index);
 
         /// <summary>
         /// Gets the field separator.
@@ -31,189 +30,189 @@ namespace VirtualObjects.Queries.Formatters
         /// <value>
         /// The field separator.
         /// </value>
-        String FieldSeparator { get; }
+        string FieldSeparator { get; }
         /// <summary>
         /// Gets the select.
         /// </summary>
         /// <value>
         /// The select.
         /// </value>
-        String Select { get; }
+        string Select { get; }
         /// <summary>
         /// Gets from.
         /// </summary>
         /// <value>
         /// From.
         /// </value>
-        String From { get; }
+        string From { get; }
         /// <summary>
         /// Gets the where.
         /// </summary>
         /// <value>
         /// The where.
         /// </value>
-        String Where { get; }
+        string Where { get; }
         /// <summary>
         /// Gets the and.
         /// </summary>
         /// <value>
         /// The and.
         /// </value>
-        String And { get; }
+        string And { get; }
         /// <summary>
         /// Gets the in.
         /// </summary>
         /// <value>
         /// The in.
         /// </value>
-        String In { get; }
+        string In { get; }
         /// <summary>
         /// Gets the inner join.
         /// </summary>
         /// <value>
         /// The inner join.
         /// </value>
-        String InnerJoin { get; }
+        string InnerJoin { get; }
         /// <summary>
         /// Gets the on.
         /// </summary>
         /// <value>
         /// The on.
         /// </value>
-        String On { get; }
+        string On { get; }
         /// <summary>
         /// Gets the is null.
         /// </summary>
         /// <value>
         /// The is null.
         /// </value>
-        String IsNull { get; }
+        string IsNull { get; }
         /// <summary>
         /// Gets the is not null.
         /// </summary>
         /// <value>
         /// The is not null.
         /// </value>
-        String IsNotNull { get; }
+        string IsNotNull { get; }
         /// <summary>
         /// Gets the order by.
         /// </summary>
         /// <value>
         /// The order by.
         /// </value>
-        String OrderBy { get; }
+        string OrderBy { get; }
         /// <summary>
         /// Gets the descending.
         /// </summary>
         /// <value>
         /// The descending.
         /// </value>
-        String Descending{ get; }
+        string Descending{ get; }
         /// <summary>
         /// Gets the count.
         /// </summary>
         /// <value>
         /// The count.
         /// </value>
-        String Count { get; }
+        string Count { get; }
         /// <summary>
         /// Gets the sum.
         /// </summary>
         /// <value>
         /// The sum.
         /// </value>
-        String Sum { get; }
+        string Sum { get; }
         /// <summary>
         /// Gets the average.
         /// </summary>
         /// <value>
         /// The average.
         /// </value>
-        String Avg { get; }
+        string Avg { get; }
         /// <summary>
         /// Gets the minimum.
         /// </summary>
         /// <value>
         /// The minimum.
         /// </value>
-        String Min { get; }
+        string Min { get; }
         /// <summary>
         /// Gets the maximum.
         /// </summary>
         /// <value>
         /// The maximum.
         /// </value>
-        String Max { get; }
+        string Max { get; }
         /// <summary>
         /// Gets any.
         /// </summary>
         /// <value>
         /// Any.
         /// </value>
-        String Any { get; }
+        string Any { get; }
         /// <summary>
         /// Gets the group by.
         /// </summary>
         /// <value>
         /// The group by.
         /// </value>
-        String GroupBy { get; }
+        string GroupBy { get; }
         /// <summary>
         /// Gets the distinct.
         /// </summary>
         /// <value>
         /// The distinct.
         /// </value>
-        String Distinct { get; }
+        string Distinct { get; }
         /// <summary>
         /// Gets the union.
         /// </summary>
         /// <value>
         /// The union.
         /// </value>
-        String Union { get; }
+        string Union { get; }
         /// <summary>
         /// Gets the delete.
         /// </summary>
         /// <value>
         /// The delete.
         /// </value>
-        String Delete { get; }
+        string Delete { get; }
         /// <summary>
         /// Gets the values.
         /// </summary>
         /// <value>
         /// The values.
         /// </value>
-        String Values { get; }
+        string Values { get; }
         /// <summary>
         /// Gets the insert.
         /// </summary>
         /// <value>
         /// The insert.
         /// </value>
-        String Insert { get; }
+        string Insert { get; }
         /// <summary>
         /// Gets the update.
         /// </summary>
         /// <value>
         /// The update.
         /// </value>
-        String Update { get; }
+        string Update { get; }
         /// <summary>
         /// Gets the set.
         /// </summary>
         /// <value>
         /// The set.
         /// </value>
-        String Set { get; }
+        string Set { get; }
         /// <summary>
         /// Gets the identity.
         /// </summary>
         /// <value>
         /// The identity.
         /// </value>
-        String Identity { get; }
+        string Identity { get; }
 
         /// <summary>
         /// Gets the left join.
@@ -221,21 +220,21 @@ namespace VirtualObjects.Queries.Formatters
         /// <value>
         /// The left join.
         /// </value>
-        String LeftJoin { get; }
+        string LeftJoin { get; }
 
         /// <summary>
         /// Formats the field.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        String FormatField(String name);
+        string FormatField(string name);
 
         /// <summary>
         /// Formats the node.
         /// </summary>
         /// <param name="nodeType">Type of the node.</param>
         /// <returns></returns>
-        String FormatNode(ExpressionType nodeType);
+        string FormatNode(ExpressionType nodeType);
 
         /// <summary>
         /// Formats the constant.
@@ -243,20 +242,20 @@ namespace VirtualObjects.Queries.Formatters
         /// <param name="value">The value.</param>
         /// <param name="count">The count.</param>
         /// <returns></returns>
-        String FormatConstant(object value, int count);
+        string FormatConstant(object value, int count);
 
         /// <summary>
         /// Formats the get date.
         /// </summary>
         /// <returns></returns>
-        String FormatGetDate();
+        string FormatGetDate();
 
         /// <summary>
         /// Formats the take n.
         /// </summary>
         /// <param name="take">The take.</param>
         /// <returns></returns>
-        String FormatTakeN(int take);
+        string FormatTakeN(int take);
 
         /// <summary>
         /// Formats the row number.
@@ -292,7 +291,7 @@ namespace VirtualObjects.Queries.Formatters
         /// Begins the wrap.
         /// </summary>
         /// <returns></returns>
-        String BeginWrap();
+        string BeginWrap();
 
         /// <summary>
         /// Ends the wrap.
@@ -307,108 +306,108 @@ namespace VirtualObjects.Queries.Formatters
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatDayOf(string columnName, int index);
+        string FormatDayOf(string columnName, int index);
         /// <summary>
         /// Formats the day of year of.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatDayOfYearOf(string columnName, int index);
+        string FormatDayOfYearOf(string columnName, int index);
         /// <summary>
         /// Formats the day of week of.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatDayOfWeekOf(string columnName, int index);
+        string FormatDayOfWeekOf(string columnName, int index);
         /// <summary>
         /// Formats the second of.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatSecondOf(string columnName, int index);
+        string FormatSecondOf(string columnName, int index);
         /// <summary>
         /// Formats the millisecond of.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatMillisecondOf(string columnName, int index);
+        string FormatMillisecondOf(string columnName, int index);
         /// <summary>
         /// Formats the hour of.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatHourOf(string columnName, int index);
+        string FormatHourOf(string columnName, int index);
         /// <summary>
         /// Formats the month of.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatMonthOf(string columnName, int index);
+        string FormatMonthOf(string columnName, int index);
         /// <summary>
         /// Formats the year of.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatYearOf(string columnName, int index);
+        string FormatYearOf(string columnName, int index);
         /// <summary>
         /// Formats the minute of.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatMinuteOf(string columnName, int index);
+        string FormatMinuteOf(string columnName, int index);
         /// <summary>
         /// Formats the date of.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatDateOf(string columnName, int index);
+        string FormatDateOf(string columnName, int index);
         /// <summary>
         /// Formats the length with.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatLengthWith(string columnName, int index);
+        string FormatLengthWith(string columnName, int index);
         /// <summary>
         /// Begins the method call.
         /// </summary>
         /// <param name="methodCalled">The method called.</param>
         /// <returns></returns>
-        String BeginMethodCall(string methodCalled);
+        string BeginMethodCall(string methodCalled);
         /// <summary>
         /// Ends the method call.
         /// </summary>
         /// <param name="methodCalled">The method called.</param>
         /// <returns></returns>
-        String EndMethodCall(string methodCalled);
+        string EndMethodCall(string methodCalled);
         /// <summary>
         /// Formats the constant.
         /// </summary>
         /// <param name="parseValue">The parse value.</param>
         /// <returns></returns>
-        String FormatConstant(object parseValue);
+        string FormatConstant(object parseValue);
         /// <summary>
         /// Formats the name of the table.
         /// </summary>
         /// <param name="entityName">Name of the entity.</param>
         /// <returns></returns>
-        String FormatTableName(string entityName);
+        string FormatTableName(string entityName);
         /// <summary>
         /// Formats the row number.
         /// </summary>
         /// <param name="orderBy">The order by.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        string FormatRowNumber(String orderBy, int index);
+        string FormatRowNumber(string orderBy, int index);
 
         /// <summary>
         /// Formats to lower with.
@@ -416,7 +415,7 @@ namespace VirtualObjects.Queries.Formatters
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatToLowerWith(string columnName, int index);
+        string FormatToLowerWith(string columnName, int index);
 
         /// <summary>
         /// Formats to upper with.
@@ -424,7 +423,7 @@ namespace VirtualObjects.Queries.Formatters
         /// <param name="columnName">Name of the column.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        String FormatToUpperWith(string columnName, int index);
+        string FormatToUpperWith(string columnName, int index);
 
         /// <summary>
         /// 

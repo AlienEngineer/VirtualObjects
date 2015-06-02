@@ -1,13 +1,12 @@
-﻿using System;
-using VirtualObjects.Mappings;
+﻿using VirtualObjects.Mappings;
 
 namespace VirtualObjects.Tests.Models.Northwind
 {
     public class CustomerDemographics
     {
         [Key]
-        public String CustomerTypeId { get; set; }
+        public string CustomerTypeId { get; set; }
 
-        public String CustomerDesc { get; set; }
+        public string CustomerDesc { get; set; }
     }
 }

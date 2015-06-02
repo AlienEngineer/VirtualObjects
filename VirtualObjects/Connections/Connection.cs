@@ -20,7 +20,7 @@ namespace VirtualObjects.Connections
         private IDbTransaction _dbTransaction;
         private bool _rolledBack;
         private bool _endedTransaction;
-        private readonly IDictionary<String, IOperationParameter> _stub = new Dictionary<String, IOperationParameter>();
+        private readonly IDictionary<string, IOperationParameter> _stub = new Dictionary<string, IOperationParameter>();
 
         #region IDisposable Members
         private bool _disposed;
@@ -107,7 +107,7 @@ namespace VirtualObjects.Connections
         }
 
 #if DEBUG
-        readonly Stack<String> commands = new Stack<String>();
+        readonly Stack<string> commands = new Stack<string>();
         readonly Stack<IDataReader> readers = new Stack<IDataReader>();
 #endif
 
@@ -231,7 +231,7 @@ namespace VirtualObjects.Connections
             return cmd;
         }
 
-        public IDbCommand CreateCommand(String commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
+        public IDbCommand CreateCommand(string commandText, IEnumerable<KeyValuePair<string, IOperationParameter>> parameters)
         {
             var cmd =  CreateCommand(commandText);
             
@@ -256,7 +256,7 @@ namespace VirtualObjects.Connections
                     e.Parameter.ParameterName = e.OperParameter.Key;
                     e.Parameter.Value = e.OperParameter.Value.Value ?? DBNull.Value;
 
-                    if ( e.OperParameter.Value.Type == typeof(Byte[]) )
+                    if ( e.OperParameter.Value.Type == typeof(byte[]) )
                     {
                         e.Parameter.DbType = DbType.Binary;
                     }

@@ -16,7 +16,7 @@ namespace VirtualObjects.Mappings
         /// <value>
         /// The name of the field.
         /// </value>
-        public String FieldName { get; set; }
+        public string FieldName { get; set; }
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ namespace VirtualObjects.Mappings
         /// <value>
         /// The name of the table.
         /// </value>
-        public String TableName { get; set; }
+        public string TableName { get; set; }
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ namespace VirtualObjects.Mappings
         /// <value>
         /// The name of the field.
         /// </value>
-        public String FieldName { get; set; }
+        public string FieldName { get; set; }
 
     }
 }

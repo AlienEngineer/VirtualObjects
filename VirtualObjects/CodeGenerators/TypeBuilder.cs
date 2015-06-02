@@ -9,19 +9,19 @@ namespace VirtualObjects.CodeGenerators
     class TypeBuilder : CodeCompiler
     {
         private CompilerResults results;
-        private readonly String typeName;
+        private readonly string typeName;
 
-        public ICollection<String> Body { get; private set; }
-        public ICollection<String> References { get; private set; }
-        public ICollection<String> Namespaces { get; private set; }
+        public ICollection<string> Body { get; private set; }
+        public ICollection<string> References { get; private set; }
+        public ICollection<string> Namespaces { get; private set; }
 
-        public TypeBuilder(String typeName, Type baseType, SessionConfiguration configuration)
+        public TypeBuilder(string typeName, Type baseType, SessionConfiguration configuration)
             : base(baseType, configuration)
         {
             this.typeName = typeName;
-            Namespaces = new Collection<String>();
-            Body = new Collection<String>();
-            References = new Collection<String>();
+            Namespaces = new Collection<string>();
+            Body = new Collection<string>();
+            References = new Collection<string>();
         }
 
         protected override string AssemblyName { get { return typeName; } }
@@ -42,7 +42,7 @@ namespace VirtualObjects.CodeGenerators
             return code;
         }
 
-        private String GenerateFunctions()
+        private string GenerateFunctions()
         {
             var code = new StringBuffer();
 
@@ -54,7 +54,7 @@ namespace VirtualObjects.CodeGenerators
             return code;
         }
 
-        private String BeginClass(string className)
+        private string BeginClass(string className)
         {
             var code = new StringBuffer();
 
@@ -65,12 +65,12 @@ namespace VirtualObjects.CodeGenerators
             return code;
         }
 
-        private static String EndClass()
+        private static string EndClass()
         {
             return "}\n";
         }
 
-        private String GenerateUsings()
+        private string GenerateUsings()
         {
             var code = new StringBuffer();
 
@@ -92,7 +92,7 @@ namespace VirtualObjects.CodeGenerators
         /// <typeparam name="TFunc">The type of the function.</typeparam>
         /// <param name="functionName">Name of the function.</param>
         /// <returns></returns>
-        public Delegate GetDelegate<TFunc>(String functionName)
+        public Delegate GetDelegate<TFunc>(string functionName)
         {
             results = results ?? Compile(References.ToArray());
 
@@ -101,6 +101,6 @@ namespace VirtualObjects.CodeGenerators
             return Delegate.CreateDelegate(typeof(TFunc), function);
         }
 
-        public String TypeName { get { return typeName; } }
+        public string TypeName { get { return typeName; } }
     }
 }

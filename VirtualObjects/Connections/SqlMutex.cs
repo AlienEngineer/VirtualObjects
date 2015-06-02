@@ -94,7 +94,7 @@ namespace VirtualObjects.Connections
             var command = Connection.CreateCommand();
             command.Connection = Connection;
             command.Transaction = Transaction;
-            command.CommandText = String.Format(@"EXEC sp_getapplock                
+            command.CommandText = string.Format(@"EXEC sp_getapplock                
             @Resource = '{0}',
             @LockMode = 'Exclusive',
             @LockOwner = 'Transaction',
@@ -115,7 +115,7 @@ namespace VirtualObjects.Connections
             var command = Connection.CreateCommand();
             command.Connection = Connection;
             command.Transaction = Transaction;
-            command.CommandText = String.Format(@"EXEC sp_releaseapplock
+            command.CommandText = string.Format(@"EXEC sp_releaseapplock
                         @Resource = '{0}',
                         @DbPrincipal = 'public',
                         @LockOwner = 'Transaction'", Name);

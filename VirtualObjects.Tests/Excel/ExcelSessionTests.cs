@@ -147,12 +147,12 @@ namespace VirtualObjects.Tests.Excel
 
     public class Person
     {
-        public String Name { get; set; }
-        public Double Age { get; set; }
-        public String Address { get; set; }
-        public String City { get; set; }
-        public String Title { get; set; }
-        public Boolean Active { get; set; }
+        public string Name { get; set; }
+        public double Age { get; set; }
+        public string Address { get; set; }
+        public string City { get; set; }
+        public string Title { get; set; }
+        public bool Active { get; set; }
     }
 
     [Table(TableName = "Folha1")]
@@ -161,12 +161,12 @@ namespace VirtualObjects.Tests.Excel
         public int Artigo { get; set; }
 
         [Column(FieldName = "Descrição")]
-        public String Descricao { get; set; }
+        public string Descricao { get; set; }
 
-        public Double Quantidade { get; set; }
+        public double Quantidade { get; set; }
 
         [Column(FieldName = "Preço Unitário")]
-        public Double PrecUnit { get; set; }
+        public double PrecUnit { get; set; }
     }
 
     [Table(TableName = "Folha2")]
@@ -176,12 +176,12 @@ namespace VirtualObjects.Tests.Excel
         public int Artigo { get; set; }
 
         [Column(FieldName = "B")]
-        public String Descricao { get; set; }
+        public string Descricao { get; set; }
 
         [Column(FieldName = "C")]
-        public Double Quantidade { get; set; }
+        public double Quantidade { get; set; }
 
         [Column(FieldName = "D")]
-        public Double PrecUnit { get; set; }
+        public double PrecUnit { get; set; }
     }
 }

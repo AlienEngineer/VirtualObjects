@@ -12,9 +12,9 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Identity]
         public int EmployeeId { get; set; }
 
-        public String LastName { get; set; }
+        public string LastName { get; set; }
 
-        public String FirstName { get; set; }
+        public string FirstName { get; set; }
 
         public DateTime HireDate { get; set; }
 
@@ -28,40 +28,40 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Identity]
         public int EmployeeId { get; set; }
 
-        public String LastName { get; set; }
+        public string LastName { get; set; }
 
-        public String FirstName { get; set; }
+        public string FirstName { get; set; }
 
-        public String Title { get; set; }
+        public string Title { get; set; }
 
-        public String TitleOfCourtesy { get; set; }
+        public string TitleOfCourtesy { get; set; }
 
         public DateTime BirthDate { get; set; }
 
         public DateTime HireDate { get; set; }
 
-        public String Address { get; set; }
+        public string Address { get; set; }
 
-        public String City { get; set; }
+        public string City { get; set; }
 
-        public String Region { get; set; }
+        public string Region { get; set; }
 
-        public String PostalCode { get; set; }
+        public string PostalCode { get; set; }
 
-        public String Country { get; set; }
+        public string Country { get; set; }
 
-        public String HomePhone { get; set; }
+        public string HomePhone { get; set; }
 
-        public String Extension { get; set; }
+        public string Extension { get; set; }
 
-        public String Notes { get; set; }
+        public string Notes { get; set; }
 
-        public Byte[] Photo { get; set; }
+        public byte[] Photo { get; set; }
 
         [Association(FieldName = "ReportsTo", OtherKey = "EmployeeId")]
         public virtual Employee ReportsTo { get; set; }
 
-        public String PhotoPath { get; set; }
+        public string PhotoPath { get; set; }
 
         public virtual IQueryable<EmployeeTerritories> Territories { get; set; }
 
@@ -73,7 +73,7 @@ namespace VirtualObjects.Tests.Models.Northwind
         [Ignore]
         public bool NonExistingField { get; set; }
 
-        public Byte[] Version { get; set; }
+        public byte[] Version { get; set; }
     }
 
 }

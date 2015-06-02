@@ -53,7 +53,7 @@ namespace VirtualObjects.Queries
         /// <value>
         /// The map entity.
         /// </value>
-        public Func<object, object[], Object> MapEntity { get; set; }
+        public Func<object, object[], object> MapEntity { get; set; }
 
         /// <summary>
         /// Gets or sets the entity information.

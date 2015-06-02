@@ -31,7 +31,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns></returns>
-        IDataReader GetRawData(String query);
+        IDataReader GetRawData(string query);
 
         /// <summary>
         /// Gets how many entities existe of the given TEntity type.
@@ -70,7 +70,7 @@ namespace VirtualObjects
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        Boolean Delete<TEntity>(TEntity entity) where TEntity : class, new();
+        bool Delete<TEntity>(TEntity entity) where TEntity : class, new();
 
         /// <summary>
         /// Begins the transaction.
@@ -84,7 +84,7 @@ namespace VirtualObjects
         /// <param name="storeProcedure">The store procedure.</param>
         /// <param name="args">The arguments.</param>
         /// <returns></returns>
-        int ExecuteStoreProcedure(String storeProcedure, IEnumerable<KeyValuePair<String, Object>> args);
+        int ExecuteStoreProcedure(string storeProcedure, IEnumerable<KeyValuePair<string, object>> args);
 
         /// <summary>
         /// Gets the connection string.
@@ -92,6 +92,6 @@ namespace VirtualObjects
         /// <value>
         /// The connection string.
         /// </value>
-        String ConnectionString { get; }
+        string ConnectionString { get; }
     }
 }

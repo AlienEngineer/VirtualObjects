@@ -53,7 +53,7 @@ namespace VirtualObjects.Queries.Translation
 
             public void AddPredicatedColumn(IEntityColumnInfo column)
             {
-                if (String.IsNullOrEmpty(Projection))
+                if (string.IsNullOrEmpty(Projection))
                 {
                     PredicatedColumns.Add(column);
                 }
@@ -61,7 +61,7 @@ namespace VirtualObjects.Queries.Translation
 
             public void AddPredicatedColumns(IEnumerable<IEntityColumnInfo> columns)
             {
-                if (String.IsNullOrEmpty(Projection))
+                if (string.IsNullOrEmpty(Projection))
                 {
                     columns.ForEach(AddPredicatedColumn);
                 }
@@ -136,13 +136,13 @@ namespace VirtualObjects.Queries.Translation
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
-        private Boolean hasJoinClause;
-        private readonly IDictionary<String, IOperationParameter> _parameters;
+        private bool hasJoinClause;
+        private readonly IDictionary<string, IOperationParameter> _parameters;
         private int _depth;
         private int _parameterCount = -1;
         private QueryTranslator _rootTranslator;
         private readonly IDictionary<ParameterExpression, QueryTranslator> _indexer;
-        private readonly Stack<String> _compileStack = new Stack<String>();
+        private readonly Stack<string> _compileStack = new Stack<string>();
         private readonly Stack<IEntityColumnInfo> _memberAccessStack = new Stack<IEntityColumnInfo>();
         private readonly Stack<IEntityInfo> _EntitySources = new Stack<IEntityInfo>();
         private readonly IList<OnClause> _OnClauses = new List<OnClause>();
@@ -154,7 +154,7 @@ namespace VirtualObjects.Queries.Translation
             _formatter = formatter;
             _mapper = mapper;
             _index = _depth = 0;
-            _parameters = new Dictionary<String, IOperationParameter>();
+            _parameters = new Dictionary<string, IOperationParameter>();
             _indexer = new Dictionary<ParameterExpression, QueryTranslator>(new ParameterEquality());
             _rootTranslator = this;
         }
@@ -202,7 +202,7 @@ namespace VirtualObjects.Queries.Translation
         /// <value>
         ///   <c>true</c> if [should return]; otherwise, <c>false</c>.
         /// </value>
-        public Boolean ShouldReturn { get { return ParameterCount > 0 && ParameterCount == Parameters.Count; } }
+        public bool ShouldReturn { get { return ParameterCount > 0 && ParameterCount == Parameters.Count; } }
 
         public IEntityInfo EntityInfo { get; set; }
 
@@ -235,9 +235,9 @@ namespace VirtualObjects.Queries.Translation
                 entityInfo = null;
             }
 
-            Func<Object, IDataReader, MapResult> mapEntity = null;
-            Func<ISession, Object> makeEntity = null;
-            Func<Object, Object> entityCast = null;
+            Func<object, IDataReader, MapResult> mapEntity = null;
+            Func<ISession, object> makeEntity = null;
+            Func<object, object> entityCast = null;
 
             if (entityInfo == null && !OutputType.IsDynamic())
             {
@@ -458,7 +458,7 @@ namespace VirtualObjects.Queries.Translation
         {
             if (buffer.Distinct)
             {
-                buffer.Projection = String.Format("{0} {1}", _formatter.Distinct, buffer.Projection);
+                buffer.Projection = string.Format("{0} {1}", _formatter.Distinct, buffer.Projection);
             }
         }
 
@@ -695,7 +695,7 @@ namespace VirtualObjects.Queries.Translation
             throw new TranslationException(Errors.Translation_Method_NoArgs_NotSupported, callExpression.Method);
         }
 
-        private void CompileMethod(Expression expression, String functionName, CompilerBuffer buffer)
+        private void CompileMethod(Expression expression, string functionName, CompilerBuffer buffer)
         {
             buffer.WasAggregated = true;
             var lambda = ExtractLambda(expression, false);
@@ -751,7 +751,7 @@ namespace VirtualObjects.Queries.Translation
 
         private StringBuffer CompileOrderOrGroupBy(Expression expression, CompilerBuffer buffer, StringBuffer stringBuffer, string starter)
         {
-            if (String.IsNullOrEmpty(stringBuffer))
+            if (string.IsNullOrEmpty(stringBuffer))
             {
                 stringBuffer += " ";
                 stringBuffer += starter;
@@ -834,7 +834,7 @@ namespace VirtualObjects.Queries.Translation
             //
 
             // The first table will only be added in the first call.
-            if (String.IsNullOrEmpty(buffer.From))
+            if (string.IsNullOrEmpty(buffer.From))
             {
                 buffer.From += _formatter.FormatTableName(entityInfo1.EntityName, _index);
             }
@@ -953,7 +953,7 @@ namespace VirtualObjects.Queries.Translation
                 var initMember = lambda.Body as MemberInitExpression;
                 if (initMember != null)
                 {
-                    if (!String.IsNullOrEmpty(buffer.Projection))
+                    if (!string.IsNullOrEmpty(buffer.Projection))
                     {
                         return;
                     }
@@ -1122,7 +1122,7 @@ namespace VirtualObjects.Queries.Translation
             return true;
         }
 
-        private Boolean CompileCustomProjectionMethodCall(CompilerBuffer buffer, Expression tmpExp, MemberInfo member, bool finalize = true)
+        private bool CompileCustomProjectionMethodCall(CompilerBuffer buffer, Expression tmpExp, MemberInfo member, bool finalize = true)
         {
             var call = tmpExp as MethodCallExpression;
 
@@ -1145,7 +1145,7 @@ namespace VirtualObjects.Queries.Translation
             return true;
         }
 
-        private Boolean CompileCustomProjectionMemberAccess(CompilerBuffer buffer, Expression tmpExp, MemberInfo member)
+        private bool CompileCustomProjectionMemberAccess(CompilerBuffer buffer, Expression tmpExp, MemberInfo member)
         {
             var memberExpression = tmpExp as MemberExpression;
 
@@ -1158,7 +1158,7 @@ namespace VirtualObjects.Queries.Translation
             return true;
         }
 
-        private Boolean CompileCustomProjectionParameter(CompilerBuffer buffer, MethodCallExpression callExpression, Expression tmpExp)
+        private bool CompileCustomProjectionParameter(CompilerBuffer buffer, MethodCallExpression callExpression, Expression tmpExp)
         {
             var parameterExpression = tmpExp as ParameterExpression;
 
@@ -1212,7 +1212,7 @@ namespace VirtualObjects.Queries.Translation
             //
             // If the whole entity is used we need to ungroup.
             //
-            if (!hasJoinClause && !String.IsNullOrEmpty(buffer.GroupBy))
+            if (!hasJoinClause && !string.IsNullOrEmpty(buffer.GroupBy))
             {
                 throw new TranslationException(
                     Errors.Translation_UnableToGroupByWithEntity);
@@ -1247,7 +1247,7 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileDefaultProjection(CompilerBuffer buffer)
         {
-            if (!String.IsNullOrEmpty(buffer.Projection))
+            if (!string.IsNullOrEmpty(buffer.Projection))
             {
                 return;
             }
@@ -1275,7 +1275,7 @@ namespace VirtualObjects.Queries.Translation
                 {
                     buffer.From += _formatter.Select + " ";
 
-                    if (!String.IsNullOrEmpty(buffer.OrderBy))
+                    if (!string.IsNullOrEmpty(buffer.OrderBy))
                     {
                         buffer.From += _formatter.FormatRowNumber(
                             buffer.OrderBy.Replace(_formatter.GetTableAlias(_index), _formatter.GetTableAlias(100 + _index)),
@@ -1309,7 +1309,7 @@ namespace VirtualObjects.Queries.Translation
                 //
                 // Append the conditions to the predicates.
                 //
-                if (String.IsNullOrEmpty(buffer.Predicates))
+                if (string.IsNullOrEmpty(buffer.Predicates))
                 {
                     buffer.Predicates += " ";
                     buffer.Predicates += _formatter.Where;
@@ -1865,7 +1865,7 @@ Group by error reasons:
         private bool CompileStringMemberAccess(MemberExpression expression, CompilerBuffer buffer, MemberExpression nextMember,
             IEntityColumnInfo foreignKey, QueryTranslator translator, out QueryTranslator queryTranslator)
         {
-            if (nextMember.Member.Type() == typeof(String))
+            if (nextMember.Member.Type() == typeof(string))
             {
                 switch (expression.Member.Name)
                 {
@@ -1951,7 +1951,7 @@ Group by error reasons:
         {
             var callExp = expression as MethodCallExpression;
 
-            if (callExp == null || callExp.Method.ReturnType != typeof(String))
+            if (callExp == null || callExp.Method.ReturnType != typeof(string))
             {
                 return false;
             }
@@ -2039,7 +2039,7 @@ Group by error reasons:
                 return;
             }
 
-            var methodCalled = String.Empty;
+            var methodCalled = string.Empty;
 
             var binary = expression as BinaryExpression;
             if (binary == null)
@@ -2148,7 +2148,7 @@ Group by error reasons:
                             throw new TranslationException(Errors.SQL_UnableToFormatNode, binary);
                     }
                 }
-                else if (IsMemberAccess(right) && right.Type == typeof(Boolean) && !IsConstant(right))
+                else if (IsMemberAccess(right) && right.Type == typeof(bool) && !IsConstant(right))
                 {
                     var parameter = ExtractAccessor(right) as ParameterExpression;
                     CompileNodeType(binary.NodeType, buffer);
@@ -2156,7 +2156,7 @@ Group by error reasons:
                 }
                 else
                 {
-                    if (methodCalled != String.Empty)
+                    if (methodCalled != string.Empty)
                     {
                         //
                         // Compiles method calls.
@@ -2225,7 +2225,7 @@ Group by error reasons:
 
         private static void InitBinaryExpressionCall(CompilerBuffer buffer)
         {
-            if (String.IsNullOrEmpty(buffer.Predicates))
+            if (string.IsNullOrEmpty(buffer.Predicates))
             {
                 buffer.Predicates += " Where ";
             }
@@ -2243,7 +2243,7 @@ Group by error reasons:
 
                 var outputType = tmpLambda.ReturnType;
 
-                if (outputType == typeof(Boolean))
+                if (outputType == typeof(bool))
                 {
                     throw new TranslationException(Errors.Translation_PredicateOnProjection);
                 }
@@ -2343,7 +2343,7 @@ Group by error reasons:
             return Expression.MakeMemberAccess(expMember, member.Member);
         }
 
-        private static Boolean HasManyMemberAccess(Expression expression)
+        private static bool HasManyMemberAccess(Expression expression)
         {
             if (IsConstant(expression))
             {
@@ -2374,7 +2374,7 @@ Group by error reasons:
 
         private static bool IsStringMember(MemberExpression member, MemberExpression next)
         {
-            return next != null && next.Member.Type() == typeof(String) &&
+            return next != null && next.Member.Type() == typeof(string) &&
                 member.Member.Name == "Length";
         }
 
@@ -2445,7 +2445,7 @@ Group by error reasons:
             return expression;
         }
 
-        private static Boolean IsConstant(Expression expression)
+        private static bool IsConstant(Expression expression)
         {
             return ExtractConstant(expression) != null;
         }
@@ -2522,7 +2522,7 @@ Group by error reasons:
                 var projection = buffer.Projection.Replace(_formatter.GetTableAlias(_index), tableAlias);
 
                 buffer.Projection = buffer.OldProjection;
-                if (String.IsNullOrEmpty(buffer.Projection))
+                if (string.IsNullOrEmpty(buffer.Projection))
                 {
                     CompileDefaultProjection(buffer);
                 }
@@ -2557,7 +2557,7 @@ Group by error reasons:
             {
                 return null;
             }
-            return String.Format(" {0} {1}", _formatter.Union, Merge(union));
+            return string.Format(" {0} {1}", _formatter.Union, Merge(union));
         }
 
         private StringBuffer CompileAndGetBuffer(Action action, CompilerBuffer buffer)
@@ -2648,7 +2648,7 @@ Group by error reasons:
             return queryable;
         }
 
-        private readonly Stack<String> _predicates = new Stack<string>();
+        private readonly Stack<string> _predicates = new Stack<string>();
 
         private void SavePredicate(CompilerBuffer buffer)
         {

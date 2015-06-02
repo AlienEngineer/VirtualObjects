@@ -7,9 +7,9 @@ namespace VirtualObjects.Tests
 {
     internal class MockReader : DbDataReader
     {
-        private readonly Object[] data;
+        private readonly object[] data;
 
-        public MockReader(Object[] data)
+        public MockReader(object[] data)
         {
             this.data = data;
         }

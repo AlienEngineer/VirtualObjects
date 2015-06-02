@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace VirtualObjects
 {
@@ -29,7 +28,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="str">The string.</param>
         /// <returns></returns>
-        public static implicit operator StringBuffer(String str)
+        public static implicit operator StringBuffer(string str)
         {
             return new StringBuffer(str);
         }
@@ -49,7 +48,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="str">The string.</param>
         /// <returns></returns>
-        public static implicit operator String(StringBuffer str)
+        public static implicit operator string(StringBuffer str)
         {
             return (str == null) ? null : str.ToString();
         }
@@ -70,7 +69,7 @@ namespace VirtualObjects
         /// <param name="sb1">The SB1.</param>
         /// <param name="sb2">The SB2.</param>
         /// <returns></returns>
-        public static StringBuffer operator +(StringBuffer sb1, String sb2)
+        public static StringBuffer operator +(StringBuffer sb1, string sb2)
         {
             if (sb1 == null)
             {
@@ -87,7 +86,7 @@ namespace VirtualObjects
         /// <param name="oldStr">The old string.</param>
         /// <param name="newStr">The new string.</param>
         /// <returns></returns>
-        public String Replace(String oldStr, String newStr)
+        public string Replace(string oldStr, string newStr)
         {
             return Sb.ToString().Replace(oldStr, newStr);
         }
@@ -133,7 +132,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="str">The string.</param>
         /// <returns></returns>
-        public static implicit operator StubBuffer(String str)
+        public static implicit operator StubBuffer(string str)
         {
             return new StubBuffer();
         }
@@ -153,7 +152,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="str">The string.</param>
         /// <returns></returns>
-        public static implicit operator String(StubBuffer str)
+        public static implicit operator string(StubBuffer str)
         {
             return (str == null) ? null : str.ToString();
         }
@@ -174,7 +173,7 @@ namespace VirtualObjects
         /// <param name="sb1">The SB1.</param>
         /// <param name="sb2">The SB2.</param>
         /// <returns></returns>
-        public static StringBuffer operator +(StubBuffer sb1, String sb2)
+        public static StringBuffer operator +(StubBuffer sb1, string sb2)
         {
             return sb1;
         }

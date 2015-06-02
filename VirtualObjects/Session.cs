@@ -163,7 +163,7 @@ namespace VirtualObjects
         /// <value>
         /// The connection string.
         /// </value>
-        public String ConnectionString
+        public string ConnectionString
         {
             get { return ((InternalSession) InternalSession).Context.Connection.ConnectionString; }
         }
@@ -181,7 +181,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="connectionName">Name of the connection.</param>
-        public Session(SessionConfiguration configuration = null, String connectionName = null)
+        public Session(SessionConfiguration configuration = null, string connectionName = null)
             : this(new ModulesConfiguration(configuration, connectionName)) { }
 
         /// <summary>
@@ -362,7 +362,7 @@ namespace VirtualObjects
             Xlsx
         }
 
-        static readonly IDictionary<String, String> Masks = new Dictionary<String, String>();
+        static readonly IDictionary<string, string> Masks = new Dictionary<string, string>();
 
         static ExcelSession()
         {
@@ -391,11 +391,11 @@ namespace VirtualObjects
             return configuration;
         }
 
-        private static String BuildConnectionString(String filename)
+        private static string BuildConnectionString(string filename)
         {
             try
             {
-                return String.Format(Masks[ParseExtension(filename)], filename);
+                return string.Format(Masks[ParseExtension(filename)], filename);
             }
             catch ( Exception ex )
             {
@@ -403,7 +403,7 @@ namespace VirtualObjects
             }
         }
 
-        private static String ParseExtension(String filename)
+        private static string ParseExtension(string filename)
         {
             return filename.Substring(filename.LastIndexOf('.') + 1);
         }

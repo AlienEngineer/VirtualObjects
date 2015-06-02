@@ -20,14 +20,14 @@ namespace VirtualObjects
         /// <value>
         /// The value.
         /// </value>
-        Object Value { get; }
+        object Value { get; }
         /// <summary>
         /// Gets the name.
         /// </summary>
         /// <value>
         /// The name.
         /// </value>
-        String Name { get; }
+        string Name { get; }
         /// <summary>
         /// Gets the column.
         /// </summary>

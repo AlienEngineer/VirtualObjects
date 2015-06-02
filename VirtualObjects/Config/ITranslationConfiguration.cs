@@ -15,63 +15,63 @@ namespace VirtualObjects.Config
         /// <value>
         /// The column ignore getters.
         /// </value>
-        IList<Func<PropertyInfo, Boolean>> ColumnIgnoreGetters { get; }
+        IList<Func<PropertyInfo, bool>> ColumnIgnoreGetters { get; }
         /// <summary>
         /// Gets the column name getters.
         /// </summary>
         /// <value>
         /// The column name getters.
         /// </value>
-        IList<Func<PropertyInfo, String>> ColumnNameGetters { get; }
+        IList<Func<PropertyInfo, string>> ColumnNameGetters { get; }
         /// <summary>
         /// Gets the column key getters.
         /// </summary>
         /// <value>
         /// The column key getters.
         /// </value>
-        IList<Func<PropertyInfo, Boolean>> ColumnKeyGetters { get; }
+        IList<Func<PropertyInfo, bool>> ColumnKeyGetters { get; }
         /// <summary>
         /// Gets the column identity getters.
         /// </summary>
         /// <value>
         /// The column identity getters.
         /// </value>
-        IList<Func<PropertyInfo, Boolean>> ColumnIdentityGetters { get; }
+        IList<Func<PropertyInfo, bool>> ColumnIdentityGetters { get; }
         /// <summary>
         /// Gets the entity name getters.
         /// </summary>
         /// <value>
         /// The entity name getters.
         /// </value>
-        IList<Func<Type, String>> EntityNameGetters { get; }
+        IList<Func<Type, string>> EntityNameGetters { get; }
         /// <summary>
         /// Gets the column foreign key getters.
         /// </summary>
         /// <value>
         /// The column foreign key getters.
         /// </value>
-        IList<Func<PropertyInfo, String>> ColumnForeignKeyGetters { get; }
+        IList<Func<PropertyInfo, string>> ColumnForeignKeyGetters { get; }
         /// <summary>
         /// Gets the column foreign key links getters.
         /// </summary>
         /// <value>
         /// The column foreign key links getters.
         /// </value>
-        IList<Func<PropertyInfo, String>> ColumnForeignKeyLinksGetters { get; }
+        IList<Func<PropertyInfo, string>> ColumnForeignKeyLinksGetters { get; }
         /// <summary>
         /// Gets the column version field getters.
         /// </summary>
         /// <value>
         /// The column version field getters.
         /// </value>
-        IList<Func<PropertyInfo, Boolean>> ColumnVersionFieldGetters { get; }
+        IList<Func<PropertyInfo, bool>> ColumnVersionFieldGetters { get; }
         /// <summary>
         /// Gets the computed column getters.
         /// </summary>
         /// <value>
         /// The computed column getters.
         /// </value>
-        IList<Func<PropertyInfo, Boolean>> ComputedColumnGetters { get; }
+        IList<Func<PropertyInfo, bool>> ComputedColumnGetters { get; }
 
         /// <summary>
         /// Gets the collection filter getters.
@@ -79,7 +79,7 @@ namespace VirtualObjects.Config
         /// <value>
         /// The collection filter getters.
         /// </value>
-        IList<Func<PropertyInfo, String>> CollectionFilterGetters { get; }
+        IList<Func<PropertyInfo, string>> CollectionFilterGetters { get; }
 
         /// <summary>
         /// Gets or sets the is foreign getters.
@@ -87,6 +87,6 @@ namespace VirtualObjects.Config
         /// <value>
         /// The is foreign getters.
         /// </value>
-        IList<Func<PropertyInfo, Boolean>> IsForeignKeyGetters { get; }
+        IList<Func<PropertyInfo, bool>> IsForeignKeyGetters { get; }
     }
 }

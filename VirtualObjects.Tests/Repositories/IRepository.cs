@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 
 namespace VirtualObjects.Tests.Repositories 
@@ -42,7 +41,7 @@ namespace VirtualObjects.Tests.Repositories
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        Boolean Delete<TEntity>(TEntity entity) where TEntity : class, new();
+        bool Delete<TEntity>(TEntity entity) where TEntity : class, new();
 
         /// <summary>
         /// Begins the transaction.

@@ -17,7 +17,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public static Boolean IsDynamic(this Type type)
+        public static bool IsDynamic(this Type type)
         {
             return type.Name.StartsWith("<>");
         }
@@ -27,7 +27,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public static Boolean IsProxy(this Type type)
+        public static bool IsProxy(this Type type)
         {
             return type.Name.EndsWith("Proxy") && type.BaseType != null && type.Name.StartsWith(type.BaseType.Name);
         }
@@ -37,7 +37,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="propertyInfo">The property information.</param>
         /// <returns></returns>
-        public static Boolean IsVirtual(this PropertyInfo propertyInfo)
+        public static bool IsVirtual(this PropertyInfo propertyInfo)
         {
 #if NET40
             return propertyInfo.GetGetMethod().IsVirtual;
@@ -51,11 +51,11 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public static Boolean IsCollection(this Type type)
+        public static bool IsCollection(this Type type)
         {
             return type.GetInterfaces()
                 .Any(e => e == typeof(IEnumerable))
-                && type != typeof(String);
+                && type != typeof(string);
         }
 
 
@@ -65,7 +65,7 @@ namespace VirtualObjects
         /// <param name="type">The type.</param>
         /// <param name="target">The target.</param>
         /// <returns></returns>
-        public static Boolean IsType(this Type type, Type target)
+        public static bool IsType(this Type type, Type target)
         {
             return type.GetInterfaces()
                 .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == target);
@@ -76,7 +76,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public static Boolean IsGenericCollection(this Type type)
+        public static bool IsGenericCollection(this Type type)
         {
             return type.IsCollection() && type.GetGenericArguments().Any();
         }

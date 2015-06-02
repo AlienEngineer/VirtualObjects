@@ -13,7 +13,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        Object CreateEntity(Type type);
+        object CreateEntity(Type type);
 
         /// <summary>
         /// Determines whether this instance can create the specified type.

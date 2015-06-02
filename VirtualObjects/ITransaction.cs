@@ -20,7 +20,7 @@ namespace VirtualObjects
         /// Indicates that a rollback has taken place.
         /// </summary>
         /// <value>Has rooledback?</value>
-        Boolean Rolledback { get; }
+        bool Rolledback { get; }
 
         /// <summary>
         /// Rollbacks the transaction.

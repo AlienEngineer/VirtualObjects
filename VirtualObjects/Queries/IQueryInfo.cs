@@ -39,7 +39,7 @@ namespace VirtualObjects.Queries
         /// <value>
         /// The map entity.
         /// </value>
-        Func<Object, IDataReader, MapResult> MapEntity { get; set; }
+        Func<object, IDataReader, MapResult> MapEntity { get; set; }
 
         /// <summary>
         /// Gets or sets the make entity.
@@ -47,7 +47,7 @@ namespace VirtualObjects.Queries
         /// <value>
         /// The make entity.
         /// </value>
-        Func<ISession, Object> MakeEntity { get; set; }
+        Func<ISession, object> MakeEntity { get; set; }
 
         /// <summary>
         /// Gets or sets the entity information.
