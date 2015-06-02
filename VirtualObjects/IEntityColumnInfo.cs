@@ -129,6 +129,22 @@ namespace VirtualObjects
         bool InjectNulls { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether this instance has formatting styles.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance has formatting styles; otherwise, <c>false</c>.
+        /// </value>
+        bool HasFormattingStyles { get; }
+
+        /// <summary>
+        /// Gets or sets the formats.
+        /// </summary>
+        /// <value>
+        /// The formats.
+        /// </value>
+        string[] Formats { get; }
+
+        /// <summary>
         /// Sets the value.
         /// </summary>
         /// <param name="entity">The entity.</param>

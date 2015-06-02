@@ -33,7 +33,8 @@ namespace VirtualObjects.Config
                 EntityNameGetters = new List<Func<Type, string>>(),
                 ColumnForeignKeyGetters = new List<Func<PropertyInfo, string>>(),
                 ColumnForeignKeyLinksGetters = new List<Func<PropertyInfo, string>>(),
-                CollectionFilterGetters = new List<Func<PropertyInfo, string>>()
+                CollectionFilterGetters = new List<Func<PropertyInfo, string>>(),
+                ColumnFormattersGetters = new List<Func<PropertyInfo, string>>()
             };
 
             _defaultBooleanGetter = attribute => attribute != null;
@@ -91,6 +92,32 @@ namespace VirtualObjects.Config
         public void ColumnName(Func<PropertyInfo, string> nameGetter)
         {
             _configuration.ColumnNameGetters.Insert(0, nameGetter);
+        }
+
+        /// <summary>
+        /// Appends a parser to get the format of the column attribute based.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="formatGetter">The format getter.</param>
+        public void ColumnFormat<TAttribute>(Func<TAttribute, string> formatGetter) where TAttribute : Attribute
+        {
+            ColumnFormat(prop =>
+            {
+                var attributes = prop.Attributes<TAttribute>();
+
+                return attributes != null ?
+                    attributes.Select(formatGetter).FirstOrDefault(e => !string.IsNullOrEmpty(e))
+                    : null;
+            });
+        }
+
+        /// <summary>
+        /// Appends a parser to get the format of the column based on a Property.
+        /// </summary>
+        /// <param name="formatGetter">The format getter.</param>
+        public void ColumnFormat(Func<PropertyInfo, string> formatGetter)
+        {
+            _configuration.ColumnFormattersGetters.Insert(0, formatGetter);
         }
 
         /// <summary>

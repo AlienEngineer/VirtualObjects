@@ -88,5 +88,13 @@ namespace VirtualObjects.Config
         /// The is foreign getters.
         /// </value>
         IList<Func<PropertyInfo, bool>> IsForeignKeyGetters { get; }
+
+        /// <summary>
+        /// Gets or sets the column formatters getters.
+        /// </summary>
+        /// <value>
+        /// The column formatters getters.
+        /// </value>
+        IList<Func<PropertyInfo, string>> ColumnFormattersGetters { get; set; }
     }
 }

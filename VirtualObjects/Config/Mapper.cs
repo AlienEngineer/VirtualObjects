@@ -210,6 +210,7 @@ namespace VirtualObjects.Config
                 ForeignKey = column.ForeignKey,
                 IsIdentity = column.IsIdentity,
                 IsKey = column.IsKey,
+                Formats = column.Formats,
                 ValueGetter = column.ValueGetter,
                 ValueSetter = column.ValueSetter,
                 IsVersionControl = column.IsVersionControl
@@ -286,6 +287,7 @@ namespace VirtualObjects.Config
                 IsIdentity = GetIsIdentity(propertyInfo),
                 IsVersionControl = _configuration.ColumnVersionFieldGetters.Any(isVersion => isVersion(propertyInfo)),
                 IsComputed = _configuration.ComputedColumnGetters.Any(isComputed => isComputed(propertyInfo)),
+                Formats = GetFormats(propertyInfo).ToArray(),
                 Property = propertyInfo,
                 ValueGetter = MakeValueGetter(columnName, propertyInfo.DelegateForGetPropertyValue()),
                 ValueSetter = MakeValueSetter(columnName, propertyInfo.DelegateForSetPropertyValue()),
@@ -397,6 +399,13 @@ namespace VirtualObjects.Config
             return _configuration.ColumnNameGetters
                 .Select(nameGetter => nameGetter(propertyInfo))
                 .FirstOrDefault(name => !string.IsNullOrEmpty(name));
+        }
+
+        private IEnumerable<string> GetFormats(PropertyInfo propertyInfo)
+        {
+            return _configuration.ColumnFormattersGetters
+                .Select(formatGetter => formatGetter(propertyInfo))
+                .Where(name => !string.IsNullOrEmpty(name));
         }
 
         private static Func<object, object> MakeValueGetter(string fieldName, MemberGetter getter)

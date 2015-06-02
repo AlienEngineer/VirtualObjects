@@ -38,6 +38,7 @@ namespace VirtualObjects.CodeGenerators
             AddNamespace("System.Linq");
             AddNamespace("System.Data");
             AddNamespace("System.Reflection");
+            AddNamespace("System.Globalization");
         }
 
         protected override string GenerateMapObjectCode()
@@ -388,6 +389,18 @@ namespace VirtualObjects.CodeGenerators
             StringBuffer result = " = ";
             if (column.Property.PropertyType.IsFrameworkType() || column.Property.PropertyType.IsEnum)
             {
+                if (column.HasFormattingStyles && column.Property.PropertyType == typeof(DateTime))
+                {
+                    result += "DateTime.ParseExact((Parse(data[{i}]) ?? default({Type})).ToString(), new[] {{ {Formats} }}, CultureInfo.InvariantCulture, DateTimeStyles.None)"
+                        .FormatWith(new
+                        {
+                            i,
+                            Formats = string.Join(", ", column.Formats.Select(e => "\"{e}\"".FormatWith(new { e }))),
+                            Type = column.Property.PropertyType.Name
+                        });
+                    return result;
+                }
+
                 result += "({Type})(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = column.Property.PropertyType.Name });
             }
             else

@@ -157,5 +157,18 @@ namespace VirtualObjects.Config
         /// </summary>
         /// <param name="isForeignKeyGetter">The is foreign key getter.</param>
         void IsForeignKey(Func<PropertyInfo, bool> isForeignKeyGetter);
+
+        /// <summary>
+        /// Appends a parser to get the format of the column attribute based.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="formatGetter">The format getter.</param>
+        void ColumnFormat<TAttribute>(Func<TAttribute, string> formatGetter) where TAttribute : Attribute;
+
+        /// <summary>
+        /// Appends a parser to get the format of the column based on a Property.
+        /// </summary>
+        /// <param name="formatGetter">The format getter.</param>
+        void ColumnFormat(Func<PropertyInfo, string> formatGetter);
     }
 }

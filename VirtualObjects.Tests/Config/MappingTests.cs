@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using VirtualObjects.Mappings;
@@ -16,9 +17,8 @@ namespace VirtualObjects.Tests.Config
     {
         public class TestModel
         {
-
             public int SomeName { get; set; }
-
+            
             [Identity(FieldName = "NotSoRandom")]
             public int SomeRandomName { get; set; }
 
@@ -27,6 +27,9 @@ namespace VirtualObjects.Tests.Config
 
             [Association(FieldName = "ExtId", OtherKey = "SomeRandomName")]
             public TestModel OtherModelKey { get; set; }
+
+            [Format(Format = "yyyy-MM-dd")]
+            public DateTime Date { get; set; }
         }
 
         public class TestModel1
@@ -64,7 +67,7 @@ namespace VirtualObjects.Tests.Config
         [Test]
         public void EntityInfo_Should_Have_Columns()
         {
-            _entityInfo.Columns.Count().Should().Be(4);
+            _entityInfo.Columns.Count().Should().Be(5);
             _entityInfo.Columns.Should().NotBeEmpty();
             CollectionAssert.AllItemsAreNotNull(_entityInfo.Columns);
         }
@@ -101,6 +104,12 @@ namespace VirtualObjects.Tests.Config
         public void EntityInfo_Should_Have_One_Identity()
         {
             _entityInfo.Columns.Count(e => e.IsIdentity).Should().Be(1);
+        }
+
+        [Test]
+        public void EntityInfo_Should_Have_Specific_Format_On_Field()
+        {
+            _entityInfo.Columns.Count(e => e.HasFormattingStyles && e.Formats.Contains("yyyy-MM-dd")).Should().Be(1);
         }
 
         [Test]

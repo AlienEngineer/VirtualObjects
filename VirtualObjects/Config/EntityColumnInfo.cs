@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Fasterflect;
 
@@ -40,6 +41,8 @@ namespace VirtualObjects.Config
 
         public Action<object, object> ValueSetter { get; set; }
 
+        public string[] Formats { get; set; }
+
         public object SetValue(object entity, object value)
         {
             if ( value == DBNull.Value )
@@ -77,6 +80,7 @@ namespace VirtualObjects.Config
 
         public object DefaultValue { get; private set; }
         public bool InjectNulls { get; set; }
+        public bool HasFormattingStyles { get { return Formats != null && Formats.Any(); } }
 
         public virtual IEntityColumnInfo GetLastBind() { return this; }
 

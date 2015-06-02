@@ -91,6 +91,8 @@ namespace VirtualObjects
 
             builder.ColumnKey<KeyAttribute>();
             builder.ColumnKey<IdentityAttribute>();
+            
+            builder.ColumnFormat<FormatAttribute>(e => e.Format);
 
             builder.ColumnIdentity<IdentityAttribute>();
 

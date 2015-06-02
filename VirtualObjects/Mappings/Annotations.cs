@@ -130,4 +130,21 @@ namespace VirtualObjects.Mappings
         public string FieldName { get; set; }
 
     }
+
+    /// <summary>
+    /// Indicates a format string to be used on value parsing.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    public class FormatAttribute : Attribute
+    {
+
+        /// <summary>
+        /// Gets or sets the format of the field you wish to use on data parsing.
+        /// </summary>
+        /// <value>
+        /// The name of the field.
+        /// </value>
+        public string Format { get; set; }
+
+    }
 }
