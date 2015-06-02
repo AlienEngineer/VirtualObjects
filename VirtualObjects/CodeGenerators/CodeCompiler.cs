@@ -1,10 +1,9 @@
+using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.CSharp;
-using System;
-using System.CodeDom.Compiler;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.CodeGenerators

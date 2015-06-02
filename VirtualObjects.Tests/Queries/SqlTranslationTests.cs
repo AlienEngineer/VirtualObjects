@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using NUnit.Framework;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Queries;
@@ -10,9 +11,6 @@ using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Queries
 {
-
-    using NUnit.Framework;
-
     class CachingTranslatorProvider : IQueryTranslatorProvider
     {
         public IQueryTranslator CreateQueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, SessionConfiguration configuration)
@@ -263,7 +261,7 @@ namespace VirtualObjects.Tests.Queries
         [Test, Repeat(Repeat)]
         public void SqlTranslation_Query_with_custom_function_call()
         {
-            var query = Query<Employee>().Where(e => Test(e.EmployeeId) == true).Select(e => e.EmployeeId);
+            var query = Query<Employee>().Where(e => Test(e.EmployeeId)).Select(e => e.EmployeeId);
 
             Assert.That(
                 Translate(query),
@@ -1278,7 +1276,7 @@ namespace VirtualObjects.Tests.Queries
                             grouped.Key.OrderId,
                             grouped.Key.FirstName,
                             grouped.Key.LastName,
-                            grouped.Key.details,
+                            grouped.Key.details
                         };
 
             Assert.That(

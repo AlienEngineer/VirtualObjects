@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using VirtualObjects.Exceptions;
-using Fasterflect;
-using System.Reflection;
-using VirtualObjects.Config;
 using System.Data;
+using System.Linq;
+using System.Reflection;
+using Fasterflect;
+using VirtualObjects.Config;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -376,7 +375,7 @@ namespace VirtualObjects.CodeGenerators
                      NotComment = column.ForeignKey == null ? String.Empty : "//",
                      Type = column.Property.PropertyType.Name,
                      IsBoolean = column.Property.PropertyType == typeof(Boolean) ? String.Empty : "//",
-                     IsNotBoolean = column.Property.PropertyType != typeof(Boolean) ? String.Empty : "//",
+                     IsNotBoolean = column.Property.PropertyType != typeof(Boolean) ? String.Empty : "//"
                  });
 
             }

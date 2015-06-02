@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using VirtualObjects.Tests.Models.Northwind;
-
-namespace VirtualObjects.Tests.Sessions
+﻿namespace VirtualObjects.Tests.Sessions
 {
 #if PERFORMANCE
     using NUnit.Framework;

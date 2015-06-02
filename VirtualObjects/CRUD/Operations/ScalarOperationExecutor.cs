@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -19,7 +20,7 @@ namespace VirtualObjects.CRUD.Operations
 
         public string CommandText
         {
-            get { throw new System.NotImplementedException(); }
+            get { throw new NotImplementedException(); }
         }
 
         public object Execute(SessionContext sessionContext)
@@ -29,7 +30,7 @@ namespace VirtualObjects.CRUD.Operations
 
         public IOperation PrepareOperation(object entityModel)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion

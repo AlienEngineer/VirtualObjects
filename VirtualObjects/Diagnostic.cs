@@ -93,7 +93,7 @@ namespace VirtualObjects
 
                 if ( mask != null )
                 {
-                    Trace.WriteLine(String.Format(mask, timer.ElapsedMilliseconds, timer.Elapsed, timer.ElapsedTicks));
+                    Console.WriteLine(mask, timer.ElapsedMilliseconds, timer.Elapsed, timer.ElapsedTicks);
                 }
 
                 Add(timer.Elapsed, name);
@@ -117,7 +117,7 @@ namespace VirtualObjects
             var timer = acum.Time;
 
             timer = new TimeSpan(timer.Ticks / acum.Count);
-            Trace.WriteLine(String.Format(mask, timer.TotalMilliseconds, timer, timer.Ticks));
+            Console.WriteLine(mask, timer.TotalMilliseconds, timer, timer.Ticks);
 
             Times.Remove(name);
         }
@@ -137,7 +137,7 @@ namespace VirtualObjects
             var acum = Times[name];
             var timer = acum.Time;
 
-            Trace.WriteLine(String.Format(mask, timer.TotalMilliseconds, timer, timer.Ticks));
+            Console.WriteLine(mask, timer.TotalMilliseconds, timer, timer.Ticks);
 
             Times.Remove(name);
         }

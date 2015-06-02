@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Machine.Specifications;
-using VirtualObjects.Connections;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions

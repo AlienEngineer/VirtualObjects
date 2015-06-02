@@ -1,16 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using VirtualObjects.EntityProvider;
+using NUnit.Framework;
+using VirtualObjects.Exceptions;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Mapping;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Queries
 {
-    using NUnit.Framework;
-    using VirtualObjects.Exceptions;
-
     /// <summary>
     /// 
     /// Unit-Tests for query Mapping

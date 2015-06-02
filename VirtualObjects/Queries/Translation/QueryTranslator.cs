@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,11 +10,10 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Fasterflect;
+using VirtualObjects.CodeGenerators;
 using VirtualObjects.Config;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Queries.Formatters;
-using VirtualObjects.CodeGenerators;
-using System.Data;
 using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.Queries.Translation
@@ -861,7 +861,7 @@ namespace VirtualObjects.Queries.Translation
                 _OnClauses.Add(new OnClause
                 {
                     Column2 = _memberAccessStack.Pop(),
-                    Column1 = _memberAccessStack.Pop(),
+                    Column1 = _memberAccessStack.Pop()
                 });
             }
 

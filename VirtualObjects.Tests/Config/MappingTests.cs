@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Linq;
+using FluentAssertions;
+using NUnit.Framework;
 using VirtualObjects.Mappings;
-
 
 namespace VirtualObjects.Tests.Config
 {
-
-
-    using NUnit.Framework;
-    using VirtualObjects.Config;
-    using FluentAssertions;
-
     /// <summary>
     /// 
     /// Unit-tests for MappingBuilder and Mapper

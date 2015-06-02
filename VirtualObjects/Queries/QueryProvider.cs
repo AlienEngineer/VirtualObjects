@@ -37,7 +37,7 @@ namespace VirtualObjects.Queries
             try
             {
                 return (IQueryable)Activator.CreateInstance(typeof(Query<>)
-                    .MakeGenericType(elementType), new object[] { this, expression });
+                    .MakeGenericType(elementType), this, expression);
             }
             catch ( TargetInvocationException tie )
             {

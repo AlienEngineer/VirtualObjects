@@ -1,9 +1,11 @@
 ﻿using System.Linq;
-using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Translation;
 
 namespace VirtualObjects.Queries
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class CustomSqlFunctionTranslation : ICustomFunctionTranslation
     {
         private readonly string[] _methodNames;

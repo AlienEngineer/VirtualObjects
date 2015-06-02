@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using VirtualObjects.CodeGenerators;
 using VirtualObjects.Config;
 using VirtualObjects.Connections;
@@ -156,7 +155,7 @@ namespace VirtualObjects
         /// Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
         public Session()
-            : this(configuration: null, connectionName: null) { }
+            : this(null, connectionName: null) { }
 
         /// <summary>
         /// Gets the connection string.
@@ -360,7 +359,7 @@ namespace VirtualObjects
             /// <summary>
             /// The XLSX
             /// </summary>
-            Xlsx,
+            Xlsx
         }
 
         static readonly IDictionary<String, String> Masks = new Dictionary<String, String>();

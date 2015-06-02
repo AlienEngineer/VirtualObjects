@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Fasterflect;
-
-namespace VirtualObjects.Tests
+﻿namespace VirtualObjects.Tests
 {
 
 #if PERFORMANCE

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using VirtualObjects.Config;
+using VirtualObjects.Exceptions;
 using ArgumentNullException = VirtualObjects.Exceptions.ArgumentNullException;
 
 namespace VirtualObjects
@@ -92,7 +93,7 @@ namespace VirtualObjects
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Exceptions.ArgumentNullException"></exception>
         public TEntity Insert<TEntity>(TEntity entity) where TEntity : class, new()
         {
             if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
@@ -107,7 +108,7 @@ namespace VirtualObjects
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Exceptions.ArgumentNullException"></exception>
         public TEntity Update<TEntity>(TEntity entity) where TEntity : class, new()
         {
             if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);
@@ -121,7 +122,7 @@ namespace VirtualObjects
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Exceptions.ArgumentNullException"></exception>
         public bool Delete<TEntity>(TEntity entity) where TEntity : class, new()
         {
             if ( entity == null ) throw new ArgumentNullException(Errors.Session_EntityNotSupplied);

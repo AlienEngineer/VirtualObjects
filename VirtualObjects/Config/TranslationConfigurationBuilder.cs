@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Fasterflect;
-using System.Linq;
 
 namespace VirtualObjects.Config
 {
@@ -102,7 +102,7 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
-                keyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
+                keyGetter = _defaultBooleanGetter;
             }
 
             ColumnKey(prop =>
@@ -131,7 +131,7 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
-                keyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
+                keyGetter = _defaultBooleanGetter;
             }
 
             ColumnIdentity(prop =>
@@ -160,7 +160,7 @@ namespace VirtualObjects.Config
         {
             if ( keyGetter == null )
             {
-                keyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
+                keyGetter = _defaultBooleanGetter;
             }
 
             ColumnVersion(prop =>
@@ -189,7 +189,7 @@ namespace VirtualObjects.Config
         {
             if ( ignoreGetter == null )
             {
-                ignoreGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
+                ignoreGetter = _defaultBooleanGetter;
             }
 
             ColumnIgnore(prop =>
@@ -218,7 +218,7 @@ namespace VirtualObjects.Config
         {
             if (isForeignKeyGetter == null)
             {
-                isForeignKeyGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
+                isForeignKeyGetter = _defaultBooleanGetter;
             }
 
             IsForeignKey(prop =>
@@ -247,7 +247,7 @@ namespace VirtualObjects.Config
         {
             if ( computedGetter == null )
             {
-                computedGetter = (Func<TAttribute, Boolean>)_defaultBooleanGetter;
+                computedGetter = _defaultBooleanGetter;
             }
 
             ComputedColumn(prop =>

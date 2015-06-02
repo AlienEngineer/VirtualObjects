@@ -10,7 +10,7 @@ namespace VirtualObjects.Connections
 {
     class Connection : IConnection, ITransaction
     {
-        private static int count = 0;
+        private static int count;
         
         
         private readonly IDbConnectionProvider _provider;

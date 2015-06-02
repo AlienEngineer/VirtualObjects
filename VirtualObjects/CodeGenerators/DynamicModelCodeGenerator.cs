@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Fasterflect;
-using System.Dynamic;
-using System.Collections.Generic;
+using Microsoft.CSharp.RuntimeBinder;
 using VirtualObjects.Config;
-using System.Data;
-using VirtualObjects.Queries;
 using VirtualObjects.Exceptions;
+using VirtualObjects.Queries;
 
 namespace VirtualObjects.CodeGenerators
 {
@@ -21,7 +22,7 @@ namespace VirtualObjects.CodeGenerators
         private int projectionIndex;
         
         public DynamicModelCodeGenerator(Type type, IEntityBag entityBag, IQueryInfo queryInfo, SessionConfiguration configuration)
-            : base(type.Namespace + "_Internal_Builder_Dynamic_" + MakeDynamicSafeName(type), type, configuration, IsDynamic: true)
+            : base(type.Namespace + "_Internal_Builder_Dynamic_" + MakeDynamicSafeName(type), type, configuration, true)
         {
             QueryInfo = queryInfo;
             this.entityBag = entityBag;
@@ -29,7 +30,7 @@ namespace VirtualObjects.CodeGenerators
 
             AddReference(typeof(Object));
             AddReference(typeof(Uri));
-            AddReference(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException));
+            AddReference(typeof(RuntimeBinderException));
             AddReference(typeof(ExpandoObject));
             AddReference(typeof(ISession));
             AddReference(typeof(IDictionary<Object, Object>));
@@ -242,9 +243,7 @@ namespace VirtualObjects.CodeGenerators
             {
                 String value = GenerateFieldAssignment(
                     entityInfo.Columns[i].Property,
-                    queryInfo, 
-                    withMethodCall: false, 
-                    column: entityInfo.Columns[i]);
+                    queryInfo, false, entityInfo.Columns[i]);
 
                 value = value.Substring(3, value.Length - 3);
 
@@ -263,7 +262,7 @@ namespace VirtualObjects.CodeGenerators
      Value = value,
      ValueNoType = value
         .Replace(String.Format("({0})", entityInfo.Columns[i].Property.PropertyType.Name), "")
-        .Replace("default", String.Format("default({0})", entityInfo.Columns[i].Property.PropertyType.Name)),
+        .Replace("default", String.Format("default({0})", entityInfo.Columns[i].Property.PropertyType.Name))
  });
                 ++projectionIndex;
             }
@@ -302,9 +301,7 @@ namespace VirtualObjects.CodeGenerators
 
                 String value = GenerateFieldAssignment(
                     propertyInfo, 
-                    queryInfo, 
-                    withMethodCall: true, 
-                    column: projectionIndex < queryInfo.PredicatedColumns.Count ? queryInfo.PredicatedColumns[projectionIndex] : null);
+                    queryInfo, true, projectionIndex < queryInfo.PredicatedColumns.Count ? queryInfo.PredicatedColumns[projectionIndex] : null);
 
                 value = value.Substring(3, value.Length - 3);
 

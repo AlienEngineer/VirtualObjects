@@ -19,10 +19,7 @@ namespace VirtualObjects.Tests.Sessions
     {
         private ISession CreateSession()
         {
-            return new Session(new SessionConfiguration
-            {
-                //Logger = Console.Out
-            }, "northwind");
+            return new Session(new SessionConfiguration(), "northwind");
         }
 
         [Test, Repeat(Repeat)]

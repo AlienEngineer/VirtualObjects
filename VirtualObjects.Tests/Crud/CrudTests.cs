@@ -2,11 +2,11 @@
 using System.Data.SqlClient;
 using FluentAssertions;
 using NUnit.Framework;
-using VirtualObjects.Tests.Models.Northwind;
 using VirtualObjects.CRUD;
+using VirtualObjects.EntityProvider;
 using VirtualObjects.Queries.Formatters;
 using VirtualObjects.Queries.Mapping;
-using VirtualObjects.EntityProvider;
+using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Crud
 {

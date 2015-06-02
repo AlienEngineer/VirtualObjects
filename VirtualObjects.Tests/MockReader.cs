@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Data.Common;
 
@@ -79,7 +80,7 @@ namespace VirtualObjects.Tests
             throw new NotImplementedException();
         }
 
-        public override System.Collections.IEnumerator GetEnumerator()
+        public override IEnumerator GetEnumerator()
         {
             throw new NotImplementedException();
         }

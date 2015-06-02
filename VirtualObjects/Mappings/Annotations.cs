@@ -6,7 +6,7 @@ namespace VirtualObjects.Mappings
     /// <summary>
     /// Use this attribute to bind this property to a data source field.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class ColumnAttribute : Attribute
     {
 
@@ -22,7 +22,7 @@ namespace VirtualObjects.Mappings
     /// <summary>
     /// Indicates that this property is a key.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class KeyAttribute : ColumnAttribute
     {
 
@@ -31,7 +31,7 @@ namespace VirtualObjects.Mappings
     /// <summary>
     /// Indicates that this property is a identity field.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class IdentityAttribute : KeyAttribute
     {
 
@@ -40,7 +40,7 @@ namespace VirtualObjects.Mappings
     /// <summary>
     /// Bind this class to a data source table.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class)]
     public class TableAttribute : Attribute
     {
         /// <summary>
@@ -55,7 +55,7 @@ namespace VirtualObjects.Mappings
     /// <summary>
     /// Binds this property to a foreignKey.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class AssociationAttribute : ColumnAttribute
     {
         /// <summary>
@@ -80,7 +80,7 @@ namespace VirtualObjects.Mappings
     /// <summary>
     /// Use this property for Version Control
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class VersionAttribute : ColumnAttribute
     {
 
@@ -89,7 +89,7 @@ namespace VirtualObjects.Mappings
     /// <summary>      
     /// Indicates that this property should be ignored.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class IgnoreAttribute : ColumnAttribute
     {
 
@@ -98,7 +98,7 @@ namespace VirtualObjects.Mappings
     /// <summary>      
     /// Indicates that this property should be ignored for changes.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class ComputedAttribute : ColumnAttribute
     {
 
@@ -108,7 +108,7 @@ namespace VirtualObjects.Mappings
     /// Marks a property as a ForeignKey. <br />
     /// The framework will inject null values instead of default values.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class ForeignKeyAttribute : Attribute
     {
 

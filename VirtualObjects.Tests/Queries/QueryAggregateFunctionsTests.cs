@@ -2,13 +2,12 @@
 using System.Data;
 using System.Linq;
 using FluentAssertions;
+using NUnit.Framework;
 using VirtualObjects.Exceptions;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Queries
 {
-    using NUnit.Framework;
-
     /// <summary>
     /// 
     /// Unit tests for aggregation functions.
@@ -364,7 +363,7 @@ namespace VirtualObjects.Tests.Queries
                              grouped.Key.OrderId,
                              grouped.Key.FirstName,
                              grouped.Key.LastName,
-                             grouped.Key.details,
+                             grouped.Key.details
                          };
 
             /*

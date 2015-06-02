@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 using Fasterflect;
-using VirtualObjects.Exceptions;
 using VirtualObjects.CodeGenerators;
+using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Config
 {

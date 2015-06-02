@@ -27,7 +27,7 @@ namespace VirtualObjects.Programability
                 new KeyValuePair<string, object>("@LockMode", "Exclusive"),
                 new KeyValuePair<string, object>("@LockTimeout", timeout),
                 new KeyValuePair<string, object>("@DbPrincipal", "public"),
-                new KeyValuePair<string, object>("@LockOwner", "Session"),
+                new KeyValuePair<string, object>("@LockOwner", "Session")
             });
 
             Console.WriteLine("The lock acquire result was: {0}", result);
@@ -42,7 +42,7 @@ namespace VirtualObjects.Programability
                 connection.ExecuteProcedure("sp_releaseapplock", new[]
                 {
                     new KeyValuePair<string, object>("@Resource", @lock),
-                    new KeyValuePair<string, object>("@LockOwner", "Session"),
+                    new KeyValuePair<string, object>("@LockOwner", "Session")
                 });
             }
 

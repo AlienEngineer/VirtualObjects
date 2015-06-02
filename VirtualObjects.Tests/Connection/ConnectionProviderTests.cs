@@ -1,13 +1,10 @@
-﻿using System;
-using System.IO;
-using FluentAssertions;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using VirtualObjects.Connections;
 using VirtualObjects.Exceptions;
 
 namespace VirtualObjects.Tests.Connection
 {
-    using NUnit.Framework;
-
     /// <summary>
     /// 
     /// Connection Provider Unit-Tests
