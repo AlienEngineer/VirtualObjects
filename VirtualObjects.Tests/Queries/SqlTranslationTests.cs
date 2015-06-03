@@ -302,6 +302,29 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+        /// <summary>
+        /// 
+        /// Sql translation with a custom function order
+        /// 
+        /// </summary>
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Query_with_custom_function_with_custom_function_as_argument_order_clause()
+        {
+            var query = Query<Employee>()
+                .OrderBy(e => SomeCalculation(SomeOtherCalculation(e.EmployeeId, e.City)))
+                .Select(e => e.EmployeeId);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By dbo.SomeCalculation(dbo.SomeOtherCalculation([T0].[EmployeeId], [T0].[City]))")
+            );
+        }
+
+        private int SomeOtherCalculation(int employeeId, string city)
+        {
+            throw new NotImplementedException();
+        }
+
 
         /// <summary>
         /// 

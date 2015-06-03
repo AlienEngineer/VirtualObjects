@@ -790,15 +790,7 @@ namespace VirtualObjects.Queries.Translation
                 {
                     if (_formatter.SupportsCustomFunction(newExp.Method.Name))
                     {
-                        buffer.Predicates += _formatter.BeginMethodCall(newExp.Method.Name);
-                        foreach (var argument in newExp.Arguments)
-                        {
-                            CompileMemberAccess(argument, buffer);
-                            buffer.Predicates += _formatter.FieldSeparator;
-                        }
-
-                        buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
-                        buffer.Predicates += _formatter.EndMethodCall(newExp.Method.Name);
+                        CompileCustomMethodCall(buffer, newExp);
                     }
                     else
                     {
@@ -812,6 +804,28 @@ namespace VirtualObjects.Queries.Translation
             }
 
             return stringBuffer;
+        }
+
+        private void CompileCustomMethodCall(CompilerBuffer buffer, MethodCallExpression newExp)
+        {
+            buffer.Predicates += _formatter.BeginMethodCall(newExp.Method.Name);
+            foreach (var argument in newExp.Arguments)
+            {
+                switch (argument.NodeType)
+                {
+                    case ExpressionType.MemberAccess:
+                        CompileMemberAccess(argument, buffer);
+                        break;
+                    case ExpressionType.Call:
+                        CompileCallPredicate(argument as MethodCallExpression, buffer);
+                        break;
+                }
+
+                buffer.Predicates += _formatter.FieldSeparator;
+            }
+
+            buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
+            buffer.Predicates += _formatter.EndMethodCall(newExp.Method.Name);
         }
 
         private void CompileJoin(MethodCallExpression expression, CompilerBuffer buffer)
@@ -1478,15 +1492,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 if (_formatter.SupportsCustomFunction(expression.Method.Name))
                 {
-                    buffer.Predicates += _formatter.BeginMethodCall(expression.Method.Name);
-                    foreach (var argument in expression.Arguments)
-                    {
-                        CompileMemberAccess(argument, buffer);
-                        buffer.Predicates += _formatter.FieldSeparator;
-                    }
-
-                    buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
-                    buffer.Predicates += _formatter.EndMethodCall(expression.Method.Name);
+                    CompileCustomMethodCall(buffer, expression);
                     return;
                 }
 
