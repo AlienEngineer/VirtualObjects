@@ -56,7 +56,8 @@ namespace VirtualObjects.Tests
             modules = new ModulesConfiguration(new SessionConfiguration
             {
                 FunctionTranslation = new CustomSqlFunctionTranslation("SomeCalculation", "Test"),
-                SaveGeneratedCode = true
+                SaveGeneratedCode = true,
+                Logger = Console.Out
             }, "northwind");
 
             ConnectionManager = modules.ConnectionManager;

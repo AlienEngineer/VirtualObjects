@@ -305,6 +305,11 @@ namespace VirtualObjects.CodeGenerators
 
         private string GenerateCodeForLinks(IEntityColumnInfo column)
         {
+            if (!column.ForeignKeyLinks.Any())
+            {
+                return string.Empty;
+            }
+
             var result = new StringBuffer();
 
             result += "_{Name} = new {Name} {{\n".FormatWith(new { column.Property.PropertyType.Name });
