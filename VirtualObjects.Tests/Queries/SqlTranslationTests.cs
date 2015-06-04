@@ -308,6 +308,19 @@ namespace VirtualObjects.Tests.Queries
         /// 
         /// </summary>
         [Test, Repeat(Repeat)]
+        public void SqlTranslation_Query_with_custom_function_with_custom_function_as_argument_where_clause()
+        {
+            var query = Query<Employee>()
+                .Where(e => SomeCalculation(SomeOtherCalculation(e.EmployeeId, e.City)) > 0)
+                .Select(e => e.EmployeeId);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where (dbo.SomeCalculation(dbo.SomeOtherCalculation([T0].[EmployeeId], [T0].[City])) > @p0)")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
         public void SqlTranslation_Query_with_custom_function_with_custom_function_as_argument_order_clause()
         {
             var query = Query<Employee>()
@@ -317,6 +330,19 @@ namespace VirtualObjects.Tests.Queries
             Assert.That(
                 Translate(query),
                 Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Order By dbo.SomeCalculation(dbo.SomeOtherCalculation([T0].[EmployeeId], [T0].[City]))")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Query_with_string_contains_method()
+        {
+            var query = Query<Employee>()
+                .Where(e => e.LastName.Contains("r") || e.LastName.Contains("a"))
+                .Select(e => e.EmployeeId);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId] From [Employees] [T0] Where ([T0].[LastName] like '%' + @p0 + '%' Or [T0].[LastName] like '%' + @p1 + '%')")
             );
         }
 

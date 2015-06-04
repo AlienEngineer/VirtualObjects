@@ -1404,15 +1404,15 @@ namespace VirtualObjects.Queries.Translation
                 case ExpressionType.Call:
                     var callExpression = (MethodCallExpression)expression;
 
-                    if (callExpression.Object != null && IsConstant(expression))
-                    {
-                        CompileConstant(Expression.Constant(Expression.Lambda(callExpression).Compile().DynamicInvoke()), buffer);
-                        return;
-                    }
-
                     if (callExpression.Object != null && IsMemberAccess(callExpression) || _formatter.SupportsCustomFunction(callExpression.Method.Name))
                     {
                         CompileMemberCallPredicate(callExpression, buffer);
+                        return;
+                    }
+
+                    if (callExpression.Object != null && IsConstant(expression))
+                    {
+                        CompileConstant(Expression.Constant(Expression.Lambda(callExpression).Compile().DynamicInvoke()), buffer);
                         return;
                     }
 
@@ -1457,8 +1457,26 @@ namespace VirtualObjects.Queries.Translation
 
             buffer.Predicates += _formatter.BeginMethodCall(callExpression.Method.Name);
 
-            CompilePredicateExpression(callExpression.Arguments.First(), buffer);
+            // CompilePredicateExpression(callExpression.Arguments.First(), buffer);
+            foreach (var argument in callExpression.Arguments)
+            {
+                switch (argument.NodeType)
+                {
+                    case ExpressionType.MemberAccess:
+                        CompileMemberAccess(argument, buffer);
+                        break;
+                    case ExpressionType.Call:
+                        CompileCallPredicate(argument as MethodCallExpression, buffer);
+                        break;
+                    default:
+                        CompilePredicateExpression(argument, buffer);
+                        break;
+                }
 
+                buffer.Predicates += _formatter.FieldSeparator;
+            }
+
+            buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
             buffer.Predicates += _formatter.EndMethodCall(callExpression.Method.Name);
         }
 
