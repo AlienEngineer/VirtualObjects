@@ -367,7 +367,12 @@ namespace VirtualObjects
         static ExcelSession()
         {
             Masks.Add(Extension.Xls.ToString().ToLower(), "Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{0}';Extended Properties='Excel 8.0;HDR=YES;'");
-            Masks.Add(Extension.Xlsx.ToString().ToLower(), "Provider=Microsoft.ACE.OLEDB.12.0;Data Source='{0}';Extended Properties='Excel 12.0;HDR=YES;'");
+
+            var sources = new System.Data.OleDb.OleDbEnumerator().GetElements();
+
+            var driver = sources.Rows.Cast<DataRow>().Select(e => e.ItemArray[0].ToString()).Where(e => e.StartsWith("Microsoft.ACE.OLEDB")).OrderByDescending(e => e).FirstOrDefault();
+
+            Masks.Add(Extension.Xlsx.ToString().ToLower(), "Provider=" + driver + ";Data Source='{0}';Extended Properties='Excel 12.0;HDR=YES;'");
         }
 
         /// <summary>

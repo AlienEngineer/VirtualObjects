@@ -819,6 +819,9 @@ namespace VirtualObjects.Queries.Translation
                     case ExpressionType.Call:
                         CompileCallPredicate(argument as MethodCallExpression, buffer);
                         break;
+                    default:
+                        CompilePredicateExpression(argument, buffer);
+                        break;
                 }
 
                 buffer.Predicates += _formatter.FieldSeparator;
@@ -1455,29 +1458,7 @@ namespace VirtualObjects.Queries.Translation
 
             CompilePredicateExpression(callExpression.Object, buffer);
 
-            buffer.Predicates += _formatter.BeginMethodCall(callExpression.Method.Name);
-
-            // CompilePredicateExpression(callExpression.Arguments.First(), buffer);
-            foreach (var argument in callExpression.Arguments)
-            {
-                switch (argument.NodeType)
-                {
-                    case ExpressionType.MemberAccess:
-                        CompileMemberAccess(argument, buffer);
-                        break;
-                    case ExpressionType.Call:
-                        CompileCallPredicate(argument as MethodCallExpression, buffer);
-                        break;
-                    default:
-                        CompilePredicateExpression(argument, buffer);
-                        break;
-                }
-
-                buffer.Predicates += _formatter.FieldSeparator;
-            }
-
-            buffer.Predicates.RemoveLast(_formatter.FieldSeparator);
-            buffer.Predicates += _formatter.EndMethodCall(callExpression.Method.Name);
+            CompileCustomMethodCall(buffer, callExpression);
         }
 
         private void CompileParameter(ParameterExpression expression, CompilerBuffer buffer)

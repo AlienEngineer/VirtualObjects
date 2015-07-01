@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Fasterflect;
@@ -105,13 +104,19 @@ namespace VirtualObjects.CodeGenerators
         object[] data;
         try 
         {{
+
+{DataFetchDiagnostics} Diagnostic.Timed(() => {{
             data = reader.GetValues();
+{DataFetchDiagnostics} }}, ""Mapping: {{1}}"");
+
         }}
         catch (Exception ex)
         {{
             throw new Exception(""Unable to fetch data from data source."", ex);
         }}
+{EntityMappingDiagnostics} Diagnostic.Timed(() => {{
         {Body}
+{EntityMappingDiagnostics} }}, ""Mapping: {{1}}"");
 
         return new MapResult {{
             Entity = entity
@@ -134,6 +139,8 @@ namespace VirtualObjects.CodeGenerators
     }}
 ".FormatWith(new
  {
+     DataFetchDiagnostics = !Configuration.PerformanceDiagnosticOptions.DataFetch ? "//" : string.Empty,
+     EntityMappingDiagnostics = !Configuration.PerformanceDiagnosticOptions.EntityMapping ? "//" : string.Empty,
      TypeName = _properName,
      Name = _entityInfo.EntityType.Name + "Proxy",
      OverridableMembers = GenerateOverridableMembers(_entityInfo),
@@ -334,7 +341,7 @@ namespace VirtualObjects.CodeGenerators
 
         }
 
-        private static string GenerateBody(IEntityInfo entityInfo)
+        private  string GenerateBody(IEntityInfo entityInfo)
         {
             var result = new StringBuffer();
 
@@ -343,17 +350,20 @@ namespace VirtualObjects.CodeGenerators
                 var column = entityInfo.Columns[i];
                 
                 const string setter = @"
+{FieldMappingDiagnostics} Diagnostic.Timed(() => {{
                 try
                 {{
+
+                    {IsBoolean} if (data[{i}] is string) {{ entity.{FieldName} = ""-1"".Equals(data[{i}]); }}
+                    {IsBoolean} else
                     {Comment}if (data[{i}] != DBNull.Value)
                         entity.{FieldName} = {Value};
+                    
                 }}
                 catch (InvalidCastException) 
                 {{ 
                      try
                      {{
-                        {IsBoolean} entity.{FieldName} = ""-1"".Equals({ValueNoType}.ToString());    
-
                         {IsNotBoolean} {NotComment} entity.{FieldName} = ({Type})Convert.ChangeType({ValueNoType}, typeof({Type}));
                      }}
                      catch ( Exception ex)
@@ -365,6 +375,7 @@ namespace VirtualObjects.CodeGenerators
                 {{
                     throw new Exception(""Error setting value to [{FieldName}] with ["" + data[{i}] + ""] value of type ["" + data[{i}].GetType() + ""]."", ex);
                 }}
+{FieldMappingDiagnostics} }}, ""{FieldName} -> Mapping {Type}: {{1}} with value "" + data[{i}] + "" "" + data[{i}].GetType());
 ";
 
                 string value = GenerateFieldAssignment(i, column);
@@ -372,6 +383,7 @@ namespace VirtualObjects.CodeGenerators
 
                 result += setter.FormatWith(new
                  {
+                     FieldMappingDiagnostics = !Configuration.PerformanceDiagnosticOptions.FieldMapping ? "//" : string.Empty,
                      FieldName = column.Property.Name,
                      i,
                      Value = value,
@@ -417,6 +429,12 @@ namespace VirtualObjects.CodeGenerators
                             GroupSeparator = column.NumberFormat.NumberGroupSeparator,
                             GroupSizes = string.Join(", ", column.NumberFormat.NumberGroupSizes)
                         });
+                    return result;
+                }
+
+                if (column.Property.PropertyType == typeof (bool))
+                {
+                    result += "Convert.ToBoolean(Parse(data[{i}]) ?? default({Type}))".FormatWith(new { i, Type = column.Property.PropertyType.Name });    
                     return result;
                 }
 

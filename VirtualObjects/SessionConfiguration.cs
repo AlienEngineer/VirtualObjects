@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.IO;
 using VirtualObjects.Config;
@@ -22,6 +23,7 @@ namespace VirtualObjects
         public SessionConfiguration()
         {
             TranslationConfigurationBuilder = new TranslationConfigurationBuilder();
+            PerformanceDiagnosticOptions = new PerformanceDiagnosticOptions();
         }
 
         internal ITranslationConfigurationBuilder TranslationConfigurationBuilder { get; set; }
@@ -54,6 +56,15 @@ namespace VirtualObjects
         /// The formatter.
         /// </value>
         public IFormatter Formatter { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the performance diagnostic options.
+        /// </summary>
+        /// <value>
+        /// The performance diagnostic options.
+        /// </value>
+        public PerformanceDiagnosticOptions PerformanceDiagnosticOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [save generated code].

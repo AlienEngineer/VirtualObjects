@@ -25,9 +25,9 @@ namespace VirtualObjects.Queries.Mapping
                 var mapped = queryInfo.MapEntity(entity, reader);
                 var casted = queryInfo.EntityCast(mapped.Entity);
 
-                yield return casted;
-
                 hasMore = mapped.HasMore;
+
+                yield return casted;
             }
 
             sessionContext.Connection.KeepAlive = keepAlive;

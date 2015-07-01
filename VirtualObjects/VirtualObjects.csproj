@@ -195,6 +195,7 @@
     <Compile Include="ITransaction.cs" />
     <Compile Include="Mappings\Annotations.cs" />
     <Compile Include="netfx\System\StringFormatWith.cs" />
+    <Compile Include="PerformanceDiagnosticOptions.cs" />
     <Compile Include="Programability\IProgramability.cs" />
     <Compile Include="Programability\SqlProgramability.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

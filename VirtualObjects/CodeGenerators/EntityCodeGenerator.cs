@@ -7,22 +7,24 @@ namespace VirtualObjects.CodeGenerators
 {
     abstract class EntityCodeGenerator : IEntityCodeGenerator
     {
-        readonly TypeBuilder builder;
+        readonly TypeBuilder _builder;
 
-        private readonly IList<Type> referencedtypes;
+        private readonly IList<Type> _referencedtypes;
 
         protected EntityCodeGenerator(string typeName, Type baseType, SessionConfiguration configuration, bool IsDynamic = false)
         {
-            builder = new TypeBuilder(typeName, baseType, configuration)
+            _builder = new TypeBuilder(typeName, baseType, configuration)
             {
                 IsDynamic = IsDynamic
             };
 
             TypeName = typeName;
-            referencedtypes = new List<Type>();
+            Configuration = configuration;
+            _referencedtypes = new List<Type>();
         }
 
         public string TypeName { get; private set; }
+        public SessionConfiguration Configuration { get; set; }
 
         public void GenerateCode()
         {
@@ -31,10 +33,10 @@ namespace VirtualObjects.CodeGenerators
             var makeProxy = GenerateMakeProxyCode();
             var otherMethods = GenerateOtherMethodsCode();
 
-            builder.Body.Add(mapObject);
-            builder.Body.Add(make);
-            builder.Body.Add(makeProxy);
-            builder.Body.Add(otherMethods);
+            _builder.Body.Add(mapObject);
+            _builder.Body.Add(make);
+            _builder.Body.Add(makeProxy);
+            _builder.Body.Add(otherMethods);
         }
 
         /// <summary>
@@ -43,14 +45,14 @@ namespace VirtualObjects.CodeGenerators
         /// <param name="type">The type.</param>
         protected void AddReference(Type type)
         {
-            if (type == null || type == typeof(object) || referencedtypes.Contains(type))
+            if (type == null || type == typeof(object) || _referencedtypes.Contains(type))
             {
                 return;
             }
 
-            referencedtypes.Add(type);
+            _referencedtypes.Add(type);
 
-            builder.References.Add(type.Assembly.Location);
+            _builder.References.Add(type.Assembly.Location);
 
             foreach (var argType in type.GetGenericArguments())
             {
@@ -76,7 +78,7 @@ namespace VirtualObjects.CodeGenerators
         /// <param name="nameSpace">The name space.</param>
         protected void AddNamespace(string nameSpace)
         {
-            builder.Namespaces.Add(nameSpace);
+            _builder.Namespaces.Add(nameSpace);
         }
 
         protected abstract string GenerateMapObjectCode();
@@ -89,35 +91,35 @@ namespace VirtualObjects.CodeGenerators
         {
 
             Console.WriteLine("-----------------------------------------------------------"); 
-            Console.WriteLine(" -> Code generated for : {0} <-", builder.TypeName);
+            Console.WriteLine(" -> Code generated for : {0} <-", _builder.TypeName);
             Console.WriteLine("-----------------------------------------------------------");
-            Console.WriteLine(builder.Code);
+            Console.WriteLine(_builder.Code);
             Console.WriteLine("-----------------------------------------------------------");
         }
 
         public Func<object, IDataReader, MapResult> GetEntityMapper()
         {
-            return (Func<object, IDataReader, MapResult>)builder.GetDelegate<Func<object, IDataReader, MapResult>>("MapObject");
+            return (Func<object, IDataReader, MapResult>)_builder.GetDelegate<Func<object, IDataReader, MapResult>>("MapObject");
         }
 
         public Func<object> GetEntityProvider()
         {
-            return (Func<object>)builder.GetDelegate<Func<object>>("Make");
+            return (Func<object>)_builder.GetDelegate<Func<object>>("Make");
         }
 
         public Func<ISession, object> GetEntityProxyProvider()
         {
-            return (Func<ISession, object>)builder.GetDelegate<Func<ISession, object>>("MakeProxy");
+            return (Func<ISession, object>)_builder.GetDelegate<Func<ISession, object>>("MakeProxy");
         }
 
         public Func<object, object> GetEntityCast()
         {
-            return (Func<object, object>)builder.GetDelegate<Func<object, object>>("EntityCast");
+            return (Func<object, object>)_builder.GetDelegate<Func<object, object>>("EntityCast");
         }
 
         public Action<Type> GetInitializer()
         {
-            return (Action<Type>)builder.GetDelegate<Action<Type>>("Init");
+            return (Action<Type>)_builder.GetDelegate<Action<Type>>("Init");
         }
     }
 }
