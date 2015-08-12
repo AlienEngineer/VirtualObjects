@@ -17,6 +17,7 @@
       * Fix: Error loading associated entities, Object reference not set to an instance of an object.
       * Fix: Multiple calls to custom functions translated properly
       * Fix: Allowed Microsoft.ACE.OLEDB.15.0 supported.
+      * Fix: Custom Projections and Take were not playing along!
 
       Version 1.3.20
       * Fix #49: Enums are not being treated as simple types.

@@ -82,6 +82,47 @@ namespace VirtualObjects.Tests.Queries
             );
         }
 
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Projected_Query_Top_N()
+        {
+            var query = Query<Employee>()
+                .Select(e => new { e.EmployeeId, e.LastName, e.FirstName }).Take(10);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select TOP 10 [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName] From [Employees] [T0]")
+            );
+        }
+        /// <summary>
+        /// 
+        /// Sql translation skip the 1 and take 1 row predicated.
+        /// 
+        /// </summary>
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Projected_Query_Skip_Take_N()
+        {
+            var query = Query<Employee>()
+                .Select(e => new { e.EmployeeId, e.LastName, e.FirstName })
+                .Take(1).Skip(1);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index], * From [Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 1 And [T0].[Internal_Row_Index] <= 2)")
+            );
+        }
+
+        [Test, Repeat(Repeat)]
+        public void SqlTranslation_Projected_Query_Skip_N()
+        {
+            var query = Query<Employee>()
+                .Select(e => new { e.EmployeeId, e.LastName, e.FirstName }).Skip(10);
+
+            Assert.That(
+                Translate(query),
+                Is.EqualTo("Select [T0].[EmployeeId], [T0].[LastName], [T0].[FirstName] From (Select ROW_NUMBER() OVER ( Order By [T100].[EmployeeId]) as [Internal_Row_Index], * From [Employees] [T100]) [T0] Where ([T0].[Internal_Row_Index] > 10)")
+            );
+        }
+
         /// <summary>
         /// 
         /// Sql translation get the 10 first rows.

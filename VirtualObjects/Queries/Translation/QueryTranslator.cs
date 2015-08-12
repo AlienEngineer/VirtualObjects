@@ -1264,8 +1264,16 @@ namespace VirtualObjects.Queries.Translation
 
         private void CompileDefaultProjection(CompilerBuffer buffer)
         {
+
+
+
             if (!string.IsNullOrEmpty(buffer.Projection))
             {
+                if (buffer.Take > 0 && buffer.Skip <= 0)
+                {
+                    buffer.Projection = _formatter.FormatTakeN(buffer.Take) + " " + buffer.Projection;
+                }
+
                 return;
             }
 

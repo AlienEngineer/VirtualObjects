@@ -410,7 +410,7 @@ namespace VirtualObjects
 
         private static string ParseExtension(string filename)
         {
-            return filename.Substring(filename.LastIndexOf('.') + 1);
+            return filename.Substring(filename.LastIndexOf('.') + 1).ToLower();
         }
 
     }
