@@ -7,14 +7,14 @@ namespace VirtualObjects.Queries.Mapping
     {
         private readonly int _offset;
         private readonly IDataReader _reader;
+        private DataTable _dataTable;
 
         public OffsetedReader(IDataReader reader, int offset)
         {
             _offset = offset;
             _reader = reader;
         }
-
-
+        
         #region IDataReader Members
 
         public void Close()
@@ -22,26 +22,14 @@ namespace VirtualObjects.Queries.Mapping
             _reader.Close();
         }
 
-        public int Depth
-        {
-            get
-            {
-                return _reader.Depth;
-            }
-        }
+        public int Depth => _reader.Depth;
 
         public DataTable GetSchemaTable()
         {
-            return _reader.GetSchemaTable();
+            return _dataTable ?? (_dataTable = _reader.GetSchemaTable());
         }
 
-        public bool IsClosed
-        {
-            get
-            {
-                return _reader.IsClosed;
-            }
-        }
+        public bool IsClosed => _reader.IsClosed;
 
         public bool NextResult()
         {
@@ -53,13 +41,7 @@ namespace VirtualObjects.Queries.Mapping
             return _reader.Read();
         }
 
-        public int RecordsAffected
-        {
-            get
-            {
-                return _reader.RecordsAffected;
-            }
-        }
+        public int RecordsAffected => _reader.RecordsAffected;
 
         #endregion
 
@@ -74,13 +56,7 @@ namespace VirtualObjects.Queries.Mapping
 
         #region IDataRecord Members
 
-        public int FieldCount
-        {
-            get
-            {
-                return _reader.FieldCount;
-            }
-        }
+        public int FieldCount => _reader.FieldCount;
 
         public bool GetBoolean(int i)
         {
@@ -188,12 +164,11 @@ namespace VirtualObjects.Queries.Mapping
             var length = FieldCount - _offset;
             _reader.GetValues(values);
 
-            if ( _offset > 0 )
+            if (_offset <= 0) return length;
+
+            for ( var i = 0; i < length; i++ )
             {
-                for ( int i = 0; i < length; i++ )
-                {
-                    values[i] = values[_offset + i];
-                }
+                values[i] = values[_offset + i];
             }
 
             return length;
@@ -204,21 +179,9 @@ namespace VirtualObjects.Queries.Mapping
             return _reader.IsDBNull(i + _offset);
         }
 
-        public object this[string name]
-        {
-            get
-            {
-                return _reader[name];
-            }
-        }
+        public object this[string name] => _reader[name];
 
-        public object this[int i]
-        {
-            get
-            {
-                return _reader[i + _offset];
-            }
-        }
+        public object this[int i] => _reader[i + _offset];
 
         #endregion
     }

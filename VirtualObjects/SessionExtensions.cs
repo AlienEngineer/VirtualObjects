@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
@@ -123,6 +124,18 @@ namespace VirtualObjects
         public static IQueryable<TEntity> Query<TEntity>(this ISession session) where TEntity : class, new()
         {
             return session.GetAll<TEntity>();
+        }
+
+        /// <summary>
+        /// Queries the specified command.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="session">The session.</param>
+        /// <param name="command">The command.</param>
+        /// <returns></returns>
+        public static IEnumerable<TEntity> Query<TEntity>(this ISession session, string command)
+        {
+            return session.Query<TEntity>(command, new IQueryParameter[0]);
         }
 
         /// <summary>

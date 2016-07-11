@@ -41,4 +41,5 @@ namespace VirtualObjects.Tests.Sessions
         It should_have_keepalive_flag_set_to_false =
             () => InternalSession.Context.Connection.KeepAlive.Should().BeFalse();
     }
+    
 }

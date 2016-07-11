@@ -299,7 +299,7 @@ namespace VirtualObjects.CodeGenerators
         }}
 ".FormatWith(new
  {
-     Type = string.Format("{0}.{1}<{2}>", property.PropertyType.Namespace, property.PropertyType.Name.Replace("`1", ""), entityType.FullName.Replace('+', '.')),
+     Type = $"{property.PropertyType.Namespace}.{property.PropertyType.Name.Replace("`1", "")}<{entityType.FullName.Replace('+', '.')}>",
      EntityType = entityType.FullName.Replace('+', '.'),
      ToList = property.PropertyType.Name.Contains("ICollection") ? ".ToList()" : string.Empty,
      property.Name,
@@ -388,8 +388,8 @@ namespace VirtualObjects.CodeGenerators
                      i,
                      Value = value,
                      ValueNoType = value
-                        .Replace(string.Format("({0})", column.Property.PropertyType.Name), "")
-                        .Replace("default", string.Format("default({0})", column.Property.PropertyType.Name)),
+                        .Replace($"({column.Property.PropertyType.Name})", "")
+                        .Replace("default", $"default({column.Property.PropertyType.Name})"),
                      Comment = column.ForeignKey == null ? "//" : string.Empty,
                      NotComment = column.ForeignKey == null ? string.Empty : "//",
                      Type = column.Property.PropertyType.Name,

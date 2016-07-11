@@ -69,13 +69,14 @@ namespace VirtualObjects
         {
             var entityInfo = Mapper.Map<TEntity>();
 
-            return (IEnumerable<TEntity>) entityInfo.Operations.QueryOperation
+            return ((IEnumerable<object>) entityInfo.Operations.QueryOperation
                 .PrepareOperation(new QueryCommand
                 {
                     Parameters = parameters,
                     Command = command
                 })
-                .Execute(Context);
+                .Execute(Context))
+                .Select(e => (TEntity)e);
         }
 
         /// <summary>

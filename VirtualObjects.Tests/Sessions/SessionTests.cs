@@ -84,6 +84,17 @@ namespace VirtualObjects.Tests.Sessions
         }
 
         [Test, Repeat(Repeat)]
+        public void Session_Raw_Queries()
+        {
+            var session = Session;
+            {
+                var employees = Diagnostic.Timed(() => session.Query<Employee>("Select EmployeeId from Employees").ToList());
+                employees.Count.Should().Be(9);
+            }
+        }
+
+
+        [Test, Repeat(Repeat)]
         public void Session_Entity_Lazy_Load()
         {
             var session = Session;
