@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Machine.Specifications;
-using VirtualObjects.Connections;
 using VirtualObjects.Tests.Models.Northwind;
 
 namespace VirtualObjects.Tests.Sessions
@@ -96,16 +94,16 @@ namespace VirtualObjects.Tests.Sessions
         private Because of = () =>
         {
 
-            cdEvent = new CountdownEvent(NumberOfThreads);
-            mrEventS = new ManualResetEventSlim();
-            exceptions = new List<Exception>();
-            tasks = new Task[NumberOfThreads];
-            unsafeCount = 0;
+            _cdEvent = new CountdownEvent(NumberOfThreads);
+            _mrEventS = new ManualResetEventSlim();
+            _exceptions = new List<Exception>();
+            _tasks = new Task[NumberOfThreads];
+            _unsafeCount = 0;
 
             for (int i = 0; i < NumberOfThreads; i++)
             {
                 var j = i + 1;
-                tasks[i] = Task.Factory.StartNew(() =>
+                _tasks[i] = Task.Factory.StartNew(() =>
                 {
                     try
                     {
@@ -122,11 +120,11 @@ namespace VirtualObjects.Tests.Sessions
                                     stopwatch.Stop();
                                     Console.WriteLine("Locked for {0} ms", stopwatch.ElapsedMilliseconds);
                                     
-                                    var value = unsafeCount;
+                                    var value = _unsafeCount;
 
                                     Thread.Sleep(20);
 
-                                    unsafeCount = value + 1;
+                                    _unsafeCount = value + 1;
                                 });
 
 
@@ -135,25 +133,24 @@ namespace VirtualObjects.Tests.Sessions
                     catch (Exception ex)
                     {
                         Trace.WriteLine(ex.Message);
-                        exceptions.Add(ex);
+                        _exceptions.Add(ex);
                     }
 
                 }, TaskCreationOptions.LongRunning);
             }
 
-            Task.WaitAll(tasks);
+            Task.WaitAll(_tasks);
 
         };
 
-        private It should_not_fail = () => exceptions.Count.Should().Be(0);
+        private It should_not_fail = () => _exceptions.Count.Should().Be(0);
 
-        It should_have_counted_all_ocurrences_on_unsafe_count = () => unsafeCount.Should().Be(NumberOfThreads);
+        It should_have_counted_all_ocurrences_on_unsafe_count = () => _unsafeCount.Should().Be(NumberOfThreads);
 
-        private static ManualResetEventSlim mrEventS;
-        private static Task[] tasks;
-        private static List<Exception> exceptions;
-        private static CountdownEvent cdEvent;
-        private static int unsafeCount;
-        private static volatile Boolean locked;
+        private static ManualResetEventSlim _mrEventS;
+        private static Task[] _tasks;
+        private static List<Exception> _exceptions;
+        private static CountdownEvent _cdEvent;
+        private static int _unsafeCount;
     }
 }

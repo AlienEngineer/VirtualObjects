@@ -48,7 +48,7 @@ namespace VirtualObjects.CRUD.Operations
             }
             finally
             {
-                if (reader != null) reader.Close();
+                reader?.Close();
 
                 //
                 // Restore keep alive flag;

@@ -13,11 +13,9 @@ namespace VirtualObjects
     public class InternalSession : ISession
     {
         internal SessionContext Context { get; private set; }
-        private readonly IConnection connection;
-        private readonly IQueryProvider queryProvider;
-        private readonly IMapper mapper;
+        private readonly IConnection _connection;
 
-        internal IMapper Mapper { get { return mapper; } }
+        internal IMapper Mapper { get; }
 
 
         /// <summary>
@@ -26,9 +24,8 @@ namespace VirtualObjects
         /// <param name="sessionContext">The session context.</param>
         public InternalSession(SessionContext sessionContext)
         {
-            connection = sessionContext.Connection;
-            queryProvider = sessionContext.QueryProvider;
-            mapper = sessionContext.Mapper;
+            _connection = sessionContext.Connection;
+            Mapper = sessionContext.Mapper;
             sessionContext.Session = this;
             Context = sessionContext;
         }
@@ -39,7 +36,7 @@ namespace VirtualObjects
         /// <value>
         /// The connection.
         /// </value>
-        public IDbConnection Connection { get { return connection.DbConnection; } }
+        public IDbConnection Connection => _connection.DbConnection;
 
         /// <summary>
         /// Gets all entities of TEntity type.
@@ -56,9 +53,29 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns></returns>
-        public IDataReader GetRawData(String query)
+        public IDataReader GetRawData(string query)
         {
-            return connection.ExecuteReader(query, new Dictionary<string, IOperationParameter>());
+            return _connection.ExecuteReader(query, new Dictionary<string, IOperationParameter>());
+        }
+
+        /// <summary>
+        /// Executes the speficied command with the speficied parameters.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="command">The command.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> Query<TEntity>(string command, IEnumerable<IQueryParameter> parameters)
+        {
+            var entityInfo = Mapper.Map<TEntity>();
+
+            return (IEnumerable<TEntity>) entityInfo.Operations.QueryOperation
+                .PrepareOperation(new QueryCommand
+                {
+                    Parameters = parameters,
+                    Command = command
+                })
+                .Execute(Context);
         }
 
         /// <summary>
@@ -144,7 +161,7 @@ namespace VirtualObjects
         /// <param name="storeProcedure">The store procedure.</param>
         /// <param name="args">The arguments.</param>
         /// <returns></returns>
-        public int ExecuteStoreProcedure(string storeProcedure, IEnumerable<KeyValuePair<String, Object>> args)
+        public int ExecuteStoreProcedure(string storeProcedure, IEnumerable<KeyValuePair<string, object>> args)
         {
             return Context.Connection.ExecuteProcedure(storeProcedure, args);
         }
@@ -155,7 +172,7 @@ namespace VirtualObjects
         /// <value>
         /// The connection string.
         /// </value>
-        public string ConnectionString { get { return Context.Connection.ConnectionString; } }
+        public string ConnectionString => Context.Connection.ConnectionString;
 
         private TEntity ExecuteOperation<TEntity>(IOperation operation, TEntity entityModel)
         {

@@ -6,13 +6,13 @@ namespace VirtualObjects.CRUD.Operations
     class ScalarOperationExecutor : IOperation
     {
 
-        private readonly IDbCommand command;
-        private readonly IDictionary<string, IOperationParameter> parameters;
+        private readonly IDbCommand _command;
+        private readonly IDictionary<string, IOperationParameter> _parameters;
 
         public ScalarOperationExecutor(IDbCommand command, IDictionary<string, IOperationParameter> parameters)
         {
-            this.parameters = parameters;
-            this.command = command;
+            _parameters = parameters;
+            _command = command;
         }
 
         #region IOperation Members
@@ -24,7 +24,7 @@ namespace VirtualObjects.CRUD.Operations
 
         public object Execute(SessionContext sessionContext)
         {
-            return sessionContext.Connection.ExecuteScalar(command, parameters);
+            return sessionContext.Connection.ExecuteScalar(_command, _parameters);
         }
 
         public IOperation PrepareOperation(object entityModel)

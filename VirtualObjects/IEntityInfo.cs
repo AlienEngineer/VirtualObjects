@@ -19,7 +19,7 @@ namespace VirtualObjects
         /// <value>
         /// The key hash code.
         /// </value>
-        Func<Object, int> KeyHashCode { get; set; }
+        Func<object, int> KeyHashCode { get; set; }
         /// <summary>
         /// Gets or sets the entity factory.
         /// </summary>
@@ -42,7 +42,7 @@ namespace VirtualObjects
         /// <value>
         /// The map entity.
         /// </value>
-        Func<Object, IDataReader, MapResult> MapEntity { get; set; }
+        Func<object, IDataReader, MapResult> MapEntity { get; set; }
 
         /// <summary>
         /// Gets the <see cref="IEntityColumnInfo"/> with the specified property name.
@@ -52,7 +52,7 @@ namespace VirtualObjects
         /// </value>
         /// <param name="propertyName">Name of the property.</param>
         /// <returns></returns>
-        IEntityColumnInfo this[String propertyName] { get; }
+        IEntityColumnInfo this[string propertyName] { get; }
 
         /// <summary>
         /// Gets the name of the entity.
@@ -60,7 +60,7 @@ namespace VirtualObjects
         /// <value>
         /// The name of the entity.
         /// </value>
-        String EntityName { get; set; }
+        string EntityName { get; set; }
 
         /// <summary>
         /// Gets the columns.
@@ -106,7 +106,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns></returns>
-        int GetKeyHashCode(Object obj);
+        int GetKeyHashCode(object obj);
 
         /// <summary>
         /// Gets the operations.
@@ -152,7 +152,7 @@ namespace VirtualObjects
         /// The entity cast.
         /// </value>
         ///   <returns></returns>
-        Func<Object, Object> EntityCast { get; set; }
+        Func<object, object> EntityCast { get; set; }
 
         /// <summary>
         /// 

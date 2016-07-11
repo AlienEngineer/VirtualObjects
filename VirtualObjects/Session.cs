@@ -164,10 +164,7 @@ namespace VirtualObjects
         /// <value>
         /// The connection string.
         /// </value>
-        public String ConnectionString
-        {
-            get { return ((InternalSession) InternalSession).Context.Connection.ConnectionString; }
-        }
+        public string ConnectionString => ((InternalSession) InternalSession).Context.Connection.ConnectionString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
@@ -182,7 +179,7 @@ namespace VirtualObjects
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="connectionName">Name of the connection.</param>
-        public Session(SessionConfiguration configuration = null, String connectionName = null)
+        public Session(SessionConfiguration configuration = null, string connectionName = null)
             : this(new ModulesConfiguration(configuration, connectionName)) { }
 
         /// <summary>
@@ -207,7 +204,7 @@ namespace VirtualObjects
         /// <value>
         /// The connection.
         /// </value>
-        public IDbConnection Connection { get { return InternalSession.Connection; } }
+        public IDbConnection Connection => InternalSession.Connection;
 
         /// <summary>
         /// Gets all entities of TEntity type.
@@ -227,6 +224,18 @@ namespace VirtualObjects
         public IDataReader GetRawData(string query)
         {
             return InternalSession.GetRawData(query);
+        }
+
+        /// <summary>
+        /// Executes the speficied command with the speficied parameters.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="command">The command.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> Query<TEntity>(string command, IEnumerable<IQueryParameter> parameters)
+        {
+            return InternalSession.Query<TEntity>(command, parameters);
         }
 
         /// <summary>
@@ -363,7 +372,7 @@ namespace VirtualObjects
             Xlsx,
         }
 
-        static readonly IDictionary<String, String> Masks = new Dictionary<String, String>();
+        static readonly IDictionary<string, string> Masks = new Dictionary<string, string>();
 
         static ExcelSession()
         {
@@ -392,11 +401,11 @@ namespace VirtualObjects
             return configuration;
         }
 
-        private static String BuildConnectionString(String filename)
+        private static string BuildConnectionString(string filename)
         {
             try
             {
-                return String.Format(Masks[ParseExtension(filename)], filename);
+                return string.Format(Masks[ParseExtension(filename)], filename);
             }
             catch ( Exception ex )
             {
@@ -404,7 +413,7 @@ namespace VirtualObjects
             }
         }
 
-        private static String ParseExtension(String filename)
+        private static string ParseExtension(string filename)
         {
             return filename.Substring(filename.LastIndexOf('.') + 1);
         }

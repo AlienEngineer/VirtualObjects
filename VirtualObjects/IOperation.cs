@@ -13,7 +13,7 @@ namespace VirtualObjects
         /// <value>
         /// The command text.
         /// </value>
-        String CommandText { get; }
+        string CommandText { get; }
 
         /// <summary>
         /// Executes the specified session context.

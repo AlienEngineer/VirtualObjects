@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using VirtualObjects.CRUD.Operations;
 using VirtualObjects.Queries;
 using VirtualObjects.Queries.Formatters;
+using VirtualObjects.Queries.Mapping;
 
 namespace VirtualObjects.CRUD
 {
@@ -29,7 +30,8 @@ namespace VirtualObjects.CRUD
                 InsertOperation = CreateInsertOperation(entityInfo),
                 UpdateOperation = CreateUpdateOperation(entityInfo),
                 GetVersionOperation = CreateGetVersionOperation(entityInfo),
-                CountOperation = CreateCountOperation(entityInfo)
+                CountOperation = CreateCountOperation(entityInfo),
+                QueryOperation = new QueryOperation(entityInfo)
             };
         }
 

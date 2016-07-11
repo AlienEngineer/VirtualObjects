@@ -14,20 +14,23 @@ namespace VirtualObjects
         /// The type.
         /// </value>
         Type Type { get; }
+
         /// <summary>
         /// Gets the value.
         /// </summary>
         /// <value>
         /// The value.
         /// </value>
-        Object Value { get; }
+        object Value { get; }
+
         /// <summary>
         /// Gets the name.
         /// </summary>
         /// <value>
         /// The name.
         /// </value>
-        String Name { get; }
+        string Name { get; }
+
         /// <summary>
         /// Gets the column.
         /// </summary>

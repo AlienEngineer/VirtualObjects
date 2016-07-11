@@ -212,11 +212,11 @@ There is no connection string configured in [App/Web].Config.</value>
   <data name="Excel_UnableToCreateConnectionString" xml:space="preserve">
     <value>Not possible to create a connection string for {FileName} filename. (*.xls, *.xlsx)</value>
   </data>
-  <data name="Operations_VersionControlError">
-    <value xml:space="preserve">Unable to execute the operation, the entity version is greater in the data source.</value>
+  <data name="Operations_VersionControlError" xml:space="preserve">
+    <value>Unable to execute the operation, the entity version is greater in the data source.</value>
   </data>
-  <data name="Operations_VersionControl_NotSupplied">
-    <value xml:space="preserve">Unable to execute the operation, the entity version was not supplied.</value>
+  <data name="Operations_VersionControl_NotSupplied" xml:space="preserve">
+    <value>Unable to execute the operation, the entity version was not supplied.</value>
   </data>
   <data name="Translation_UnableToGroup" xml:space="preserve">
     <value>
@@ -237,8 +237,8 @@ To achieve this use .ToList() before the GroupBy methodCall.</value>
 Method [{Name}] not yet supported on nested query.</value>
     <comment>Translation_MethodNotYetSupported description</comment>
   </data>
-  <data name="EntitiesMapper_UnableToMapType">
-    <value xml:space="preserve">Unable to map the query into [{Name}]</value>
+  <data name="EntitiesMapper_UnableToMapType" xml:space="preserve">
+    <value>Unable to map the query into [{Name}]</value>
   </data>
   <data name="Mapping_UnableToGetColumnName" xml:space="preserve">
     <value>
@@ -259,5 +259,8 @@ The model for [{TargetName}] needs a bind to the field [{FieldName}] in the [{Cu
   <data name="Mapping_FieldNotFoundOnEntity" xml:space="preserve">
     <value>
 The field [{Name}] does not exist in the entity Type [{EntityName}].</value>
+  </data>
+  <data name="Operations_Invalid_Argument" xml:space="preserve">
+    <value>Unable to cast model of PrepareOperation to QueryCommand</value>
   </data>
 </root>
