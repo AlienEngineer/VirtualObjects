@@ -163,10 +163,7 @@ namespace VirtualObjects
         /// <value>
         /// The connection string.
         /// </value>
-        public string ConnectionString
-        {
-            get { return ((InternalSession) InternalSession).Context.Connection.ConnectionString; }
-        }
+        public string ConnectionString => ((InternalSession) InternalSession).Context.Connection.ConnectionString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Session"/> class.
@@ -206,7 +203,7 @@ namespace VirtualObjects
         /// <value>
         /// The connection.
         /// </value>
-        public IDbConnection Connection { get { return InternalSession.Connection; } }
+        public IDbConnection Connection => InternalSession.Connection;
 
         /// <summary>
         /// Gets all entities of TEntity type.
@@ -226,6 +223,18 @@ namespace VirtualObjects
         public IDataReader GetRawData(string query)
         {
             return InternalSession.GetRawData(query);
+        }
+
+        /// <summary>
+        /// Executes the speficied command with the speficied parameters.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="command">The command.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> Query<TEntity>(string command, IEnumerable<IQueryParameter> parameters)
+        {
+            return InternalSession.Query<TEntity>(command, parameters);
         }
 
         /// <summary>

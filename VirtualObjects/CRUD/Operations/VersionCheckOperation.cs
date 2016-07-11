@@ -15,7 +15,7 @@ namespace VirtualObjects.CRUD.Operations
             _entityInfo = entityInfo;
         }
 
-        public string CommandText { get { return _operation.CommandText; } }
+        public string CommandText => _operation.CommandText;
 
         public object Execute(SessionContext sessionContext)
         {

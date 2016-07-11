@@ -14,6 +14,7 @@ namespace VirtualObjects
         /// The type.
         /// </value>
         Type Type { get; }
+
         /// <summary>
         /// Gets the value.
         /// </summary>
@@ -21,6 +22,7 @@ namespace VirtualObjects
         /// The value.
         /// </value>
         object Value { get; }
+
         /// <summary>
         /// Gets the name.
         /// </summary>
@@ -28,6 +30,7 @@ namespace VirtualObjects
         /// The name.
         /// </value>
         string Name { get; }
+
         /// <summary>
         /// Gets the column.
         /// </summary>

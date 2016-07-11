@@ -160,6 +160,7 @@
     <Compile Include="CRUD\Operations\ScalarOperationExecutor.cs" />
     <Compile Include="CRUD\Operations\UpdateOperation.cs" />
     <Compile Include="CRUD\Operations\VersionCheckOperation.cs" />
+    <Compile Include="CRUD\Operations\QueryOperation.cs" />
     <Compile Include="Diagnostic.cs" />
     <Compile Include="EntityProvider\CollectionTypeEntityProvider.cs" />
     <Compile Include="EntityProvider\DynamicTypeProvider.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="IOperationParameter.cs" />
     <Compile Include="IOperations.cs" />
     <Compile Include="IOperationsProvider.cs" />
+    <Compile Include="IQueryParameter.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="Mappings\Annotations.cs" />
@@ -225,6 +227,7 @@
     <Compile Include="Queries\Translation\ICustomFunctionTranslation.cs" />
     <Compile Include="Queries\Translation\OnClause.cs" />
     <Compile Include="Queries\Translation\QueryTranslator.cs" />
+    <Compile Include="QueryCommand.cs" />
     <Compile Include="ReflectionExtensions.cs" />
     <Compile Include="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>

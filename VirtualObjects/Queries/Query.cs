@@ -17,9 +17,9 @@ namespace VirtualObjects.Queries
 
         public abstract IEnumerator GetEnumerator();
 
-        public Expression Expression { get; private set; }
-        public Type ElementType { get; private set; }
-        public IQueryProvider Provider { get; private set; }
+        public Expression Expression { get; }
+        public Type ElementType { get; }
+        public IQueryProvider Provider { get; }
 
         public override string ToString()
         {

@@ -114,8 +114,8 @@ namespace VirtualObjects.Queries.Translation
                 throw new NotImplementedException();
             }
 
-            public Expression Expression { get; private set; }
-            public Type ElementType { get; private set; }
+            public Expression Expression { get; }
+            public Type ElementType { get; }
             public IQueryProvider Provider { get; private set; }
         }
 
@@ -131,25 +131,24 @@ namespace VirtualObjects.Queries.Translation
 
         #region Declaration Zone
 
-        private readonly IEntityBag entityBag;
+        private readonly IEntityBag _entityBag;
         private readonly SessionConfiguration _configuration;
         private readonly int _index;
         private readonly IFormatter _formatter;
         private readonly IMapper _mapper;
-        private bool hasJoinClause;
+        private bool _hasJoinClause;
         private readonly IDictionary<string, IOperationParameter> _parameters;
         private int _depth;
-        private int _parameterCount = -1;
         private QueryTranslator _rootTranslator;
         private readonly IDictionary<ParameterExpression, QueryTranslator> _indexer;
         private readonly Stack<string> _compileStack = new Stack<string>();
         private readonly Stack<IEntityColumnInfo> _memberAccessStack = new Stack<IEntityColumnInfo>();
-        private readonly Stack<IEntityInfo> _EntitySources = new Stack<IEntityInfo>();
-        private readonly IList<OnClause> _OnClauses = new List<OnClause>();
+        private readonly Stack<IEntityInfo> _entitySources = new Stack<IEntityInfo>();
+        private readonly IList<OnClause> _onClauses = new List<OnClause>();
 
         public QueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, SessionConfiguration configuration)
         {
-            this.entityBag = entityBag;
+            _entityBag = entityBag;
             _configuration = configuration;
             _formatter = formatter;
             _mapper = mapper;
@@ -161,16 +160,16 @@ namespace VirtualObjects.Queries.Translation
 
         public QueryTranslator(IFormatter formatter, IMapper mapper, IEntityBag entityBag, int index, SessionConfiguration configuration)
         {
-            this.entityBag = entityBag;
+            _entityBag = entityBag;
             _formatter = formatter;
             _mapper = mapper;
             _index = index;
             _configuration = configuration;
         }
 
-        private IDictionary<string, IOperationParameter> Parameters { get { return _rootTranslator._parameters; } }
+        private IDictionary<string, IOperationParameter> Parameters => _rootTranslator._parameters;
 
-        public IDictionary<ParameterExpression, QueryTranslator> Indexer { get { return _rootTranslator._indexer; } }
+        public IDictionary<ParameterExpression, QueryTranslator> Indexer => _rootTranslator._indexer;
 
         public QueryTranslator this[ParameterExpression parameter]
         {
@@ -194,7 +193,7 @@ namespace VirtualObjects.Queries.Translation
             }
         }
 
-        public int ParameterCount { get { return _parameterCount; } }
+        public int ParameterCount { get; private set; } = -1;
 
         /// <summary>
         /// This means that we have all the parameters.
@@ -202,7 +201,7 @@ namespace VirtualObjects.Queries.Translation
         /// <value>
         ///   <c>true</c> if [should return]; otherwise, <c>false</c>.
         /// </value>
-        public bool ShouldReturn { get { return ParameterCount > 0 && ParameterCount == Parameters.Count; } }
+        public bool ShouldReturn => ParameterCount > 0 && ParameterCount == Parameters.Count;
 
         public IEntityInfo EntityInfo { get; set; }
 
@@ -217,7 +216,6 @@ namespace VirtualObjects.Queries.Translation
         /// </summary>
         /// <param name="queryable">The queryable.</param>
         /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         public IQueryInfo TranslateQuery(IQueryable queryable)
         {
             queryable = EvaluateQuery(queryable);
@@ -250,8 +248,8 @@ namespace VirtualObjects.Queries.Translation
                 Parameters = Parameters,
                 PredicatedColumns = buffer.PredicatedColumns,
                 OutputType = OutputType ?? queryable.ElementType,
-                Sources = _EntitySources.ToList(),
-                OnClauses = _OnClauses,
+                Sources = _entitySources.ToList(),
+                OnClauses = _onClauses,
                 Buffer = buffer,
                 EntityInfo = entityInfo
             };
@@ -260,7 +258,7 @@ namespace VirtualObjects.Queries.Translation
             {
                 if (OutputType.IsDynamic())
                 {
-                    var dynCodeGen = new DynamicModelCodeGenerator(OutputType, entityBag, queryinfo, _configuration);
+                    var dynCodeGen = new DynamicModelCodeGenerator(OutputType, _entityBag, queryinfo, _configuration);
 
                     //
                     // Generates the code to be compiled.
@@ -391,7 +389,7 @@ namespace VirtualObjects.Queries.Translation
 
         public IQueryInfo TranslateParametersOnly(IQueryable queryable, int howMany)
         {
-            _parameterCount = howMany;
+            ParameterCount = howMany;
 
             if (howMany == 0)
             {
@@ -423,7 +421,7 @@ namespace VirtualObjects.Queries.Translation
 
         public IQueryInfo TranslateParametersOnly(Expression expression, int howMany)
         {
-            _parameterCount = howMany;
+            ParameterCount = howMany;
 
             if (howMany == 0)
             {
@@ -602,7 +600,7 @@ namespace VirtualObjects.Queries.Translation
 
             if (parametersOnly)
             {
-                translator.TranslateParametersOnly(expression, _parameterCount);
+                translator.TranslateParametersOnly(expression, ParameterCount);
                 return;
             }
 
@@ -791,7 +789,7 @@ namespace VirtualObjects.Queries.Translation
                     if (_formatter.SupportsCustomFunction(newExp.Method.Name))
                     {
                         CompileCustomMethodCall(buffer, newExp);
-                    }
+                        }
                     else
                     {
                         throw new TranslationException(Errors.Translation_MethodNotSupported, expression);
@@ -844,7 +842,7 @@ namespace VirtualObjects.Queries.Translation
             EntityInfo = entityInfo1;
             newTranlator.EntityInfo = entityInfo2;
 
-            _EntitySources.Push(entityInfo2);
+            _entitySources.Push(entityInfo2);
 
             //
             // From [Source] Join [Other Source]
@@ -875,7 +873,7 @@ namespace VirtualObjects.Queries.Translation
 
                 CompileJoinOnPart(expression.Arguments[3], buffer, newTranlator);
 
-                _OnClauses.Add(new OnClause
+                _onClauses.Add(new OnClause
                 {
                     Column2 = _memberAccessStack.Pop(),
                     Column1 = _memberAccessStack.Pop()
@@ -888,7 +886,7 @@ namespace VirtualObjects.Queries.Translation
             // Custom Projection
             //
 
-            hasJoinClause = true;
+            _hasJoinClause = true;
 
             buffer.Projection = null;
             CompileCustomProjection(expression.Arguments[4], buffer, expression);
@@ -950,7 +948,7 @@ namespace VirtualObjects.Queries.Translation
                                 if (
                                     ExtractAccessor(arg).Type.Name.Contains("IGrouping") &&
                                     !tmpExp.Type.IsFrameworkType() &&
-                                    _EntitySources.FirstOrDefault(e => e.EntityType == tmpExp.Type) == null)
+                                    _entitySources.FirstOrDefault(e => e.EntityType == tmpExp.Type) == null)
                                 {
                                     throw new TranslationException(Errors.Translation_UnableToGroup);
                                 }
@@ -1010,7 +1008,7 @@ namespace VirtualObjects.Queries.Translation
                                 if (
                                     ExtractAccessor(arg.Expression).Type.Name.Contains("IGrouping") &&
                                     !tmpExp.Type.IsFrameworkType() &&
-                                    _EntitySources.FirstOrDefault(e => e.EntityType == tmpExp.Type) == null)
+                                    _entitySources.FirstOrDefault(e => e.EntityType == tmpExp.Type) == null)
                                 {
                                     throw new TranslationException(Errors.Translation_UnableToGroup);
                                 }
@@ -1229,7 +1227,7 @@ namespace VirtualObjects.Queries.Translation
             //
             // If the whole entity is used we need to ungroup.
             //
-            if (!hasJoinClause && !string.IsNullOrEmpty(buffer.GroupBy))
+            if (!_hasJoinClause && !string.IsNullOrEmpty(buffer.GroupBy))
             {
                 throw new TranslationException(
                     Errors.Translation_UnableToGroupByWithEntity);
@@ -1270,7 +1268,7 @@ namespace VirtualObjects.Queries.Translation
             if (!string.IsNullOrEmpty(buffer.Projection))
             {
                 if (buffer.Take > 0 && buffer.Skip <= 0)
-                {
+            {
                     buffer.Projection = _formatter.FormatTakeN(buffer.Take) + " " + buffer.Projection;
                 }
 
@@ -1371,7 +1369,7 @@ namespace VirtualObjects.Queries.Translation
 
 
 
-            _EntitySources.Push(buffer.EntityInfo);
+            _entitySources.Push(buffer.EntityInfo);
             buffer.From = _formatter.FormatTableName(buffer.EntityInfo.EntityName, _index);
         }
 
@@ -1494,7 +1492,7 @@ namespace VirtualObjects.Queries.Translation
                 CompileConversions(expression, buffer);
                 return;
             }
-            
+
             if (expression.Method.Name != "Contains")
             {
                 if (_formatter.SupportsCustomFunction(expression.Method.Name))
@@ -1729,7 +1727,7 @@ namespace VirtualObjects.Queries.Translation
                 memberInfo = member.Member;
             }
 
-            if (hasJoinClause)
+            if (_hasJoinClause)
             {
                 var parameter = RemoveDynamicType(member) as ParameterExpression;
 
@@ -2405,7 +2403,7 @@ Group by error reasons:
 
         private QueryTranslator CreateNewTranslator()
         {
-            return new QueryTranslator(_formatter, _mapper, entityBag, ++_rootTranslator._depth, _configuration)
+            return new QueryTranslator(_formatter, _mapper, _entityBag, ++_rootTranslator._depth, _configuration)
             {
                 //
                 // Bind the new compile to the root.

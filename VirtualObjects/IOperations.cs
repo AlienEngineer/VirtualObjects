@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace VirtualObjects
 {
     /// <summary>
@@ -53,5 +55,13 @@ namespace VirtualObjects
         /// The get version operation.
         /// </value>
         IOperation GetVersionOperation { get; }
+
+        /// <summary>
+        /// Gets or sets the query operation.
+        /// </summary>
+        /// <value>
+        /// The query operation.
+        /// </value>
+        IOperation QueryOperation { get; set; }
     }
 }

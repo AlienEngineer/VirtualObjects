@@ -41,6 +41,15 @@ namespace VirtualObjects
         int Count<TEntity>();
 
         /// <summary>
+        /// Executes the speficied command with the speficied parameters.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="command">The command.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        IEnumerable<TEntity> Query<TEntity>(string command, IEnumerable<IQueryParameter> parameters);
+
+        /// <summary>
         /// Gets the entity by its ID.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
