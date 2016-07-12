@@ -67,7 +67,7 @@ To improve myself and create something really easy to use with the best performa
 Verified on unit-tests using NUnit on a intel i7 3.07GHz 18Gb RAM and intel i7-3537U 2.0GHz 8Gb RAM. On 06/08/2014.
 
 * VO Version 1.3.18
-* Dapper Version 1.27
+* Dapper Version 1.50
 * Entity Framework 6.1.1
 
 #### Under Northwind Database
