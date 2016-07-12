@@ -9,7 +9,8 @@
 #---------------------------------#
 
 # version format
-version: '1.3.20.{build}'
+version: '1.3.20.{build}'
+
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -20,7 +21,8 @@ assembly_info:
 os: Visual Studio 2015
 install:
 - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
-
+
+
 # branches to build
 branches:
   # whitelist
@@ -78,7 +80,8 @@ matrix:
 # build Configuration, i.e. Debug, Release, etc.
 configuration:
 - Release 4.5
-- Release 4.0
+- Release 4.0
+
 
 # to add several configurations to build matrix:
 #configuration:
@@ -135,7 +138,7 @@ after_test:
 # to run your custom scripts instead of automatic tests
 test_script:
  - echo NUnit
- - nunit-console "C:\projects\virtualobjects\VirtualObjects.Tests\bin\Release\VirtualObjects.Tests.dll"
+ - nunit-console "C:\projects\virtualobjects\VirtualObjects.Tests\bin\Release\VirtualObjects.Tests.dll" /exclude:Excel
 
 
 # to disable automatic tests

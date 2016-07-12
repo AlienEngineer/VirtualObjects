@@ -379,7 +379,7 @@ namespace VirtualObjects
 
             var sources = new System.Data.OleDb.OleDbEnumerator().GetElements();
 
-            var driver = sources.Rows.Cast<DataRow>().Select(e => e.ItemArray[0].ToString()).Where(e => e.StartsWith("Microsoft.ACE.OLEDB")).OrderByDescending(e => e).FirstOrDefault();
+            var driver = sources.Rows.Cast<DataRow>().Select(e => e.ItemArray[0].ToString()).Where(e => e.StartsWith("Microsoft.ACE.OLEDB")).OrderByDescending(e => e).FirstOrDefault() ?? "SQLOLEDB";
 
             Masks.Add(Extension.Xlsx.ToString().ToLower(), "Provider=" + driver + ";Data Source='{0}';Extended Properties='Excel 12.0;HDR=YES;'");
         }
