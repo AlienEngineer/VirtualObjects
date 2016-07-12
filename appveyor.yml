@@ -15,7 +15,12 @@ assembly_info:
   file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
+  assembly_informational_version: '{version}'
+
+os: Visual Studio 2015
+install:
+- set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
+
 # branches to build
 branches:
   # whitelist
@@ -131,8 +136,6 @@ after_test:
 test_script:
  - echo NUnit
  - nunit-console "C:\projects\virtualobjects\VirtualObjects.Tests\bin\Release\VirtualObjects.Tests.dll"
- - echo Mspec
- - mspec-clr4 --appveyor "C:\projects\virtualobjects\VirtualObjects.Tests\bin\Release\VirtualObjects.Tests.dll"
 
 
 # to disable automatic tests
