@@ -71,6 +71,7 @@ namespace VirtualObjects.Tests.Crud
             });
 
             employee.Should().NotBeNull();
+
             employee.EmployeeId.Should().Be(1);
             employee.LastName.Should().Be("Davolio");
         }

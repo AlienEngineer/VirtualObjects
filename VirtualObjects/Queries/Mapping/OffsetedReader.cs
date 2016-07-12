@@ -56,7 +56,7 @@ namespace VirtualObjects.Queries.Mapping
 
         #region IDataRecord Members
 
-        public int FieldCount => _reader.FieldCount;
+        public virtual int FieldCount => _reader.FieldCount;
 
         public bool GetBoolean(int i)
         {
@@ -158,7 +158,7 @@ namespace VirtualObjects.Queries.Mapping
             return _reader.GetValue(i + _offset);
         }
 
-        public int GetValues(object[] values)
+        public virtual int GetValues(object[] values)
         {
 
             var length = FieldCount - _offset;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using VirtualObjects.Exceptions;
@@ -16,7 +17,7 @@ namespace VirtualObjects.CRUD.Operations
 
         public QueryOperation(IEntityInfo entityInfo) : this(entityInfo, new EntityModelEntitiesMapper())
         {
-            
+
         }
 
         public QueryOperation(IEntityInfo entityInfo, IEntitiesMapper mapper)
@@ -45,7 +46,7 @@ namespace VirtualObjects.CRUD.Operations
                     Value = e.Value
                 });
 
-            var reader = new CustomReader(connection.ExecuteReader(commandText, parameters));
+            var reader = new CustomReader(_entityInfo, connection.ExecuteReader(commandText, parameters));
 
             return _mapper.MapEntities(reader, new QueryInfo
             {
@@ -70,164 +71,76 @@ namespace VirtualObjects.CRUD.Operations
         }
     }
 
-    internal class CustomReader : IDataReader
+    internal class CustomReader : OffsetedReader
     {
+        private readonly IEntityInfo _entityInfo;
         private readonly IDataReader _executeReader;
+        private IEnumerable<SwapIndexes> _swapIndexeses;
 
-        public CustomReader(IDataReader executeReader)
+        class SwapIndexes
         {
+            public int Index1 { get; set; }
+            public int Index2 { get; set; }
+        }
+
+        public CustomReader(IEntityInfo entityInfo, IDataReader executeReader) : base(executeReader, 0)
+        {
+            _entityInfo = entityInfo;
             _executeReader = executeReader;
+            _swapIndexeses = null;
         }
 
-        public void Dispose()
+        public override int GetValues(object[] values)
         {
-            _executeReader.Dispose();
+            _swapIndexeses = _swapIndexeses ?? MakeSwapIndexes();
+
+            var count = base.GetValues(values);
+
+            // Rearrange values array to match EntityInfo metadata
+            foreach (var swap in _swapIndexeses)
+            {
+                Swap(values, swap.Index1, swap.Index2);
+            }
+
+            return count;
         }
 
-        public string GetName(int i)
+        private static void Swap(IList<object> values, int index1, int index2)
         {
-            return _executeReader.GetName(i);
+            var obj = values[index2];
+
+            values[index2] = values[index1];
+            values[index1] = obj;
         }
 
-        public string GetDataTypeName(int i)
+        private IEnumerable<SwapIndexes> MakeSwapIndexes()
         {
-            throw new NotImplementedException();
+            IList<SwapIndexes> swapIndexeses = new List<SwapIndexes>();
+            var schemaTable = _executeReader.GetSchemaTable();
+            var columns = _entityInfo.Columns.Select(e => e.ColumnName).ToList();
+
+            for (var i = 0; i < schemaTable.Rows.Count; i++)
+            {
+                var columnName = schemaTable.Rows[i].ItemArray[0].ToString();
+
+                if (!_entityInfo.Columns[i].ColumnName.Equals(columnName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var index = columns.IndexOf(columnName);
+
+                    if (index != -1 && !swapIndexeses.Any(e => e.Index1 == i && e.Index2 == index || e.Index2 == i && e.Index1 == index))
+                    {
+                        swapIndexeses.Add(new SwapIndexes
+                        {
+                            Index1 = i,
+                            Index2 = index
+                        });
+                    }
+                }
+            }
+
+            return swapIndexeses.ToList();
         }
 
-        public Type GetFieldType(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetValue(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int GetValues(object[] values)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int GetOrdinal(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool GetBoolean(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public byte GetByte(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
-        {
-            throw new NotImplementedException();
-        }
-
-        public char GetChar(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Guid GetGuid(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public short GetInt16(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int GetInt32(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetInt64(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public float GetFloat(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetDouble(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetString(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal GetDecimal(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DateTime GetDateTime(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDataReader GetData(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsDBNull(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int FieldCount { get; }
-
-        object IDataRecord.this[int i]
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        object IDataRecord.this[string name]
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void Close()
-        {
-            throw new NotImplementedException();
-        }
-
-        public DataTable GetSchemaTable()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool NextResult()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Read()
-        {
-            throw new NotImplementedException();
-        }
-
-        public int Depth { get; }
-        public bool IsClosed { get; }
-        public int RecordsAffected { get; }
+        public override int FieldCount => _entityInfo.Columns.Count;
     }
 }

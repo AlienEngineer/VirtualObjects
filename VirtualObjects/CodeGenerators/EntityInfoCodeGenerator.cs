@@ -350,6 +350,14 @@ namespace VirtualObjects.CodeGenerators
                 var column = entityInfo.Columns[i];
                 
                 const string setter = @"
+
+                if ({i} >= data.Length)                    
+                {{
+                    return new MapResult {{
+                        Entity = entity
+                    }};
+                }}  
+
 {FieldMappingDiagnostics} Diagnostic.Timed(() => {{
                 try
                 {{
@@ -358,7 +366,7 @@ namespace VirtualObjects.CodeGenerators
                     {IsBoolean} else
                     {Comment}if (data[{i}] != DBNull.Value)
                         entity.{FieldName} = {Value};
-                    
+                                      
                 }}
                 catch (InvalidCastException) 
                 {{ 

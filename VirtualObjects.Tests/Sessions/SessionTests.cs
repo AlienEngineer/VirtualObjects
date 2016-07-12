@@ -17,7 +17,7 @@ namespace VirtualObjects.Tests.Sessions
     [TestFixture, Category("Session")]
     public class SessionTests : UtilityBelt
     {
-        private ISession CreateSession()
+        private static ISession CreateSession()
         {
             return new Session(new SessionConfiguration(), "northwind");
         }
@@ -25,10 +25,10 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Should_Be_Created_And_Disposed()
         {
-            using (var session = CreateSession() )
+            using (var session = CreateSession())
             {
 
-                
+
 
             }
         }
@@ -37,15 +37,15 @@ namespace VirtualObjects.Tests.Sessions
         public void Session_Transaction_Should_Be_Created_And_Disposed()
         {
 
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
-                using ( session.BeginTransaction() )
+                using (session.BeginTransaction())
                 {
 
 
                 }
             }
-            
+
         }
 
         [Test, Repeat(Repeat)]
@@ -93,6 +93,71 @@ namespace VirtualObjects.Tests.Sessions
             }
         }
 
+        [Test, Repeat(Repeat)]
+        public void Session_Raw_Queries_with_filter()
+        {
+            var session = Session;
+            {
+                var employees = Diagnostic.Timed(() => session.Query<Employee>("Select EmployeeId from Employees Where EmployeeId = 1").ToList());
+                employees.Count.Should().Be(1);
+            }
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Session_Raw_Queries_with_filter_and_full_projection()
+        {
+            var session = Session;
+            {
+                var employees = Diagnostic.Timed(() => session.Query<EmployeeSimple>(@"
+Select 
+    EmployeeId,
+    LastName,
+    FirstName,
+    HireDate,
+    ReportsTo
+from Employees 
+Where EmployeeId = 1").ToList());
+                employees.Count.Should().Be(1);
+            }
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Session_Raw_Queries_with_filter_and_sub_projection()
+        {
+            var session = Session;
+            {
+                var employees = Diagnostic.Timed(() => session.Query<EmployeeSimple>(@"
+Select 
+    EmployeeId,
+    HireDate,
+    ReportsTo
+from Employees 
+Where EmployeeId = 1").ToList());
+
+                employees.Count.Should().Be(1);
+                employees.First().EmployeeId.Should().Be(1);
+                employees.First().HireDate.Should().Be(new DateTime(1992, 05, 01));
+                employees.First().ReportsTo.Should().Be(2);
+            }
+        }
+
+        [Test, Repeat(Repeat)]
+        public void Session_Raw_Queries_with_filter_and_full_inverted_projection()
+        {
+            var session = Session;
+            {
+                var employees = Diagnostic.Timed(() => session.Query<EmployeeSimple>(@"
+Select 
+    ReportsTo,
+    HireDate,
+    FirstName,
+    LastName,
+    EmployeeId
+from Employees 
+Where EmployeeId = 1").ToList());
+                employees.Count.Should().Be(1);
+            }
+        }
 
         [Test, Repeat(Repeat)]
         public void Session_Entity_Lazy_Load()
@@ -127,7 +192,7 @@ namespace VirtualObjects.Tests.Sessions
                 var employees = session.GetAll<Employee>();
                 var i = 0;
 
-                foreach ( Employee employee in employees )
+                foreach (Employee employee in employees)
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     ++i;
@@ -145,7 +210,7 @@ namespace VirtualObjects.Tests.Sessions
                 var employees = session.GetAll<Employee>();
                 var i = 0;
 
-                foreach ( Employee employee in employees )
+                foreach (Employee employee in employees)
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     ++i;
@@ -165,7 +230,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 var i = 0;
 
-                foreach ( var employee in employees )
+                foreach (var employee in employees)
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     Assert.That(employee.City, Is.Not.Null);
@@ -187,7 +252,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 var i = 0;
 
-                foreach ( var employee in employees )
+                foreach (var employee in employees)
                 {
                     Assert.That(employee.EmployeeId, Is.GreaterThan(0));
                     Assert.That(employee.City, Is.Not.Null);
@@ -237,7 +302,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat), ExpectedException(typeof(TranslationException))]
         public void Session_GetAll_Employees_From_Orders_MemberAccess_OnProjection()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 var employees = session.GetAll<Employee>()
                     .Where(e => session.GetAll<Orders>()
@@ -704,7 +769,7 @@ namespace VirtualObjects.Tests.Sessions
         {
             var session = Session;
             {
-                using ( var s = CreateSession() )
+                using (var s = CreateSession())
                 {
                     var employee1 = s.GetById(new Employee { EmployeeId = 1 });
 
@@ -734,7 +799,7 @@ namespace VirtualObjects.Tests.Sessions
         [Test, Repeat(Repeat)]
         public void Session_Insert_Employee()
         {
-            using ( var session = CreateSession() )
+            using (var session = CreateSession())
             {
                 session.WithRollback(() =>
                 {
@@ -878,7 +943,7 @@ namespace VirtualObjects.Tests.Sessions
                              join od in session.GetAll<OrderDetails>() on o equals od.Order
                              select new { Order = o, OrderDetail = od };
 
-                foreach ( var order in orders )
+                foreach (var order in orders)
                 {
                     Assert.That(order, Is.Not.Null);
                     Assert.That(order.Order, Is.Not.Null);
@@ -909,7 +974,7 @@ namespace VirtualObjects.Tests.Sessions
                              join e in session.GetAll<Employee>() on o.Employee equals e
                              select new { Order = o, OrderDetail = od, Employee = e };
 
-                foreach ( var order in orders )
+                foreach (var order in orders)
                 {
                     Assert.That(order, Is.Not.Null);
                     Assert.That(order.Order, Is.Not.Null);
@@ -933,7 +998,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 int i = 0;
 
-                foreach ( var order in orders )
+                foreach (var order in orders)
                 {
                     Assert.That(order, Is.Not.Null);
                     Assert.That(order.Order, Is.Not.Null);
@@ -960,7 +1025,7 @@ namespace VirtualObjects.Tests.Sessions
 
                 var i = 0;
 
-                foreach ( var order in orders )
+                foreach (var order in orders)
                 {
                     Assert.That(order.OrderId, Is.GreaterThan(0));
                     Assert.That(order.Quantity, Is.GreaterThan(0));
